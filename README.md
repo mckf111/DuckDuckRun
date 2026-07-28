@@ -38,7 +38,20 @@ src/
   ui.js         HUD 与各界面
   input.js      键盘/触屏输入
   main.js       入口:主循环与深链
+assets/fonts/   标题用子集化思源宋体(jinling-serif.woff2)与字符表 chars.txt
 docs/           设计文档(不参与版本控制的代码部分)
+```
+
+### 重新生成标题字体
+
+游戏用字变化后,用项目内 `.venv`(fonttools + brotli)重新子集化:
+
+```bash
+# 1. 重新提取字符表(见 assets/fonts/chars.txt 的生成脚本,遍历 src/**/*.js + index.html)
+# 2. 下载 Noto Serif SC(可变字重),固定到 wght=600 后子集化:
+./.venv/Scripts/fonttools varLib.instancer NotoSerifSC.ttf wght=600 -o NotoSerif600.ttf
+./.venv/Scripts/pyftsubset NotoSerif600.ttf --text-file=assets/fonts/chars.txt \
+  --flavor=woff2 --output-file=assets/fonts/jinling-serif.woff2 --no-hinting --desubroutinize
 ```
 
 ## 版本控制约定
