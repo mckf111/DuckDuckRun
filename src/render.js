@@ -1,14 +1,18 @@
-import { ctx, W, H, TAU, proj, poly, disc, clamp, ROAD_HALF, LANEGAP, ZP, DRAWD } from './core.js';
-import { LEVELS } from './config.js';
+import { ctx, W, H, HOR, TAU, proj, poly, disc, clamp, ROAD_HALF, LANEGAP, ZP, DRAWD } from './core.js';
+import { LEVELS, LM_CYCLE } from './config.js';
 import { G, pl, curLv } from './game.js';
 import { drawItemIcon } from './art/items.js';
 import { drawObstacle } from './art/obstacles.js';
-import { drawSide, drawSkyline } from './art/scenery.js';
+import { drawSide, drawSkyline, drawLandmark, drawBoat, drawNear } from './art/scenery.js';
 import { drawPlayer } from './art/player.js';
 
-/* ================= 渲染:场景 ================= */
+/* ================= 渲染:场景(远/中/近三层视差) ================= */
 export function render(){
   const lv = G.state==='play'||G.state==='over'||G.state==='clear' ? curLv() : LEVELS[3]; // 菜单用秦淮夜景
+  // 无尽模式地标轮换(含长江大桥);冒险模式用本关地标
+  const lmId = G.mode==='endless' && (G.state==='play'||G.state==='over'||G.state==='clear')
+    ? LM_CYCLE[Math.floor(G.dist/600)%LM_CYCLE.length]
+    : lv.landmark;
   // 天空
   const g = ctx.createLinearGradient(0,0,0,H);
   g.addColorStop(0, lv.sky[0]); g.addColorStop(0.62, lv.sky[1]); g.addColorStop(0.62, lv.ground); g.addColorStop(1, lv.side);
@@ -20,6 +24,13 @@ export function render(){
   ctx.globalAlpha = 0.18; ctx.beginPath(); ctx.arc(moonX, moonY, 52, 0, TAU); ctx.fill();
   ctx.globalAlpha = 1;
   drawSkyline(lv, G.dist);
+  drawLandmark(lmId, lv, G.dist);
+  // 秦淮河:画舫横向漂过(在道路之前绘制,从路后穿过)
+  if(lv.motif==='lantern'){
+    ctx.globalAlpha = 0.85;
+    drawBoat((G.t*26) % (W+360) - 180, HOR + 26);
+    ctx.globalAlpha = 1;
+  }
 
   // 地面道路(梯形)
   const pN = proj(-ROAD_HALF, 0, 2.2), pN2 = proj(ROAD_HALF, 0, 2.2);
@@ -51,10 +62,14 @@ export function render(){
       drawSide(lv.motif, p.x, p.y, p.s, lv, m<0);
     }
   }
-  // 中山陵:远处祭堂剪影
-  if(lv.motif==='steps'){
-    const p = proj(0, 0, DRAWD*0.96);
-    poly([[p.x-30,p.y],[p.x-30,p.y-26],[p.x,p.y-40],[p.x+30,p.y-26],[p.x+30,p.y]], '#5a7ca6');
+  // 近层(快):栏杆柱/柳枝/灯笼串/松枝,只画最近一段,从两侧高速掠过
+  const nstep = 9, nz0 = Math.floor((G.dist - ZP)/nstep)*nstep + nstep;
+  for(let z = nz0; z < G.dist - ZP + 14; z += nstep){
+    const rz = z - G.dist + ZP; if(rz < 2.4 || rz > 14) continue;
+    for(const m of [-1,1]){
+      const p = proj(m * (ROAD_HALF + 2.6), 0, rz);
+      drawNear(lv.motif, p.x, p.y, p.s, lv, m<0);
+    }
   }
   // 收集品(远->近)
   const cols = G.cols.slice().sort((a,b)=>b.rz-a.rz);

@@ -49,3 +49,133 @@ export function drawSkyline(lv, dist){
   }
   ctx.globalAlpha = 1;
 }
+
+/* 远景地标剪影:每关一个一眼可辨的南京符号(远层,慢速视差) */
+export function drawLandmark(id, lv, dist){
+  const base = HOR + 2;
+  const off = (dist*2) % 720;
+  ctx.globalAlpha = 0.55;
+  for(let i=-1;i<3;i++){
+    drawLm(id, lv, i*720 - off + 360, base);
+  }
+  ctx.globalAlpha = 1;
+}
+
+function drawLm(id, lv, x, base){
+  const SIL = lv.lmColor || lv.sideTop, SKY = lv.sky[1];
+  ctx.fillStyle = SIL;
+  if(id==='zhonghua'){          // 中华门瓮城:三重拱门 + 两重檐敌楼
+    ctx.fillRect(x-110, base-58, 220, 58);
+    for(let k=0;k<9;k++) ctx.fillRect(x-104+k*24, base-66, 12, 8);   // 垛口
+    ctx.fillStyle = SKY;
+    for(const k of [-1,0,1]){                                        // 三道拱门(镂空见天)
+      ctx.beginPath();
+      ctx.moveTo(x+k*64-15, base); ctx.lineTo(x+k*64-15, base-24);
+      ctx.arc(x+k*64, base-24, 15, Math.PI, 0);
+      ctx.lineTo(x+k*64+15, base); ctx.closePath(); ctx.fill();
+    }
+    ctx.fillStyle = SIL;
+    ctx.fillRect(x-30, base-84, 60, 26);                             // 敌楼
+    poly([[x-46,base-84],[x-26,base-98],[x+26,base-98],[x+46,base-84]], SIL);
+    ctx.fillRect(x-14, base-108, 28, 10);
+    poly([[x-22,base-108],[x,base-118],[x+22,base-108]], SIL);
+  } else if(id==='jiming'){     // 鸡鸣寺药师佛塔:五层密檐
+    let w = 60, y0 = base;
+    for(let k=0;k<5;k++){
+      ctx.fillRect(x-w/2, y0-13, w, 13);
+      poly([[x-w/2-9,y0-13],[x,y0-21],[x+w/2+9,y0-13]], SIL);
+      y0 -= 21; w *= 0.8;
+    }
+    ctx.fillRect(x-2, y0-12, 4, 12);                                 // 塔刹
+    poly([[x-6,y0-12],[x+6,y0-12],[x,y0-22]], SIL);
+  } else if(id==='sunyard'){    // 中山陵祭堂:蓝瓦白墙(琉璃蓝大屋顶)
+    poly([[x-95,base],[x-72,base-14],[x+72,base-14],[x+95,base]], SIL); // 台阶基座
+    ctx.fillRect(x-52, base-54, 104, 40);                            // 墙身
+    ctx.fillStyle = SKY;
+    for(const k of [-1,0,1]){                                        // 三座拱门
+      ctx.beginPath();
+      ctx.moveTo(x+k*30-8, base-14); ctx.lineTo(x+k*30-8, base-36);
+      ctx.arc(x+k*30, base-36, 8, Math.PI, 0);
+      ctx.lineTo(x+k*30+8, base-14); ctx.closePath(); ctx.fill();
+    }
+    ctx.fillStyle = '#2e5f8a';                                       // 琉璃蓝瓦
+    poly([[x-66,base-54],[x-42,base-82],[x+42,base-82],[x+66,base-54]], '#2e5f8a');
+    poly([[x-32,base-82],[x-20,base-92],[x+20,base-92],[x+32,base-82]], '#2e5f8a');
+  } else if(id==='zhaobi'){     // 夫子庙双龙戏珠大照壁
+    ctx.fillRect(x-120, base-50, 240, 50);
+    poly([[x-132,base-50],[x-118,base-62],[x+118,base-62],[x+132,base-50]], SIL); // 瓦顶
+    ctx.strokeStyle = lv.accent; ctx.lineWidth = 5; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(x-92, base-18);                      // 左龙
+    ctx.quadraticCurveTo(x-62, base-44, x-34, base-20);
+    ctx.quadraticCurveTo(x-20, base-10, x-10, base-24); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x+92, base-18);                      // 右龙
+    ctx.quadraticCurveTo(x+62, base-44, x+34, base-20);
+    ctx.quadraticCurveTo(x+20, base-10, x+10, base-24); ctx.stroke();
+    disc(x, base-24, 7, '#f0b64c');                                  // 明珠
+    ctx.fillStyle = 'rgba(240,182,76,0.4)';
+    ctx.beginPath(); ctx.arc(x, base-24, 12, 0, TAU); ctx.fill();
+  } else if(id==='observatory'){ // 紫金山天文台:山丘银圆顶
+    poly([[x-150,base],[x-60,base-32],[x+70,base-28],[x+150,base]], SIL);
+    ctx.fillStyle = '#b9c4d6';
+    ctx.beginPath(); ctx.arc(x-16, base-40, 20, Math.PI, 0); ctx.fill(); // 主圆顶
+    ctx.fillRect(x-36, base-40, 40, 12);
+    ctx.beginPath(); ctx.arc(x+38, base-36, 12, Math.PI, 0); ctx.fill(); // 小圆顶
+    ctx.fillRect(x+26, base-36, 24, 9);
+    ctx.strokeStyle = SIL; ctx.lineWidth = 3;                        // 天窗缝
+    ctx.beginPath(); ctx.moveTo(x-16, base-60); ctx.lineTo(x-16, base-46); ctx.stroke();
+  } else if(id==='bridge'){     // 南京长江大桥:双层桁架 + 桥头堡
+    const bw = 320;
+    ctx.fillRect(x-bw/2, base-48, bw, 6);                            // 公路层
+    ctx.fillRect(x-bw/2, base-28, bw, 6);                            // 铁路层
+    for(let k=0;k<=10;k++) ctx.fillRect(x-bw/2+k*bw/10-1, base-48, 2, 26); // 桁架
+    for(const k of [-1,0,1]) ctx.fillRect(x+k*110-5, base-22, 10, 22);     // 桥墩
+    ctx.fillRect(x-bw/2-16, base-80, 26, 38);                        // 桥头堡
+    poly([[x-bw/2-20,base-80],[x-bw/2-3,base-92],[x-bw/2+14,base-80]], SIL);
+    ctx.fillRect(x-bw/2-9, base-100, 3, 10);                         // 旗杆
+    poly([[x-bw/2-6,base-100],[x-bw/2+6,base-97],[x-bw/2-6,base-94]], '#e2483d'); // 红旗
+  }
+}
+
+/* 秦淮河画舫:横向缓缓漂过(中景) */
+export function drawBoat(x, y){
+  poly([[x-70,y],[x-56,y-14],[x+56,y-14],[x+70,y]], '#120d1e');      // 船体
+  ctx.fillStyle = '#120d1e';
+  ctx.fillRect(x-34, y-38, 68, 24);                                   // 船舱
+  poly([[x-44,y-38],[x,y-52],[x+44,y-38]], '#1a1228');                // 舱顶
+  disc(x-22, y-28, 4, '#f0b64c'); disc(x, y-28, 4, '#f0b64c'); disc(x+22, y-28, 4, '#f0b64c'); // 窗灯
+  disc(x+52, y-20, 5, '#e2483d');                                     // 船头灯笼
+}
+
+/* 近层装饰(快速掠过):栏杆柱/垂柳/灯笼串/松枝 */
+export function drawNear(motif, x, y, s, lv, mirror){
+  const m = mirror ? -1 : 1;
+  const c = lv.side;
+  if(motif==='crenel' || motif==='steps'){   // 石栏柱
+    ctx.fillStyle = c;
+    ctx.fillRect(x-0.12*s, y-1.1*s, 0.24*s, 1.1*s);
+    disc(x, y-1.18*s, 0.17*s, lv.sideTop);
+  } else if(motif==='lotus'){                // 垂柳
+    ctx.strokeStyle = c; ctx.lineWidth = Math.max(1.5, s*0.05);
+    ctx.beginPath(); ctx.moveTo(x, y); ctx.quadraticCurveTo(x+m*0.2*s, y-1.2*s, x+m*0.1*s, y-2.0*s); ctx.stroke();
+    ctx.lineWidth = Math.max(1, s*0.025);
+    for(let i=0;i<4;i++){                    // 垂下的柳条
+      const bx = x+m*(0.1+0.14*i)*s;
+      ctx.beginPath(); ctx.moveTo(bx, y-(1.9-0.08*i)*s);
+      ctx.quadraticCurveTo(bx+m*0.12*s, y-1.3*s, bx+m*0.05*s, y-(0.7+0.06*i)*s); ctx.stroke();
+    }
+  } else if(motif==='lantern'){              // 灯笼串
+    ctx.strokeStyle = lv.sideTop; ctx.lineWidth = Math.max(1.5, s*0.03);
+    ctx.beginPath(); ctx.moveTo(x, y-2.2*s); ctx.quadraticCurveTo(x+m*0.5*s, y-1.8*s, x+m*1.0*s, y-2.1*s); ctx.stroke();
+    for(let i=0;i<3;i++){
+      const lx = x+m*(0.25+0.3*i)*s, ly = y-1.95*s - 0.12*s*Math.sin(i*1.3);
+      disc(lx, ly, 0.16*s, '#e2483d');
+      ctx.fillStyle = 'rgba(240,182,76,0.35)';
+      ctx.beginPath(); ctx.arc(lx, ly, 0.26*s, 0, TAU); ctx.fill();
+    }
+  } else {                                   // 松枝(从上方扫过)
+    ctx.strokeStyle = c; ctx.lineWidth = Math.max(2, s*0.06);
+    ctx.beginPath(); ctx.moveTo(x, y-2.6*s); ctx.lineTo(x+m*0.9*s, y-2.2*s); ctx.stroke();
+    poly([[x+m*0.9*s,y-2.2*s],[x+m*0.3*s,y-2.0*s],[x+m*0.7*s,y-1.6*s]], lv.sideTop);
+    poly([[x+m*0.6*s,y-2.35*s],[x+m*0.1*s,y-2.2*s],[x+m*0.45*s,y-1.9*s]], lv.sideTop);
+  }
+}
