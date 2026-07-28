@@ -8,7 +8,9 @@ import { drawSide } from './art/scenery.js';
 
 /* ================= 渲染:UI 组件 ================= */
 export function text(str, x, y, size, color, align, weight){
-  ctx.font = (weight ? weight + ' ' : '') + size + 'px "Microsoft YaHei","PingFang SC",sans-serif';
+  // 大字号标题用宋体系(金陵长卷气质),小字号 UI 保留黑体
+  const family = size >= 30 ? '"JinlingSong","STSong","SimSun",serif' : '"Microsoft YaHei","PingFang SC",sans-serif';
+  ctx.font = (weight ? weight + ' ' : '') + size + 'px ' + family;
   ctx.textAlign = align||'center'; ctx.textBaseline = 'middle';
   ctx.fillStyle = color; ctx.fillText(str, x, y);
 }
