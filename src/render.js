@@ -66,8 +66,14 @@ export function render(){
   // 障碍(远->近)
   const obs = G.obs.slice().sort((a,b)=>b.rz-a.rz);
   for(const o of obs){ if(o.rz > 2 && o.rz < DRAWD) drawObstacle(o, lv); }
-  // 玩家
-  if(G.state==='play') drawPlayer(pl, G.t);
+  // 玩家(鸭子):障碍逼近时惊恐表情,撞车后保持四脚朝天
+  if(G.state==='play' || G.state==='over'){
+    let panic = false;
+    for(const o of G.obs){
+      if(!o.hit && o.rz > ZP && o.rz < ZP+12){ panic = true; break; }
+    }
+    drawPlayer(pl, G.t, { panic, crashed: G.state==='over' });
+  }
   // 粒子
   for(const pt of G.parts){
     const p = proj(pt.x, pt.y, pt.z);

@@ -12,6 +12,7 @@ export const G = {
   obs:[], cols:[], parts:[],
   nextSpawn:0, shake:0,
   buttons:[], albumFrom:'menu',
+  egg:null,            // 彩蛋文案 { text, ttl, dur }
 };
 export const pl = { lane:0, x:0, y:0, vy:0, sliding:0, jumps:0 };
 
@@ -20,7 +21,7 @@ export function startRun(mode, lvIdx){
   G.dist = 0; G.items = 0; G.newIds = []; G.t = 0;
   G.obs = []; G.cols = []; G.parts = [];
   G.speed = mode==='adv' ? LEVELS[lvIdx].speed : 9.5;
-  G.nextSpawn = 40; G.paused = false; G.shake = 0;
+  G.nextSpawn = 40; G.paused = false; G.shake = 0; G.egg = null;
   pl.lane = 0; pl.x = 0; pl.y = 0; pl.vy = 0; pl.sliding = 0; pl.jumps = 0;
   G.state = 'play';
 }
@@ -95,6 +96,7 @@ export function ambient(lv){
 /* ---- 主更新 ---- */
 export function update(dt){
   G.t += dt;
+  if(G.egg){ G.egg.ttl -= dt; if(G.egg.ttl<=0) G.egg = null; } // 彩蛋文案倒计时
   if(G.state!=='play' || G.paused) return;
   const lv = curLv();
   if(G.mode==='endless') G.speed = Math.min(20, 9.5 + G.dist/280);
@@ -131,6 +133,9 @@ export function update(dt){
       c.got = true; G.items++; sfx.collect();
       const p = proj(c.x, c.y, ZP); burst(p.x, p.y, '#f0b64c');
       if(!save.album[c.id]){ save.album[c.id]=true; G.newIds.push(c.id); persist(); }
+      // 鸭子主题彩蛋文案
+      if(c.id==='fans') G.egg = { text:'……这碗里没有鸭,放心。', ttl:2.6, dur:2.6 };
+      else if(c.id==='duck') G.egg = { text:'拒绝翻看。', ttl:2.6, dur:2.6 };
     }
   }
   G.cols = G.cols.filter(c=>!c.got && c.rz > 1.2);

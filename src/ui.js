@@ -54,6 +54,13 @@ export function drawHUD(){
     text('无尽模式 · 最佳 '+save.best+' m', CX, 30, 20, lv.hud, 'center', 'bold');
   }
   text('←→换道  ↑跳  ↓滑铲  P暂停  M静音'+(save.muted?'(已静音)':''), CX, H-16, 13, lv.hud, 'center');
+  // 彩蛋文案(淡入淡出)
+  if(G.egg){
+    const a = clamp(Math.min((G.egg.dur-G.egg.ttl)*4, G.egg.ttl), 0, 1);
+    ctx.globalAlpha = a;
+    text(G.egg.text, CX, H-48, 16, '#f0b64c', 'center', 'bold');
+    ctx.globalAlpha = 1;
+  }
   if(G.paused){
     dim(0.6);
     text('暂 停', CX, H*0.42, 54, '#f7ead0', 'center', 'bold');
