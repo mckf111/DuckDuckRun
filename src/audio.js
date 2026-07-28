@@ -31,4 +31,5 @@ export const sfx = {
   hit(){ tone(160, 40, 0.4, 'sawtooth', 0.2); tone(90, 30, 0.5, 'square', 0.12, 0.03); },
   clear(){ [523,659,784,1047].forEach((f,i)=>tone(f,f,0.3,'triangle',0.13,i*0.12)); },
   click(){ tone(700, 700, 0.06, 'square', 0.06); },
+  gate(){ tone(660, 660, 0.12, 'triangle', 0.1); tone(880, 880, 0.2, 'triangle', 0.1, 0.09); }, // 穿门风铃
 };

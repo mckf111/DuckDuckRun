@@ -9,8 +9,8 @@ export const G = {
   mode:'adv',        // adv | endless
   lvIdx:0, paused:false, t:0,
   dist:0, speed:0, items:0, newIds:[],
-  obs:[], cols:[], parts:[],
-  nextSpawn:0, shake:0,
+  obs:[], cols:[], parts:[], gates:[],
+  nextSpawn:0, nextGate:0, shake:0,
   buttons:[], albumFrom:'menu',
   egg:null,            // 彩蛋文案 { text, ttl, dur }
 };
@@ -19,9 +19,10 @@ export const pl = { lane:0, x:0, y:0, vy:0, sliding:0, jumps:0 };
 export function startRun(mode, lvIdx){
   G.mode = mode; G.lvIdx = lvIdx;
   G.dist = 0; G.items = 0; G.newIds = []; G.t = 0;
-  G.obs = []; G.cols = []; G.parts = [];
+  G.obs = []; G.cols = []; G.parts = []; G.gates = [];
   G.speed = mode==='adv' ? LEVELS[lvIdx].speed : 9.5;
   G.nextSpawn = 40; G.paused = false; G.shake = 0; G.egg = null;
+  G.nextGate = mode==='adv' ? 130 : 200;
   pl.lane = 0; pl.x = 0; pl.y = 0; pl.vy = 0; pl.sliding = 0; pl.jumps = 0;
   G.state = 'play';
 }
@@ -93,6 +94,17 @@ export function ambient(lv){
   });
 }
 
+/* 穿门演出:头顶三簇纸屑雨 + 风铃音 */
+function gateShower(lv){
+  const colors = { crenel:'#e8b04b', lotus:'#d98ba0', steps:'#ffffff', lantern:'#f0b64c', pine:'#c9a2ff' };
+  const c = colors[lv.motif] || '#f0b64c';
+  for(let i=-1;i<=1;i++){
+    const p = proj(i*LANEGAP, 2.2, ZP);
+    burst(p.x, p.y, c);
+  }
+  sfx.gate();
+}
+
 /* ---- 主更新 ---- */
 export function update(dt){
   G.t += dt;
@@ -108,6 +120,16 @@ export function update(dt){
     spawnCluster(G.nextSpawn);
     G.nextSpawn += rnd(16,24) * (9.5/G.speed) + 4;
   }
+  // 穿越门:冒险约每 130~160m,无尽每 200m;不参与碰撞
+  while(G.nextGate < G.dist + DRAWD){
+    G.gates.push({ z: G.nextGate, passed:false, rz: G.nextGate - G.dist + ZP });
+    G.nextGate += G.mode==='adv' ? rnd(130,160) : 200;
+  }
+  for(const g of G.gates){
+    g.rz = g.z - G.dist + ZP;
+    if(!g.passed && g.rz <= ZP){ g.passed = true; gateShower(lv); }
+  }
+  G.gates = G.gates.filter(g=>g.rz > 1.2);
   // 玩家物理
   pl.x = lerp(pl.x, pl.lane*LANEGAP, Math.min(1, dt*12));
   pl.vy -= 18*dt; pl.y += pl.vy*dt;

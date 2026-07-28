@@ -1,4 +1,4 @@
-import { ctx, TAU, HOR, poly, disc, petalFlower } from '../core.js';
+import { ctx, TAU, HOR, poly, disc, petalFlower, proj, clamp, ROAD_HALF, ZP } from '../core.js';
 
 /* ================= 剪纸绘制:两侧走廊装饰 ================= */
 export function drawSide(motif, x, y, s, lv, mirror){
@@ -144,6 +144,68 @@ export function drawBoat(x, y){
   poly([[x-44,y-38],[x,y-52],[x+44,y-38]], '#1a1228');                // 舱顶
   disc(x-22, y-28, 4, '#f0b64c'); disc(x, y-28, 4, '#f0b64c'); disc(x+22, y-28, 4, '#f0b64c'); // 窗灯
   disc(x+52, y-20, 5, '#e2483d');                                     // 船头灯笼
+}
+
+/* 穿越门地标:随深度逼近放大,掠过头顶时淡出;不参与碰撞 */
+export function drawGate(g, lv){
+  const X = ROAD_HALF + 0.35;
+  const pl1 = proj(-X, 0, g.rz), pr1 = proj(X, 0, g.rz);   // 柱脚
+  const pl2 = proj(-X, 3.0, g.rz), pr2 = proj(X, 3.0, g.rz); // 柱顶(门楣)
+  const s = pl1.s;
+  ctx.globalAlpha = clamp((g.rz - ZP + 0.6)/2.4, 0, 1);    // 穿门瞬间淡出
+  const pillar = lv.side, beam = lv.sideTop, trim = lv.accent;
+  const pw = 0.3*s, bh = 0.24*s;
+  ctx.fillStyle = pillar;
+  ctx.fillRect(pl1.x-pw/2, pl2.y, pw, pl1.y-pl2.y);        // 左柱
+  ctx.fillRect(pr1.x-pw/2, pr2.y, pw, pr1.y-pr2.y);        // 右柱
+  poly([[pl2.x,pl2.y],[pr2.x,pr2.y],[pr2.x,pr2.y-bh],[pl2.x,pl2.y-bh]], beam, trim, Math.max(1.5,s*0.02)); // 门楣
+  const cxm = (pl2.x+pr2.x)/2;
+  ctx.fillStyle = trim;                                    // 匾额
+  ctx.fillRect(cxm-0.34*s, pl2.y-bh*0.5-0.14*s, 0.68*s, 0.28*s);
+  const motif = lv.motif;
+  if(motif==='crenel'){          // 中华门:城垛 + 两盏灯笼
+    ctx.fillStyle = pillar;
+    const n = 7, step = (pr2.x-pl2.x)/n;
+    for(let i=0;i<n;i++) ctx.fillRect(pl2.x+i*step+step*0.2, pl2.y-bh-0.14*s, step*0.6, 0.14*s);
+    for(const k of [0.3, 0.7]){
+      const hx = pl2.x+(pr2.x-pl2.x)*k;
+      ctx.strokeStyle = trim; ctx.lineWidth = Math.max(1, s*0.02);
+      ctx.beginPath(); ctx.moveTo(hx, pl2.y); ctx.lineTo(hx, pl2.y+0.12*s); ctx.stroke();
+      disc(hx, pl2.y+0.26*s, 0.14*s, '#e2483d');
+    }
+  } else if(motif==='lotus'){    // 湖堤柳门:门楣垂下柳帘
+    poly([[pl2.x,pl2.y-bh],[pr2.x,pr2.y-bh],[pr2.x,pr2.y-bh-0.1*s],[pl2.x,pl2.y-bh-0.1*s]], '#1f4a42');
+    ctx.strokeStyle = '#a8d5a2'; ctx.lineWidth = Math.max(1, s*0.02);
+    const n = 9;
+    for(let i=0;i<=n;i++){
+      const hx = pl2.x+(pr2.x-pl2.x)*i/n;
+      ctx.beginPath(); ctx.moveTo(hx, pl2.y);
+      ctx.quadraticCurveTo(hx+0.06*s, pl2.y+0.5*s, hx-0.03*s, pl2.y+(0.9+0.2*Math.sin(i*2.1))*s);
+      ctx.stroke();
+    }
+  } else if(motif==='steps'){    // 博爱坊:蓝瓦三楼
+    const roof = '#2e5f8a';
+    poly([[cxm-1.1*s,pl2.y-bh],[cxm-0.8*s,pl2.y-bh-0.34*s],[cxm+0.8*s,pl2.y-bh-0.34*s],[cxm+1.1*s,pl2.y-bh]], roof);
+    poly([[pl2.x-0.2*s,pl2.y-bh],[pl2.x+0.15*s,pl2.y-bh-0.24*s],[pl2.x+0.55*s,pl2.y-bh-0.24*s],[pl2.x+0.7*s,pl2.y-bh]], roof);
+    poly([[pr2.x+0.2*s,pr2.y-bh],[pr2.x-0.15*s,pr2.y-bh-0.24*s],[pr2.x-0.55*s,pr2.y-bh-0.24*s],[pr2.x-0.7*s,pr2.y-bh]], roof);
+  } else if(motif==='lantern'){  // 天下文枢坊:翘檐 + 三盏灯笼
+    poly([[cxm-1.3*s,pl2.y-bh],[cxm-0.7*s,pl2.y-bh-0.3*s],[cxm+0.7*s,pl2.y-bh-0.3*s],[cxm+1.3*s,pl2.y-bh]], '#3d1430');
+    poly([[cxm-1.3*s,pl2.y-bh],[cxm-1.45*s,pl2.y-bh-0.18*s],[cxm-1.1*s,pl2.y-bh-0.1*s]], '#3d1430');
+    poly([[cxm+1.3*s,pl2.y-bh],[cxm+1.45*s,pl2.y-bh-0.18*s],[cxm+1.1*s,pl2.y-bh-0.1*s]], '#3d1430');
+    for(const k of [0.25, 0.5, 0.75]){
+      const hx = pl2.x+(pr2.x-pl2.x)*k;
+      ctx.strokeStyle = trim; ctx.lineWidth = Math.max(1, s*0.02);
+      ctx.beginPath(); ctx.moveTo(hx, pl2.y); ctx.lineTo(hx, pl2.y+0.14*s); ctx.stroke();
+      disc(hx, pl2.y+0.3*s, 0.16*s, '#e2483d');
+      ctx.fillStyle = 'rgba(240,182,76,0.35)';
+      ctx.beginPath(); ctx.arc(hx, pl2.y+0.3*s, 0.26*s, 0, TAU); ctx.fill();
+    }
+  } else {                       // 盘山牌坊:石坊 + 松枝
+    poly([[cxm-0.9*s,pl2.y-bh],[cxm-0.6*s,pl2.y-bh-0.26*s],[cxm+0.6*s,pl2.y-bh-0.26*s],[cxm+0.9*s,pl2.y-bh]], beam);
+    poly([[pl2.x,pl2.y-bh],[pl2.x-0.3*s,pl2.y-bh-0.35*s],[pl2.x+0.25*s,pl2.y-bh-0.5*s]], trim);
+    poly([[pr2.x,pr2.y-bh],[pr2.x+0.3*s,pr2.y-bh-0.35*s],[pr2.x-0.25*s,pr2.y-bh-0.5*s]], trim);
+  }
+  ctx.globalAlpha = 1;
 }
 
 /* 近层装饰(快速掠过):栏杆柱/垂柳/灯笼串/松枝 */

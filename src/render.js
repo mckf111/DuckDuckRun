@@ -3,7 +3,7 @@ import { LEVELS, LM_CYCLE } from './config.js';
 import { G, pl, curLv } from './game.js';
 import { drawItemIcon } from './art/items.js';
 import { drawObstacle } from './art/obstacles.js';
-import { drawSide, drawSkyline, drawLandmark, drawBoat, drawNear } from './art/scenery.js';
+import { drawSide, drawSkyline, drawLandmark, drawBoat, drawGate, drawNear } from './art/scenery.js';
 import { drawPlayer } from './art/player.js';
 
 /* ================= 渲染:场景(远/中/近三层视差) ================= */
@@ -71,6 +71,9 @@ export function render(){
       drawNear(lv.motif, p.x, p.y, p.s, lv, m<0);
     }
   }
+  // 穿越门(远->近,在收集品与障碍之后)
+  const gates = G.gates.slice().sort((a,b)=>b.rz-a.rz);
+  for(const g of gates){ if(g.rz > 2 && g.rz < DRAWD) drawGate(g, lv); }
   // 收集品(远->近)
   const cols = G.cols.slice().sort((a,b)=>b.rz-a.rz);
   for(const c of cols){
