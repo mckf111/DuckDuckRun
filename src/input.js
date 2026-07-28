@@ -24,8 +24,18 @@ addEventListener('keyup', e=>{ keys[e.key]=false; });
 
 // 触屏/鼠标:滑动 = 操作;点击 = 按钮
 let tStart = null;
-cv.addEventListener('pointerdown', e=>{ ac(); tStart = {x:e.clientX, y:e.clientY}; });
+cv.addEventListener('pointerdown', e=>{
+  ac(); tStart = {x:e.clientX, y:e.clientY};
+  // 记录按下的按钮(按压反馈)
+  const r = cv.getBoundingClientRect();
+  const px = (e.clientX-r.left)/r.width*W, py = (e.clientY-r.top)/r.height*H;
+  G.pressed = null;
+  for(const b of G.buttons){
+    if(px>=b.x && px<=b.x+b.w && py>=b.y && py<=b.y+b.h){ G.pressed = {id:b.id, data:b.data}; break; }
+  }
+});
 cv.addEventListener('pointerup', e=>{
+  G.pressed = null;
   if(!tStart) return;
   const dx = e.clientX - tStart.x, dy = e.clientY - tStart.y;
   tStart = null;
@@ -38,4 +48,5 @@ cv.addEventListener('pointerup', e=>{
     clickAt(px, py);
   }
 });
+cv.addEventListener('pointercancel', ()=>{ G.pressed = null; tStart = null; });
 document.addEventListener('visibilitychange', ()=>{ if(document.hidden && G.state==='play') G.paused=true; });

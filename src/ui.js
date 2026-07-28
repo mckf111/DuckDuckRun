@@ -15,6 +15,9 @@ export function text(str, x, y, size, color, align, weight){
 export function button(id, label, x, y, w, h, opts){
   opts = opts||{};
   G.buttons.push({ id, x:x-w/2, y:y-h/2, w, h, data:opts.data });
+  const pressed = G.pressed && G.pressed.id===id && G.pressed.data===opts.data;
+  ctx.save();
+  if(pressed){ ctx.translate(x,y); ctx.scale(0.94,0.94); ctx.translate(-x,-y); } // 按压回弹
   ctx.globalAlpha = opts.disabled ? 0.45 : 1;
   const bg = opts.bg || '#c8342e';
   poly([[x-w/2+8,y-h/2],[x+w/2-8,y-h/2],[x+w/2,y],[x+w/2-8,y+h/2],[x-w/2+8,y+h/2],[x-w/2,y]], bg);
@@ -22,7 +25,9 @@ export function button(id, label, x, y, w, h, opts){
   ctx.beginPath(); ctx.moveTo(x-w/2+8,y-h/2); ctx.lineTo(x+w/2-8,y-h/2); ctx.lineTo(x+w/2,y);
   ctx.lineTo(x+w/2-8,y+h/2); ctx.lineTo(x-w/2+8,y+h/2); ctx.lineTo(x-w/2,y); ctx.closePath(); ctx.stroke();
   text(label, x, y+1, opts.size||22, '#f7ead0', 'center', 'bold');
+  if(pressed) poly([[x-w/2+8,y-h/2],[x+w/2-8,y-h/2],[x+w/2,y],[x+w/2-8,y+h/2],[x-w/2+8,y+h/2],[x-w/2,y]], 'rgba(0,0,0,0.22)');
   ctx.globalAlpha = 1;
+  ctx.restore();
 }
 export function stars(n, x, y, r){
   for(let i=0;i<3;i++){

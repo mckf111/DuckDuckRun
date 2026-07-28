@@ -1,4 +1,4 @@
-import { ctx, fit, rnd } from './core.js';
+import { ctx, W, H, fit, rnd } from './core.js';
 import { G, startRun, update } from './game.js';
 import { render } from './render.js';
 import { drawHUD, drawMenu, drawLevels, drawOver, drawClear, drawAlbum } from './ui.js';
@@ -7,9 +7,12 @@ import './input.js';
 addEventListener('resize', fit); fit();
 
 /* ================= 主循环 ================= */
-let lastT = 0;
+let lastT = 0, prevState = G.state;
 function frame(ts){
-  const dt = Math.min(0.05, (ts-lastT)/1000 || 0.016); lastT = ts;
+  const raw = Math.min(0.05, (ts-lastT)/1000 || 0.016); lastT = ts;
+  // 撞车慢动作:0.3 倍速 0.22 秒
+  let dt = raw;
+  if(G.slowmo > 0){ dt = raw*0.3; G.slowmo -= raw; }
   update(dt);
   G.buttons = [];
   ctx.save();
@@ -22,6 +25,14 @@ function frame(ts){
   else if(G.state==='over') drawOver();
   else if(G.state==='clear') drawClear();
   else if(G.state==='album') drawAlbum();
+  // 界面切换:卷轴自左向右揭开
+  if(G.state !== prevState){ prevState = G.state; G.wipe = 0.32; }
+  if(G.wipe > 0){
+    G.wipe -= raw;
+    const x = (1 - Math.max(0,G.wipe)/0.32) * (W+160) - 80;
+    ctx.fillStyle = '#0d0a14'; ctx.fillRect(x, 0, W-x+80, H);
+    ctx.fillStyle = '#f0b64c'; ctx.fillRect(x-3, 0, 3, H);
+  }
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);

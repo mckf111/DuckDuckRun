@@ -92,11 +92,19 @@ export function render(){
     }
     drawPlayer(pl, G.t, { panic, crashed: G.state==='over' });
   }
-  // 粒子
+  // 粒子(收集/穿门为剪纸碎片,环境粒子仍为圆点)
   for(const pt of G.parts){
     const p = proj(pt.x, pt.y, pt.z);
     ctx.globalAlpha = clamp(pt.life, 0, 1) * (pt.ambient?0.7:1);
-    disc(p.x, p.y, pt.size*(pt.ambient?p.s*0.02+0.6:1), pt.color);
+    if(pt.shard){
+      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(pt.rot);
+      const sz = pt.size;
+      if(pt.dia) poly([[0,-sz],[sz*0.7,0],[0,sz],[-sz*0.7,0]], pt.color);   // 菱形纸片
+      else poly([[0,-sz],[sz*0.9,sz*0.7],[-sz*0.9,sz*0.7]], pt.color);       // 三角纸片
+      ctx.restore();
+    } else {
+      disc(p.x, p.y, pt.size*(pt.ambient?p.s*0.02+0.6:1), pt.color);
+    }
   }
   ctx.globalAlpha = 1;
 }

@@ -1,4 +1,4 @@
-import { clamp, lerp, rnd, irnd, proj, LANEGAP, ZP, DRAWD } from './core.js';
+import { clamp, lerp, rnd, irnd, proj, LANEGAP, ZP, DRAWD, TAU } from './core.js';
 import { LEVELS, ITEMS } from './config.js';
 import { save, persist } from './save.js';
 import { sfx } from './audio.js';
@@ -11,7 +11,7 @@ export const G = {
   dist:0, speed:0, items:0, newIds:[],
   obs:[], cols:[], parts:[], gates:[],
   nextSpawn:0, nextGate:0, shake:0,
-  buttons:[], albumFrom:'menu',
+  buttons:[], albumFrom:'menu', slowmo:0, wipe:0, pressed:null,
   egg:null,            // 彩蛋文案 { text, ttl, dur }
 };
 export const pl = { lane:0, x:0, y:0, vy:0, sliding:0, jumps:0 };
@@ -80,8 +80,10 @@ export function spawnCluster(z){
 
 /* ---- 粒子 ---- */
 export function burst(x, y, color){
-  for(let i=0;i<10;i++) G.parts.push({
-    x, y, z:ZP, vx:rnd(-2,2), vy:rnd(1,4), life:rnd(0.4,0.8), color, size:rnd(2,5),
+  // 剪纸碎片:三角/菱形小纸片,旋转变速下落
+  for(let i=0;i<12;i++) G.parts.push({
+    x, y, z:ZP, vx:rnd(-2.5,2.5), vy:rnd(1,4.5), life:rnd(0.5,0.9), color, size:rnd(3,6),
+    shard:true, dia:Math.random()<0.5, rot:rnd(0,TAU), vr:rnd(-8,8),
   });
 }
 export function ambient(lv){
@@ -109,11 +111,11 @@ function gateShower(lv){
 export function update(dt){
   G.t += dt;
   if(G.egg){ G.egg.ttl -= dt; if(G.egg.ttl<=0) G.egg = null; } // 彩蛋文案倒计时
+  G.shake = Math.max(0, G.shake - dt*3);                        // 震屏衰减(撞车后也能平息)
   if(G.state!=='play' || G.paused) return;
   const lv = curLv();
   if(G.mode==='endless') G.speed = Math.min(20, 9.5 + G.dist/280);
   G.dist += G.speed * dt;
-  G.shake = Math.max(0, G.shake - dt*3);
 
   // 生成
   while(G.nextSpawn < G.dist + DRAWD){
@@ -166,6 +168,7 @@ export function update(dt){
   for(const p of G.parts){
     p.life -= dt; p.x += p.vx*dt; p.y += p.vy*dt;
     if(!p.ambient) p.vy -= 6*dt;
+    if(p.shard) p.rot += p.vr*dt;   // 纸片旋转
   }
   G.parts = G.parts.filter(p=>p.life>0);
   // 过关
@@ -173,7 +176,7 @@ export function update(dt){
 }
 
 export function gameOver(){
-  sfx.hit(); G.shake = 1;
+  sfx.hit(); G.shake = 1; G.slowmo = 0.22;   // 震屏 + 0.2s 慢动作
   if(G.mode==='endless'){
     const m = Math.floor(G.dist);
     if(m > save.best){ save.best = m; persist(); }
