@@ -1,6 +1,8 @@
 # 金陵快跑 · 南京实景跑酷
 
-南京城市主题跑酷小游戏:跑过明城墙、玄武湖、中山陵、夫子庙、紫金山五关,收集盐水鸭、鸭血粉丝汤、雨花茶等金陵风物。视觉为「实景照片 × 代码插画」混合:远景是 Wikimedia Commons 的南京实景照片(统一下载、调色、加颗粒),角色、障碍、路面、UI 全部由 Canvas 代码实时绘制。零构建、原生 ES Modules。
+南京城市主题跑酷小游戏:跑过明城墙、玄武湖、中山陵、夫子庙、紫金山五关(图鉴集齐+15星解锁隐藏关「长江大桥」),收集盐水鸭、鸭血粉丝汤、雨花茶等 12 件金陵风物。视觉为「实景照片 × 代码插画」混合:远景是 Wikimedia Commons 的南京实景照片(统一下载、调色、加颗粒),角色、障碍、路面、UI 全部由 Canvas 代码实时绘制。零构建、原生 ES Modules。
+
+玩法:三车道跑酷,低障碍跳、高障碍滑铲、整墙换道;连击有音阶爬升,无尽模式有里程碑勋章与 600m 地标报站;结算页可生成拍立得成绩卡分享;15 星解锁金鸭皮肤。
 
 ## 操作
 
@@ -28,20 +30,21 @@ python -m http.server 8000   # 然后浏览器打开 http://localhost:8000
 ```
 index.html      入口骨架(style + canvas + module script)
 src/
-  core.js       canvas/透视投影/常量/绘制原语
-  config.js     关卡与收集品数据
-  save.js       localStorage 存档
-  audio.js      WebAudio 合成音效
+  core.js       canvas/透视投影/常量/绘制原语(含接触影/DPR 适配)
+  config.js     关卡与收集品数据(6 关 12 风物,含文案/主场权重/里程碑)
+  save.js       localStorage 存档(带类型容错)
+  audio.js      WebAudio 合成音效 + 五声音阶 BGM
   art/
-    photo.js    实景照片:预加载/远景背景(叠化)/拍立得风物卡
+    photo.js    实景照片:预加载(带超时兜底)/远景背景(叠化)/拍立得风物卡
     road.js     路面纹理(城砖/湖堤石板/花岗岩/石板街/沥青)
     scenery.js  两侧走廊/穿越门/画舫(含剪影回退)
     obstacles.js 障碍(按景点写实物件:城砖堆/敌楼/荷花缸/画舫/路锥…)
     items.js    风物插画(无照片素材时的 fallback)
-    player.js   主角:逃出鸭店的白胖鸭(保留卡通形象)
-  game.js       游戏状态与主更新逻辑
+    player.js   主角:逃出鸭店的白胖鸭(3/4 背视角;15 星金鸭皮肤)
+  game.js       游戏状态与主更新逻辑(扫掠碰撞/连击/教学/里程碑/报站)
   render.js     场景渲染(照片远景 → 路面 → 两侧 → 门 → 收集品 → 障碍 → 鸭子 → 晕影)
-  ui.js         HUD 与各界面(图鉴=相册)
+  ui.js         HUD 与各界面(图鉴=相册,含键盘导航)
+  share.js      拍立得成绩卡生成与分享(navigator.share/下载)
   input.js      键盘/触屏输入
   main.js       入口:照片预加载(缺图回退插画) + 主循环与深链
 assets/
