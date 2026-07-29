@@ -31,6 +31,27 @@ export function button(id, label, x, y, w, h, opts){
   if(pressed) poly([[x-w/2+8,y-h/2],[x+w/2-8,y-h/2],[x+w/2,y],[x+w/2-8,y+h/2],[x-w/2+8,y+h/2],[x-w/2,y]], 'rgba(0,0,0,0.22)');
   ctx.globalAlpha = 1;
   ctx.restore();
+  focusRing(bi, x-w/2, y-h/2, w, h);
+}
+
+/* 键盘导航:方向键移动焦点,Enter 激活(按过方向键后才显示焦点框) */
+function focusRing(bi, bx, by, bw, bh){
+  if(!G.kbActive || bi !== Math.min(G.kbSel||0, G.buttons.length-1)) return;
+  ctx.save();
+  ctx.strokeStyle = '#f7ead0'; ctx.lineWidth = 2; ctx.setLineDash([6,4]);
+  ctx.strokeRect(bx-5, by-5, bw+10, bh+10);
+  ctx.restore();
+}
+export function kbNav(d){
+  if(!G.buttons.length || G.state==='play') return;
+  G.kbActive = true;
+  G.kbSel = ((G.kbSel||0)+d+G.buttons.length)%G.buttons.length;
+  sfx.click();
+}
+export function kbEnter(){
+  if(!G.buttons.length) return;
+  const b = G.buttons[Math.min(G.kbSel||0, G.buttons.length-1)];
+  if(b){ sfx.click(); handleButton(b.id, b.data); }
 }
 export function stars(n, x, y, r){
   for(let i=0;i<3;i++){

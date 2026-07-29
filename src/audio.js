@@ -1,15 +1,14 @@
-import { irnd } from './core.js';
 import { save } from './save.js';
 
 /* ================= 音频(WebAudio 合成) ================= */
 let AC = null;
 export function ac(){
   if(!AC){ try{ AC = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} }
-  if(AC && AC.state === 'suspended') AC.resume();
+  if(AC && AC.state === 'suspended') AC.resume().catch(()=>{});
   return AC;
 }
 export function tone(f0, f1, dur, type, vol, delay){
-  if(save.muted) return; const a = ac(); if(!a) return;
+  if(save.muted) return; const a = ac(); if(!a || a.state!=='running') return; // suspended 时不排队,避免解锁瞬间连发爆音
   const t0 = a.currentTime + (delay||0);
   const o = a.createOscillator(), g = a.createGain();
   o.type = type||'sine'; o.frequency.setValueAtTime(f0, t0);

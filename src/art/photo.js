@@ -1,10 +1,11 @@
 import { ctx, W, H, HOR, clamp } from '../core.js';
+import { drawItemIcon } from './items.js';
 
 /* ================= 实景照片:加载 / 远景 / 拍立得风物卡 ================= */
 // 命名约定:背景 assets/img/bg_<landmarkId>.jpg;风物 assets/img/it_<itemId>.jpg
 // landmarkId 与 config.js 的 LEVELS.landmark / LM_CYCLE 一致;itemId 与 ITEMS.id 一致。
 const BG_IDS = ['zhonghua', 'jiming', 'sunyard', 'zhaobi', 'observatory', 'bridge'];
-const IT_IDS = ['duck', 'fans', 'tea', 'taro', 'plum', 'stone'];
+const IT_IDS = ['duck', 'fans', 'taro', 'plum', 'stone'];   // 雨花茶无 CC 照片,恒走手绘插画
 const IMGS = {};
 
 /* 预加载全部照片;onProgress(0~1)。缺图不阻塞:hasPhoto 返回 false,走代码插画回退 */
@@ -15,8 +16,10 @@ export function loadAll(onProgress){
   let done = 0;
   return Promise.all(jobs.map(([key, url]) => new Promise(res => {
     const img = new Image();
-    const fin = () => { done++; onProgress && onProgress(done / jobs.length); res(); };
+    let settled = false;
+    const fin = () => { if(settled) return; settled = true; done++; onProgress && onProgress(done / jobs.length); res(); };
     img.onload = fin; img.onerror = fin;
+    setTimeout(fin, 8000);   // 弱网挂起兜底:超时放弃该图,走插画回退
     img.src = url;
     IMGS[key] = img;
   })));

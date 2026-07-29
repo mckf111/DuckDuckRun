@@ -13,6 +13,13 @@ export const G = {
   nextSpawn:0, nextGate:0, shake:0,
   buttons:[], albumFrom:'menu', slowmo:0, wipe:0, pressed:null,
   egg:null,            // 彩蛋文案 { text, ttl, dur }
+  newBest:false,       // 本局是否破了无尽纪录(结算页展示)
+  kbSel:0, kbActive:false, // 菜单键盘导航焦点
+  combo:0, comboT:0,   // 连击与剩余窗口
+  tut:null,            // 首局教学飘字 [{z,text}]
+  killedBy:null,       // 致死障碍类型(结算页死因提示)
+  newItem:null,        // 新图鉴即时横幅 { id, ttl }
+  msIdx:0, lmCyc:-1,   // 无尽:里程碑进度 / 报站周期
 };
 export const pl = { lane:0, x:0, y:0, vy:0, sliding:0, jumps:0 };
 
@@ -45,7 +52,7 @@ export function onSlide(){
 export function onPauseKey(){
   if(G.state==='play'){ G.paused = !G.paused; sfx.click(); }
   else if(G.state==='album'){ G.state = G.albumFrom; sfx.click(); }
-  else if(G.state==='levels'){ G.state='menu'; sfx.click(); }
+  else if(G.state==='levels' || G.state==='over' || G.state==='clear'){ G.state='menu'; sfx.click(); }
 }
 export function onEnter(){
   if(G.state==='over'){ startRun(G.mode, G.lvIdx); }
@@ -138,28 +145,54 @@ export function update(dt){
   if(pl.y<=0){ pl.y=0; pl.vy=0; pl.jumps=0; }
   pl.sliding = Math.max(0, pl.sliding - dt);
 
+  // 过关判定先于碰撞:冲线同帧不冤死
+  if(G.mode==='adv' && G.dist >= lv.len){ levelClear(); return; }
+
   // 障碍:更新相对深度 + 碰撞
   for(const o of G.obs){
+    const prevRz = o.rz===undefined ? Infinity : o.rz;
     o.rz = o.z - G.dist + ZP;
     if(o.hit) continue;
-    if(o.rz > ZP-0.45 && o.rz < ZP+0.45 && Math.abs(o.x - pl.x) < 0.55){
-      const jumpClear = pl.y > 0.72;              // 跳起可通过 low
-      const slideClear = pl.sliding > 0;          // 滑铲可通过 high
+    // 扫掠判定:在判定窗内,或本帧整体跨过玩家平面(防高速低帧率隧穿)
+    const inWin = (o.rz > ZP-0.45 && o.rz < ZP+0.45) || (prevRz > ZP && o.rz <= ZP);
+    if(inWin && Math.abs(o.x - pl.x) < 0.55){
+      const jumpClear = pl.y > 0.72;                      // 跳起可通过 low
+      const slideClear = pl.sliding > 0 && pl.y < 0.3;    // 贴地滑铲才可通过 high(空中快降不免疫)
       const dead = o.type==='full' || (o.type==='low' && !jumpClear) || (o.type==='high' && !slideClear);
-      if(dead){ o.hit = true; gameOver(); return; }
+      if(dead){ o.hit = true; gameOver(o.type); return; }
     }
   }
   G.obs = G.obs.filter(o=>o.rz > 1.2);
-  // 收集品
+  // 收集品(同样扫掠,防高速漏捡)
   for(const c of G.cols){
+    const prevRz = c.rz===undefined ? Infinity : c.rz;
     c.rz = c.z - G.dist + ZP;
-    if(!c.got && c.rz > ZP-0.5 && c.rz < ZP+0.5 && Math.abs(c.x-pl.x)<0.6 && Math.abs(c.y-(pl.y+0.8))<0.95){
-      c.got = true; G.items++; sfx.collect();
+    const inWin = (c.rz > ZP-0.5 && c.rz < ZP+0.5) || (prevRz > ZP && c.rz <= ZP);
+    if(!c.got && inWin && Math.abs(c.x-pl.x)<0.6 && Math.abs(c.y-(pl.y+0.8))<0.95){
+      c.got = true; G.items++;
+      G.combo++; G.comboT = 3; sfx.collect(G.combo);
       const p = proj(c.x, c.y, ZP); burst(p.x, p.y, '#f0b64c');
-      if(!save.album[c.id]){ save.album[c.id]=true; G.newIds.push(c.id); persist(); }
-      // 鸭子主题彩蛋文案
-      if(c.id==='fans') G.egg = { text:'……这碗里没有鸭,放心。', ttl:2.6, dur:2.6 };
-      else if(c.id==='duck') G.egg = { text:'拒绝翻看。', ttl:2.6, dur:2.6 };
+      if(!save.album[c.id]){
+        save.album[c.id]=true; G.newIds.push(c.id); persist();
+        const it = ITEMS.find(i=>i.id===c.id);
+        G.newItem = { id:c.id, ttl:2.8 }; sfx.newItem();          // 新图鉴即时横幅
+        G.egg = { text:it && it.quip ? it.quip : '', ttl:3.2, dur:3.2 };
+      } else if(Math.random() < 0.2){
+        const it = ITEMS.find(i=>i.id===c.id);
+        if(it && it.quip) G.egg = { text:it.quip, ttl:2.6, dur:2.6 };
+      }
+      // 吃满整条弧线:一串全收
+      if(G.combo >= 2 && !G.cols.some(o2=>o2!==c && o2.arc===c.arc && !o2.got)){
+        G.egg = G.egg && G.egg.ttl > 1.5 ? G.egg : { text:'一串全收!', ttl:2, dur:2 };
+        const q = proj(c.x, c.y+0.6, ZP); burst(q.x, q.y, '#f0b64c');
+      }
+      // 冒险模式:星级门槛即时提示
+      if(G.mode==='adv'){
+        const need = [8,14,20];
+        for(let i=0;i<3;i++) if(G.items === need[i]){
+          G.egg = { text:'★'.repeat(i+1)+' 达成!', ttl:2.2, dur:2.2 }; sfx.gate();
+        }
+      }
     }
   }
   G.cols = G.cols.filter(c=>!c.got && c.rz > 1.2);
@@ -171,15 +204,16 @@ export function update(dt){
     if(p.shard) p.rot += p.vr*dt;   // 纸片旋转
   }
   G.parts = G.parts.filter(p=>p.life>0);
-  // 过关
-  if(G.mode==='adv' && G.dist >= lv.len) levelClear();
 }
 
-export function gameOver(){
+export function gameOver(type){
   sfx.hit(); G.shake = 1; G.slowmo = 0.22;   // 震屏 + 0.2s 慢动作
+  G.killedBy = type || null;                 // 死因(结算页教学提示)
+  G.newBest = false;
   if(G.mode==='endless'){
     const m = Math.floor(G.dist);
-    if(m > save.best){ save.best = m; persist(); }
+    G.newBest = m > save.best;               // 先判后写,平局不误报
+    if(G.newBest){ save.best = m; persist(); sfx.record(); }
   }
   G.state = 'over';
 }
@@ -187,11 +221,12 @@ export function levelClear(){
   sfx.clear();
   const need = [8,14,20]; let star = 0;
   for(let i=0;i<3;i++) if(G.items>=need[i]) star = i+1;
-  if(star > save.stars[G.lvIdx]){ save.stars[G.lvIdx]=star; persist(); }
-  else persist();
+  if(star > save.stars[G.lvIdx]) save.stars[G.lvIdx]=star;
+  save.cleared[G.lvIdx] = true;   // 通关即解锁下一关,与星级脱钩
+  persist();
   G.state = 'clear';
 }
 export function nextAfterClear(){
-  if(G.lvIdx < 4) startRun('adv', G.lvIdx+1);
+  if(G.lvIdx < LEVELS.length-1) startRun('adv', G.lvIdx+1);
   else G.state = 'menu';
 }

@@ -27,7 +27,8 @@ function frame(ts){
   else if(G.state==='clear') drawClear();
   else if(G.state==='album') drawAlbum();
   // 界面切换:卷轴自左向右揭开
-  if(G.state !== prevState){ prevState = G.state; G.wipe = 0.32; }
+  if(G.state !== prevState){ prevState = G.state; G.wipe = 0.32; G.kbSel = 0; G.kbActive = false; G.stateT = 0; }
+  G.stateT = (G.stateT||0) + raw;
   if(G.wipe > 0){
     G.wipe -= raw;
     const x = (1 - Math.max(0,G.wipe)/0.32) * (W+160) - 80;
