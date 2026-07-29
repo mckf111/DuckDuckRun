@@ -4,6 +4,7 @@ import { save } from './save.js';
 import { sfx } from './audio.js';
 import { G, curLv, startRun, nextAfterClear } from './game.js';
 import { drawItemIcon } from './art/items.js';
+import { drawItemPhoto, hasPhoto } from './art/photo.js';
 import { drawSide } from './art/scenery.js';
 
 /* ================= 渲染:UI 组件 ================= */
@@ -88,7 +89,7 @@ export function drawMenu(){
   button('adv','冒险模式 · 五关金陵', CX, H*0.52, 300, 54);
   button('endless','无尽模式 · 最佳 '+save.best+' m', CX, H*0.64, 300, 54, {bg:'#8a3b34'});
   button('album','金陵图鉴 ('+Object.keys(save.album).length+'/'+ITEMS.length+')', CX, H*0.76, 300, 54, {bg:'#3a5a6b'});
-  text('南京城市主题 · 国风剪纸跑酷 · 全部画面由代码实时绘制', CX, H-24, 13, 'rgba(247,234,208,0.7)');
+  text('南京城市主题 · 实景照片 × 代码插画 · 全部界面实时渲染', CX, H-24, 13, 'rgba(247,234,208,0.7)');
 }
 export function drawLevels(){
   dim(0.55);
@@ -135,18 +136,20 @@ export function drawClear(){
 export function drawAlbum(){
   dim(0.82);
   text('金陵图鉴', CX, 56, 40, '#f7ead0', 'center', 'bold');
-  text('跑酷途中收集的风物,点亮即永久收录', CX, 92, 15, '#f0b64c');
+  text('鸭子逃亡路上收集的南京记忆', CX, 92, 15, '#f0b64c');
   for(let i=0;i<ITEMS.length;i++){
     const it = ITEMS[i], got = !!save.album[it.id];
-    const x = CX + (i%3-1)*260, y = 190 + Math.floor(i/3)*160;
-    ctx.globalAlpha = got?1:0.6;
-    disc(x, y-24, 40, got?'rgba(200,52,46,0.25)':'rgba(255,255,255,0.06)', got?'#f0b64c':'#555', 2);
-    drawItemIcon(it.id, x, y-24, 26, !got);
-    text(got?it.name:'???', x, y+30, 20, got?'#f7ead0':'#776e85', 'center', 'bold');
-    text(got?it.note:'还未收集到…', x, y+56, 12, got?'#d8c9a8':'#5a5366');
+    const x = CX + (i%3-1)*260, y = 196 + Math.floor(i/3)*170;
+    ctx.globalAlpha = got?1:0.75;
+    if(!got) drawItemPhoto(it.id, x, y-20, 44, i%2?-0.06:0.05, true);         // 相纸背面
+    else if(hasPhoto('it_'+it.id)) drawItemPhoto(it.id, x, y-20, 44, i%2?-0.06:0.05, false);
+    else drawItemIcon(it.id, x, y-20, 38, false);                             // 雨花茶:手绘明信片
+    text(got?it.name:'???', x, y+54, 20, got?'#f7ead0':'#776e85', 'center', 'bold');
+    text(got?it.note:'还未收集到…', x, y+80, 12, got?'#d8c9a8':'#5a5366');
     ctx.globalAlpha = 1;
   }
-  button('back','返回 (Esc)', CX, H-48, 180, 44, {bg:'#5a4a6b'});
+  text('实景照片来自 Wikimedia Commons,作者与授权见 assets/img/CREDITS.md', CX, H-72, 11, 'rgba(216,201,168,0.55)');
+  button('back','返回 (Esc)', CX, H-42, 180, 44, {bg:'#5a4a6b'});
 }
 
 /* ---- 点击 ---- */
