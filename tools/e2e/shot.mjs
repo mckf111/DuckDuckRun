@@ -1,4 +1,4 @@
-// 截图验证:对各深链页面截屏,输出到 tools/e2e/shots/
+// 截图验证 + 冒烟测试:对各深链页面截屏,收集 pageerror/console error,有问题时非零退出
 // 用法: node tools/e2e/shot.mjs [menu|lv0|lv1|lv2|lv3|lv4|play ...]
 import { chromium } from 'playwright-core';
 import { mkdirSync } from 'fs';
@@ -21,11 +21,28 @@ let browser;
 try { browser = await chromium.launch({ channel: 'chrome', headless: true }); }
 catch { browser = await chromium.launch({ channel: 'msedge', headless: true }); }
 const page = await browser.newPage({ viewport: { width: 1000, height: 600 } });
+
+const errors = [];
+page.on('pageerror', e => errors.push('pageerror: ' + e.message));
+page.on('console', m => { if (m.type() === 'error') errors.push('console: ' + m.text()); });
+
+// 游戏画面截图期间随机输入,避免鸭子 39m 必撞、截图撞上死亡结算
+async function playInputs(ms){
+  const keys = ['Space', 'ArrowLeft', 'ArrowRight', 'ArrowDown'];
+  const t0 = Date.now();
+  while (Date.now() - t0 < ms) {
+    await page.keyboard.press(keys[Math.floor(Math.random() * keys.length)]);
+    await page.waitForTimeout(320);
+  }
+}
+
 for (const [name, [url, wait]] of shots) {
+  errors.length = 0;
   await page.goto('about:blank');   // 强制整页重载,否则仅哈希变化不会重跑深链逻辑
   await page.goto(url);
-  await page.waitForTimeout(wait);
+  if (name === 'menu') await page.waitForTimeout(wait);
+  else await playInputs(wait);
   await page.screenshot({ path: `tools/e2e/shots/${name}.png` });
-  console.log(name, 'ok');
+  console.log(name, errors.length ? 'ERRORS:\n  ' + errors.join('\n  ') : 'ok');
 }
 await browser.close();
