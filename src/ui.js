@@ -13,11 +13,16 @@ export function text(str, x, y, size, color, align, weight){
   const family = size >= 30 ? '"JinlingSong","STSong","SimSun",serif' : '"Microsoft YaHei","PingFang SC",sans-serif';
   ctx.font = (weight ? weight + ' ' : '') + size + 'px ' + family;
   ctx.textAlign = align||'center'; ctx.textBaseline = 'middle';
+  // 统一深色描边:任何实景照片背景上都可读
+  ctx.lineJoin = 'round';
+  ctx.lineWidth = Math.max(2, size*0.16); ctx.strokeStyle = 'rgba(10,8,16,0.6)';
+  ctx.strokeText(str, x, y);
   ctx.fillStyle = color; ctx.fillText(str, x, y);
 }
 export function button(id, label, x, y, w, h, opts){
   opts = opts||{};
   G.buttons.push({ id, x:x-w/2, y:y-h/2, w, h, data:opts.data });
+  const bi = G.buttons.length-1;
   const pressed = G.pressed && G.pressed.id===id && G.pressed.data===opts.data;
   ctx.save();
   if(pressed){ ctx.translate(x,y); ctx.scale(0.94,0.94); ctx.translate(-x,-y); } // 按压回弹

@@ -1,8 +1,25 @@
-import { ctx, TAU, HOR, poly, disc, petalFlower, proj, clamp, ROAD_HALF, ZP } from '../core.js';
+import { ctx, TAU, HOR, poly, disc, petalFlower, proj, clamp, shadow, ROAD_HALF, ZP } from '../core.js';
 
 /* ================= 两侧走廊装饰(多色插画,与实景照片同色系) ================= */
+/* 红灯笼:径向柔光晕 + 竖向骨架 + 上下收口 + 穗(替代过去的实心圆盘) */
+function lantern(x, y, r){
+  const g = ctx.createRadialGradient(x, y, r*0.2, x, y, r*1.8);
+  g.addColorStop(0, 'rgba(240,182,76,0.42)'); g.addColorStop(1, 'rgba(240,182,76,0)');
+  ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r*1.8, 0, TAU); ctx.fill();
+  ctx.fillStyle = '#e2483d';
+  ctx.beginPath(); ctx.ellipse(x, y, r*0.88, r, 0, 0, TAU); ctx.fill();
+  ctx.strokeStyle = '#b02a24'; ctx.lineWidth = Math.max(1, r*0.09);   // 骨架弧
+  for(const k of [0.55, 0.28]){ ctx.beginPath(); ctx.ellipse(x, y, r*k, r, 0, 0, TAU); ctx.stroke(); }
+  ctx.fillStyle = '#f0b64c';
+  ctx.fillRect(x-r*0.32, y-r*1.16, r*0.64, r*0.2);                    // 上盖
+  ctx.fillRect(x-r*0.32, y+r*0.96, r*0.64, r*0.2);                    // 下托
+  ctx.strokeStyle = '#f0b64c'; ctx.lineWidth = Math.max(1, r*0.1);
+  ctx.beginPath(); ctx.moveTo(x, y+r*1.16); ctx.lineTo(x, y+r*1.5); ctx.stroke(); // 穗
+}
+
 export function drawSide(motif, x, y, s, lv, mirror){
   const m = mirror ? -1 : 1;
+  shadow(x, y+0.02*s, 1.05*s, 0.22);   // 接触影:装饰"落地"
   if(motif==='crenel'){          // 城墙段:青砖 + 垛口 + 墙头红灯笼
     const w = '#6b6560', wl = '#8a837a', wd = '#544e48';
     poly([[x-1.2*s,y],[x-1.2*s,y-1.5*s],[x+1.2*s,y-1.5*s],[x+1.2*s,y]], w);
@@ -14,10 +31,8 @@ export function drawSide(motif, x, y, s, lv, mirror){
     ctx.fillStyle = wl;
     for(let i=0;i<4;i++) ctx.fillRect(x-1.15*s+i*0.62*s, y-1.72*s, 0.34*s, 0.05*s);
     ctx.strokeStyle = '#8a6a3a'; ctx.lineWidth = Math.max(1, s*0.02);    // 灯笼绳
-    ctx.beginPath(); ctx.moveTo(x+m*0.7*s, y-1.72*s); ctx.lineTo(x+m*0.7*s, y-1.56*s); ctx.stroke();
-    disc(x+m*0.7*s, y-1.42*s, 0.14*s, '#e2483d');
-    ctx.fillStyle = 'rgba(240,182,76,0.28)';
-    ctx.beginPath(); ctx.arc(x+m*0.7*s, y-1.42*s, 0.24*s, 0, TAU); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(x+m*0.7*s, y-1.72*s); ctx.lineTo(x+m*0.7*s, y-1.62*s); ctx.stroke();
+    lantern(x+m*0.7*s, y-1.42*s, 0.14*s);
   } else if(motif==='lotus'){    // 湖堤:矮石栏 + 荷叶荷花 + 垂柳(树冠成团)
     ctx.fillStyle = '#7a8a80'; ctx.fillRect(x-0.9*s, y-0.34*s, 1.8*s, 0.34*s);   // 矮石栏
     ctx.fillStyle = '#93a298'; ctx.fillRect(x-0.9*s, y-0.34*s, 1.8*s, 0.08*s);
@@ -40,17 +55,10 @@ export function drawSide(motif, x, y, s, lv, mirror){
     poly([[x,y-2.4*s],[x-0.8*s,y-1.3*s],[x+0.8*s,y-1.3*s]], '#3a6b56');
     poly([[x,y-1.9*s],[x-0.95*s,y-0.7*s],[x+0.95*s,y-0.7*s]], '#2f5a48');
     poly([[x-0.08*s,y-2.28*s],[x-0.5*s,y-1.5*s],[x+0.1*s,y-1.55*s]], '#4a8570'); // 受光面
-  } else if(motif==='lantern'){  // 灯笼杆:木杆挑灯 + 暖光晕
+  } else if(motif==='lantern'){  // 灯笼杆:木杆挑灯 + 径向暖光晕
     ctx.strokeStyle = '#4a2c3a'; ctx.lineWidth = Math.max(1.5, s*0.03);
     ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x, y-2.4*s); ctx.lineTo(x+m*0.7*s, y-2.4*s); ctx.stroke();
-    disc(x+m*0.55*s, y-2.05*s, 0.3*s, '#e2483d');
-    ctx.fillStyle = '#c8342e';
-    ctx.beginPath(); ctx.ellipse(x+m*0.55*s, y-2.05*s, 0.16*s, 0.3*s, 0, 0, TAU); ctx.fill();
-    ctx.fillStyle = 'rgba(240,182,76,0.35)';
-    ctx.beginPath(); ctx.arc(x+m*0.55*s, y-2.05*s, 0.48*s, 0, TAU); ctx.fill();
-    ctx.fillStyle = '#f0b64c';
-    ctx.fillRect(x+m*0.45*s, y-2.4*s, 0.2*s, 0.06*s);
-    poly([[x+m*0.48*s,y-1.75*s],[x+m*0.62*s,y-1.75*s],[x+m*0.55*s,y-1.5*s]], '#f0b64c');
+    lantern(x+m*0.55*s, y-2.05*s, 0.3*s);
   } else {                       // 松树:棕干 + 三层墨绿 + 受光棱
     ctx.fillStyle = '#3a2f28'; ctx.fillRect(x-0.09*s, y-0.6*s, 0.18*s, 0.6*s);
     poly([[x,y-2.6*s],[x-0.7*s,y-1.6*s],[x+0.7*s,y-1.6*s]], '#2a5a45');
@@ -208,7 +216,7 @@ export function drawGate(g, lv){
       const hx = pl2.x+(pr2.x-pl2.x)*k;
       ctx.strokeStyle = trim; ctx.lineWidth = Math.max(1, s*0.02);
       ctx.beginPath(); ctx.moveTo(hx, pl2.y); ctx.lineTo(hx, pl2.y+0.12*s); ctx.stroke();
-      disc(hx, pl2.y+0.26*s, 0.14*s, '#e2483d');
+      lantern(hx, pl2.y+0.26*s, 0.14*s);
     }
   } else if(motif==='lotus'){    // 湖堤柳门:门楣垂下柳帘
     poly([[pl2.x,pl2.y-bh],[pr2.x,pr2.y-bh],[pr2.x,pr2.y-bh-0.1*s],[pl2.x,pl2.y-bh-0.1*s]], '#1f4a42');
@@ -234,9 +242,7 @@ export function drawGate(g, lv){
       const hx = pl2.x+(pr2.x-pl2.x)*k;
       ctx.strokeStyle = trim; ctx.lineWidth = Math.max(1, s*0.02);
       ctx.beginPath(); ctx.moveTo(hx, pl2.y); ctx.lineTo(hx, pl2.y+0.14*s); ctx.stroke();
-      disc(hx, pl2.y+0.3*s, 0.16*s, '#e2483d');
-      ctx.fillStyle = 'rgba(240,182,76,0.35)';
-      ctx.beginPath(); ctx.arc(hx, pl2.y+0.3*s, 0.26*s, 0, TAU); ctx.fill();
+      lantern(hx, pl2.y+0.3*s, 0.16*s);
     }
   } else {                       // 盘山牌坊:石坊 + 松枝
     poly([[cxm-0.9*s,pl2.y-bh],[cxm-0.6*s,pl2.y-bh-0.26*s],[cxm+0.6*s,pl2.y-bh-0.26*s],[cxm+0.9*s,pl2.y-bh]], beam);
@@ -270,9 +276,7 @@ export function drawNear(motif, x, y, s, lv, mirror){
     ctx.beginPath(); ctx.moveTo(x, y-2.2*s); ctx.quadraticCurveTo(x+m*0.5*s, y-1.8*s, x+m*1.0*s, y-2.1*s); ctx.stroke();
     for(let i=0;i<3;i++){
       const lx = x+m*(0.25+0.3*i)*s, ly = y-1.95*s - 0.12*s*Math.sin(i*1.3);
-      disc(lx, ly, 0.16*s, '#e2483d');
-      ctx.fillStyle = 'rgba(240,182,76,0.35)';
-      ctx.beginPath(); ctx.arc(lx, ly, 0.26*s, 0, TAU); ctx.fill();
+      lantern(lx, ly, 0.16*s);
     }
   } else {                                   // 松枝(从上方扫过)
     ctx.strokeStyle = '#3a2f28'; ctx.lineWidth = Math.max(2, s*0.06);

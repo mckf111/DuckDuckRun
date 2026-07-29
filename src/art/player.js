@@ -1,8 +1,10 @@
-import { ctx, TAU, ZP, proj, poly, disc } from '../core.js';
+import { ctx, TAU, ZP, LANEGAP, proj, poly, disc, shadow, clamp } from '../core.js';
+import { save } from '../save.js';
 
 /* ================= 剪纸绘制:玩家(逃跑的盐水鸭) ================= */
 // 一只从桂花鸭店橱窗逃出的白胖鸭:橘喙脚蹼、头顶桂花枝(它的标志物)
-const BODY = '#f5f0e6', BELLY = '#e3d9c8';            // 鸭身/腹羽
+// 15 星解锁金鸭皮肤(金色羽毛)
+let BODY = '#f5f0e6', BELLY = '#e3d9c8';            // 鸭身/腹羽
 const ORANGE = '#f08c1e', ORANGE_D = '#d97a12';       // 喙与脚蹼
 const DARK = '#1a1220';
 const OSM = '#f0b64c', LEAF = '#7ba05b';              // 桂花与叶
@@ -25,48 +27,53 @@ function osmanthus(ox, oy, s){
   disc(ox+0.01*s, oy-0.20*s, 0.035*s, OSM);
 }
 
-/* 头 + 表情:panic 时瞪眼张嘴冒汗(兼作障碍逼近提示) */
-function head(hx, hy, s, panic, tilt){
-  ctx.save(); ctx.translate(hx, hy); ctx.rotate(tilt||0);
+/* 后脑勺(3/4 后视):平时只见后脑与桂花枝,右缘露一点喙尖;
+   panic 时扭头回望镜头——瞪眼张嘴冒汗(兼作障碍逼近提示) */
+function headBack(hx, hy, s, panic){
+  ctx.save(); ctx.translate(hx, hy);
   disc(0, 0, 0.3*s, BODY);
-  const open = panic ? 0.1*s : 0.02*s;               // 惊恐时张嘴
-  poly([[0.2*s,-0.06*s],[0.55*s,-0.02*s],[0.2*s,0.02*s]], ORANGE);     // 上喙
-  poly([[0.2*s,0.04*s],[0.48*s,0.04*s+open],[0.2*s,0.1*s]], ORANGE_D); // 下喙
+  ctx.fillStyle = BELLY;                                              // 颈部分界阴
+  ctx.beginPath(); ctx.ellipse(0, 0.2*s, 0.24*s, 0.12*s, 0, 0, TAU); ctx.fill();
   if(panic){
-    disc(0.08*s, -0.1*s, 0.085*s, '#fff'); disc(0.1*s, -0.09*s, 0.04*s, DARK); // 瞪圆的眼
-    ctx.fillStyle = '#9fd4e8';                                            // 汗珠
-    ctx.beginPath(); ctx.ellipse(0.26*s, -0.26*s, 0.04*s, 0.06*s, 0.3, 0, TAU); ctx.fill();
+    disc(-0.1*s, -0.06*s, 0.09*s, '#fff'); disc(-0.11*s, -0.05*s, 0.045*s, DARK); // 瞪圆的眼
+    disc(0.12*s, -0.08*s, 0.07*s, '#fff'); disc(0.11*s, -0.07*s, 0.035*s, DARK);
+    poly([[-0.32*s,-0.02*s],[-0.58*s,0.06*s],[-0.3*s,0.12*s]], ORANGE);           // 上喙朝镜头
+    poly([[-0.3*s,0.14*s],[-0.52*s,0.24*s],[-0.26*s,0.22*s]], ORANGE_D);          // 下喙张开
+    ctx.fillStyle = '#9fd4e8';                                                     // 汗珠
+    ctx.beginPath(); ctx.ellipse(0.24*s, -0.28*s, 0.04*s, 0.06*s, -0.3, 0, TAU); ctx.fill();
   } else {
-    disc(0.08*s, -0.08*s, 0.045*s, DARK);            // 平时淡定眯眼
+    poly([[0.24*s,-0.02*s],[0.44*s,0.04*s],[0.24*s,0.1*s]], ORANGE);              // 右缘喙尖(3/4 视角)
   }
-  osmanthus(-0.05*s, -0.26*s, s);
+  osmanthus(-0.04*s, -0.27*s, s);
   ctx.restore();
 }
 
-/* 跑步:前倾白胖身体 + 屁股扭 + 小碎步;腾空时扑翼(鸭子不会飞,硬扑腾) */
+/* 跑步(3/4 后视,与追尾透视一致):梨形背影 + 上翘尾羽 + 两侧翅膀 + 交替脚蹼;
+   腾空时扑翼(鸭子不会飞,硬扑腾,二段跳扑得更急) */
 function drawRun(pl, t, s, run, run2, panic){
   const airK = pl.y > 0.05 ? 0.25 : 1;               // 空中脚蹼收起
   ctx.translate(0, pl.y > 0.05 ? 0 : -Math.abs(run2)*0.04*s); // 跑步上下颠簸
-  // 脚蹼交替拍地
-  const f1 = run*0.3*airK, f2 = -run*0.3*airK;
-  foot(f1*s, -0.04*s - Math.max(0, run2)*0.07*s*airK, s, false);
-  foot(f2*s + 0.08*s, -0.04*s - Math.max(0,-run2)*0.07*s*airK, s, false);
-  // 尾巴上翘,随跑步摇摆
-  poly([[-0.42*s,-0.72*s],[-0.72*s,(-0.98+run*0.06)*s],[-0.5*s,-0.62*s]], BELLY);
-  // 身体
-  ctx.save(); ctx.translate(0, -0.72*s); ctx.rotate(-0.14 + run*0.04);
+  // 脚蹼交替拍地(后视:两只橘蹼左右分)
+  foot(-0.16*s + run*0.08*s*airK, -0.03*s - Math.max(0, run2)*0.07*s*airK, s, false);
+  foot( 0.16*s - run*0.08*s*airK, -0.03*s - Math.max(0,-run2)*0.07*s*airK, s, false);
+  // 身体:上窄下宽的梨形背影
   ctx.fillStyle = BODY;
-  ctx.beginPath(); ctx.ellipse(0, 0, 0.5*s, 0.42*s, 0, 0, TAU); ctx.fill();
-  ctx.fillStyle = BELLY;
-  ctx.beginPath(); ctx.ellipse(0.05*s, 0.14*s, 0.34*s, 0.22*s, 0, 0, TAU); ctx.fill();
-  // 翅膀:跑步贴身,腾空扑翼(二段跳扑得更急)
-  const flap = pl.y > 0.05 ? Math.sin(t*(pl.jumps===2?34:24))*0.9 : run*0.12;
-  ctx.save(); ctx.translate(0.1*s, -0.05*s); ctx.rotate(flap);
-  ctx.fillStyle = BELLY;
-  ctx.beginPath(); ctx.ellipse(0.12*s, 0.1*s, 0.3*s, 0.13*s, 0.5, 0, TAU); ctx.fill();
-  ctx.restore();
-  ctx.restore();
-  head(0.24*s, -1.28*s, s, panic, panic ? -0.15 : run*0.03);
+  ctx.beginPath(); ctx.ellipse(0, -0.68*s, 0.46*s, 0.56*s, 0, 0, TAU); ctx.fill();
+  ctx.fillStyle = BELLY;                                        // 下缘背阴
+  ctx.beginPath(); ctx.ellipse(0, -0.44*s, 0.34*s, 0.26*s, 0, 0, TAU); ctx.fill();
+  // 尾羽:上翘一撮(鸭子的招牌屁股),随跑步摇摆
+  poly([[-0.14*s,(-1.08+run*0.03)*s],[-0.02*s,(-1.34+run*0.04)*s],[0.06*s,-1.1*s],
+        [0.16*s,(-1.26-run*0.03)*s],[0.18*s,-1.04*s]], BELLY);
+  // 翅膀:身体两侧;跑步贴身微摆,腾空向外扑
+  const flap = pl.y > 0.05 ? Math.sin(t*(pl.jumps===2?34:24)) : run*0.3;
+  for(const m of [-1,1]){
+    ctx.save(); ctx.translate(m*0.42*s, -0.82*s);
+    ctx.rotate(m*(0.22 + flap*(pl.y>0.05?0.7:0.12)));
+    ctx.fillStyle = BELLY;
+    ctx.beginPath(); ctx.ellipse(0, 0.24*s, 0.15*s, 0.34*s, m*0.15, 0, TAU); ctx.fill();
+    ctx.restore();
+  }
+  headBack(0.05*s, -1.42*s, s, panic);
 }
 
 /* 滑铲:肚皮贴地、双脚朝天、喙几乎擦地 */
@@ -131,12 +138,22 @@ function spark(sx, sy, r){
 // opts: { panic: 障碍逼近, crashed: 撞车定格 }
 export function drawPlayer(pl, t, opts){
   opts = opts || {};
+  const gold = save.stars.reduce((a,b)=>a+b,0) >= 15;   // 15 星:金鸭皮肤
+  BODY = gold ? '#f5d76e' : '#f5f0e6';
+  BELLY = gold ? '#d8a83a' : '#e3d9c8';
   const p = proj(pl.x, pl.y, ZP);
   const s = p.s * 0.62;                 // 角色整体缩放
   const x = p.x, y = p.y;
   const run = Math.sin(t*14), run2 = Math.sin(t*28);
+  // 接地影:随起跳高度收缩变淡
+  const gp = proj(pl.x, 0, ZP);
+  const shK = Math.max(0.3, 1 - pl.y*0.55);
+  shadow(gp.x, gp.y + 0.05*s, s*0.6*shK, 0.26*shK);
   ctx.save();
   ctx.translate(x, y);
+  if(!opts.crashed){   // 换道时身体侧倾
+    ctx.rotate(clamp((pl.lane*LANEGAP - pl.x)*0.35, -0.35, 0.35));
+  }
   if(opts.crashed) drawCrash(t, s, run);
   else if(pl.sliding) drawSlide(t, s);
   else drawRun(pl, t, s, run, run2, !!opts.panic);

@@ -94,12 +94,12 @@ export function burst(x, y, color){
   });
 }
 export function ambient(lv){
-  // 梅花瓣/灯火/星尘 环境粒子
-  if(Math.random() > 0.25) return;
+  // 梅花瓣/灯火/星尘 环境粒子(大、淡、柔边,求"飘絮"不求"撒盐")
+  if(Math.random() > 0.12) return;
   const colors = { crenel:'#e8b04b', lotus:'#d98ba0', steps:'#ffffff', lantern:'#f0b64c', pine:'#c9a2ff' };
   G.parts.push({
     x:rnd(-6,6), y:rnd(2,5), z:rnd(4,30), vx:rnd(-0.5,0.1), vy:rnd(-0.8,-0.3),
-    life:rnd(2,4), color:colors[lv.motif]||'#fff', size:rnd(1.5,3.5), ambient:true,
+    life:rnd(2.5,4.5), color:colors[lv.motif]||'#fff', size:rnd(3,6.5), ambient:true,
   });
 }
 

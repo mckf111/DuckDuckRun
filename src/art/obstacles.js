@@ -16,7 +16,11 @@ function shadow(x, y, w){
   ctx.beginPath(); ctx.ellipse(x, y, w, w * 0.22, 0, 0, TAU); ctx.fill();
 }
 function lantern(x, y, r, glow){
-  if(glow){ ctx.fillStyle = 'rgba(240,182,76,0.30)'; ctx.beginPath(); ctx.arc(x, y, r * 1.6, 0, TAU); ctx.fill(); }
+  if(glow){
+    const g = ctx.createRadialGradient(x, y, r * 0.2, x, y, r * 1.8);
+    g.addColorStop(0, 'rgba(240,182,76,0.4)'); g.addColorStop(1, 'rgba(240,182,76,0)');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r * 1.8, 0, TAU); ctx.fill();
+  }
   disc(x, y, r, '#e2483d');
   ctx.fillStyle = '#c8342e';
   ctx.beginPath(); ctx.ellipse(x, y, r * 0.55, r, 0, 0, TAU); ctx.fill();

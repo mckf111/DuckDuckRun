@@ -23,12 +23,14 @@ PICK = {
 }
 
 # 每关调色:warm(色温,-100~100)/ bright / contrast / sat;crop_y 为横幅裁剪中心(0=上,0.5=中,1=下)
+# tint=(r,g,b,alpha) 叠加色罩,用于夜景化等强风格(如天文台日转夜)
 GRADE = {
     "bg_zhonghua":    dict(warm=14, bright=1.02, contrast=1.02, sat=1.05, crop_y=0.46),
     "bg_jiming":      dict(warm=2,  bright=1.00, contrast=0.98, sat=1.02, crop_y=0.28),
     "bg_sunyard":     dict(warm=-6, bright=1.03, contrast=0.98, sat=0.98, crop_y=0.38),
     "bg_zhaobi":      dict(warm=12, bright=1.00, contrast=1.00, sat=1.08, crop_y=0.42),
-    "bg_observatory": dict(warm=-4, bright=0.98, contrast=1.00, sat=0.95, crop_y=0.48),
+    # 紫金山关是夜奔主题(路面/天空深紫):白天原片压暗 + 蓝紫色罩,调成黄昏入夜
+    "bg_observatory": dict(warm=-22, bright=0.52, contrast=1.06, sat=0.72, crop_y=0.48, tint=(58,42,110,0.38)),
     "bg_bridge":      dict(warm=6,  bright=1.00, contrast=1.00, sat=1.00, crop_y=0.50),
     "it_duck":  dict(warm=8, bright=1.02, contrast=1.05, sat=1.10),
     "it_fans":  dict(warm=8, bright=1.02, contrast=1.05, sat=1.10),
@@ -43,7 +45,7 @@ IT_SIZE = (512, 512)
 
 
 def grade(im, g):
-    """色温/亮度/对比/饱和。"""
+    """色温/亮度/对比/饱和 (+可选色罩 tint)。"""
     if g.get("warm"):
         w = g["warm"] / 100.0
         r, gr, b = im.split()[:3]
@@ -56,6 +58,10 @@ def grade(im, g):
         im = ImageEnhance.Contrast(im).enhance(g["contrast"])
     if g.get("sat", 1) != 1:
         im = ImageEnhance.Color(im).enhance(g["sat"])
+    if g.get("tint"):
+        tr, tg, tb, ta = g["tint"]
+        overlay = Image.new("RGB", im.size, (tr, tg, tb))
+        im = Image.blend(im, overlay, ta)
     return im
 
 

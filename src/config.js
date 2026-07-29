@@ -19,8 +19,8 @@ export const LEVELS = [
     hud:'#274a6b', textDark:true, speed:11, len:600,
     landmark:'sunyard', lmColor:'#93a9c2',    // 蓝瓦祭堂
     side2:'雪松', weight:{low:.62,high:.18,full:.2} },
-  { name:'夫子庙 · 秦淮河', sub:'桨声灯影,十里珠帘',
-    sky:['#0c0918','#2b1a3d'], ground:'#191226', road:'#241a35', lane:'#f0b64c',
+  { name:'夫子庙', sub:'桨声灯影,十里珠帘',
+    sky:['#0c0918','#2b1a3d'], ground:'#191226', road:'#2e2144', lane:'#f0b64c',
     side:'#120d1e', sideTop:'#1a1228', accent:'#e2483d', motif:'lantern',
     hud:'#f7d9a0', textDark:false, speed:11.5, len:640,
     landmark:'zhaobi', lmColor:'#160f26',     // 双龙戏珠大照壁

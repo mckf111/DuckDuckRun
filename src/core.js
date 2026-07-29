@@ -38,6 +38,11 @@ export function disc(x,y,r,fill,stroke,lw){
   if(fill){ ctx.fillStyle=fill; ctx.fill(); }
   if(stroke){ ctx.strokeStyle=stroke; ctx.lineWidth=lw||1.5; ctx.stroke(); }
 }
+/* 接地椭圆影:一切落地物件的接触影(消除"纸片漂浮感") */
+export function shadow(x, y, rx, alpha){
+  ctx.fillStyle = `rgba(0,0,0,${alpha===undefined?0.26:alpha})`;
+  ctx.beginPath(); ctx.ellipse(x, y, rx, rx*0.22, 0, 0, TAU); ctx.fill();
+}
 export function petalFlower(x,y,r,fill,center){
   for(let i=0;i<5;i++){
     const a = -Math.PI/2 + i*TAU/5;

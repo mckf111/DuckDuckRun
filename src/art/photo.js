@@ -47,14 +47,17 @@ export function drawBackdrop(id, lv, dist, mix){
   const dx = (W - dw) / 2 + drift;
   ctx.globalAlpha = clamp(mix, 0, 1);
   ctx.drawImage(img, dx, 0, dw, dh);
-  // 底部渐变:照片 → 关卡地面色(照片层与手绘层的过渡带)
+  // 底部过渡带:照片 → 地面色 → 路面色,150px 三段渐变消除"硬地平线"
   const [r, g, b] = hexRgb(lv.ground);
-  const grad = ctx.createLinearGradient(0, dh - 92, 0, dh);
+  const [r2, g2, b2] = hexRgb(lv.road);
+  const band = 150;
+  const grad = ctx.createLinearGradient(0, dh - band, 0, dh);
   grad.addColorStop(0, `rgba(${r},${g},${b},0)`);
-  grad.addColorStop(0.8, `rgba(${r},${g},${b},0.85)`);
-  grad.addColorStop(1, `rgba(${r},${g},${b},1)`);
+  grad.addColorStop(0.5, `rgba(${r},${g},${b},0.5)`);
+  grad.addColorStop(0.85, `rgba(${r2},${g2},${b2},0.92)`);
+  grad.addColorStop(1, `rgba(${r2},${g2},${b2},1)`);
   ctx.fillStyle = grad;
-  ctx.fillRect(0, dh - 92, W, 92);
+  ctx.fillRect(0, dh - band, W, band);
   ctx.globalAlpha = 1;
   return true;
 }
@@ -73,13 +76,17 @@ export function drawItemPhoto(id, x, y, r, rot, locked){
   ctx.fillRect(-cw / 2, -ch / 2, cw, ch);
   if(!locked && hasPhoto(key)){
     ctx.drawImage(IMGS[key], -s / 2, -ch / 2 + padT, s, s);
+  } else if(!locked){
+    ctx.fillStyle = '#e9e2d0';                                     // 缺图(雨花茶):相纸内手绘插画
+    ctx.fillRect(-s / 2, -ch / 2 + padT, s, s);
+    drawItemIcon(id, 0, -ch / 2 + padT + s / 2, s * 0.34, false);
   } else {
-    ctx.fillStyle = locked ? '#b8ad94' : '#e3d9c4';                // 相纸背面/缺图占位
-    ctx.fillRect(-s / 2, -s / 2, s, s);
-    ctx.fillStyle = locked ? '#8d8268' : '#b3a684';
+    ctx.fillStyle = '#b8ad94';                                     // 相纸背面
+    ctx.fillRect(-s / 2, -ch / 2 + padT, s, s);
+    ctx.fillStyle = '#8d8268';
     ctx.font = `bold ${Math.round(s * 0.5)}px "Microsoft YaHei","PingFang SC",sans-serif`;
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText(locked ? '?' : '…', 0, 1);
+    ctx.fillText('?', 0, -ch / 2 + padT + s / 2 + 1);
   }
   ctx.restore();
 }
