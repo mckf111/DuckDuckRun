@@ -1,11 +1,11 @@
 import { ctx, W, H, CX, poly, disc, petalFlower, clamp } from './core.js';
-import { LEVELS, ITEMS } from './config.js';
+import { LEVELS, ITEMS, MILESTONES } from './config.js';
 import { save } from './save.js';
 import { sfx } from './audio.js';
 import { G, curLv, startRun, nextAfterClear } from './game.js';
-import { drawItemIcon } from './art/items.js';
-import { drawItemPhoto, hasPhoto } from './art/photo.js';
+import { drawItemPhoto } from './art/photo.js';
 import { drawSide } from './art/scenery.js';
+import { shareScore } from './share.js';
 
 /* ================= 渲染:UI 组件 ================= */
 export function text(str, x, y, size, color, align, weight){
@@ -76,8 +76,8 @@ export function dim(alpha){ ctx.fillStyle=`rgba(8,6,14,${alpha})`; ctx.fillRect(
 export function drawHUD(){
   const lv = curLv();
   text(Math.floor(G.dist)+' m', 24, 30, 24, lv.hud, 'left', 'bold');
-  drawItemIcon('plum', 34, 66, 11, false);
-  text('× '+G.items, 52, 66, 20, lv.hud, 'left', 'bold');
+  text('风物 × '+G.items, 24, 64, 20, lv.hud, 'left', 'bold');
+  if(G.combo >= 2) text(G.combo+' 连击!', 24, 92, 16, '#f0b64c', 'left', 'bold');
   if(G.mode==='adv'){
     text(lv.name, CX, 30, 22, lv.hud, 'center', 'bold');
     // 进度条
@@ -86,10 +86,28 @@ export function drawHUD(){
     ctx.fillStyle=lv.accent; ctx.fillRect(px, py, pw*clamp(G.dist/lv.len,0,1), 6);
   } else {
     text('无尽模式 · 最佳 '+save.best+' m', CX, 30, 20, lv.hud, 'center', 'bold');
+    if(G.msIdx < MILESTONES.length)
+      text('距「'+MILESTONES[G.msIdx][1]+'」还差 '+Math.max(0,Math.ceil(MILESTONES[G.msIdx][0]-G.dist))+' m', CX, 54, 13, lv.hud, 'center');
   }
-  text('←→换道  ↑跳  ↓滑铲  P暂停  M静音'+(save.muted?'(已静音)':''), CX, H-16, 13, lv.hud, 'center');
+  // 新图鉴即时横幅(拍立得滑入)
+  if(G.newItem){
+    const it = ITEMS.find(i=>i.id===G.newItem.id);
+    const a = clamp(Math.min((2.8-G.newItem.ttl)*5, G.newItem.ttl*2), 0, 1);
+    ctx.save(); ctx.globalAlpha = a;
+    drawItemPhoto(G.newItem.id, CX, 108, 20, -0.06, false);
+    text('新图鉴:'+(it?it.name:''), CX, 150, 18, '#f0b64c', 'center', 'bold');
+    ctx.restore();
+  }
+  // 底部操作提示:开场 5 秒内显示后淡出,暂停时重新出现;触屏设备显示手势
+  const hint = ('ontouchstart' in window) ? '左右滑换道  上滑跳  下滑铲  点按钮暂停'
+    : '←→换道  ↑跳  ↓滑铲  P暂停  M静音'+(save.muted?'(已静音)':'');
+  if(G.paused || G.t < 5){
+    ctx.globalAlpha = G.paused ? 1 : clamp(5-G.t, 0, 1);
+    text(hint, CX, H-16, 13, lv.hud, 'center');
+    ctx.globalAlpha = 1;
+  }
   // 彩蛋文案(淡入淡出)
-  if(G.egg){
+  if(G.egg && G.egg.text){
     const a = clamp(Math.min((G.egg.dur-G.egg.ttl)*4, G.egg.ttl), 0, 1);
     ctx.globalAlpha = a;
     text(G.egg.text, CX, H-48, 16, '#f0b64c', 'center', 'bold');
@@ -105,77 +123,126 @@ export function drawHUD(){
 
 /* ---- 界面 ---- */
 export function drawMenu(){
-  dim(0.25);
-  // 标题剪纸章
-  text('金陵快跑', CX, H*0.26, 78, '#f7ead0', 'center', 'bold');
-  ctx.strokeStyle='#f0b64c'; ctx.lineWidth=3;
-  ctx.strokeRect(CX-190, H*0.26-52, 380, 104);
+  dim(0.4);
+  // 标题 + 双细线(两端圆点收头,替代旧矩形框)
+  const ty = H*0.26;
+  text('金陵快跑', CX, ty, 78, '#f7ead0', 'center', 'bold');
+  ctx.strokeStyle = '#f0b64c';
+  for(const dy of [-56, 56]){
+    const sgn = Math.sign(dy);
+    ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(CX-212, ty+dy); ctx.lineTo(CX+212, ty+dy); ctx.stroke();
+    ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(CX-198, ty+dy+sgn*6); ctx.lineTo(CX+198, ty+dy+sgn*6); ctx.stroke();
+    disc(CX-212, ty+dy, 3.5, '#f0b64c'); disc(CX+212, ty+dy, 3.5, '#f0b64c');
+  }
   text('—— 奔跑展开的金陵长卷 ——', CX, H*0.38, 18, '#f0b64c');
-  petalFlower(CX-230, H*0.26, 16, '#e2483d'); petalFlower(CX+230, H*0.26, 16, '#e2483d');
-  button('adv','冒险模式 · 五关金陵', CX, H*0.52, 300, 54);
-  button('endless','无尽模式 · 最佳 '+save.best+' m', CX, H*0.64, 300, 54, {bg:'#8a3b34'});
-  button('album','金陵图鉴 ('+Object.keys(save.album).length+'/'+ITEMS.length+')', CX, H*0.76, 300, 54, {bg:'#3a5a6b'});
-  text('南京城市主题 · 实景照片 × 代码插画 · 全部界面实时渲染', CX, H-24, 13, 'rgba(247,234,208,0.7)');
+  petalFlower(CX-230, ty, 16, '#e2483d'); petalFlower(CX+230, ty, 16, '#e2483d');
+  text('没有一只鸭子能走出南京——除了我。', CX, H*0.45, 15, '#f7ead0');
+  button('adv','冒险模式 · 五关金陵', CX, H*0.55, 300, 54);
+  button('endless','无尽模式 · 一路跑到长江大桥', CX, H*0.66, 300, 54, {bg:'#8a3b34'});
+  button('album','金陵图鉴 ('+Object.keys(save.album).length+'/'+ITEMS.length+')', CX, H*0.77, 300, 54, {bg:'#3a5a6b'});
+  text('游戏里的风景,都是真的南京', CX, H-24, 13, 'rgba(247,234,208,0.7)');
 }
 export function drawLevels(){
   dim(0.55);
   text('选择关卡', CX, 70, 40, '#f7ead0', 'center', 'bold');
-  for(let i=0;i<5;i++){
-    const x = CX + (i-2)*180, y = H*0.48, unlocked = i===0 || save.stars[i-1] > 0;
+  const totalStars = save.stars.reduce((a,b)=>a+b,0);
+  const albumFull = Object.keys(save.album).length >= ITEMS.length;
+  for(let i=0;i<LEVELS.length;i++){
     const lv = LEVELS[i];
-    ctx.globalAlpha = unlocked?1:0.45;
-    poly([[x-78,y-100],[x+78,y-100],[x+88,y],[x+78,y+110],[x-78,y+110],[x-88,y]], lv.ground);
+    const unlocked = lv.hidden ? (albumFull && totalStars>=15) : (i===0 || save.cleared[i-1]);
+    const x = CX + (i-2.5)*160, y = H*0.48;
+    poly([[x-70,y-100],[x+70,y-100],[x+80,y],[x+70,y+110],[x-70,y+110],[x-80,y]], lv.ground); // 卡片不透明
     ctx.strokeStyle = lv.accent; ctx.lineWidth=2; ctx.stroke();
-    text((i+1)+'', x, y-74, 30, lv.hud, 'center', 'bold');
-    text(lv.name, x, y-38, 19, lv.hud, 'center', 'bold');
+    ctx.globalAlpha = unlocked?1:0.45;
+    text(lv.hidden?'★':(i+1)+'', x, y-74, 30, lv.hud, 'center', 'bold');
+    text(lv.name, x, y-40, 19, lv.hud, 'center', 'bold');
+    text(lv.sub, x, y-14, 11, lv.hud, 'center');
     // 该关小图标
-    const p = {s:26};
+    const p = {s:22};
     drawSide(lv.motif, x, y+52, p.s, lv, false);
-    if(unlocked){ stars(save.stars[i], x, y+86, 11); G.buttons.push({id:'lv', x:x-88, y:y-100, w:176, h:210, data:i}); }
-    else text('🔒 通关前一关解锁', x, y+86, 12, '#cbb');
+    if(unlocked){ stars(save.stars[i], x, y+88, 10); G.buttons.push({id:'lv', x:x-80, y:y-100, w:160, h:210, data:i}); focusRing(G.buttons.length-1, x-80, y-100, 160, 210); }
+    else text(lv.hidden?'🔒 图鉴集齐+15星解锁':'🔒 通关前一关解锁', x, y+88, 12, '#cbb');
     ctx.globalAlpha = 1;
   }
   button('back','返回', CX, H-56, 140, 44, {bg:'#5a4a6b'});
 }
+const CRASH_TITLES = ['撞上了!','鸭鸭眼冒金星!','被金陵的墙留下了','差一步就出城了……'];
+const DEATH_TIPS = {
+  low:'矮墩子要跳过去(↑)',
+  high:'高门楼要滑铲钻过去(↓)',
+  full:'整堵墙只能换道(←→)',
+};
 export function drawOver(){
   dim(0.55);
   const got = G.newIds.length;
-  text('撞上了!', CX, H*0.3, 52, '#f7ead0', 'center', 'bold');
+  text(CRASH_TITLES[Math.floor(G.dist)%CRASH_TITLES.length], CX, H*0.26, 52, '#f7ead0', 'center', 'bold');
+  if(G.killedBy && DEATH_TIPS[G.killedBy]) text('小提示:'+DEATH_TIPS[G.killedBy], CX, H*0.35, 15, '#a8d5a2');
   const line = G.mode==='endless'
-    ? '跑了 '+Math.floor(G.dist)+' m · 收集 '+G.items+(Math.floor(G.dist)>=save.best?' · 新纪录!':'')
+    ? '跑了 '+Math.floor(G.dist)+' m · 收集 '+G.items+(G.newBest?' · 新纪录!':'')
     : LEVELS[G.lvIdx].name+' · 跑了 '+Math.floor(G.dist)+' m · 收集 '+G.items;
-  text(line, CX, H*0.4, 20, '#f0b64c');
-  if(got) text('新图鉴:'+G.newIds.map(id=>ITEMS.find(i=>i.id===id).name).join('、'), CX, H*0.46, 16, '#a8d5a2');
+  text(line, CX, H*0.42, 20, '#f0b64c');
+  if(got) text('新图鉴:'+G.newIds.map(id=>(ITEMS.find(i=>i.id===id)||{}).name||'').join('、'), CX, H*0.48, 16, '#a8d5a2');
   button('retry','再来一次 (Enter)', CX, H*0.58, 240, 52);
-  button('quit','回主菜单', CX, H*0.7, 240, 52, {bg:'#5a4a6b'});
+  button('share','分享成绩', CX, H*0.68, 240, 52, {bg:'#3a5a6b'});
+  button('quit','回主菜单', CX, H*0.78, 240, 52, {bg:'#5a4a6b'});
+}
+function star(x, y, r, on, k){
+  ctx.save(); ctx.translate(x, y); ctx.scale(k, k);
+  ctx.fillStyle = on ? '#f0b64c' : 'rgba(255,255,255,0.18)';
+  ctx.beginPath();
+  for(let i=0;i<10;i++){
+    const a = -Math.PI/2 + i*Math.PI/5, rr = i%2 ? r*0.45 : r;
+    ctx[i?'lineTo':'moveTo'](Math.cos(a)*rr, Math.sin(a)*rr);
+  }
+  ctx.closePath(); ctx.fill();
+  ctx.restore();
 }
 export function drawClear(){
   dim(0.5);
-  text('过关!', CX, H*0.24, 56, '#f7ead0', 'center', 'bold');
-  text(LEVELS[G.lvIdx].name+' · 收集 '+G.items+' 件金陵风物', CX, H*0.33, 20, '#f0b64c');
-  stars(save.stars[G.lvIdx], CX, H*0.44, 20);
-  if(G.newIds.length) text('新图鉴:'+G.newIds.map(id=>ITEMS.find(i=>i.id===id).name).join('、'), CX, H*0.53, 16, '#a8d5a2');
-  if(G.lvIdx<4) button('next','下一关:'+LEVELS[G.lvIdx+1].name+' (Enter)', CX, H*0.64, 300, 52);
-  else text('你已跑遍金陵五景!图鉴还在继续等你集齐', CX, H*0.64, 18, '#f7ead0');
-  button('quit','回主菜单', CX, H*0.76, 240, 52, {bg:'#5a4a6b'});
+  const lv = LEVELS[G.lvIdx];
+  text('过关!', CX, H*0.2, 56, '#f7ead0', 'center', 'bold');
+  text(lv.sub, CX, H*0.29, 15, '#d8c9a8');
+  text(lv.name+' · 收集 '+G.items+' 件金陵风物', CX, H*0.36, 20, '#f0b64c');
+  // 星星逐颗弹入
+  const n = save.stars[G.lvIdx];
+  for(let i=0;i<3;i++){
+    const k = clamp((G.stateT-0.35-i*0.25)/0.2, 0, 1);
+    if(k>0) star(CX+(i-1)*52, H*0.45, 20, i<n, 1.6-0.6*k);
+  }
+  if(G.stateT > 1.2) text('收集 8 / 14 / 20 件 = 1 / 2 / 3 星', CX, H*0.52, 13, '#d8c9a8');
+  if(G.newIds.length) text('新图鉴:'+G.newIds.map(id=>(ITEMS.find(i=>i.id===id)||{}).name||'').join('、'), CX, H*0.58, 16, '#a8d5a2');
+  if(G.lvIdx < LEVELS.length-1){
+    const next = LEVELS[G.lvIdx+1];
+    const albumFull = Object.keys(save.album).length >= ITEMS.length;
+    const totalStars = save.stars.reduce((a,b)=>a+b,0);
+    if(!next.hidden || (albumFull && totalStars>=15)) button('next','下一关:'+next.name+' (Enter)', CX, H*0.66, 300, 52);
+    else text('图鉴集齐 + 15 星,解锁隐藏关「'+next.name+'」', CX, H*0.66, 16, '#f7ead0');
+  } else if(G.lvIdx===LEVELS.length-1) text('你已跑过长江大桥!金陵再也没墙拦得住鸭鸭', CX, H*0.66, 18, '#f7ead0');
+  else text('你已跑遍金陵五景!图鉴还在继续等你集齐', CX, H*0.66, 18, '#f7ead0');
+  button('share','分享成绩', CX, H*0.75, 240, 52, {bg:'#3a5a6b'});
+  button('quit','回主菜单', CX, H*0.85, 240, 52, {bg:'#5a4a6b'});
 }
 export function drawAlbum(){
   dim(0.82);
-  text('金陵图鉴', CX, 56, 40, '#f7ead0', 'center', 'bold');
-  text('鸭子逃亡路上收集的南京记忆', CX, 92, 15, '#f0b64c');
+  text('金陵图鉴', CX, 46, 40, '#f7ead0', 'center', 'bold');
+  text('鸭子逃亡路上收集的南京记忆 · 游戏里的风景,都是真的南京', CX, 76, 14, '#f0b64c');
   for(let i=0;i<ITEMS.length;i++){
     const it = ITEMS[i], got = !!save.album[it.id];
-    const x = CX + (i%3-1)*260, y = 196 + Math.floor(i/3)*170;
+    const x = CX + (i%4-1.5)*220, y = 140 + Math.floor(i/4)*128;
     ctx.globalAlpha = got?1:0.75;
-    if(!got) drawItemPhoto(it.id, x, y-20, 44, i%2?-0.06:0.05, true);         // 相纸背面
-    else if(hasPhoto('it_'+it.id)) drawItemPhoto(it.id, x, y-20, 44, i%2?-0.06:0.05, false);
-    else drawItemIcon(it.id, x, y-20, 38, false);                             // 雨花茶:手绘明信片
-    text(got?it.name:'???', x, y+54, 20, got?'#f7ead0':'#776e85', 'center', 'bold');
-    text(got?it.note:'还未收集到…', x, y+80, 12, got?'#d8c9a8':'#5a5366');
+    drawItemPhoto(it.id, x, y, 26, i%2?-0.06:0.05, !got);
+    text(got?it.name:'???', x, y+38, 17, got?'#f7ead0':'#776e85', 'center', 'bold');
+    if(got){
+      text(it.note, x, y+56, 11, '#d8c9a8');
+      text(it.quip, x, y+72, 11, '#f0b64c');
+      text(it.where, x, y+88, 11, '#a8d5a2');
+    } else {
+      text('📍 还没去过…', x, y+56, 11, '#5a5366');
+    }
     ctx.globalAlpha = 1;
   }
-  text('实景照片来自 Wikimedia Commons,作者与授权见 assets/img/CREDITS.md', CX, H-72, 11, 'rgba(216,201,168,0.55)');
-  button('back','返回 (Esc)', CX, H-42, 180, 44, {bg:'#5a4a6b'});
+  text('实景照片来自 Wikimedia Commons,作者与授权见 assets/img/CREDITS.md', CX, H-14, 11, 'rgba(216,201,168,0.55)');
+  button('back','返回 (Esc)', W-90, 46, 150, 44, {bg:'#5a4a6b'});
 }
 
 /* ---- 点击 ---- */
@@ -196,4 +263,5 @@ export function handleButton(id, data){
   else if(id==='quit'){ G.paused=false; G.state='menu'; }
   else if(id==='resume') G.paused=false;
   else if(id==='next') nextAfterClear();
+  else if(id==='share') shareScore();
 }

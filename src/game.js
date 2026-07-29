@@ -1,7 +1,7 @@
 import { clamp, lerp, rnd, irnd, proj, LANEGAP, ZP, DRAWD, TAU } from './core.js';
-import { LEVELS, ITEMS } from './config.js';
+import { LEVELS, ITEMS, LM_CYCLE, LM_NAME, MILESTONES } from './config.js';
 import { save, persist } from './save.js';
-import { sfx } from './audio.js';
+import { sfx, bgm } from './audio.js';
 
 /* ================= 游戏状态 ================= */
 export const G = {
@@ -29,9 +29,19 @@ export function startRun(mode, lvIdx){
   G.obs = []; G.cols = []; G.parts = []; G.gates = [];
   G.speed = mode==='adv' ? LEVELS[lvIdx].speed : 9.5;
   G.nextSpawn = 40; G.paused = false; G.shake = 0; G.egg = null;
+  G.slowmo = 0; G.newBest = false; G.kbSel = 0; G.kbActive = false;
+  G.combo = 0; G.comboT = 0; G.killedBy = null; G.newItem = null;
+  G.msIdx = 0; G.lmCyc = -1;
+  // 首局教学(仅冒险第一关、第一次):三句世界飘字
+  G.tut = null;
+  if(mode==='adv' && lvIdx===0 && !save.tut){
+    G.tut = [{z:20,text:'← → 换道'},{z:48,text:'↑ 跳过矮墩'},{z:76,text:'↓ 滑铲钻高门'}];
+    save.tut = true; persist();
+  }
   G.nextGate = mode==='adv' ? 130 : 200;
   pl.lane = 0; pl.x = 0; pl.y = 0; pl.vy = 0; pl.sliding = 0; pl.jumps = 0;
   G.state = 'play';
+  bgm(LEVELS[lvIdx].motif);
 }
 export const curLv = ()=> G.mode==='adv' ? LEVELS[G.lvIdx] : LEVELS[Math.floor(G.dist/600)%5];
 
@@ -77,11 +87,19 @@ export function spawnCluster(z){
     }
   }
   // 收集品弧线:免费道上 4~6 个,若相邻道有 low 障碍则从其上方越过
-  const itemId = ITEMS[irnd(0,ITEMS.length-1)].id;
+  // 风物与关卡绑定:主场风物 3 倍权重;稀有款仅主场关或无尽 800m 后掉落
+  const lvNow = G.mode==='adv' ? G.lvIdx : -1;
+  const pool = [];
+  for(const it of ITEMS){
+    if(it.rare && !(it.home===lvNow || (G.mode==='endless' && G.dist>800))) continue;
+    const w = it.home===lvNow ? 3 : 1;
+    for(let k=0;k<w;k++) pool.push(it.id);
+  }
+  const itemId = pool[irnd(0,pool.length-1)];
   const n = irnd(4,6), overLow = G.obs.some(o=>o.z===z && o.type==='low' && Math.abs(o.lane-freeLane)===1);
   for(let i=0;i<n;i++){
     const hump = overLow ? Math.sin((i+1)/(n+1)*Math.PI)*1.35 : 0;
-    G.cols.push({ x:freeLane*LANEGAP, z:z-2+i*1.8, y:0.55+hump, id:itemId, got:false });
+    G.cols.push({ x:freeLane*LANEGAP, z:z-2+i*1.8, y:0.55+hump, id:itemId, got:false, arc:z });
   }
 }
 
@@ -116,13 +134,29 @@ function gateShower(lv){
 
 /* ---- 主更新 ---- */
 export function update(dt){
-  G.t += dt;
   if(G.egg){ G.egg.ttl -= dt; if(G.egg.ttl<=0) G.egg = null; } // 彩蛋文案倒计时
   G.shake = Math.max(0, G.shake - dt*3);                        // 震屏衰减(撞车后也能平息)
   if(G.state!=='play' || G.paused) return;
+  G.t += dt;   // 世界时钟:暂停时冻结,画舫/粒子等不动
   const lv = curLv();
   if(G.mode==='endless') G.speed = Math.min(20, 9.5 + G.dist/280);
   G.dist += G.speed * dt;
+  // 连击窗口衰减
+  if(G.comboT > 0){ G.comboT -= dt; if(G.comboT <= 0) G.combo = 0; }
+  if(G.newItem){ G.newItem.ttl -= dt; if(G.newItem.ttl <= 0) G.newItem = null; }
+  if(G.mode==='endless'){
+    // 里程碑勋章
+    if(G.msIdx < MILESTONES.length && G.dist >= MILESTONES[G.msIdx][0]){
+      G.egg = { text:'达成 · '+MILESTONES[G.msIdx][1]+'!', ttl:2.6, dur:2.6 };
+      sfx.gate(); G.msIdx++;
+    }
+    // 600m 报站
+    const cyc = Math.floor(G.dist/600);
+    if(cyc !== G.lmCyc){
+      if(G.lmCyc >= 0) G.egg = { text:'前方 · '+LM_NAME[LM_CYCLE[cyc%LM_CYCLE.length]], ttl:2.6, dur:2.6 };
+      G.lmCyc = cyc;
+    }
+  }
 
   // 生成
   while(G.nextSpawn < G.dist + DRAWD){
