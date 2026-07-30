@@ -67,4 +67,10 @@ export const ITEMS = [
   { id:'gold',  name:'金箔',     note:'龙潭金箔,万锤打成的一片轻金', quip:'轻得像鸭绒,亮得晃鸭眼。', where:'📍 栖霞龙潭金箔之乡', home:4, rare:true },
   { id:'leaf',  name:'梧桐叶',   note:'陵园大道梧桐,南京秋天的入场券', quip:'一片叶子,就是一条颐和路。', where:'📍 陵园大道、颐和路', home:2 },
   { id:'lamp',  name:'秦淮花灯', note:'正月里上灯,十里秦淮一夜鱼龙舞', quip:'鸭子提灯:照亮逃亡的路。', where:'📍 夫子庙花灯市场,正月', home:3, rare:true },
+  { id:'cake',  name:'梅花糕',   note:'乾隆下江南钦点的名字,一朵会爆浆的梅花', quip:'烫嘴也要趁热吃,鸭蹼拿不住也认了。', where:'📍 老门东、夫子庙,左师傅梅花糕', home:3 },
+  { id:'root',  name:'糖粥藕',   note:'糯米灌藕红糖慢熬,糖粥一浇软糯拉丝', quip:'甜党鸭认证:比糖芋苗还黏牙。', where:'📍 老门东、南京大牌档', home:0 },
+  { id:'egg',   name:'活珠子',   note:'六合名产,十二天旺鸡蛋,鲜掉眉毛的勇士料理', quip:'鸭鸭报警了:你们管这叫小吃?!', where:'📍 六合、街头五香卤锅', home:4, rare:true },
+  { id:'elephant', name:'石象路', note:'明孝陵神道,石兽六百米,一站六百年', quip:'石象不追鸭,好评。', where:'📍 明孝陵景区,深秋最美', home:2 },
+  { id:'sakura', name:'樱花',    note:'鸡鸣寺路三月,下一场粉白色的雪', quip:'花瓣落鸭头,也算戴过春天了。', where:'📍 鸡鸣寺路、玄武湖樱洲', home:1 },
+  { id:'book',  name:'先锋书店', note:'地下车库里的最美书店,大地上的异乡者', quip:'鸭鸭看不懂字,但很会装文化鸭。', where:'📍 五台山总店,广州路173号', home:0, rare:true },
 ];

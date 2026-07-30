@@ -16,7 +16,8 @@ await page.waitForTimeout(1800);
 await page.evaluate(async () => {
   const g = await import('./src/game.js');
   const s = await import('./src/save.js');
-  s.save.album = { duck: true, fans: true, tea: true, plum: true, stone: true, taro: true };
+  s.save.album = { duck: true, fans: true, tea: true, plum: true, stone: true, taro: true,
+                   cake: true, root: true, egg: true, elephant: true, sakura: true, book: true };
   g.G.albumFrom = 'menu';
   g.G.state = 'album';
 });
