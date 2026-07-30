@@ -5,7 +5,9 @@ import { drawItemIcon } from './items.js';
 // 命名约定:背景 assets/img/bg_<landmarkId>.jpg;风物 assets/img/it_<itemId>.jpg
 // landmarkId 与 config.js 的 LEVELS.landmark / LM_CYCLE 一致;itemId 与 ITEMS.id 一致。
 const BG_IDS = ['zhonghua', 'jiming', 'sunyard', 'zhaobi', 'observatory', 'bridge'];
-const IT_IDS = ['duck', 'fans', 'taro', 'plum', 'stone'];   // 雨花茶无 CC 照片,恒走手绘插画
+const IT_IDS = ['duck', 'fans', 'taro', 'plum', 'stone', 'tea',
+                'pot', 'bean', 'cloud', 'gold', 'leaf', 'lamp',
+                'cake', 'root', 'egg', 'elephant', 'sakura', 'book'];   // 18 件全实图
 const IMGS = {};
 
 /* 预加载全部照片;onProgress(0~1)。缺图不阻塞:hasPhoto 返回 false,走代码插画回退 */

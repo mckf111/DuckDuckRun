@@ -17,7 +17,19 @@ PAGES = {
     "bg_jiming":      ("zh", "鸡鸣寺", 1920),
     "bg_sunyard":     ("zh", "中山陵", 1920),
     "bg_observatory": ("zh", "中国科学院紫金山天文台", 1920),
-    "it_tea":         ("en", "Yuhua tea", 1024),
+    "it_tea":         ("zh", "雨花茶", 1024),
+    "it_pot":         ("zh", "牛肉锅贴", 1024),
+    "it_bean":        ("zh", "赤豆元宵", 1024),
+    "it_cloud":       ("zh", "南京云锦", 1024),
+    "it_gold":        ("zh", "金箔", 1024),
+    "it_leaf":        ("zh", "二球悬铃木", 1024),
+    "it_lamp":        ("zh", "秦淮灯彩", 1024),
+    "it_cake":        ("zh", "梅花糕", 1024),
+    "it_root":        ("zh", "糯米藕", 1024),
+    "it_egg":         ("zh", "活珠子", 1024),
+    "it_elephant":    ("zh", "明孝陵", 1024),
+    "it_sakura":      ("zh", "鸡鸣寺路", 1024),
+    "it_book":        ("zh", "先锋书店", 1024),
 }
 
 LICENSE_OK = re.compile(r"(cc0|cc[ -]by|cc[ -]by[ -]sa|public domain|pd\b)", re.I)

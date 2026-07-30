@@ -24,9 +24,9 @@ await page.evaluate(async () => {
 await page.waitForTimeout(400);
 await page.screenshot({ path: 'tools/e2e/shots/album.png' });
 
-// 点击第一张卡(duck):逻辑坐标 (150,140) → client 坐标
+// 点击第一张卡(duck):6 列网格,逻辑坐标 (105,150) → client 坐标
 const box = await (await page.$('#cv')).boundingBox();
-const cx = box.x + 150 / 960 * box.width, cy = box.y + 140 / 540 * box.height;
+const cx = box.x + 105 / 960 * box.width, cy = box.y + 150 / 540 * box.height;
 await page.mouse.click(cx, cy);
 await page.waitForTimeout(300);
 const zoomed = await page.evaluate(async () => (await import('./src/game.js')).G.albumZoom);

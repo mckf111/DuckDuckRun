@@ -14,12 +14,16 @@ SRC = ROOT / "assets" / "img" / "src"
 OUT = ROOT / "assets" / "img"
 
 # 看图后选定每个 key 用第几张候选(序号对应 <key>__<n>.jpg)
-# it_tea 无可用 CC 照片,走 items.js 多色插画 fallback
 PICK = {
     "bg_zhonghua": 2, "bg_jiming": 9, "bg_sunyard": 9,
     "bg_zhaobi": 1, "bg_observatory": 9, "bg_bridge": 2,
     "it_duck": 2, "it_fans": 1,
     "it_taro": 1, "it_plum": 1, "it_stone": 2,
+    "it_tea": 2,        # 雨花茶无本尊 CC 照片,用茶园实景(打开思路后的替代)
+    "it_pot": 1, "it_bean": 2, "it_cloud": 1, "it_gold": 2,
+    "it_leaf": 2, "it_lamp": 1,
+    "it_cake": 1, "it_root": 9, "it_egg": 9,
+    "it_elephant": 3, "it_sakura": 1, "it_book": 2,
 }
 
 # 每关调色:warm(色温,-100~100)/ bright / contrast / sat;crop_y 为横幅裁剪中心(0=上,0.5=中,1=下)
@@ -38,6 +42,18 @@ GRADE = {
     "it_taro":  dict(warm=8, bright=1.02, contrast=1.05, sat=1.08),
     "it_plum":  dict(warm=4, bright=1.02, contrast=1.03, sat=1.06),
     "it_stone": dict(warm=4, bright=1.02, contrast=1.05, sat=1.08),
+    "it_pot":  dict(warm=8, bright=1.02, contrast=1.05, sat=1.10),
+    "it_bean": dict(warm=8, bright=1.02, contrast=1.04, sat=1.08),
+    "it_cloud": dict(warm=4, bright=1.02, contrast=1.04, sat=1.08),
+    "it_gold": dict(warm=4, bright=1.02, contrast=1.04, sat=1.06),
+    "it_leaf": dict(warm=4, bright=1.02, contrast=1.03, sat=1.04),
+    "it_lamp": dict(warm=6, bright=1.03, contrast=1.04, sat=1.10),
+    "it_cake": dict(warm=6, bright=1.02, contrast=1.04, sat=1.08),
+    "it_root": dict(warm=6, bright=1.02, contrast=1.04, sat=1.06),
+    "it_egg":  dict(warm=6, bright=1.03, contrast=1.04, sat=1.05),
+    "it_elephant": dict(warm=6, bright=1.02, contrast=1.03, sat=1.06),
+    "it_sakura": dict(warm=2, bright=1.02, contrast=1.02, sat=1.05),
+    "it_book": dict(warm=2, bright=1.02, contrast=1.02, sat=1.02),
 }
 
 BG_SIZE = (1920, 480)
@@ -119,7 +135,7 @@ def main():
             used.append(c)
     # CREDITS.md(只列正式采用的图)
     lines = ["# 实景照片署名(CREDITS)", "",
-             "游戏内实景照片均来自 Wikimedia Commons,按各自授权使用。", ""]
+             "游戏内实景照片来自 Wikimedia Commons 与 Openverse 聚合的 CC 图床,按各自授权使用。", ""]
     for c in used:
         lines.append(f"- `{c['key']}` — [{c['title']}]({c['page']}),作者:{c['author']},授权:{c['license']}")
     (OUT / "CREDITS.md").write_text("\n".join(lines) + "\n", encoding="utf-8")

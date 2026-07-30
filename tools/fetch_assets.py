@@ -27,10 +27,22 @@ ASSETS = {
     "bg_bridge":      ("Nanjing Yangtze River Bridge", 1920, 2),
     "it_duck":        ("Nanjing salted duck", 1024, 2),
     "it_fans":        ("鸭血粉丝汤", 1024, 2),
-    "it_tea":         ("Yuhuacha", 480, 3),
+    "it_tea":         ("茶园", 1024, 3),
     "it_taro":        ("糖芋苗", 1024, 2),
     "it_plum":        ("梅花山 南京", 1024, 2),
     "it_stone":       ("雨花石", 1024, 2),
+    "it_pot":         ("牛肉锅贴", 1024, 3),
+    "it_bean":        ("赤豆元宵", 1024, 3),
+    "it_cloud":       ("南京云锦", 1024, 3),
+    "it_gold":        ("金箔", 1024, 3),
+    "it_leaf":        ("梧桐 南京", 1024, 3),
+    "it_lamp":        ("秦淮花灯", 1024, 3),
+    "it_cake":        ("梅花糕 南京", 1024, 3),
+    "it_root":        ("糯米藕", 1024, 3),
+    "it_egg":         ("活珠子", 1024, 3),
+    "it_elephant":    ("石象路", 1024, 3),
+    "it_sakura":      ("鸡鸣寺 樱花", 1024, 3),
+    "it_book":        ("先锋书店 南京", 1024, 3),
 }
 
 LICENSE_OK = re.compile(r"(cc0|cc[ -]by|cc[ -]by[ -]sa|public domain|pd\b)", re.I)
