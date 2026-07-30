@@ -1,4 +1,4 @@
-import { ctx, W, H, CX, poly, disc, petalFlower, clamp } from './core.js';
+import { ctx, W, H, CX, poly, disc, rrect, petalFlower, clamp } from './core.js';
 import { LEVELS, ITEMS, MILESTONES } from './config.js';
 import { save } from './save.js';
 import { sfx } from './audio.js';
@@ -8,14 +8,15 @@ import { drawSide } from './art/scenery.js';
 import { shareScore } from './share.js';
 
 /* ================= 渲染:UI 组件 ================= */
-export function text(str, x, y, size, color, align, weight){
+export function text(str, x, y, size, color, align, weight, soft){
   // 大字号标题用宋体系(金陵长卷气质),小字号 UI 保留黑体
   const family = size >= 30 ? '"JinlingSong","STSong","SimSun",serif' : '"Microsoft YaHei","PingFang SC",sans-serif';
   ctx.font = (weight ? weight + ' ' : '') + size + 'px ' + family;
   ctx.textAlign = align||'center'; ctx.textBaseline = 'middle';
-  // 统一深色描边:任何实景照片背景上都可读
+  // 统一深色描边:任何实景照片背景上都可读;soft=大标题用细淡描边(现代感)
   ctx.lineJoin = 'round';
-  ctx.lineWidth = Math.max(2, size*0.16); ctx.strokeStyle = 'rgba(10,8,16,0.6)';
+  ctx.lineWidth = Math.max(2, size*(soft?0.08:0.16));
+  ctx.strokeStyle = soft ? 'rgba(10,8,16,0.42)' : 'rgba(10,8,16,0.6)';
   ctx.strokeText(str, x, y);
   ctx.fillStyle = color; ctx.fillText(str, x, y);
 }
@@ -27,13 +28,15 @@ export function button(id, label, x, y, w, h, opts){
   ctx.save();
   if(pressed){ ctx.translate(x,y); ctx.scale(0.94,0.94); ctx.translate(-x,-y); } // 按压回弹
   ctx.globalAlpha = opts.disabled ? 0.45 : 1;
-  const bg = opts.bg || '#c8342e';
-  poly([[x-w/2+8,y-h/2],[x+w/2-8,y-h/2],[x+w/2,y],[x+w/2-8,y+h/2],[x-w/2+8,y+h/2],[x-w/2,y]], bg);
-  ctx.strokeStyle = '#f0b64c'; ctx.lineWidth = 2;
-  ctx.beginPath(); ctx.moveTo(x-w/2+8,y-h/2); ctx.lineTo(x+w/2-8,y-h/2); ctx.lineTo(x+w/2,y);
-  ctx.lineTo(x+w/2-8,y+h/2); ctx.lineTo(x-w/2+8,y+h/2); ctx.lineTo(x-w/2,y); ctx.closePath(); ctx.stroke();
-  text(label, x, y+1, opts.size||22, '#f7ead0', 'center', 'bold');
-  if(pressed) poly([[x-w/2+8,y-h/2],[x+w/2-8,y-h/2],[x+w/2,y],[x+w/2-8,y+h/2],[x-w/2+8,y+h/2],[x-w/2,y]], 'rgba(0,0,0,0.22)');
+  const r = h/2;   // 药丸形
+  if(opts.ghost){  // 次级按钮:半透明幽灵风
+    rrect(x-w/2, y-h/2, w, h, r, 'rgba(246,241,231,0.08)', 'rgba(246,241,231,0.35)', 1.5);
+  } else {         // 主按钮:柔和朱红(opts.bg 可覆盖)
+    rrect(x-w/2, y-h/2, w, h, r, opts.bg || '#d85c47');
+    rrect(x-w/2+1.5, y-h/2+1.5, w-3, h*0.42, r*0.8, 'rgba(255,255,255,0.10)'); // 顶部柔光
+  }
+  text(label, x, y+1, opts.size||22, '#f7f2e6', 'center', 'bold');
+  if(pressed) rrect(x-w/2, y-h/2, w, h, r, 'rgba(0,0,0,0.22)');
   ctx.globalAlpha = 1;
   ctx.restore();
   focusRing(bi, x-w/2, y-h/2, w, h);
@@ -117,30 +120,33 @@ export function drawHUD(){
     dim(0.6);
     text('暂 停', CX, H*0.42, 54, '#f7ead0', 'center', 'bold');
     button('resume','继续', CX, H*0.56, 180, 52);
-    button('quit','回主菜单', CX, H*0.68, 180, 52, {bg:'#5a4a6b'});
+    button('quit','回主菜单', CX, H*0.68, 180, 52, {ghost:true});
   }
 }
 
 /* ---- 界面 ---- */
 export function drawMenu(){
-  dim(0.4);
-  // 标题 + 双细线(两端圆点收头,替代旧矩形框)
+  dim(0.5);
+  // 标题区自上而下渐变压暗,夜景之上文字更干净
+  const g = ctx.createLinearGradient(0, 0, 0, H*0.66);
+  g.addColorStop(0, 'rgba(8,6,14,0.55)'); g.addColorStop(1, 'rgba(8,6,14,0)');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H*0.66);
+  // 标题:宋体大字号 + 字距,细淡描边(soft)
   const ty = H*0.26;
-  text('金陵快跑', CX, ty, 78, '#f7ead0', 'center', 'bold');
-  ctx.strokeStyle = '#f0b64c';
-  for(const dy of [-56, 56]){
-    const sgn = Math.sign(dy);
-    ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(CX-212, ty+dy); ctx.lineTo(CX+212, ty+dy); ctx.stroke();
-    ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(CX-198, ty+dy+sgn*6); ctx.lineTo(CX+198, ty+dy+sgn*6); ctx.stroke();
-    disc(CX-212, ty+dy, 3.5, '#f0b64c'); disc(CX+212, ty+dy, 3.5, '#f0b64c');
-  }
-  text('—— 奔跑展开的金陵长卷 ——', CX, H*0.38, 18, '#f0b64c');
-  petalFlower(CX-230, ty, 16, '#e2483d'); petalFlower(CX+230, ty, 16, '#e2483d');
-  text('没有一只鸭子能走出南京——除了我。', CX, H*0.45, 15, '#f7ead0');
-  button('adv','冒险模式 · 五关金陵', CX, H*0.55, 300, 54);
-  button('endless','无尽模式 · 一路跑到长江大桥', CX, H*0.66, 300, 54, {bg:'#8a3b34'});
-  button('album','金陵图鉴 ('+Object.keys(save.album).length+'/'+ITEMS.length+')', CX, H*0.77, 300, 54, {bg:'#3a5a6b'});
-  text('游戏里的风景,都是真的南京', CX, H-24, 13, 'rgba(247,234,208,0.7)');
+  ctx.save();
+  if('letterSpacing' in ctx) ctx.letterSpacing = '10px';
+  text('金陵快跑', CX, ty, 92, '#f6f1e7', 'center', 'bold', true);
+  ctx.restore();
+  // 标题下短金线 + 单圆点收口(替代旧双线框/红纸花)
+  ctx.strokeStyle = '#d9b36a'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(CX-46, ty+66); ctx.lineTo(CX+46, ty+66); ctx.stroke();
+  disc(CX, ty+66, 3, '#d9b36a');
+  text('—— 奔跑展开的金陵长卷 ——', CX, H*0.44, 17, 'rgba(217,179,106,0.9)');
+  text('没有一只鸭子能走出南京——除了我。', CX, H*0.50, 15, 'rgba(246,241,231,0.8)');
+  button('adv','冒险模式 · 五关金陵', CX, H*0.62, 320, 54);
+  button('endless','无尽模式 · 一路跑到长江大桥', CX, H*0.73, 320, 54, {ghost:true});
+  button('album','金陵图鉴 ('+Object.keys(save.album).length+'/'+ITEMS.length+')', CX, H*0.84, 320, 54, {ghost:true});
+  text('游戏里的风景,都是真的南京', CX, H-22, 13, 'rgba(246,241,231,0.5)');
 }
 export function drawLevels(){
   dim(0.55);
@@ -164,7 +170,7 @@ export function drawLevels(){
     else text(lv.hidden?'🔒 图鉴集齐+15星解锁':'🔒 通关前一关解锁', x, y+88, 12, '#cbb');
     ctx.globalAlpha = 1;
   }
-  button('back','返回', CX, H-56, 140, 44, {bg:'#5a4a6b'});
+  button('back','返回', CX, H-56, 140, 44, {ghost:true});
 }
 const CRASH_TITLES = ['撞上了!','鸭鸭眼冒金星!','被金陵的墙留下了','差一步就出城了……'];
 const DEATH_TIPS = {
@@ -183,8 +189,8 @@ export function drawOver(){
   text(line, CX, H*0.42, 20, '#f0b64c');
   if(got) text('新图鉴:'+G.newIds.map(id=>(ITEMS.find(i=>i.id===id)||{}).name||'').join('、'), CX, H*0.48, 16, '#a8d5a2');
   button('retry','再来一次 (Enter)', CX, H*0.58, 240, 52);
-  button('share','分享成绩', CX, H*0.68, 240, 52, {bg:'#3a5a6b'});
-  button('quit','回主菜单', CX, H*0.78, 240, 52, {bg:'#5a4a6b'});
+  button('share','分享成绩', CX, H*0.68, 240, 52, {ghost:true});
+  button('quit','回主菜单', CX, H*0.78, 240, 52, {ghost:true});
 }
 function star(x, y, r, on, k){
   ctx.save(); ctx.translate(x, y); ctx.scale(k, k);
@@ -219,8 +225,8 @@ export function drawClear(){
     else text('图鉴集齐 + 15 星,解锁隐藏关「'+next.name+'」', CX, H*0.66, 16, '#f7ead0');
   } else if(G.lvIdx===LEVELS.length-1) text('你已跑过长江大桥!金陵再也没墙拦得住鸭鸭', CX, H*0.66, 18, '#f7ead0');
   else text('你已跑遍金陵五景!图鉴还在继续等你集齐', CX, H*0.66, 18, '#f7ead0');
-  button('share','分享成绩', CX, H*0.75, 240, 52, {bg:'#3a5a6b'});
-  button('quit','回主菜单', CX, H*0.85, 240, 52, {bg:'#5a4a6b'});
+  button('share','分享成绩', CX, H*0.75, 240, 52, {ghost:true});
+  button('quit','回主菜单', CX, H*0.85, 240, 52, {ghost:true});
 }
 export function drawAlbum(){
   dim(0.82);
@@ -242,7 +248,7 @@ export function drawAlbum(){
     ctx.globalAlpha = 1;
   }
   text('实景照片来自 Wikimedia Commons,作者与授权见 assets/img/CREDITS.md', CX, H-14, 11, 'rgba(216,201,168,0.55)');
-  button('back','返回 (Esc)', W-90, 46, 150, 44, {bg:'#5a4a6b'});
+  button('back','返回 (Esc)', W-90, 46, 150, 44, {ghost:true});
 }
 
 /* ---- 点击 ---- */
