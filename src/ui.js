@@ -230,25 +230,41 @@ export function drawClear(){
 }
 export function drawAlbum(){
   dim(0.82);
-  text('金陵图鉴', CX, 46, 40, '#f7ead0', 'center', 'bold');
-  text('鸭子逃亡路上收集的南京记忆 · 游戏里的风景,都是真的南京', CX, 76, 14, '#f0b64c');
+  text('金陵图鉴', CX, 46, 40, '#f6f1e7', 'center', 'bold', true);
+  text('鸭子逃亡路上收集的南京记忆 · 点击卡片放大看实图', CX, 78, 14, 'rgba(217,179,106,0.9)');
+  // 风物超过 12 件自动切 6 列紧凑网格;详情都收进放大层
+  const cols = ITEMS.length > 12 ? 6 : 4;
+  const cw = cols === 6 ? 150 : 220, pr = cols === 6 ? 24 : 26;
+  const y0 = cols === 6 ? 150 : 140, step = cols === 6 ? 138 : 128;
   for(let i=0;i<ITEMS.length;i++){
     const it = ITEMS[i], got = !!save.album[it.id];
-    const x = CX + (i%4-1.5)*220, y = 140 + Math.floor(i/4)*128;
+    const x = CX + (i%cols-(cols-1)/2)*cw, y = y0 + Math.floor(i/cols)*step;
     ctx.globalAlpha = got?1:0.75;
-    drawItemPhoto(it.id, x, y, 26, i%2?-0.06:0.05, !got);
-    text(got?it.name:'???', x, y+38, 17, got?'#f7ead0':'#776e85', 'center', 'bold');
-    if(got){
-      text(it.note, x, y+56, 11, '#d8c9a8');
-      text(it.quip, x, y+72, 11, '#f0b64c');
-      text(it.where, x, y+88, 11, '#a8d5a2');
-    } else {
-      text('📍 还没去过…', x, y+56, 11, '#5a5366');
+    drawItemPhoto(it.id, x, y, pr, i%2?-0.06:0.05, !got);
+    text(got?it.name:'???', x, y+pr+16, cols===6?15:17, got?'#f7ead0':'#776e85', 'center', 'bold');
+    if(got && !G.albumZoom){
+      G.buttons.push({id:'item', x:x-65, y:y-56, w:130, h:124, data:it.id});
+      focusRing(G.buttons.length-1, x-65, y-56, 130, 124);
     }
     ctx.globalAlpha = 1;
   }
-  text('实景照片来自 Wikimedia Commons,作者与授权见 assets/img/CREDITS.md', CX, H-14, 11, 'rgba(216,201,168,0.55)');
+  text('实景照片来自 Wikimedia Commons 与 Openverse,作者与授权见 assets/img/CREDITS.md', CX, H-14, 11, 'rgba(216,201,168,0.55)');
   button('back','返回 (Esc)', W-90, 46, 150, 44, {ghost:true});
+  if(G.albumZoom) drawAlbumZoom();
+}
+
+/* 图鉴放大层:大号拍立得实图 + 完整文案;点击任意处 / Enter / Esc 关闭 */
+function drawAlbumZoom(){
+  const it = ITEMS.find(i=>i.id===G.albumZoom);
+  if(!it){ G.albumZoom = null; return; }
+  G.buttons.push({id:'zoomclose', x:0, y:0, w:W, h:H});
+  dim(0.88);
+  drawItemPhoto(it.id, CX, H*0.36, 118, -0.03, false);
+  text(it.name, CX, H*0.72, 34, '#f6f1e7', 'center', 'bold', true);
+  text(it.note, CX, H*0.775, 14, '#d8c9a8');
+  text(it.quip, CX, H*0.825, 14, '#f0b64c');
+  text(it.where, CX, H*0.875, 13, '#a8d5a2');
+  text('点击任意处关闭', CX, H-18, 12, 'rgba(246,241,231,0.55)');
 }
 
 /* ---- 点击 ---- */
@@ -262,9 +278,11 @@ export function clickAt(px, py){
 export function handleButton(id, data){
   if(id==='adv') G.state='levels';
   else if(id==='endless') startRun('endless', 0);
-  else if(id==='album'){ G.albumFrom = G.state==='play'?'play':'menu'; G.state='album'; }
+  else if(id==='album'){ G.albumFrom = G.state==='play'?'play':'menu'; G.albumZoom=null; G.state='album'; }
+  else if(id==='item') G.albumZoom = data;
+  else if(id==='zoomclose') G.albumZoom = null;
   else if(id==='lv') startRun('adv', data);
-  else if(id==='back') G.state = G.state==='album' ? G.albumFrom : 'menu';
+  else if(id==='back'){ G.albumZoom=null; G.state = G.state==='album' ? G.albumFrom : 'menu'; }
   else if(id==='retry') startRun(G.mode, G.lvIdx);
   else if(id==='quit'){ G.paused=false; G.state='menu'; }
   else if(id==='resume') G.paused=false;

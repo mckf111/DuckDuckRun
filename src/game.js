@@ -12,6 +12,7 @@ export const G = {
   obs:[], cols:[], parts:[], gates:[],
   nextSpawn:0, nextGate:0, shake:0,
   buttons:[], albumFrom:'menu', slowmo:0, wipe:0, pressed:null,
+  albumZoom:null,    // 图鉴放大查看的风物 id(纯 UI 状态)
   egg:null,            // 彩蛋文案 { text, ttl, dur }
   newBest:false,       // 本局是否破了无尽纪录(结算页展示)
   kbSel:0, kbActive:false, // 菜单键盘导航焦点
@@ -61,7 +62,11 @@ export function onSlide(){
 }
 export function onPauseKey(){
   if(G.state==='play'){ G.paused = !G.paused; sfx.click(); }
-  else if(G.state==='album'){ G.state = G.albumFrom; sfx.click(); }
+  else if(G.state==='album'){
+    if(G.albumZoom) G.albumZoom = null;        // 放大查看时 Esc 先关放大层
+    else G.state = G.albumFrom;
+    sfx.click();
+  }
   else if(G.state==='levels' || G.state==='over' || G.state==='clear'){ G.state='menu'; sfx.click(); }
 }
 export function onEnter(){
