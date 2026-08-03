@@ -1,11 +1,11 @@
 import { ctx, W, H, CX, poly, disc, rrect, petalFlower, clamp } from './core.js';
 import { LEVELS, ITEMS, MILESTONES } from './config.js';
-import { save } from './save.js';
+import { save, persist } from './save.js';
 import { sfx } from './audio.js';
 import { G, curLv, startRun, nextAfterClear } from './game.js';
 import { drawItemPhoto } from './art/photo.js';
 import { drawSide } from './art/scenery.js';
-import { shareScore } from './share.js';
+import { shareScore, copyText, shareLink } from './share.js';
 
 /* ================= 渲染:UI 组件 ================= */
 export function text(str, x, y, size, color, align, weight, soft){
@@ -51,7 +51,7 @@ function focusRing(bi, bx, by, bw, bh){
   ctx.restore();
 }
 export function kbNav(d){
-  if(!G.buttons.length || G.state==='play') return;
+  if(!G.buttons.length || (G.state==='play' && !G.paused)) return;   // L2:暂停菜单也能键盘导航
   G.kbActive = true;
   G.kbSel = ((G.kbSel||0)+d+G.buttons.length)%G.buttons.length;
   sfx.click();
@@ -92,17 +92,22 @@ export function drawHUD(){
     if(G.msIdx < MILESTONES.length)
       text('距「'+MILESTONES[G.msIdx][1]+'」还差 '+Math.max(0,Math.ceil(MILESTONES[G.msIdx][0]-G.dist))+' m', CX, 54, 13, lv.hud, 'center');
   }
-  // 新图鉴即时横幅(拍立得滑入)
+  // 右上角:暂停 + 静音按钮(F3 触屏可暂停;M4 移动端可静音)
+  if(!G.paused){
+    button('mute', save.muted?'♪̶':'♪', W-96, 34, 44, 44, {ghost:true, size:18});
+    button('pause','▐▐', W-42, 34, 44, 44, {ghost:true, size:16});
+  }
+  // 新图鉴即时横幅(右上角,不挡地平线障碍出生点)
   if(G.newItem){
     const it = ITEMS.find(i=>i.id===G.newItem.id);
-    const a = clamp(Math.min((2.8-G.newItem.ttl)*5, G.newItem.ttl*2), 0, 1);
+    const a = clamp(Math.min((2.0-G.newItem.ttl)*5, G.newItem.ttl*2), 0, 1);
     ctx.save(); ctx.globalAlpha = a;
-    drawItemPhoto(G.newItem.id, CX, 108, 20, -0.06, false);
-    text('新图鉴:'+(it?it.name:''), CX, 150, 18, '#f0b64c', 'center', 'bold');
+    drawItemPhoto(G.newItem.id, W-96, 96, 15, -0.06, false);
+    text('新图鉴:'+(it?it.name:''), W-96, 132, 15, '#f0b64c', 'center', 'bold');
     ctx.restore();
   }
   // 底部操作提示:开场 5 秒内显示后淡出,暂停时重新出现;触屏设备显示手势
-  const hint = ('ontouchstart' in window) ? '左右滑换道  上滑跳  下滑铲  点按钮暂停'
+  const hint = ('ontouchstart' in window) ? '左右滑换道  上滑跳  下滑铲  右上角可暂停'
     : '←→换道  ↑跳  ↓滑铲  P暂停  M静音'+(save.muted?'(已静音)':'');
   if(G.paused || G.t < 5){
     ctx.globalAlpha = G.paused ? 1 : clamp(5-G.t, 0, 1);
@@ -146,7 +151,10 @@ export function drawMenu(){
   button('adv','冒险模式 · 五关金陵', CX, H*0.62, 320, 54);
   button('endless','无尽模式 · 一路跑到长江大桥', CX, H*0.73, 320, 54, {ghost:true});
   button('album','金陵图鉴 ('+Object.keys(save.album).length+'/'+ITEMS.length+')', CX, H*0.84, 320, 54, {ghost:true});
-  text('游戏里的风景,都是真的南京', CX, H-22, 13, 'rgba(246,241,231,0.5)');
+  text('背景风景,皆是实景南京', CX, H-22, 13, 'rgba(246,241,231,0.5)');
+  // F6:微信内提示绕开内置浏览器限制(下载/分享被吞)
+  if(/MicroMessenger/i.test(navigator.userAgent))
+    text('微信内体验有限:点右上角 ··· → 在浏览器打开', CX, H-44, 12, 'rgba(246,241,231,0.42)');
 }
 export function drawLevels(){
   dim(0.55);
@@ -185,11 +193,12 @@ export function drawOver(){
   if(G.killedBy && DEATH_TIPS[G.killedBy]) text('小提示:'+DEATH_TIPS[G.killedBy], CX, H*0.35, 15, '#a8d5a2');
   const line = G.mode==='endless'
     ? '跑了 '+Math.floor(G.dist)+' m · 收集 '+G.items+(G.newBest?' · 新纪录!':'')
-    : LEVELS[G.lvIdx].name+' · 跑了 '+Math.floor(G.dist)+' m · 收集 '+G.items;
+    : LEVELS[G.lvIdx].name+' · 跑了 '+Math.floor(G.dist)+' m · 收集 '+G.items+' · 距终点还差 '+Math.max(0,Math.ceil(LEVELS[G.lvIdx].len-G.dist))+' m';
   text(line, CX, H*0.42, 20, '#f0b64c');
   if(got) text('新图鉴:'+G.newIds.map(id=>(ITEMS.find(i=>i.id===id)||{}).name||'').join('、'), CX, H*0.48, 16, '#a8d5a2');
-  button('retry','再来一次 (Enter)', CX, H*0.58, 240, 52);
-  button('share','分享成绩', CX, H*0.68, 240, 52, {ghost:true});
+  button('retry','再来一次 (Enter)', CX, H*0.56, 240, 52);
+  button('share','分享成绩', CX-115, H*0.68, 210, 52, {ghost:true});
+  button('copy','复制链接', CX+115, H*0.68, 210, 52, {ghost:true});
   button('quit','回主菜单', CX, H*0.78, 240, 52, {ghost:true});
 }
 function star(x, y, r, on, k){
@@ -225,13 +234,14 @@ export function drawClear(){
     else text('图鉴集齐 + 15 星,解锁隐藏关「'+next.name+'」', CX, H*0.66, 16, '#f7ead0');
   } else if(G.lvIdx===LEVELS.length-1) text('你已跑过长江大桥!金陵再也没墙拦得住鸭鸭', CX, H*0.66, 18, '#f7ead0');
   else text('你已跑遍金陵五景!图鉴还在继续等你集齐', CX, H*0.66, 18, '#f7ead0');
-  button('share','分享成绩', CX, H*0.75, 240, 52, {ghost:true});
-  button('quit','回主菜单', CX, H*0.85, 240, 52, {ghost:true});
+  button('share','分享成绩', CX-115, H*0.76, 210, 52, {ghost:true});
+  button('copy','复制链接', CX+115, H*0.76, 210, 52, {ghost:true});
+  button('quit','回主菜单', CX, H*0.86, 240, 52, {ghost:true});
 }
 export function drawAlbum(){
   dim(0.82);
   text('金陵图鉴', CX, 46, 40, '#f6f1e7', 'center', 'bold', true);
-  text('鸭子逃亡路上收集的南京记忆 · 点击卡片放大看实图', CX, 78, 14, 'rgba(217,179,106,0.9)');
+  text('鸭子逃亡路上收集的南京记忆 · 四季同框,有时有令 · 点击放大', CX, 78, 14, 'rgba(217,179,106,0.9)');
   // 风物超过 12 件自动切 6 列紧凑网格;详情都收进放大层
   const cols = ITEMS.length > 12 ? 6 : 4;
   const cw = cols === 6 ? 150 : 220, pr = cols === 6 ? 24 : 26;
@@ -278,7 +288,7 @@ export function clickAt(px, py){
 export function handleButton(id, data){
   if(id==='adv') G.state='levels';
   else if(id==='endless') startRun('endless', 0);
-  else if(id==='album'){ G.albumFrom = G.state==='play'?'play':'menu'; G.albumZoom=null; G.state='album'; }
+  else if(id==='album'){ G.albumFrom='menu'; G.albumZoom=null; G.state='album'; }
   else if(id==='item') G.albumZoom = data;
   else if(id==='zoomclose') G.albumZoom = null;
   else if(id==='lv') startRun('adv', data);
@@ -286,6 +296,12 @@ export function handleButton(id, data){
   else if(id==='retry') startRun(G.mode, G.lvIdx);
   else if(id==='quit'){ G.paused=false; G.state='menu'; }
   else if(id==='resume') G.paused=false;
+  else if(id==='pause') G.paused=true;
+  else if(id==='mute'){ save.muted=!save.muted; persist(); }
   else if(id==='next') nextAfterClear();
   else if(id==='share') shareScore();
+  else if(id==='copy'){
+    const dist = Math.floor(G.dist), albumN = Object.keys(save.album).length;
+    copyText('我在《金陵快跑》跑了 '+dist+' m,集齐 '+albumN+'/'+ITEMS.length+' 件金陵风物!没有一只鸭子能走出南京——除了我。 '+shareLink());
+  }
 }

@@ -11,7 +11,8 @@
 - `↓`(或 `S`):滑铲 / 空中快降
 - `P` / `Esc`:暂停、返回
 - `M`:静音开关;`Enter`:重开 / 下一关
-- 触屏:滑动 = 操作,点击 = 按钮
+- 触屏:滑动 = 操作,点击 = 按钮;右上角有暂停与静音按钮
+- 竖屏手机自动显示「横过来」引导层
 
 ## 本地运行
 
@@ -24,6 +25,21 @@ python -m http.server 8000   # 然后浏览器打开 http://localhost:8000
 或使用 VS Code 的 Live Server 插件。
 
 深链:`#play` 直接进无尽模式,`#lv0` ~ `#lv4` 直接进对应关卡。
+
+## 部署(传播层)
+
+零构建项目,静态托管直接可用。国内访问速度:境外托管(GitHub Pages 等)不稳,有传播苗头后建议走「ICP 备案 + 国内 CDN」。
+
+```bash
+# GitHub Pages 示例(零构建,直接推)
+git init && git add . && git commit -m "init"
+git remote add origin https://github.com/<你>/<仓库>.git
+git push -u origin main    # 仓库 Settings → Pages → Source 选 main 根目录
+```
+
+部署后把 `index.html` 的 `og:image` 换成绝对 URL。埋点见 `src/track.js` 顶部 `TRACK_URL`(留空 = 不上报;可用 Cloudflare Web Analytics 补 PV/UV)。
+
+分享链路:结算页「分享成绩」→ 非微信走系统分享/下载;**微信内自动弹全屏遮罩,长按图片保存 + 复制链接**;成绩卡右下角印二维码与回游链接(自研零依赖 QR 生成器 `src/qr.js`,已与 qrcode 参考实现逐模块对拍验证)。
 
 ## 目录结构
 
@@ -45,17 +61,22 @@ src/
   render.js     场景渲染(照片远景 → 路面 → 两侧 → 门 → 收集品 → 障碍 → 鸭子 → 晕影)
   ui.js         HUD 与各界面(图鉴=相册,含键盘导航)
   share.js      拍立得成绩卡生成与分享(navigator.share/下载)
-  input.js      键盘/触屏输入
-  main.js       入口:照片预加载(缺图回退插画) + 主循环与深链
+  input.js      键盘/触屏输入(多指/画布外松手/IME 容错)
+  main.js       入口:照片预加载(缺图回退插画) + 主循环与深链 + 竖屏旋转引导层
+  qr.js         零依赖 QR 生成器(V1~4 / L 纠错,分享卡回游二维码)
+  track.js      轻量埋点(sendBeacon,TRACK_URL 留空则静默)
 assets/
   fonts/        标题用子集化思源宋体(jinling-serif.woff2)与字符表 chars.txt
+  icons/        duck-512.png / duck-192.png(游戏图标,make_icon.py 生成)
   img/          实景照片:bg_*.jpg(六张远景横幅)、it_*.jpg(风物卡)、CREDITS.md(署名)
 tools/
+  make_icon.py          生成 assets/icons 鸭子图标(Pillow)
   fetch_assets.py      从 Wikimedia Commons 抓候选照片(仅 CC0/CC-BY/CC-BY-SA/PD)
   fetch_pageimages.py  兜底:取维基百科条目头图
+  fetch_openverse.py   第三源:Openverse 聚合 CC 图床补抓(仅可改作授权)
   process_assets.py    Pillow 处理:横幅/方形裁剪、按关调色、颗粒、暗角
-  e2e/shot*.mjs        playwright-core 截图验证(需本地 http 服务)
-docs/           设计文档(历史方案留档)
+  e2e/*.mjs            playwright-core 截图与逻辑推演验证(需本地 http 服务)
+docs/           设计文档与审查报告(本地留档,不入库)
 ```
 
 ## 重新生成实景照片
@@ -70,7 +91,7 @@ docs/           设计文档(历史方案留档)
 ./.venv/Scripts/python tools/process_assets.py     # 产出 assets/img/*.jpg + CREDITS.md
 ```
 
-18 件风物全部为实景照片(雨花茶无本尊 CC 照片,以茶园实景代替;云锦用乾隆龙袍织金代表织金工艺)。缺图时所有照片元素仍会自动回退到 `art/items.js` 的代码插画,游戏始终可运行。
+18 件风物全部为实景照片(雨花茶无本尊 CC 照片,以茶园实景代替;云锦用乾隆龙袍织金代表织金工艺;金箔缺南京本地的 CC 实拍图,条目已标注「工艺示意图」)。缺图时所有照片元素仍会自动回退到 `art/items.js` 的代码插画,游戏始终可运行。
 
 ## 重新生成标题字体
 

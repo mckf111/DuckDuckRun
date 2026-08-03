@@ -40,6 +40,7 @@ const PENTA = [1, 9/8, 5/4, 3/2, 5/3];
 const PATTERN = [2,1,0,1, 2,3,4,3, 2,1,0,2, 1,0,1,2];
 const ROOTS = { crenel:220, lotus:196, steps:247, lantern:175, pine:208 };
 let bgmTimer = null, bgmRoot = 220, bgmStep = 0;
+export function bgmStop(){ if(bgmTimer){ clearInterval(bgmTimer); bgmTimer = null; } }
 export function bgm(motif){
   if(motif && ROOTS[motif]) bgmRoot = ROOTS[motif];
   if(bgmTimer) return;

@@ -17,7 +17,7 @@
 - `it_pot` — [File:牛肉锅贴 Pan-fried Beef Dumplings - Ants Bistro.jpg](https://commons.wikimedia.org/wiki/File%3A%E7%89%9B%E8%82%89%E9%94%85%E8%B4%B4_Pan-fried_Beef_Dumplings_-_Ants_Bistro.jpg),作者:avlxyz,授权:CC BY-SA 2.0
 - `it_bean` — [Julia and Alpha's 红豆沙 汤圆 Red Bean Dessert with Rice Dumplings](https://www.flickr.com/photos/10559879@N00/2139376304),作者:avlxyz,授权:CC BY SA 2.0
 - `it_cloud` — [File:Drachenrobe-Qianlong.JPG](https://commons.wikimedia.org/wiki/File%3ADrachenrobe-Qianlong.JPG),作者:Dr. Meierhofer,授权:CC BY-SA 3.0
-- `it_gold` — [File:Kanazawa Gold Factory.jpg](https://commons.wikimedia.org/wiki/File%3AKanazawa_Gold_Factory.jpg),作者:Eckhard Pecher,授权:CC BY 2.5
+- `it_gold` — [File:Kanazawa Gold Factory.jpg](https://commons.wikimedia.org/wiki/File%3AKanazawa_Gold_Factory.jpg),作者:Eckhard Pecher,授权:CC BY 2.5,用途:**工艺示意图**(南京金箔暂缺 CC 实拍图,游戏内条目已注明;口号口径为「背景风景,皆是实景南京」)
 - `it_leaf` — [File:南京-玄午湖公园梧桐大道 - panoramio.jpg](https://commons.wikimedia.org/wiki/File%3A%E5%8D%97%E4%BA%AC-%E7%8E%84%E5%8D%88%E6%B9%96%E5%85%AC%E5%9B%AD%E6%A2%A7%E6%A1%90%E5%A4%A7%E9%81%93_-_panoramio.jpg),作者:Nyx Ning,授权:CC BY-SA 3.0
 - `it_lamp` — [17 (QinHuai Lantern Festival)](https://www.flickr.com/photos/65305775@N08/29241346700),作者:Ralph.Torello,授权:Public Domain Mark
 - `it_cake` — [Red Bean Plum Blossom Cake (1)](https://commons.wikimedia.org/w/index.php?curid=144437655),作者:François Nguyen,授权:CC BY 2.0

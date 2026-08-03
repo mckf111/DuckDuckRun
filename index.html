@@ -4,7 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>金陵快跑 · 南京实景跑酷</title>
-<link rel="icon" href="data:,">
+<meta name="description" content="南京城市主题跑酷 H5:跑过明城墙、玄武湖、中山陵、夫子庙、紫金山,收集 18 件金陵风物。没有一只鸭子能走出南京——除了我。">
+<meta name="theme-color" content="#0d0a14">
+<meta property="og:type" content="website">
+<meta property="og:title" content="金陵快跑 · 南京实景跑酷">
+<meta property="og:description" content="南京城市主题跑酷 H5:逃出鸭店的白胖鸭,跑遍金陵五景,收集 18 件风物图鉴。">
+<!-- og:image 需绝对 URL,部署后替换为 https://<你的域名>/assets/icons/duck-512.png -->
+<meta property="og:image" content="./assets/icons/duck-512.png">
+<link rel="icon" href="./assets/icons/duck-512.png">
+<link rel="apple-touch-icon" href="./assets/icons/duck-192.png">
 <style>
   @font-face{
     font-family:'JinlingSong';
@@ -14,10 +22,39 @@
   html,body{margin:0;padding:0;background:#0d0a14;height:100%;overflow:hidden}
   #wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
   canvas{display:block;touch-action:none;cursor:pointer;box-shadow:0 0 60px rgba(0,0,0,.6)}
+  /* 竖屏引导层:触屏设备纵向拿手机时全屏提示旋转 */
+  #rotate{position:fixed;inset:0;z-index:99;display:none;flex-direction:column;align-items:center;justify-content:center;
+    background:#0d0a14;color:#f6f1e7;font-family:"Microsoft YaHei","PingFang SC",sans-serif;gap:22px}
+  #rotate .phone{width:56px;height:96px;border:3px solid #f0b64c;border-radius:10px;position:relative;animation:rot 1.6s ease-in-out infinite}
+  #rotate .phone::after{content:'';position:absolute;left:50%;top:50%;width:3px;height:26px;background:#f0b64c;transform:translate(-50%,-50%)}
+  @keyframes rot{0%,100%{transform:rotate(0)}40%{transform:rotate(90deg)}60%{transform:rotate(90deg)}}
+  #rotate .t1{font-size:24px;font-weight:bold;letter-spacing:2px}
+  #rotate .t2{font-size:14px;color:rgba(246,241,231,0.55)}
+  /* 分享遮罩:微信/老 iOS 内把成绩卡渲染成 img,提示长按保存;附复制链接按钮 */
+  #shareLayer{position:fixed;inset:0;z-index:98;background:rgba(10,8,16,0.93);display:none;
+    flex-direction:column;align-items:center;justify-content:center;gap:12px;overflow-y:auto;
+    padding:16px;box-sizing:border-box;
+    font-family:"Microsoft YaHei","PingFang SC",sans-serif}
+  #shareLayer .card{height:min(56vh,340px);width:auto;border-radius:8px;box-shadow:0 10px 40px rgba(0,0,0,.6)}
+  #shareLayer .tip{color:rgba(246,241,231,0.75);font-size:14px;margin:0}
+  #shareLayer button{background:#d85c47;color:#f7f2e6;border:none;border-radius:22px;
+    padding:11px 40px;font-size:16px;cursor:pointer;flex-shrink:0}
+  #shareLayer .ghost{background:transparent;border:1.5px solid rgba(246,241,231,0.35);color:rgba(246,241,231,0.8)}
+  #shareToast{position:fixed;left:50%;bottom:12vh;transform:translateX(-50%);z-index:99;
+    background:#f0b64c;color:#1a1424;padding:10px 18px;border-radius:20px;font-size:14px;
+    opacity:0;transition:opacity .3s;pointer-events:none;max-width:80vw}
 </style>
 </head>
 <body>
 <div id="wrap"><canvas id="cv" width="960" height="540"></canvas></div>
+<div id="rotate"><div class="phone"></div><div class="t1">横过来,跑起来更爽</div><div class="t2">游戏是横向的,把手机转一下</div></div>
+<div id="shareLayer">
+  <img class="card" alt="金陵快跑成绩卡">
+  <div class="tip">长按图片保存 / 发送给好友</div>
+  <button id="copyBtn">复制链接发给朋友</button>
+  <button class="ghost" id="closeShare">关 闭</button>
+</div>
+<div id="shareToast"></div>
 <script type="module" src="./src/main.js"></script>
 </body>
 </html>

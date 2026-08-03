@@ -2,10 +2,23 @@ import { ctx, W, H, CX, fit, rnd } from './core.js';
 import { G, startRun, update } from './game.js';
 import { render } from './render.js';
 import { loadAll } from './art/photo.js';
+import { bgmStop } from './audio.js';
 import { drawHUD, drawMenu, drawLevels, drawOver, drawClear, drawAlbum } from './ui.js';
+import { track } from './track.js';
 import './input.js';
 
 addEventListener('resize', fit); fit();
+
+/* 竖屏引导层:触屏设备纵向持机时全屏提示旋转(横屏手机与桌面不受影响) */
+function checkRotate(){
+  const el = document.getElementById('rotate');
+  if(!el) return;
+  const portrait = ('ontouchstart' in window) && innerHeight > innerWidth;
+  el.style.display = portrait ? 'flex' : 'none';
+}
+addEventListener('resize', checkRotate);
+addEventListener('orientationchange', checkRotate);
+checkRotate();
 
 /* ================= 主循环 ================= */
 let lastT = 0, prevState = G.state;
@@ -26,8 +39,11 @@ function frame(ts){
   else if(G.state==='over') drawOver();
   else if(G.state==='clear') drawClear();
   else if(G.state==='album') drawAlbum();
-  // 界面切换:卷轴自左向右揭开
-  if(G.state !== prevState){ prevState = G.state; G.wipe = 0.32; G.kbSel = 0; G.kbActive = false; G.stateT = 0; }
+  // 界面切换:卷轴自左向右揭开;离开游玩状态即停 BGM(菜单/结算不再无限循环)
+  if(G.state !== prevState){
+    if(prevState==='play' && G.state!=='play') bgmStop();
+    prevState = G.state; G.wipe = 0.32; G.kbSel = 0; G.kbActive = false; G.stateT = 0;
+  }
   G.stateT = (G.stateT||0) + raw;
   if(G.wipe > 0){
     G.wipe -= raw;
@@ -51,6 +67,7 @@ function drawLoading(p){
 }
 loadAll(drawLoading).then(() => {
   requestAnimationFrame(frame);
+  track('view');
   // 深链直达:#lv0~#lv4 直接开对应关,#play 直接无尽模式(便于分享/测试)
   if(location.hash==='#play') startRun('endless', 0);
   else if(/^#lv[0-4]$/.test(location.hash)) startRun('adv', +location.hash.slice(3));
