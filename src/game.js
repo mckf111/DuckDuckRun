@@ -35,6 +35,10 @@ export const G = {
 export const pl = { lane:0, x:0, y:0, vy:0, sliding:0, jumps:0 };
 
 export function startRun(mode, lvIdx){
+  if(mode==='adv' && (!LEVELS[lvIdx] || (LEVELS[lvIdx].hidden && !getBridgeUnlockStatus(save).unlocked))){
+    G.state = 'levels';
+    return false;
+  }
   G.mode = mode; G.lvIdx = lvIdx;
   G.dist = 0; G.runMarks = 0; G.runStars = 0; G.newIds = []; G.t = 0;
   G.obs = []; G.cols = []; G.parts = []; G.gates = [];
@@ -59,6 +63,7 @@ export function startRun(mode, lvIdx){
   G.state = 'play';
   bgm(LEVELS[lvIdx].motif);
   track('start', { mode, lv:lvIdx });
+  return true;
 }
 export const curLv = ()=> G.mode==='adv' ? LEVELS[G.lvIdx] : LEVELS[Math.floor(G.dist/600)%LEVELS.length];
 

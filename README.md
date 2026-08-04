@@ -24,7 +24,7 @@ python -m http.server 8000   # 然后浏览器打开 http://localhost:8000
 
 或使用 VS Code 的 Live Server 插件。
 
-深链:`#play` 直接进无尽模式,`#lv0` ~ `#lv9` 直接进对应关卡。
+深链:`#play` 直接进无尽模式,`#lv0` ~ `#lv8` 直接进普通关卡；`#lv9` 仍会校验大桥解锁条件。
 
 ## 部署(传播层)
 

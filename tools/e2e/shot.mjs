@@ -27,6 +27,13 @@ let browser;
 try { browser = await chromium.launch({ channel: 'chrome', headless: true }); }
 catch { browser = await chromium.launch({ channel: 'msedge', headless: true }); }
 const page = await browser.newPage({ viewport: { width: 1000, height: 600 } });
+await page.addInitScript(() => {
+  // 大桥截图使用“旧档已通桥”的合法入口，不绕过正式解锁规则。
+  if(location.hash==='#lv9'){
+    const cleared=Array(10).fill(false); cleared[9]=true;
+    localStorage.setItem('jinling_run_v1',JSON.stringify({cleared,stars:Array(10).fill(0)}));
+  }
+});
 
 const errors = [];
 page.on('pageerror', e => errors.push('pageerror: ' + e.message));

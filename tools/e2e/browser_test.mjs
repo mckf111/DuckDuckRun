@@ -119,6 +119,8 @@ try{
     const ledger=await page.evaluate(async()=>{
       const game=await import('/src/game.js');
       const saves=await import('/src/save.js');
+      saves.save.cleared.fill(false); saves.save.stars.fill(0); saves.save.album={};
+      const lockedBridgeRejected=game.startRun('adv',9)===false && game.G.state==='levels';
       game.startRun('adv',0);
       game.G.nextSpawn=Infinity; game.G.nextGate=Infinity; game.G.nextPower=Infinity;
       game.G.obs=[]; game.G.cols=[{x:0,z:0.2,y:0.8,id:'duck',got:false,arc:1,arcN:1}];
@@ -128,8 +130,9 @@ try{
       delete saves.save.album.jiangtun;
       game.G.lvIdx=9; game.G.mode='adv'; game.G.state='play'; game.G.dist=900; game.G.runMarks=0; game.G.newIds=[];
       game.levelClear();
-      return {pickup,jiangtun:!!saves.save.album.jiangtun,newIds:game.G.newIds.slice(),red:!!saves.save.albumNew};
+      return {lockedBridgeRejected,pickup,jiangtun:!!saves.save.album.jiangtun,newIds:game.G.newIds.slice(),red:!!saves.save.albumNew};
     });
+    assert.equal(ledger.lockedBridgeRejected,true);
     assert.deepEqual(ledger.pickup,{marks:1,stars:0,coins:2});
     assert.equal(ledger.jiangtun,true);
     assert.ok(ledger.newIds.includes('jiangtun'));
