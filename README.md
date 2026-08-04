@@ -30,14 +30,9 @@ python -m http.server 8000   # 然后浏览器打开 http://localhost:8000
 
 零构建项目,静态托管直接可用。国内访问速度:境外托管(GitHub Pages 等)不稳,有传播苗头后建议走「ICP 备案 + 国内 CDN」。
 
-```bash
-# GitHub Pages 示例(零构建,直接推)
-git init && git add . && git commit -m "init"
-git remote add origin https://github.com/<你>/<仓库>.git
-git push -u origin main    # 仓库 Settings → Pages → Source 选 main 根目录
-```
+实施分支的技术预览由 GitHub Actions 在全部测试通过后发布：<https://mckf111.github.io/DuckDuckRun/>。该地址只用于测试，不代表正式机构托管方案。
 
-部署后把 `index.html` 的 `og:image` 换成绝对 URL。埋点见 `src/track.js` 顶部 `TRACK_URL`(留空 = 不上报;可用 Cloudflare Web Analytics 补 PV/UV)。
+埋点见 `src/track.js` 顶部 `TRACK_URL`(留空 = 不上报;可用 Cloudflare Web Analytics 补 PV/UV)。
 
 分享链路:结算页「分享成绩」→ 非微信走系统分享/下载;**微信内自动弹全屏遮罩,长按图片保存 + 复制链接**;成绩卡右下角印二维码与回游链接(自研零依赖 QR 生成器 `src/qr.js`,已与 qrcode 参考实现逐模块对拍验证)。
 

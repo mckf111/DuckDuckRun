@@ -5,6 +5,13 @@ on:
     branches: [codex/trusted-experience]
   pull_request:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -20,3 +27,30 @@ jobs:
       - run: npm run test:save
       - run: npm run test:resources
       - run: npm run test:browser
+
+  preview:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/codex/trusted-experience'
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/configure-pages@v5
+      - name: Prepare static preview
+        run: |
+          mkdir _site
+          cp index.html _site/
+          cp -r src assets _site/
+          touch _site/.nojekyll
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+      - name: Deploy implementation preview
+        id: deployment
+        uses: actions/deploy-pages@v4
