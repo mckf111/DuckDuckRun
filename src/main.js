@@ -1,7 +1,8 @@
-import { ctx, W, H, CX, fit, rnd } from './core.js';
-import { G, startRun, update } from './game.js';
+import { ctx, W, H, fit, rnd, downgradeQuality } from './core.js';
+import { G, startRun, update, curLv } from './game.js';
+import { LEVELS, LM_CYCLE } from './config.js';
 import { render } from './render.js';
-import { loadAll } from './art/photo.js';
+import { loadMenuBackground, loadBackground, prefetchBackground } from './art/photo.js';
 import { bgmStop } from './audio.js';
 import { drawHUD, drawMenu, drawLevels, drawOver, drawClear, drawAlbum, drawShop } from './ui.js';
 import { track } from './track.js';
@@ -22,12 +23,40 @@ checkRotate();
 
 /* ================= 主循环 ================= */
 let lastT = 0, prevState = G.state;
+let perfStart = 0, perfFrames = 0, perfPrev = 0, assetKey = '';
+function syncAssets(){
+  if(G.state!=='play' && G.state!=='over' && G.state!=='clear'){
+    loadMenuBackground();
+    return;
+  }
+  const endlessIndex = Math.floor(G.dist/600)%LM_CYCLE.length;
+  const id = G.mode==='endless' ? LM_CYCLE[endlessIndex] : curLv().landmark;
+  if(id === assetKey) return;
+  assetKey = id;
+  loadBackground(id);
+  const next = G.mode==='endless'
+    ? LM_CYCLE[(endlessIndex+1)%LM_CYCLE.length]
+    : LEVELS[Math.min(G.lvIdx+1, LEVELS.length-1)].landmark;
+  if(next !== id) prefetchBackground(next);
+}
+function monitorFrameBudget(ts){
+  if(perfPrev && ts-perfPrev > 250){ perfStart=ts; perfFrames=0; }
+  perfPrev = ts;
+  if(!perfStart) perfStart = ts;
+  perfFrames++;
+  if(ts-perfStart < 3000) return;
+  const averageFrameMs = (ts-perfStart)/Math.max(1, perfFrames-1);
+  if(averageFrameMs > 33) downgradeQuality();
+  perfStart = ts; perfFrames = 0;
+}
 function frame(ts){
+  monitorFrameBudget(ts);
   const raw = Math.min(0.05, (ts-lastT)/1000 || 0.016); lastT = ts;
   // 撞车慢动作:0.3 倍速 0.22 秒
   let dt = raw;
   if(G.slowmo > 0){ dt = raw*0.3; G.slowmo -= raw; }
   update(dt);
+  syncAssets();
   G.buttons = [];
   ctx.save();
   if(G.shake>0) ctx.translate(rnd(-1,1)*G.shake*8, rnd(-1,1)*G.shake*8);
@@ -54,22 +83,10 @@ function frame(ts){
   }
   requestAnimationFrame(frame);
 }
-/* 照片预加载:完成后再进主循环(缺图不阻塞,对应元素走代码插画回退) */
-function drawLoading(p){
-  ctx.fillStyle = '#0d0a14'; ctx.fillRect(0,0,W,H);
-  ctx.fillStyle = '#f4f1e8'; ctx.font = '44px "JinlingBrush","KaiTi","Microsoft YaHei",serif';
-  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillText('金陵快跑', CX, H*0.38);
-  ctx.fillStyle = 'rgba(247,234,208,0.25)'; ctx.fillRect(CX-140, H*0.52, 280, 6);
-  ctx.fillStyle = '#f0b64c'; ctx.fillRect(CX-140, H*0.52, 280*p, 6);
-  ctx.font = '15px "Microsoft YaHei","PingFang SC",sans-serif';
-  ctx.fillStyle = '#f0b64c';
-  ctx.fillText('照片冲洗中…', CX, H*0.6);
-}
-loadAll(drawLoading).then(() => {
-  requestAnimationFrame(frame);
-  track('view');
-  // 深链直达:#lv0~#lv9 直接开对应关,#play 直接无尽模式(便于分享/测试)
-  if(location.hash==='#play') startRun('endless', 0);
-  else if(/^#lv\d$/.test(location.hash)) startRun('adv', +location.hash.slice(3));
-});
+
+// HTML 与模块就绪即开循环；照片只负责渐入，失败或挂起不再挡住菜单。
+requestAnimationFrame(frame);
+track('view');
+loadMenuBackground();
+if(location.hash==='#play') startRun('endless', 0);
+else if(/^#lv\d$/.test(location.hash)) startRun('adv', +location.hash.slice(3));

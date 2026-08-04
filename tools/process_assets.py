@@ -134,6 +134,9 @@ def main():
             q = 85
         dest = OUT / f"{key}.jpg"
         im.save(dest, "JPEG", quality=q, optimize=True)
+        if key.startswith("bg_"):
+            # 运行时优先 WebP，失败再回退同名 JPEG。
+            im.save(OUT / f"{key}.webp", "WEBP", quality=78, method=6)
         kb = dest.stat().st_size // 1024
         print(f"{dest.name}  {im.size[0]}x{im.size[1]}  {kb}KB")
         c = next((c for c in credits if c["file"] == src.name), None)

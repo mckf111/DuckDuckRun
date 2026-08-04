@@ -5,13 +5,32 @@ export const W = 960, H = 540, CX = W / 2, HOR = H * 0.40;   // 逻辑分辨率�
 export const CAMF = 300, CAMH = 2.3, ZP = 3, DRAWD = 72;      // 透视参数:焦距/相机高/玩家z/绘制距离
 export const LANEGAP = 1.25, ROAD_HALF = 2.0;
 
+const QUALITY_LEVELS = [
+  { name:'high', dpr:2 },
+  { name:'medium', dpr:1.5 },
+  { name:'low', dpr:1 },
+];
+let qualityIndex = 0;
+
+export function getQuality(){ return QUALITY_LEVELS[qualityIndex]; }
+export function downgradeQuality(){
+  if(qualityIndex >= QUALITY_LEVELS.length-1) return false;
+  qualityIndex++;
+  fit();
+  return true;
+}
+
 export function fit(){
-  const dpr = Math.min(3, window.devicePixelRatio || 1);
+  const cap = getQuality().dpr;
+  const dpr = Math.min(cap, Math.max(1, window.devicePixelRatio || 1));
   const s = Math.min(innerWidth / W, innerHeight / H);
-  cv.style.width = (W * s) + 'px'; cv.style.height = (H * s) + 'px';
-  // DPR 适配:高分屏/手机上按物理像素渲染,逻辑坐标不变
-  cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const cssW = W * s, cssH = H * s;
+  cv.style.width = cssW + 'px'; cv.style.height = cssH + 'px';
+  // 背板 = CSS 显示尺寸 × cappedDPR，逻辑坐标仍为 960×540。
+  cv.width = Math.max(1, Math.round(cssW * dpr));
+  cv.height = Math.max(1, Math.round(cssH * dpr));
+  ctx.setTransform(cv.width / W, 0, 0, cv.height / H, 0, 0);
+  if(cv.dataset) cv.dataset.quality = getQuality().name;
 }
 
 // 透视投影:世界(车道x, 高度y, 相对深度z) -> 屏幕

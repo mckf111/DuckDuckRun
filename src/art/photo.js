@@ -1,45 +1,70 @@
 import { ctx, W, H, HOR, clamp } from '../core.js';
+import { ITEMS } from '../config.js';
 import { drawItemIcon } from './items.js';
 
 /* ================= 实景照片:加载 / 远景 / 拍立得风物卡 ================= */
 // 命名约定:背景 assets/img/bg_<landmarkId>.jpg;风物 assets/img/it_<itemId>.jpg
 // landmarkId 与 config.js 的 LEVELS.landmark / LM_CYCLE 一致;itemId 与 ITEMS.id 一致。
-const BG_IDS = ['menu', 'zhonghua', 'jiming', 'sunyard', 'zhaobi', 'observatory', 'bridge', 'yihe', 'mendong', 'qixia', 'baoen'];
-const IT_IDS = ['duck', 'fans', 'taro', 'plum', 'stone', 'tea',
-                'pot', 'bean', 'cloud', 'gold', 'leaf', 'lamp',
-                'cake', 'root', 'egg', 'elephant', 'sakura', 'book'];   // 18 件全实图
 const IMGS = {};
+const LOADS = {};
+const READY_AT = {};
+const PHOTO_ITEMS = new Set(ITEMS.filter(item => item.photo).map(item => item.id));
 
-/* 预加载背景照片;onProgress(0~1)。缺图不阻塞:hasPhoto 返回 false,走代码插画回退。
-   风物照片 it_* 不再随开局加载(懒加载,见 loadItemPhoto)。 */
-export function loadAll(onProgress){
-  const jobs = [];
-  for(const id of BG_IDS) jobs.push(['bg_' + id, 'assets/img/bg_' + id + '.jpg']);
-  let done = 0;
-  return Promise.all(jobs.map(([key, url]) => new Promise(res => {
+function now(){ return typeof performance !== 'undefined' ? performance.now() : Date.now(); }
+
+function tryImage(url, timeoutMs){
+  return new Promise(resolve => {
     const img = new Image();
     let settled = false;
-    const fin = () => { if(settled) return; settled = true; done++; onProgress && onProgress(done / jobs.length); res(); };
-    img.onload = fin; img.onerror = fin;
-    setTimeout(fin, 8000);   // 弱网挂起兜底:超时放弃该图,走插画回退
+    const finish = value => {
+      if(settled) return;
+      settled = true;
+      clearTimeout(timer);
+      img.onload = img.onerror = null;
+      resolve(value);
+    };
+    const timer = setTimeout(() => finish(null), timeoutMs);
+    img.onload = async () => {
+      try{ if(img.decode) await img.decode(); }catch(e){ finish(null); return; }
+      finish(img.naturalWidth > 0 ? img : null);
+    };
+    img.onerror = () => finish(null);
     img.src = url;
-    IMGS[key] = img;
-  })));
+  });
+}
+
+function loadWithFallback(key, urls){
+  if(hasPhoto(key)) return Promise.resolve(IMGS[key]);
+  if(LOADS[key]) return LOADS[key];
+  LOADS[key] = (async () => {
+    for(const url of urls){
+      const img = await tryImage(url, 3500);
+      if(img){ IMGS[key] = img; READY_AT[key] = now(); return img; }
+    }
+    return null;
+  })();
+  return LOADS[key];
+}
+
+export function loadBackground(id){
+  return loadWithFallback('bg_' + id, [
+    'assets/img/bg_' + id + '.webp',
+    'assets/img/bg_' + id + '.jpg',
+  ]);
+}
+export function loadMenuBackground(){ return loadBackground('menu'); }
+export function prefetchBackground(id){
+  const run = () => loadBackground(id);
+  if(typeof requestIdleCallback === 'function') requestIdleCallback(run, { timeout:1800 });
+  else setTimeout(run, 120);
 }
 
 /* 图鉴风物照片懒加载:首次进图鉴页时调用,逐张异步;已加载/加载中不重复。
    未加载完或缺图不阻塞 UI——放大层只在 hasPhoto 时显示「实景对照」。 */
 export function loadItemPhoto(id){
   const key = 'it_' + id;
-  if(IMGS[key]) return Promise.resolve(IMGS[key]);
-  return new Promise(res => {
-    const img = new Image();
-    const fin = () => res(img);
-    img.onload = fin; img.onerror = fin;
-    setTimeout(fin, 8000);
-    img.src = 'assets/img/it_' + id + '.jpg';
-    IMGS[key] = img;
-  });
+  if(!PHOTO_ITEMS.has(id)) return Promise.resolve(null);
+  return loadWithFallback(key, ['assets/img/it_' + id + '.jpg']);
 }
 export function loadItemPhotos(ids){
   return Promise.all(ids.map(loadItemPhoto));
@@ -85,11 +110,20 @@ export function drawBackdrop(id, lv, dist, mix){
 /* 菜单/选关/图鉴底图:南京眼蓝调时刻,cover 铺满;底部压入黛蓝,界面元素坐得稳。
    缺图返回 false,render 回退旧场景。 */
 export function drawMenuBg(){
+  // 照片尚未就绪时先给可用的代码背景，菜单从第一帧即可操作。
+  const fallback = ctx.createLinearGradient(0, 0, 0, H);
+  fallback.addColorStop(0, '#16263d'); fallback.addColorStop(0.62, '#284866'); fallback.addColorStop(1, '#121a2b');
+  ctx.fillStyle = fallback; ctx.fillRect(0, 0, W, H);
+  ctx.strokeStyle = 'rgba(127,184,240,0.26)'; ctx.lineWidth = 5;
+  ctx.beginPath(); ctx.moveTo(W*0.08,H*0.63); ctx.quadraticCurveTo(W*0.5,H*0.44,W*0.92,H*0.63); ctx.stroke();
+  ctx.fillStyle = 'rgba(232,193,112,0.72)'; ctx.beginPath(); ctx.arc(W*0.78,H*0.17,30,0,Math.PI*2); ctx.fill();
   const key = 'bg_menu';
-  if(!hasPhoto(key)) return false;
+  if(!hasPhoto(key)) return true;
   const img = IMGS[key];
   const s = Math.max(W / img.naturalWidth, H / img.naturalHeight);
   const dw = img.naturalWidth * s, dh = img.naturalHeight * s;
+  ctx.save();
+  ctx.globalAlpha = clamp((now() - READY_AT[key]) / 420, 0, 1);
   ctx.drawImage(img, (W - dw) / 2, (H - dh) / 2, dw, dh);
   const g = ctx.createLinearGradient(0, H * 0.5, 0, H);
   g.addColorStop(0, 'rgba(27,42,68,0)');
@@ -101,6 +135,7 @@ export function drawMenuBg(){
   g2.addColorStop(1, 'rgba(13,10,20,0)');
   ctx.fillStyle = g2;
   ctx.fillRect(0, 0, W, H * 0.3);
+  ctx.restore();
   return true;
 }
 
