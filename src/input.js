@@ -1,6 +1,6 @@
 import { cv, W, H } from './core.js';
-import { save, persist } from './save.js';
-import { ac } from './audio.js';
+import { save, persist, flushSave } from './save.js';
+import { ac, suspendAudio } from './audio.js';
 import { G, onLeft, onRight, onJump, onSlide, onPauseKey, onEnter } from './game.js';
 import { clickAt, kbNav, kbEnter } from './ui.js';
 
@@ -38,9 +38,11 @@ cv.addEventListener('pointerdown', e=>{
   if(!e.isPrimary) return;   // M1:双指操作只认第一根手指,杜绝幽灵滑动
   ac();
   if(G.state==='album' && !G.albumZoom){   // 图鉴:拖拽滚动(不按按钮)
+    tStart = null;
     dragScroll = { y:e.clientY, scroll:G.albumScroll, moved:false };
     return;
   }
+  dragScroll = null;
   tStart = {x:e.clientX, y:e.clientY};
   // 记录按下的按钮(按压反馈)
   const r = cv.getBoundingClientRect();
@@ -85,5 +87,14 @@ function endPointer(e){
 cv.addEventListener('pointerup', endPointer);
 // M2:鼠标在画布外松手会丢 pointerup,window 级兜底,避免 G.pressed 卡死与陈旧起点幽灵滑动
 addEventListener('pointerup', e=>{ if(e.target !== cv) endPointer(e); });
-addEventListener('pointercancel', ()=>{ G.pressed = null; tStart = null; });
-document.addEventListener('visibilitychange', ()=>{ if(document.hidden && G.state==='play') G.paused=true; });
+function cancelPointer(){ G.pressed = null; tStart = null; dragScroll = null; }
+function pauseForBackground(){
+  cancelPointer();
+  if(G.state==='play') G.paused = true;
+  flushSave();
+  suspendAudio();
+}
+addEventListener('pointercancel', cancelPointer);
+document.addEventListener('visibilitychange', ()=>{ if(document.hidden) pauseForBackground(); });
+addEventListener('blur', pauseForBackground);
+addEventListener('pagehide', pauseForBackground);

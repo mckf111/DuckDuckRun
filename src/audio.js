@@ -7,6 +7,9 @@ export function ac(){
   if(AC && AC.state === 'suspended') AC.resume().catch(()=>{});
   return AC;
 }
+export function suspendAudio(){
+  if(AC && AC.state==='running') AC.suspend().catch(()=>{});
+}
 export function tone(f0, f1, dur, type, vol, delay){
   if(save.muted) return; const a = ac(); if(!a || a.state!=='running') return; // suspended 时不排队,避免解锁瞬间连发爆音
   const t0 = a.currentTime + (delay||0);

@@ -336,7 +336,7 @@ export function drawClear(){
     if(!next.hidden || bridgeStatus.unlocked) button('next','下一关:'+next.name+' (Enter)', CX, H*0.66, 300, 52);
     else text('前九关通关 + 15 星 + 28/34 普通风物,解锁「'+next.name+'」', CX, H*0.66, 15, '#f7ead0');
   } else if(G.lvIdx===LEVELS.length-1) text('你已跑过长江大桥!金陵再也没墙拦得住鸭鸭', CX, H*0.66, 18, '#f7ead0');
-  else text('你已跑遍金陵五景!图鉴还在继续等你集齐', CX, H*0.66, 18, '#f7ead0');
+  else text('你已跑遍金陵十景!图鉴还在继续等你集齐', CX, H*0.66, 18, '#f7ead0');
   button('share','分享成绩', CX-115, H*0.76, 210, 52, {ghost:true});
   button('copy','复制链接', CX+115, H*0.76, 210, 52, {ghost:true});
   button('quit','回主菜单', CX, H*0.86, 240, 52, {ghost:true});
@@ -447,7 +447,7 @@ export function handleButton(id, data){
     }
   }
   else if(id==='album'){ G.albumFrom='menu'; G.albumZoom=null; G.state='album';
-    loadItemPhotos(ITEMS.map(i=>i.id));   // 懒加载实景对照照片,不阻塞进页
+    loadItemPhotos(ITEMS.filter(i=>i.photo).map(i=>i.id));   // 只请求 config 标记的 18 张实景照片
     if(save.albumNew){ save.albumNew=false; persist(); }   // 隐藏件红点看完即清
   }
   else if(id==='item') G.albumZoom = data;
