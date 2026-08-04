@@ -88,6 +88,46 @@ export function drawObstacle(ob, lv){
         const a = i * TAU / 8;
         disc(x + Math.cos(a) * r * 0.82, y - 0.12 * s - r * 0.85 + Math.sin(a) * r * 0.82, r * 0.06, '#c2b096');
       }
+    } else if(m === 'plane'){    // 矮花坛:黄砖围栏 + 顶上一排花
+      rectO(x - 0.55 * s, y - 0.3 * s, 1.1 * s, 0.3 * s, '#c9a868');
+      rect(x - 0.55 * s, y - 0.3 * s, 1.1 * s, 0.07 * s, '#e0c88a');
+      for(let i = 0; i < 5; i++){
+        ctx.fillStyle = i % 2 ? '#d98ba0' : '#e8d8b0';
+        ctx.beginPath(); ctx.arc(x - 0.42 * s + i * 0.21 * s, y - 0.34 * s, 0.05 * s, 0, TAU); ctx.fill();
+      }
+      line(x - 0.5 * s, y - 0.22 * s, x + 0.5 * s, y - 0.22 * s, '#8a6a3a', Math.max(1, s * 0.015));
+    } else if(m === 'street'){   // 青石墩:矮方石(粉巷里的灰石)
+      rectO(x - 0.5 * s, y - 0.38 * s, 1.0 * s, 0.38 * s, '#8a8578');
+      rect(x - 0.5 * s, y - 0.38 * s, 0.28 * s, 0.38 * s, '#a09a8a');
+      disc(x, y - 0.38 * s, 0.12 * s, '#6a655a');                     // 顶部圆角
+    } else if(m === 'maple'){    // 枫木桩:断桩 + 红菇
+      rectO(x - 0.24 * s, y - 0.5 * s, 0.48 * s, 0.5 * s, '#5f3a28');
+      ctx.fillStyle = '#e8d8b0';                                       // 断口
+      ctx.beginPath(); ctx.ellipse(x, y - 0.5 * s, 0.24 * s, 0.08 * s, 0, 0, TAU); ctx.fill();
+      disc(x - 0.26 * s, y - 0.24 * s, 0.1 * s, '#e0783a');
+      disc(x + 0.22 * s, y - 0.18 * s, 0.08 * s, '#d0682a');
+    } else if(m === 'pagoda'){   // 琉璃香炉:金脚圆炉 + 微光
+      const g = ctx.createRadialGradient(x, y - 0.5 * s, 0, x, y - 0.5 * s, 0.9 * s);
+      g.addColorStop(0, 'rgba(232,193,112,0.25)'); g.addColorStop(1, 'rgba(232,193,112,0)');
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y - 0.5 * s, 0.9 * s, 0, TAU); ctx.fill();
+      rectO(x - 0.2 * s, y - 0.34 * s, 0.4 * s, 0.34 * s, '#c9c2b0');  // 炉身
+      rectO(x - 0.28 * s, y - 0.4 * s, 0.56 * s, 0.1 * s, '#e8c170');  // 炉口
+      rectO(x - 0.34 * s, y - 0.06 * s, 0.68 * s, 0.06 * s, '#b8934a'); // 炉脚
+      rect(x - 0.28 * s, y - 0.4 * s, 0.56 * s, 0.05 * s, '#f5dd9a');
+    } else if(m === 'bridge'){   // 检修路障:黄黑斜纹警示板 + 两支脚,全场最亮
+      const bw = 1.1 * s, bh = 0.5 * s;
+      ctx.fillStyle = '#f0c040';                                       // 警示板
+      ctx.fillRect(x - bw / 2, y - bh, bw, bh);
+      ctx.strokeStyle = '#2a2a30'; ctx.lineWidth = Math.max(1.5, s * 0.035);
+      for(let k = -3; k <= 3; k++){                                    // 斜纹
+        ctx.beginPath(); ctx.moveTo(x - bw / 2 + k * bh * 0.42, y);
+        ctx.lineTo(x - bw / 2 + (k + 1) * bh * 0.42, y - bh); ctx.stroke();
+      }
+      ctx.strokeRect(x - bw / 2, y - bh, bw, bh);
+      rect(x - bw / 2, y - bh, bw, bh * 0.14, '#ffe08a');              // 受光沿
+      rectO(x - bw / 2 - 0.06 * s, y - bh - 0.05 * s, bw + 0.12 * s, 0.07 * s, '#2a2a30'); // 顶杆
+      line(x - bw * 0.32, y - 0.06 * s, x - bw * 0.18, y, '#2a2a30', Math.max(2, s * 0.05)); // 支脚
+      line(x + bw * 0.32, y - 0.06 * s, x + bw * 0.18, y, '#2a2a30', Math.max(2, s * 0.05));
     } else {                     // 路锥 + 落枝
       const h = 0.72 * s;
       poly([[x, y - h], [x - 0.26 * s, y], [x + 0.26 * s, y]], '#e07830', OUT, Math.max(1, s * 0.025));  // 锥体
@@ -133,6 +173,52 @@ export function drawObstacle(ob, lv){
         poly([[bx, y - top - 0.06 * s], [bx - 0.3 * s, y - top + 0.34 * s], [bx + 0.3 * s, y - top + 0.34 * s]], '#2f5a48', OUT, Math.max(1, s * 0.02));
         poly([[bx, y - top + 0.1 * s], [bx - 0.36 * s, y - top + 0.55 * s], [bx + 0.36 * s, y - top + 0.55 * s]], '#3a6b56', OUT, Math.max(1, s * 0.02));
       }
+    } else if(m === 'plane'){    // 电线杆横档:两黑杆 + 横线 + 吊灯
+      rectO(x - w / 2, y - top, w * 0.06, top, '#3a3a42');
+      rectO(x + w / 2 - w * 0.06, y - top, w * 0.06, top, '#3a3a42');
+      line(x - w / 2, y - top + 0.08 * s, x + w / 2, y - top + 0.08 * s, '#4a4a52', Math.max(1.5, s * 0.025));
+      for(const k of [-0.25, 0.25]){
+        const hx = x + k * w;
+        line(hx, y - top + 0.08 * s, hx, y - top + 0.34 * s, '#5a5a62', Math.max(1, s * 0.015)); // 吊线
+        disc(hx, y - top + 0.42 * s, 0.07 * s, '#f0d890', OUT, Math.max(1, s * 0.015));          // 灯泡
+      }
+    } else if(m === 'street'){   // 幌子横杆:木杆 + 米布幌
+      rectO(x - w / 2, y - top, w * 0.07, top, '#4a3a2c');
+      rectO(x + w / 2 - w * 0.07, y - top, w * 0.07, top, '#4a3a2c');
+      line(x - w / 2, y - top + 0.1 * s, x + w / 2, y - top + 0.1 * s, '#6a4a34', Math.max(2, s * 0.04));
+      rectO(x - w * 0.3, y - top + 0.1 * s, w * 0.6, 0.5 * s, '#e8d8b0');  // 布幌
+      rect(x - w * 0.22, y - top + 0.2 * s, w * 0.44, 0.12 * s, '#a83a2e'); // 红字
+      rect(x - w * 0.22, y - top + 0.38 * s, w * 0.3, 0.08 * s, '#a83a2e');
+    } else if(m === 'maple'){    // 枫枝横架:两石柱 + 红枫枝
+      rectO(x - w / 2, y - top, w * 0.08, top, '#5a3528');
+      rectO(x + w / 2 - w * 0.08, y - top, w * 0.08, top, '#5a3528');
+      line(x - w / 2, y - top + 0.1 * s, x + w / 2, y - top + 0.1 * s, '#4a2a1c', Math.max(2, s * 0.05));
+      for(let i = 0; i < 7; i++){
+        const hx = x - w / 2 + (i / 6) * w;
+        disc(hx, y - top - 0.02 * s, 0.14 * s, i % 2 ? '#e0783a' : '#d0682a', OUT, Math.max(1, s * 0.015));
+      }
+    } else if(m === 'pagoda'){   // 金檐横梁:两琉璃柱 + 金檐
+      rectO(x - w / 2, y - top, w * 0.08, top, '#c9c2b0');
+      rectO(x + w / 2 - w * 0.08, y - top, w * 0.08, top, '#c9c2b0');
+      poly([[x - w * 0.62, y - top], [x - w * 0.34, y - top - 0.26 * s], [x + w * 0.34, y - top - 0.26 * s], [x + w * 0.62, y - top]], '#e8c170', '#b8934a', Math.max(1, s * 0.02));
+      const g = ctx.createRadialGradient(x, y - top - 0.2 * s, 0, x, y - top - 0.2 * s, w);
+      g.addColorStop(0, 'rgba(232,193,112,0.3)'); g.addColorStop(1, 'rgba(232,193,112,0)');
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y - top - 0.2 * s, w, 0, TAU); ctx.fill();
+    } else if(m === 'bridge'){   // 开放钢桁架:上弦 + 斜腹杆镂空(不挡后方视野)
+      const steel = '#5a6a8a', steelD = '#2a3a5c';
+      rectO(x - w / 2, y - top, w * 0.07, top, steelD);               // 端柱
+      rectO(x + w / 2 - w * 0.07, y - top, w * 0.07, top, steelD);
+      rectO(x - w / 2 - w * 0.04, y - top, w * 1.08, 0.16 * s, steel); // 上弦横杆
+      rect(x - w / 2 - w * 0.04, y - top, w * 1.08, 0.05 * s, '#8a9ab8');
+      for(let k = -4; k <= 4; k++){                                    // 斜腹杆(镂空:只画杆,空档透明)
+        const t1 = (k + 5) / 9, t2 = (k + 5 + 0.5) / 9;
+        line(x - w / 2 + t1 * w, y - top + 0.16 * s, x - w / 2 + t2 * w, y - bot + 0.1 * s, steel, Math.max(1.5, s * 0.03));
+        line(x - w / 2 + t2 * w, y - top + 0.16 * s, x - w / 2 + t1 * w, y - bot + 0.1 * s, steelD, Math.max(1, s * 0.022));
+      }
+      rectO(x - w / 2 - w * 0.02, y - bot + 0.06 * s, w * 1.04, 0.12 * s, steelD); // 下弦
+      disc(x - w * 0.35, y - top + 0.05 * s, 0.05 * s, '#e2483d');     // 端柱红旗标
+      disc(x + w * 0.35, y - top + 0.05 * s, 0.05 * s, '#e2483d');
+      line(x - w * 0.35, y - top + 0.02 * s, x - w * 0.35, y - top + 0.12 * s, '#f0d890', Math.max(1, s * 0.015));
     } else {                     // 山路护栏:金属横栏 + 反光标
       const post = '#5a6278', rail = '#aab2c8', railD = '#3f4556';
       rectO(x - w / 2, y - top + 0.5 * s, w * 0.07, top - 0.5 * s, post);
@@ -180,6 +266,36 @@ export function drawObstacle(ob, lv){
         rect(x + k * w - 0.05 * s, y - h * 0.5, 0.1 * s, 0.12 * s, '#f0b64c');
       }
       lantern(x + w * 0.4, y - h * 0.36, 0.1 * s, true);              // 船头灯
+    } else if(m === 'plane'){    // 梧桐大树:满冠金黄(晨雾天最显眼)
+      tree(x, y, s * 0.95, '#d8a83a', '#c08a2a', '#5a4428');
+    } else if(m === 'street'){   // 门楼:粉墙门面 + 黛瓦檐 + 灯笼
+      rectO(x - w / 2, y - h * 0.78, w, h * 0.78, '#d8a89a');           // 粉墙
+      rect(x - w / 2, y - h * 0.78, w, 0.1 * s, '#f0d0c0');             // 受光
+      poly([[x - w * 0.58, y - h * 0.78], [x - w * 0.42, y - h * 0.95], [x + w * 0.42, y - h * 0.95], [x + w * 0.58, y - h * 0.78]], '#3a3a46', OUT, Math.max(1, s * 0.02)); // 瓦檐
+      ctx.fillStyle = '#6a4a42';                                        // 门洞
+      ctx.fillRect(x - w * 0.2, y - h * 0.45, w * 0.4, h * 0.45);
+      line(x - w / 2, y - h * 0.42, x + w / 2, y - h * 0.42, '#8a5a4a', Math.max(1, s * 0.02));
+      lantern(x + w * 0.36, y - h * 0.5, 0.09 * s, true);
+    } else if(m === 'maple'){    // 红枫大树
+      tree(x, y, s * 0.95, '#e0783a', '#c06028', '#5a3528');
+    } else if(m === 'pagoda'){   // 塔柱:白琉璃柱 + 金檐 + 光晕
+      const g = ctx.createRadialGradient(x, y - h * 0.6, 0, x, y - h * 0.6, h * 0.9);
+      g.addColorStop(0, 'rgba(232,193,112,0.3)'); g.addColorStop(1, 'rgba(232,193,112,0)');
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y - h * 0.6, h * 0.9, 0, TAU); ctx.fill();
+      rectO(x - w * 0.34, y - h * 0.8, w * 0.68, h * 0.8, '#c9c2b0');   // 塔身
+      rect(x - w * 0.34, y - h * 0.8, w * 0.16, h * 0.8, '#e0d8c4');    // 受光棱
+      poly([[x - w * 0.44, y - h * 0.8], [x - w * 0.26, y - h * 0.92], [x + w * 0.26, y - h * 0.92], [x + w * 0.44, y - h * 0.8]], '#e8c170', '#b8934a', Math.max(1, s * 0.02)); // 金檐
+      rectO(x - w * 0.4, y - h * 0.12, w * 0.8, h * 0.12, '#a89f8e');   // 基座
+    } else if(m === 'bridge'){   // 窄桥墩:瘦身 0.6s + 浅灰蓝 + 顶旗 + 灯点
+      const bw = 0.6 * s;                                              // 瘦身后不遮邻道与后方
+      shadow(x, y + 0.03 * s, 0.45 * s);
+      rectO(x - bw / 2, y - h * 0.85, bw, h * 0.85, '#5a6a8a');        // 墩身浅灰蓝
+      rect(x - bw / 2, y - h * 0.85, bw * 0.3, h * 0.85, '#7a8aaa');   // 受光棱
+      rectO(x - bw / 2 - 0.06 * s, y - h * 0.85 - 0.06 * s, bw + 0.12 * s, 0.09 * s, '#2a3a5c'); // 顶帽
+      poly([[x - bw * 0.3, y - h * 0.85 - 0.06 * s], [x, y - h * 0.85 - 0.3 * s], [x + bw * 0.3, y - h * 0.85 - 0.06 * s]], '#e2483d', OUT, Math.max(1, s * 0.015)); // 红旗
+      rect(x - bw / 2, y - h * 0.42, bw, h * 0.08, '#2a3a5c');         // 横缝
+      disc(x, y - h * 0.58, 0.05 * s, '#f0d890');                      // 灯点
+      rectO(x - bw / 2 - 0.08 * s, y - h * 0.1, bw + 0.16 * s, h * 0.1, '#4a5a7a'); // 墩座
     } else {                     // 松树(夜色,提亮 + 月色轮廓光)
       tree(x, y, s * 0.92, '#3a8562', '#2e6a4e', '#4a3c30');
     }

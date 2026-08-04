@@ -12,6 +12,11 @@ const ALL = {
   lv2: [BASE + '#lv2', 3900],
   lv3: [BASE + '#lv3', 3900],
   lv4: [BASE + '#lv4', 3900],
+  lv5: [BASE + '#lv5', 3900],
+  lv6: [BASE + '#lv6', 3900],
+  lv7: [BASE + '#lv7', 3900],
+  lv8: [BASE + '#lv8', 3900],
+  lv9: [BASE + '#lv9', 3900],
   play: [BASE + '#play', 3900],
 };
 const picks = process.argv.slice(2);

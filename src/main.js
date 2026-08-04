@@ -68,7 +68,7 @@ function drawLoading(p){
 loadAll(drawLoading).then(() => {
   requestAnimationFrame(frame);
   track('view');
-  // 深链直达:#lv0~#lv4 直接开对应关,#play 直接无尽模式(便于分享/测试)
+  // 深链直达:#lv0~#lv9 直接开对应关,#play 直接无尽模式(便于分享/测试)
   if(location.hash==='#play') startRun('endless', 0);
-  else if(/^#lv[0-4]$/.test(location.hash)) startRun('adv', +location.hash.slice(3));
+  else if(/^#lv\d$/.test(location.hash)) startRun('adv', +location.hash.slice(3));
 });

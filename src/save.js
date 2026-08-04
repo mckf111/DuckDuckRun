@@ -1,5 +1,5 @@
 /* ================= 存档 ================= */
-import { ITEMS } from './config.js';
+import { ITEMS, LEVELS } from './config.js';
 export const SAVE_KEY = 'jinling_run_v1';
 // F1 致命白屏兜底:存档被写成标量(123/"abc"/true)时 JSON.parse 返回原始值,
 // 严格模式顶层给原始值设属性会抛 TypeError 导致整个游戏白屏。必须挡住非对象。
@@ -11,8 +11,12 @@ export const save = (()=>{
 })();
 // 类型容错:旧版本或手工改坏的数据一律回退默认值
 save.best    = (typeof save.best==='number' && isFinite(save.best) && save.best>0) ? Math.floor(save.best) : 0; // 无尽最高分(米),防 Infinity(L8)
-save.stars   = Array.isArray(save.stars) ? [0,1,2,3,4,5].map(i=>Math.min(3, Math.max(0, save.stars[i]|0))) : [0,0,0,0,0,0]; // 每关星级
-save.cleared = Array.isArray(save.cleared) ? [0,1,2,3,4,5].map(i=>!!save.cleared[i]) : [false,false,false,false,false,false]; // 每关通关标记(解锁用)
+// 关卡数 6→10 迁移:旧 6 关格式中 index5 是隐藏关大桥,新格式大桥在 index9;
+// 旧玩家的桥进度搬过去,index5 新关(颐和路)保持未玩
+const isOld6 = Array.isArray(save.stars) && save.stars.length===6 && Array.isArray(save.cleared) && save.cleared.length===6;
+save.stars   = Array.isArray(save.stars) ? LEVELS.map((_,i)=>Math.min(3, Math.max(0, save.stars[i]|0))) : LEVELS.map(()=>0); // 每关星级
+save.cleared = Array.isArray(save.cleared) ? LEVELS.map((_,i)=>!!save.cleared[i]) : LEVELS.map(()=>false); // 每关通关标记(解锁用)
+if(isOld6){ save.stars[9] = save.stars[5]; save.stars[5] = 0; save.cleared[9] = save.cleared[5]; save.cleared[5] = false; }
 // M3:album 用 ITEMS id 白名单重建,脏数据塞的假键不计入图鉴进度
 { const raw = (save.album && typeof save.album==='object') ? save.album : {};
   save.album = {};

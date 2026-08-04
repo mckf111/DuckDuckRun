@@ -38,7 +38,8 @@ export const sfx = {
 /* ---- BGM:五声音阶江南小调循环,每关换根音,垫底音量 ---- */
 const PENTA = [1, 9/8, 5/4, 3/2, 5/3];
 const PATTERN = [2,1,0,1, 2,3,4,3, 2,1,0,2, 1,0,1,2];
-const ROOTS = { crenel:220, lotus:196, steps:247, lantern:175, pine:208 };
+const ROOTS = { crenel:220, lotus:196, steps:247, lantern:175, pine:208,
+                plane:233, street:262, maple:294, pagoda:330, bridge:349 };
 let bgmTimer = null, bgmRoot = 220, bgmStep = 0;
 export function bgmStop(){ if(bgmTimer){ clearInterval(bgmTimer); bgmTimer = null; } }
 export function bgm(motif){

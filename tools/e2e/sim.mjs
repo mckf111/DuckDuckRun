@@ -1,5 +1,6 @@
 // 逻辑推演:mock 浏览器环境后直接 import 游戏模块,验证可疑 bug
 // 用法: node tools/e2e/sim.mjs
+global.window = { devicePixelRatio: 1, innerWidth: 960, innerHeight: 540 };
 global.document = { getElementById: () => ({ getContext: () => ({}) }) };
 global.localStorage = { _s:{}, getItem(k){ return this._s[k] ?? null; }, setItem(k,v){ this._s[k]=v; } };
 
@@ -118,5 +119,35 @@ for(const seed of [11,22,33,44,55]){
   if(r.survivors===0) deadSeeds.push(seed);
 }
 report('T4 beam search: 5 个种子在最高速段均存在生还路径', deadSeeds.length===0, deadSeeds.length?('团灭种子: '+deadSeeds.join(',')):'耗时 '+((Date.now()-t0)/1000).toFixed(1)+'s');
+
+/* ---- T5: 10 关各 2000m 生成,断言无「三车道全堵」簇(二期 §8 回归) ---- */
+function spawnWorld(lvIdx, meters, seed){
+  Math.random = mulberry32(seed);
+  startRun('adv', lvIdx);
+  G.dist = 0; G.nextSpawn = 40;
+  while(G.nextSpawn < meters){ spawnCluster(G.nextSpawn); G.nextSpawn += rnd(16,24)*(9.5/G.speed)+4; }
+  return G.obs.slice();
+}
+function hasFullBlock(obs, z0, z1, lane){
+  return obs.some(o=>o.type==='full' && o.z >= z0 && o.z <= z1 && o.lane === lane);
+}
+let t5Fails = [];
+for(let lvIdx = 0; lvIdx < 10; lvIdx++){
+  const obs = spawnWorld(lvIdx, 2000, 100 + lvIdx);
+  // 8m 窗口内三道全有 full = 必死簇
+  for(let z0 = 0; z0 < 2000; z0 += 8){
+    if([-1,0,1].every(l=>hasFullBlock(obs, z0, z0+8, l))){
+      t5Fails.push('lv'+lvIdx+' @'+z0+'m 三道全堵'); break;
+    }
+  }
+  // 单簇内免费道破坏检查(逐簇看:簇中心 z 前后 12m 内的 full 覆盖三道)
+  const clusters = [...new Set(obs.map(o=>Math.round(o.z/20)*20))];
+  for(const cz of clusters){
+    if([-1,0,1].every(l=>obs.some(o=>o.type==='full' && Math.abs(o.z-cz)<=6 && o.lane===l))){
+      t5Fails.push('lv'+lvIdx+' 簇@'+cz+'m 三道全堵'); break;
+    }
+  }
+}
+report('T5 十关 2000m: 无三车道全堵簇', t5Fails.length===0, t5Fails.slice(0,3).join(';')||'10 关通过');
 
 console.log('\n== '+pass+' passed, '+fail+' failed ==');

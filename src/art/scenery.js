@@ -59,12 +59,56 @@ export function drawSide(motif, x, y, s, lv, mirror){
     ctx.strokeStyle = '#4a2c3a'; ctx.lineWidth = Math.max(1.5, s*0.03);
     ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x, y-2.4*s); ctx.lineTo(x+m*0.7*s, y-2.4*s); ctx.stroke();
     lantern(x+m*0.55*s, y-2.05*s, 0.3*s);
-  } else {                       // 松树:棕干 + 三层墨绿 + 受光棱
-    ctx.fillStyle = '#3a2f28'; ctx.fillRect(x-0.09*s, y-0.6*s, 0.18*s, 0.6*s);
-    poly([[x,y-2.6*s],[x-0.7*s,y-1.6*s],[x+0.7*s,y-1.6*s]], '#2a5a45');
-    poly([[x,y-2.0*s],[x-0.9*s,y-0.9*s],[x+0.9*s,y-0.9*s]], '#1f4a38');
-    poly([[x,y-1.4*s],[x-1.05*s,y-0.4*s],[x+1.05*s,y-0.4*s]], '#2a5a45');
-    poly([[x-0.08*s,y-2.45*s],[x-0.42*s,y-1.75*s],[x+0.05*s,y-1.8*s]], '#3f6b52');
+  } else if(motif==='plane'){    // 颐和路:黄墙洋房 + 梧桐树
+    ctx.fillStyle = '#c9a868'; ctx.fillRect(x-1.15*s, y-1.5*s, 2.3*s, 1.5*s);      // 黄墙
+    ctx.fillStyle = '#b8985a'; ctx.fillRect(x-1.15*s, y-1.5*s, 2.3*s, 0.12*s);     // 檐口
+    ctx.fillStyle = '#8a6a3a'; ctx.fillRect(x-1.05*s, y-1.42*s, 2.1*s, 0.1*s);
+    for(const k of [-0.6, 0.15, 0.75]){                                             // 拱窗
+      ctx.fillStyle = '#7a5a34';
+      ctx.beginPath(); ctx.moveTo(x+k*s-0.14*s, y-0.2*s); ctx.lineTo(x+k*s-0.14*s, y-1.1*s);
+      ctx.arc(x+k*s, y-1.1*s, 0.14*s, Math.PI, 0); ctx.lineTo(x+k*s+0.14*s, y-0.2*s); ctx.fill();
+    }
+    ctx.fillStyle = '#5a4428'; ctx.fillRect(x-0.08*s, y-2.5*s, 0.16*s, 1.05*s);    // 梧桐干
+    disc(x-0.5*s, y-2.3*s, 0.62*s, '#d8a83a');                                     // 金黄树冠
+    disc(x+0.42*s, y-2.55*s, 0.5*s, '#c9983a');
+    disc(x+0.1*s, y-1.95*s, 0.36*s, '#e0b84a');
+  } else if(motif==='street'){   // 老门东:粉墙黛瓦 + 木幌子
+    ctx.fillStyle = '#d8a89a'; ctx.fillRect(x-1.15*s, y-1.4*s, 2.3*s, 1.4*s);      // 粉墙
+    poly([[x-1.15*s,y-1.4*s],[x-1.05*s,y-1.72*s],[x+1.05*s,y-1.72*s],[x+1.15*s,y-1.4*s]], '#3a3a46', '#2a2a34', Math.max(1, s*0.02)); // 黛瓦檐
+    ctx.fillStyle = '#8a5a4a'; ctx.fillRect(x-1.05*s, y-1.34*s, 2.1*s, 0.06*s);
+    ctx.strokeStyle = '#4a2c3a'; ctx.lineWidth = Math.max(1, s*0.02);              // 幌子杆
+    ctx.beginPath(); ctx.moveTo(x+m*0.55*s, y-1.72*s); ctx.lineTo(x+m*0.55*s, y-1.9*s); ctx.stroke();
+    ctx.fillStyle = '#e8d8b0'; ctx.fillRect(x+m*0.55*s-0.2*s, y-2.14*s, 0.4*s, 0.28*s);   // 幌子
+    ctx.fillStyle = '#a83a2e'; ctx.fillRect(x+m*0.55*s-0.14*s, y-2.05*s, 0.28*s, 0.1*s);
+    lantern(x+m*0.9*s, y-1.6*s, 0.13*s);
+  } else if(motif==='maple'){    // 栖霞山:红枫(赤金树冠 + 棕干)
+    ctx.fillStyle = '#5a3528'; ctx.fillRect(x-0.09*s, y-2.3*s, 0.18*s, 1.2*s);
+    ctx.fillStyle = '#e0783a';                                                      // 红枫三团
+    disc(x-0.5*s, y-2.2*s, 0.58*s, '#e0783a');
+    disc(x+0.48*s, y-2.45*s, 0.52*s, '#d0682a');
+    disc(x+0.05*s, y-1.9*s, 0.4*s, '#e8884a');
+    disc(x-0.35*s, y-2.55*s, 0.3*s, '#f0904a');
+  } else if(motif==='pagoda'){   // 大报恩寺:琉璃塔角 + 金檐 + 光晕
+    const g = ctx.createRadialGradient(x, y-1.4*s, s*0.2, x, y-1.4*s, s*1.8);
+    g.addColorStop(0, 'rgba(232,193,112,0.28)'); g.addColorStop(1, 'rgba(232,193,112,0)');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y-1.4*s, s*1.8, 0, TAU); ctx.fill();
+    ctx.fillStyle = '#c9c2b0'; ctx.fillRect(x-0.3*s, y-1.9*s, 0.6*s, 1.9*s);        // 白琉璃塔身
+    ctx.fillStyle = '#a89f8e'; ctx.fillRect(x-0.3*s, y-1.9*s, 0.16*s, 1.9*s);       // 受光棱
+    for(let k=0;k<3;k++){                                                            // 金檐
+      poly([[x-0.52*s,y-1.26*s-k*0.3*s],[x-0.3*s,y-1.5*s-k*0.3*s],[x+0.3*s,y-1.5*s-k*0.3*s],[x+0.52*s,y-1.26*s-k*0.3*s]], '#e8c170', '#b8934a', Math.max(1, s*0.02));
+    }
+    ctx.strokeStyle = '#e8c170'; ctx.lineWidth = Math.max(1, s*0.025);
+    ctx.beginPath(); ctx.moveTo(x, y-1.9*s); ctx.lineTo(x, y-2.5*s); ctx.stroke();  // 塔刹
+    disc(x, y-2.55*s, 0.08*s, '#e8c170');
+  } else {                       // 大桥:路灯杆 + 斜拉钢索
+    ctx.strokeStyle = '#4a5a74'; ctx.lineWidth = Math.max(1.5, s*0.03);
+    ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x, y-2.3*s); ctx.stroke();        // 灯杆
+    ctx.beginPath(); ctx.moveTo(x, y-2.3*s); ctx.lineTo(x+m*0.75*s, y-1.6*s); ctx.stroke();  // 钢索
+    ctx.beginPath(); ctx.moveTo(x, y-2.3*s); ctx.lineTo(x+m*0.55*s, y-1.1*s); ctx.stroke();
+    lantern(x, y-2.38*s, 0.15*s);                                                     // 桥灯
+    ctx.strokeStyle = '#3a4a66'; ctx.lineWidth = Math.max(1, s*0.028);               // 桥栏杆
+    ctx.beginPath(); ctx.moveTo(x-1.1*s, y); ctx.lineTo(x+1.1*s, y); ctx.stroke();
+    for(let i=-2;i<=2;i++){ ctx.beginPath(); ctx.moveTo(x+i*0.55*s, y); ctx.lineTo(x+i*0.55*s, y-0.3*s); ctx.stroke(); }
   }
 }
 
@@ -166,7 +210,54 @@ function drawLm(id, lv, x, base){
     ctx.fillRect(x-bw/2-16, base-80, 26, 38);
     poly([[x-bw/2-20,base-80],[x-bw/2-3,base-92],[x-bw/2+14,base-80]], SIL);
     ctx.fillRect(x-bw/2-9, base-100, 3, 10);
-    poly([[x-bw/2-6,base-100],[x-bw/2+6,base-97],[x-bw/2-6,base-94]], '#e2483d');
+    poly([[x-bw/2-6,base-100],[x+bw/2+6,base-97],[x-bw/2-6,base-94]], '#e2483d');
+  } else if(id==='yihe'){      // 颐和路:民国洋房一排 + 梧桐
+    for(const k of [-2,-1,0,1,2]){
+      const hx = x+k*64;
+      ctx.fillStyle = k%2 ? SIL : '#7a6238';
+      ctx.fillRect(hx-24, base-44, 48, 44);
+      ctx.fillStyle = SKY;                                    // 平顶女儿墙
+      ctx.fillRect(hx-26, base-52, 52, 8);
+      ctx.fillRect(hx-18, base-30, 12, 18);                   // 窗
+      ctx.fillRect(hx+6, base-30, 12, 18);
+    }
+    ctx.fillStyle = SIL;
+    ctx.fillRect(x+152, base-34, 6, 34);                      // 梧桐干
+    disc(x+162, base-44, 22, SIL);
+    disc(x+140, base-48, 16, SIL);
+  } else if(id==='mendong'){   // 老门东:牌坊 + 两侧黛瓦山墙
+    ctx.fillRect(x-28, base-58, 56, 58);
+    poly([[x-44,base-58],[x-30,base-76],[x+30,base-76],[x+44,base-58]], SIL);
+    ctx.fillRect(x-6, base-82, 12, 6);
+    poly([[x-12,base-82],[x,base-90],[x+12,base-82]], SIL);
+    for(const m of [-1,1]){                                   // 山墙
+      poly([[x+m*84,base],[x+m*46,base],[x+m*38,base-40],[x+m*84,base-40]], SIL);
+      poly([[x+m*84,base-40],[x+m*72,base-52],[x+m*88,base-52]], SKY);
+    }
+  } else if(id==='qixia'){     // 栖霞山:宝塔 + 枫树剪影
+    let w = 26, y0 = base;
+    for(let k=0;k<6;k++){
+      ctx.fillRect(x-w/2, y0-9, w, 9);
+      poly([[x-w/2-6,y0-9],[x,y0-16],[x+w/2+6,y0-9]], SIL);
+      y0 -= 16; w *= 0.82;
+    }
+    ctx.fillRect(x-2, y0-10, 4, 10);
+    poly([[x-5,y0-10],[x+5,y0-10],[x,y0-18]], SIL);
+    for(const m of [-1,1]){                                   // 枫树团
+      disc(x+m*70, base-46, 26, '#8a4a2a');
+      disc(x+m*52, base-32, 20, '#8a4a2a');
+    }
+  } else if(id==='baoen'){     // 大报恩寺:细高琉璃塔 + 基座
+    ctx.fillRect(x-60, base-16, 120, 16);
+    ctx.fillRect(x-46, base-30, 92, 14);
+    let w = 40, y0 = base-30;
+    for(let k=0;k<9;k++){
+      ctx.fillRect(x-w/2, y0-7, w, 7);
+      poly([[x-w/2-7,y0-7],[x-w/2-3,y0-13],[x+w/2+3,y0-13],[x+w/2+7,y0-7]], SIL);
+      y0 -= 13; w *= 0.88;
+    }
+    ctx.fillRect(x-2, y0-10, 4, 10);
+    poly([[x-6,y0-10],[x+6,y0-10],[x,y0-18]], SIL);
   }
 }
 
@@ -195,6 +286,11 @@ export function drawGate(g, lv){
     steps:   { pillar:'#aeb9c9', beam:'#2e5f8a', trim:'#5a7ca6' },
     lantern: { pillar:'#3d2430', beam:'#4a2030', trim:'#f0b64c' },
     pine:    { pillar:'#5a5a6b', beam:'#3a3552', trim:'#c9a2ff' },
+    plane:   { pillar:'#a8865c', beam:'#c9a868', trim:'#d8a83a' },
+    street:  { pillar:'#8f6d60', beam:'#3a3a46', trim:'#e8a04a' },
+    maple:   { pillar:'#5a3528', beam:'#7a4428', trim:'#e0783a' },
+    pagoda:  { pillar:'#c9c2b0', beam:'#1b2440', trim:'#e8c170' },
+    bridge:  { pillar:'#3a4a66', beam:'#2a3a5a', trim:'#7fb8f0' },
   }[motif] || { pillar: lv.side, beam: lv.sideTop, trim: lv.accent };
   const { pillar, beam, trim } = GATEC;
   const pw = 0.3*s, bh = 0.24*s;
@@ -244,6 +340,35 @@ export function drawGate(g, lv){
       ctx.beginPath(); ctx.moveTo(hx, pl2.y); ctx.lineTo(hx, pl2.y+0.14*s); ctx.stroke();
       lantern(hx, pl2.y+0.3*s, 0.16*s);
     }
+  } else if(motif==='plane'){    // 梧桐门:黄叶拱
+    poly([[pl2.x,pl2.y-bh],[pr2.x,pr2.y-bh],[pr2.x,pl2.y-bh-0.14*s],[pl2.x,pl2.y-bh-0.14*s]], '#c9a868');
+    for(let i=0;i<7;i++){
+      const hx = pl2.x+(pr2.x-pl2.x)*i/6;
+      disc(hx, pl2.y-bh-0.18*s, 0.18*s, i%2 ? '#d8a83a' : '#c9983a');
+    }
+  } else if(motif==='street'){   // 老门东牌坊:粉墙瓦檐 + 两盏灯
+    poly([[pl2.x,pl2.y-bh],[pr2.x,pr2.y-bh],[pr2.x,pl2.y-bh-0.16*s],[pl2.x,pl2.y-bh-0.16*s]], '#d8a89a');
+    poly([[pl2.x-0.14*s,pl2.y-bh],[pr2.x+0.14*s,pr2.y-bh],[pr2.x,pl2.y-bh-0.3*s],[pl2.x,pl2.y-bh-0.3*s]], '#3a3a46');
+    for(const k of [0.3, 0.7]){
+      const hx = pl2.x+(pr2.x-pl2.x)*k;
+      ctx.strokeStyle = trim; ctx.lineWidth = Math.max(1, s*0.02);
+      ctx.beginPath(); ctx.moveTo(hx, pl2.y); ctx.lineTo(hx, pl2.y+0.14*s); ctx.stroke();
+      lantern(hx, pl2.y+0.3*s, 0.14*s);
+    }
+  } else if(motif==='maple'){    // 枫门:赤金拱
+    poly([[pl2.x,pl2.y-bh],[pr2.x,pr2.y-bh],[pr2.x,pl2.y-bh-0.12*s],[pl2.x,pl2.y-bh-0.12*s]], '#7a4428');
+    for(let i=0;i<8;i++){
+      const hx = pl2.x+(pr2.x-pl2.x)*i/7;
+      disc(hx, pl2.y-bh-0.15*s, 0.17*s, i%3 ? '#e0783a' : '#e8884a');
+    }
+  } else if(motif==='pagoda'){   // 琉璃塔门:金檐叠塔
+    for(let k=0;k<3;k++){
+      poly([[cxm-0.9*s,pl2.y-bh+k*0.1*s],[cxm-0.62*s,pl2.y-bh-0.22*s+k*0.1*s],[cxm+0.62*s,pl2.y-bh-0.22*s+k*0.1*s],[cxm+0.9*s,pl2.y-bh+k*0.1*s]], '#e8c170');
+    }
+    ctx.fillStyle = '#c9c2b0'; ctx.fillRect(cxm-0.2*s, pl2.y-bh+0.06*s, 0.4*s, 0.2*s);
+    const g = ctx.createRadialGradient(cxm, pl2.y-bh-0.3*s, s*0.1, cxm, pl2.y-bh-0.3*s, s*1.2);
+    g.addColorStop(0, 'rgba(232,193,112,0.35)'); g.addColorStop(1, 'rgba(232,193,112,0)');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cxm, pl2.y-bh-0.3*s, s*1.2, 0, TAU); ctx.fill();
   } else {                       // 盘山牌坊:石坊 + 松枝
     poly([[cxm-0.9*s,pl2.y-bh],[cxm-0.6*s,pl2.y-bh-0.26*s],[cxm+0.6*s,pl2.y-bh-0.26*s],[cxm+0.9*s,pl2.y-bh]], beam);
     poly([[pl2.x,pl2.y-bh],[pl2.x-0.3*s,pl2.y-bh-0.35*s],[pl2.x+0.25*s,pl2.y-bh-0.5*s]], trim);
@@ -278,6 +403,34 @@ export function drawNear(motif, x, y, s, lv, mirror){
       const lx = x+m*(0.25+0.3*i)*s, ly = y-1.95*s - 0.12*s*Math.sin(i*1.3);
       lantern(lx, ly, 0.16*s);
     }
+  } else if(motif==='plane' || motif==='maple'){  // 黄叶/枫枝(从上方扫过)
+    const leaf = motif==='maple' ? '#e0783a' : '#d8b04a', leafD = motif==='maple' ? '#c06028' : '#c9983a';
+    ctx.strokeStyle = '#5a4428'; ctx.lineWidth = Math.max(2, s*0.06);
+    ctx.beginPath(); ctx.moveTo(x, y-2.6*s); ctx.lineTo(x+m*0.9*s, y-2.2*s); ctx.stroke();
+    disc(x+m*0.7*s, y-2.1*s, 0.4*s, leaf);
+    disc(x+m*0.3*s, y-2.3*s, 0.32*s, leafD);
+    disc(x+m*1.0*s, y-1.85*s, 0.26*s, leaf);
+  } else if(motif==='street'){               // 招牌幌子串
+    ctx.strokeStyle = '#4a2c3a'; ctx.lineWidth = Math.max(1.5, s*0.03);
+    ctx.beginPath(); ctx.moveTo(x, y-2.1*s); ctx.quadraticCurveTo(x+m*0.4*s, y-1.9*s, x+m*1.0*s, y-2.0*s); ctx.stroke();
+    for(let i=0;i<3;i++){
+      const lx = x+m*(0.3+0.32*i)*s;
+      ctx.fillStyle = i%2 ? '#e8d8b0' : '#d8a89a';
+      ctx.fillRect(lx-0.18*s, y-2.3*s, 0.36*s, 0.3*s);
+      ctx.fillStyle = '#a83a2e';
+      ctx.fillRect(lx-0.12*s, y-2.2*s, 0.24*s, 0.1*s);
+    }
+  } else if(motif==='pagoda'){               // 金灯串
+    ctx.strokeStyle = '#3a4a66'; ctx.lineWidth = Math.max(1.5, s*0.03);
+    ctx.beginPath(); ctx.moveTo(x, y-2.3*s); ctx.lineTo(x+m*1.0*s, y-2.2*s); ctx.stroke();
+    for(let i=0;i<3;i++) lantern(x+m*(0.3+0.32*i)*s, y-2.15*s, 0.13*s, true);
+  } else if(motif==='bridge'){               // 桥侧:斜拉钢索 + 竖杆(快速掠过)
+    ctx.strokeStyle = '#3a4a66'; ctx.lineWidth = Math.max(1.5, s*0.035);
+    ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x, y-2.1*s); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x, y-2.1*s); ctx.lineTo(x+m*1.0*s, y-1.4*s); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x, y-2.1*s); ctx.lineTo(x+m*0.8*s, y-0.9*s); ctx.stroke();
+    ctx.strokeStyle = '#5a6a8a'; ctx.lineWidth = Math.max(1, s*0.025);
+    ctx.beginPath(); ctx.moveTo(x-0.9*s, y-0.1*s); ctx.lineTo(x+0.9*s, y-0.1*s); ctx.stroke();
   } else {                                   // 松枝(从上方扫过)
     ctx.strokeStyle = '#3a2f28'; ctx.lineWidth = Math.max(2, s*0.06);
     ctx.beginPath(); ctx.moveTo(x, y-2.6*s); ctx.lineTo(x+m*0.9*s, y-2.2*s); ctx.stroke();

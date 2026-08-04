@@ -97,7 +97,8 @@ function spawnTutorial(z){
     spawnArc(z, freeLane);
   } else spawnArc(z, 0);   // 跳/铲教学:障碍在玩家道,弧线同路引导动作
 }
-/* 收集品弧线:免费道上 4~6 个,若相邻道有 low 障碍则从其上方越过 */
+/* 收集品弧线:免费道上 4~6 个(玄武湖 longArc 修饰器加长到 5~7),若相邻道有 low 障碍则从其上方越过。
+   栖霞山 arcDrift:弧线横向摆动,蛇形飘移 */
 function spawnArc(z, freeLane){
   // 风物与关卡绑定:主场风物 3 倍权重;稀有款仅主场关或无尽 800m 后掉落
   const lvNow = G.mode==='adv' ? G.lvIdx : -1;
@@ -108,10 +109,14 @@ function spawnArc(z, freeLane){
     for(let k=0;k<w;k++) pool.push(it.id);
   }
   const itemId = pool[irnd(0,pool.length-1)];
-  const n = irnd(4,6), overLow = G.obs.some(o=>o.z===z && o.type==='low' && Math.abs(o.lane-freeLane)===1);
+  const mod = G.mode==='adv' ? LEVELS[G.lvIdx].mod : (LEVELS[Math.floor(G.dist/600)%LEVELS.length].mod||'');
+  const n = irnd(4,6) + (mod==='longArc' ? 1 : 0);
+  const drift = mod==='arcDrift';
+  const overLow = G.obs.some(o=>o.z===z && o.type==='low' && Math.abs(o.lane-freeLane)===1);
   for(let i=0;i<n;i++){
     const hump = overLow ? Math.sin((i+1)/(n+1)*Math.PI)*1.35 : 0;
-    G.cols.push({ x:freeLane*LANEGAP, z:z-2+i*1.8, y:0.55+hump, id:itemId, got:false, arc:z, arcN:n });
+    const sway = drift ? Math.sin(i*0.9)*0.35 : 0;
+    G.cols.push({ x:freeLane*LANEGAP+sway, z:z-2+i*1.8, y:0.55+hump, id:itemId, got:false, arc:z, arcN:n });
   }
 }
 export function spawnCluster(z){
@@ -120,12 +125,32 @@ export function spawnCluster(z){
   if(G.tutStage < 3){ spawnTutorial(z); return; }
   const lanes = [-1,0,1];
   for(let i=lanes.length-1;i>0;i--){ const j=irnd(0,i), t=lanes[i]; lanes[i]=lanes[j]; lanes[j]=t; } // L3:Fisher-Yates 均匀洗牌
+  /* ---- 关内修饰器(二期 §C3):明城墙瓮城双墙,强制折返 ---- */
+  if(lv.mod==='wallPair' && diff > 0.3 && Math.random() < 0.15){
+    G.obs.push({ lane:lanes[0], x:lanes[0]*LANEGAP, z, type:'full' });
+    G.obs.push({ lane:lanes[1], x:lanes[1]*LANEGAP, z:z+6, type:'full' });
+    spawnArc(z, lanes[2]);
+    return;
+  }
+  /* 中山陵台阶节奏:12% 同道连续 3 个 low,间距 4m(跳跳跳) */
+  if(lv.mod==='stepRhythm' && Math.random() < 0.12){
+    for(let k=0;k<3;k++) G.obs.push({ lane:lanes[0], x:lanes[0]*LANEGAP, z:z+k*4, type:'low' });
+    spawnArc(z, lanes[1]);
+    return;
+  }
   const nBlock = Math.random() < 0.35 + diff*0.45 ? 2 : 1; // 堵 1~2 条道
   const freeLane = lanes[nBlock];                          // 必定留出的道
+  // 修饰器微调权重:夫子庙高灯密(high↑)、老门东巷窄墙多(full↑)
+  const w = { ...lv.weight };
+  if(lv.mod==='lanternDense'){ w.low -= 0.1; w.high += 0.1; }
+  if(lv.mod==='alleyNarrow'){ w.low -= 0.08; w.full += 0.08; }
   for(let i=0;i<nBlock;i++){
-    const r = Math.random(); const w = lv.weight;
+    const r = Math.random();
     const type = r < w.low ? 'low' : r < w.low + w.high ? 'high' : 'full';
     G.obs.push({ lane:lanes[i], x:lanes[i]*LANEGAP, z, type });
+    // 颐和路:梧桐落枝成对出现(40% 同 lane z+4 再补一根)
+    if(type==='low' && lv.mod==='planeFall' && Math.random() < 0.4)
+      G.obs.push({ lane:lanes[i], x:lanes[i]*LANEGAP, z:z+4, type:'low' });
     // 难度高时同簇追加前后错位障碍;H1/H2 约束:禁止落免费道,偏移上限随速度收缩,
     // 与下一簇保持 >= 6m 反应余量(高速下自然少出,速度封顶时几乎不出)
     if(diff > 0.5 && Math.random() < 0.3){
@@ -151,16 +176,19 @@ export function burst(x, y, color){
 export function ambient(lv){
   // 梅花瓣/灯火/星尘 环境粒子(大、淡、柔边,求"飘絮"不求"撒盐")
   if(Math.random() > 0.12) return;
-  const colors = { crenel:'#e8b04b', lotus:'#d98ba0', steps:'#ffffff', lantern:'#f0b64c', pine:'#c9a2ff' };
+  const colors = { crenel:'#e8b04b', lotus:'#d98ba0', steps:'#ffffff', lantern:'#f0b64c', pine:'#c9a2ff',
+    plane:'#d8b04a', street:'#f0a04a', maple:'#e0783a', pagoda:'#e8c170', bridge:'#9fc0e8' };
+  const windy = lv.mod==='riverWind';   // 大桥江风:粒子横向速度加大
   G.parts.push({
-    x:rnd(-6,6), y:rnd(2,5), z:rnd(4,30), vx:rnd(-0.5,0.1), vy:rnd(-0.8,-0.3),
+    x:rnd(-6,6), y:rnd(2,5), z:rnd(4,30), vx:windy?rnd(-1.4,0.4):rnd(-0.5,0.1), vy:rnd(-0.8,-0.3),
     life:rnd(2.5,4.5), color:colors[lv.motif]||'#ffffff', size:rnd(3,6.5), ambient:true,
   });
 }
 
 /* 穿门演出:头顶三簇纸屑雨 + 风铃音 */
 function gateShower(lv){
-  const colors = { crenel:'#e8b04b', lotus:'#d98ba0', steps:'#ffffff', lantern:'#f0b64c', pine:'#c9a2ff' };
+  const colors = { crenel:'#e8b04b', lotus:'#d98ba0', steps:'#ffffff', lantern:'#f0b64c', pine:'#c9a2ff',
+    plane:'#d8b04a', street:'#f0a04a', maple:'#e0783a', pagoda:'#e8c170', bridge:'#9fc0e8' };
   const c = colors[lv.motif] || '#f0b64c';
   for(let i=-1;i<=1;i++){
     const p = proj(i*LANEGAP, 2.2, ZP);
@@ -195,10 +223,11 @@ export function update(dt){
     }
   }
 
-  // 生成
+  // 生成(老门东巷窄:簇间距 ×0.9)
+  const gapMul = curLv().mod==='alleyNarrow' ? 0.9 : 1;
   while(G.nextSpawn < G.dist + DRAWD){
     spawnCluster(G.nextSpawn);
-    G.nextSpawn += rnd(16,24) * (9.5/G.speed) + 4;
+    G.nextSpawn += (rnd(16,24) * (9.5/G.speed) + 4) * gapMul;
   }
   // 穿越门:冒险约每 130~160m,无尽每 200m;不参与碰撞
   while(G.nextGate < G.dist + DRAWD){
@@ -304,6 +333,14 @@ export function levelClear(){
   track('clear', { lv:G.lvIdx, star, items:G.items });
 }
 export function nextAfterClear(){
-  if(G.lvIdx < LEVELS.length-1) startRun('adv', G.lvIdx+1);
-  else G.state = 'menu';
+  if(G.lvIdx < LEVELS.length-1){
+    const next = LEVELS[G.lvIdx+1];
+    // 隐藏关(大桥)未达成解锁条件时不允许 Enter 直进
+    if(next.hidden){
+      const albumFull = Object.keys(save.album).length >= ITEMS.length;
+      const totalStars = save.stars.reduce((a,b)=>a+b,0);
+      if(!(albumFull && totalStars >= 15)){ G.state = 'menu'; return; }
+    }
+    startRun('adv', G.lvIdx+1);
+  } else G.state = 'menu';
 }

@@ -1,4 +1,4 @@
-import { ctx, W, H, proj, clamp, ROAD_HALF, LANEGAP, DRAWD, ZP } from '../core.js';
+import { ctx, W, H, proj, clamp, TAU, ROAD_HALF, LANEGAP, DRAWD, ZP } from '../core.js';
 
 /* ================= 路面:按景点写实纹理(砖/石板/花岗岩/沥青) ================= */
 // 以 lv.motif 关联路面材质:course=横向缝间距(米), joint=缝色, speck=噪点不透明度
@@ -8,6 +8,11 @@ const TEX = {
   steps:   { course: 4.0, joint: '#93a7bd', speck: 0.08, name: '花岗岩' },
   lantern: { course: 2.6, joint: '#120d1c', speck: 0.12, warm: true, name: '石板街' },
   pine:    { course: 6.0, joint: '#1a1530', speck: 0.14, dash: true, name: '沥青' },
+  plane:   { course: 2.8, joint: '#6b4a2a', speck: 0.10, leaf: true, name: '梧桐柏油' },
+  street:  { course: 2.2, joint: '#6b3a30', speck: 0.12, warm: true, name: '老门东石板' },
+  maple:   { course: 3.2, joint: '#5f2a1a', speck: 0.12, leaf: true, name: '枫叶砾石' },
+  pagoda:  { course: 2.4, joint: '#1a2440', speck: 0.10, warm: true, name: '琉璃砖' },
+  bridge:  { course: 5.0, joint: '#1c2c4a', speck: 0.14, dash: true, wide: true, name: '钢桥面' },
 };
 
 /* 平铺噪点材质(只建一次,滚动 drawImage 实现路面质感) */
@@ -78,7 +83,7 @@ export function drawRoad(lv, dist){
       ctx.fillRect(p.x - p.s, p.y - p.s * 0.4, p.s * 2, p.s * 0.8);
     }
   }
-  // 紫金山:中央黄色虚线(盘山公路)
+  // 紫金山/大桥:中央黄色虚线(盘山公路/桥面标线)
   if(t.dash){
     ctx.strokeStyle = '#c9b458'; ctx.lineCap = 'butt';
     for(let z = z0; z < dist - ZP + DRAWD; z += t.course){
@@ -91,10 +96,25 @@ export function drawRoad(lv, dist){
     }
     ctx.globalAlpha = 1;
   }
-  // 车道分隔线(保留原手感)
+  // 颐和路/栖霞山:飘落的梧桐叶/枫叶铺在路面上(随距离滚动,深色路面上的亮色)
+  if(t.leaf){
+    ctx.globalAlpha = 0.5;
+    for(let i = 0; i < 8; i++){
+      const zoff = ((i * 7 + 3) % 28) + 4;
+      const rz = (zoff * 6 - (dist % (zoff * 6))) + 3;
+      if(rz < 2.2 || rz > DRAWD) continue;
+      const p = proj((i % 2 ? -0.8 : 0.6) + Math.sin(i * 1.7) * 0.5, 0, rz);
+      ctx.fillStyle = t === TEX.maple ? '#e0783a' : '#d8b04a';
+      ctx.beginPath();
+      ctx.ellipse(p.x, p.y, p.s * 0.09, p.s * 0.04, i * 0.7, 0, TAU);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+  // 车道分隔线(保留原手感;大桥 lane 加宽 1px,钢桥面标线更清晰)
   for(const lx of [-LANEGAP / 2, LANEGAP / 2]){
     const a = proj(lx, 0, 2.2), b = proj(lx, 0, DRAWD);
-    ctx.strokeStyle = lv.lane; ctx.globalAlpha = 0.5; ctx.lineWidth = 2;
+    ctx.strokeStyle = lv.lane; ctx.globalAlpha = 0.5; ctx.lineWidth = t.wide ? 3 : 2;
     ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke(); ctx.globalAlpha = 1;
   }
   // 路缘石(亮一线,界定路肩)

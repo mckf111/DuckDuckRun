@@ -4,17 +4,17 @@ import { drawItemIcon } from './items.js';
 /* ================= 实景照片:加载 / 远景 / 拍立得风物卡 ================= */
 // 命名约定:背景 assets/img/bg_<landmarkId>.jpg;风物 assets/img/it_<itemId>.jpg
 // landmarkId 与 config.js 的 LEVELS.landmark / LM_CYCLE 一致;itemId 与 ITEMS.id 一致。
-const BG_IDS = ['menu', 'zhonghua', 'jiming', 'sunyard', 'zhaobi', 'observatory', 'bridge'];
+const BG_IDS = ['menu', 'zhonghua', 'jiming', 'sunyard', 'zhaobi', 'observatory', 'bridge', 'yihe', 'mendong', 'qixia', 'baoen'];
 const IT_IDS = ['duck', 'fans', 'taro', 'plum', 'stone', 'tea',
                 'pot', 'bean', 'cloud', 'gold', 'leaf', 'lamp',
                 'cake', 'root', 'egg', 'elephant', 'sakura', 'book'];   // 18 件全实图
 const IMGS = {};
 
-/* 预加载全部照片;onProgress(0~1)。缺图不阻塞:hasPhoto 返回 false,走代码插画回退 */
+/* 预加载背景照片;onProgress(0~1)。缺图不阻塞:hasPhoto 返回 false,走代码插画回退。
+   风物照片 it_* 不再随开局加载(懒加载,见 loadItemPhoto)。 */
 export function loadAll(onProgress){
   const jobs = [];
   for(const id of BG_IDS) jobs.push(['bg_' + id, 'assets/img/bg_' + id + '.jpg']);
-  for(const id of IT_IDS) jobs.push(['it_' + id, 'assets/img/it_' + id + '.jpg']);
   let done = 0;
   return Promise.all(jobs.map(([key, url]) => new Promise(res => {
     const img = new Image();
@@ -25,6 +25,24 @@ export function loadAll(onProgress){
     img.src = url;
     IMGS[key] = img;
   })));
+}
+
+/* 图鉴风物照片懒加载:首次进图鉴页时调用,逐张异步;已加载/加载中不重复。
+   未加载完或缺图不阻塞 UI——放大层只在 hasPhoto 时显示「实景对照」。 */
+export function loadItemPhoto(id){
+  const key = 'it_' + id;
+  if(IMGS[key]) return Promise.resolve(IMGS[key]);
+  return new Promise(res => {
+    const img = new Image();
+    const fin = () => res(img);
+    img.onload = fin; img.onerror = fin;
+    setTimeout(fin, 8000);
+    img.src = 'assets/img/it_' + id + '.jpg';
+    IMGS[key] = img;
+  });
+}
+export function loadItemPhotos(ids){
+  return Promise.all(ids.map(loadItemPhoto));
 }
 
 export function hasPhoto(key){
