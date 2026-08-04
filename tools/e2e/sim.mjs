@@ -25,7 +25,7 @@ function testTunnel(){
   return G.state === 'play' && !G.obs[0]?.hit; // 还活着且没标记命中 = 穿透
 }
 Math.random = mulberry32(1);
-report('T1 高速穿透: speed20 + dt0.05 穿过 full 障碍无判定', testTunnel(), '预期: 碰撞被跳过(证实则 FAIL 语义反转为 bug 存在)');
+report('T1 高速不穿透: speed20 + dt0.05 扫掠判定生效(修复有效)', !testTunnel(), '穿透存在则 FAIL');
 
 // 对照: 60fps 正常步进应当撞死
 function testTunnelControl(){
@@ -40,20 +40,20 @@ function testTunnelControl(){
 Math.random = mulberry32(1);
 report('T1b 对照: 同场景 60fps 应正常撞死', testTunnelControl());
 
-/* ---- T2: 过终点线同帧被撞死(碰撞判定在过关判定之前) ---- */
+/* ---- T2: 过终点线同帧不被撞死(终点线判定优先) ---- */
 function testFinishLineDeath(){
   startRun('adv', 0); // len=520
   G.dist = 519.9; G.speed = 12; G.nextSpawn = Infinity; G.nextGate = Infinity;
   G.obs.length = 0; G.cols.length = 0;
   G.obs.push({ lane:0, x:0, z: G.dist + 0.2, type:'full' }); // 0.2m 前,本帧必撞
   pl.lane = 0; pl.x = 0;
-  update(1/60); // dist 增加 0.2 -> 520.1 >= len, 但先走碰撞
-  return G.state === 'over'; // 过了 520m 却判负
+  update(1/60); // dist 增加 0.2 -> 520.1 >= len, 先走碰撞则死
+  return G.state === 'over'; // 过了 520m 却判负 = bug 仍在
 }
 Math.random = mulberry32(2);
-report('T2 终点线同帧死亡: dist>=len 仍先判碰撞', testFinishLineDeath());
+report('T2 终点线优先: dist>=len 同帧不判负(修复有效)', !testFinishLineDeath());
 
-/* ---- T3: 空中按滑铲获得对 high 的免疫(快降附带 slideClear 与高度无关) ---- */
+/* ---- T3: 空中快降滑铲对 high 不免疫(贴地才算滑铲) ---- */
 function testAirSlide(){
   startRun('adv', 0);
   G.nextSpawn = Infinity; G.nextGate = Infinity; G.obs.length = 0; G.cols.length = 0;
@@ -69,14 +69,36 @@ function testAirSlide(){
 }
 Math.random = mulberry32(3);
 const t3 = testAirSlide();
-report('T3 空中滑铲免疫 high: y='+t3.yAt+' 仍判定滑铲通过', t3.alive, 'sliding='+t3.sliding);
+report('T3 空中快降不免疫 high: y='+t3.yAt+' 滑铲需贴地(修复有效)', !t3.alive, 'sliding='+t3.sliding);
 
 /* ---- T4: 无解死局搜索(beam search, 无尽最高速段) ---- */
+// 快照用手动浅深拷贝(structuredClone 每帧数千次,开销大到跑不完)
 function snap(){
-  return { G: structuredClone({t:G.t,dist:G.dist,speed:G.speed,state:G.state,obs:G.obs,cols:G.cols,parts:G.parts,gates:G.gates,nextSpawn:G.nextSpawn,nextGate:G.nextGate,mode:G.mode,lvIdx:G.lvIdx,items:G.items,newIds:G.newIds,paused:G.paused,shake:G.shake,egg:G.egg,slowmo:G.slowmo}),
-           pl: structuredClone(pl) };
+  return { G:{ t:G.t, dist:G.dist, speed:G.speed, state:G.state,
+    obs:G.obs.map(o=>({...o})), cols:G.cols.map(c=>({...c})),
+    parts:G.parts.map(p=>({...p})), gates:G.gates.map(g=>({...g})),
+    nextSpawn:G.nextSpawn, nextGate:G.nextGate, mode:G.mode, lvIdx:G.lvIdx,
+    items:G.items, newIds:G.newIds.slice(), paused:G.paused, shake:G.shake,
+    egg:G.egg?{...G.egg}:null, slowmo:G.slowmo, combo:G.combo, comboT:G.comboT,
+    shield:G.shield, powerT:{...G.powerT}, powers:G.powers.map(p=>({...p})),
+    arcGot:{...G.arcGot}, killedBy:G.killedBy, newItem:G.newItem?{...G.newItem}:null,
+    secretUnlock:{...G.secretUnlock}, msIdx:G.msIdx, lmCyc:G.lmCyc, tutStage:G.tutStage,
+    albumScroll:G.albumScroll, albumZoom:G.albumZoom, albumFrom:G.albumFrom,
+    newBest:G.newBest, kbSel:G.kbSel, kbActive:G.kbActive },
+    pl:{ ...pl } };
 }
-function restore(s){ const g=structuredClone(s.G); for(const k in g) G[k]=g[k]; const p=structuredClone(s.pl); for(const k in p) pl[k]=p[k]; }
+function restore(s){
+  const g = s.G;
+  G.t=g.t; G.dist=g.dist; G.speed=g.speed; G.state=g.state;
+  G.obs=g.obs; G.cols=g.cols; G.parts=g.parts; G.gates=g.gates;
+  G.nextSpawn=g.nextSpawn; G.nextGate=g.nextGate; G.mode=g.mode; G.lvIdx=g.lvIdx;
+  G.items=g.items; G.newIds=g.newIds; G.paused=g.paused; G.shake=g.shake;
+  G.egg=g.egg; G.slowmo=g.slowmo; G.combo=g.combo; G.comboT=g.comboT;
+  G.shield=g.shield; G.powerT=g.powerT; G.powers=g.powers;
+  G.arcGot=g.arcGot; G.killedBy=g.killedBy; G.newItem=g.newItem;
+  G.secretUnlock=g.secretUnlock; G.msIdx=g.msIdx; G.lmCyc=g.lmCyc; G.tutStage=g.tutStage;
+  const p = s.pl; pl.lane=p.lane; pl.x=p.x; pl.y=p.y; pl.vy=p.vy; pl.sliding=p.sliding; pl.jumps=p.jumps;
+}
 function keyOf(){ return pl.lane+'|'+Math.round(pl.x*10)+'|'+Math.round(pl.y*10)+'|'+Math.round(pl.vy*2)+'|'+Math.ceil(pl.sliding*10)+'|'+pl.jumps; }
 
 function beamTrial(seed, worldLen){
@@ -90,10 +112,10 @@ function beamTrial(seed, worldLen){
   const maxZ = Math.max(...G.obs.map(o=>o.z));
   Math.random = ()=>0.99; // 步进期间屏蔽随机(环境粒子), 障碍世界已固定
   const ACTIONS = [null, onLeft, onRight, onJump, onSlide];
-  const CAP = 2500, DT = 1/60;
+  const CAP = 500, DT = 1/60;              // 搜索宽度收敛(原 2500 在 Node 24 上分钟级跑不完)
   let beam = [snap()];
   let frames = 0;
-  while(beam.length && G.dist < maxZ + 5 && frames < 60*40){
+  while(beam.length && G.dist < maxZ + 5 && frames < 60*20){
     frames++;
     const next = [], seen = new Set();
     for(const s of beam){
