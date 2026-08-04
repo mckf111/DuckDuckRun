@@ -1,8 +1,8 @@
 # 金陵快跑 · 南京实景跑酷
 
-南京城市主题跑酷小游戏:跑过明城墙、玄武湖、中山陵、夫子庙、紫金山五关(图鉴集齐+15星解锁隐藏关「长江大桥」),收集盐水鸭、鸭血粉丝汤、梅花糕、石象路等 18 件金陵风物。视觉为「实景照片 × 代码插画」混合:远景是 Wikimedia Commons 的南京实景照片(统一下载、调色、加颗粒),角色、障碍、路面、UI 全部由 Canvas 代码实时绘制。零构建、原生 ES Modules。
+南京城市主题跑酷小游戏:跑遍金陵十景(明城墙、玄武湖、中山陵、夫子庙、紫金山、颐和路、老门东、栖霞山、大报恩寺 + 图鉴集齐 15 星解锁的隐藏关「长江大桥」),收集 40 件金陵风物(食/工/迹/灵四部,含 6 件按条件解锁的隐藏档)。视觉为「实景照片 × 代码插画」混合:远景是 Wikimedia Commons 的南京实景照片(统一下载、调色、加颗粒),角色、障碍、路面、收集品、UI 全部由 Canvas 代码实时绘制。零构建、原生 ES Modules。
 
-玩法:三车道跑酷,低障碍跳、高障碍滑铲、整墙换道;连击有音阶爬升,无尽模式有里程碑勋章与 600m 地标报站;结算页可生成拍立得成绩卡分享;15 星解锁金鸭皮肤。
+玩法:三车道跑酷,低障碍跳、高障碍滑铲、整墙换道;连击有音阶爬升,无尽模式有里程碑勋章与 600m 地标报站;每件收集品 = 1 枚铜钱,可去鸭铺升级局内道具(磁铁/护盾/金桂);结算页可生成拍立得成绩卡分享;15 星解锁金鸭皮肤。
 
 ## 操作
 
@@ -24,7 +24,7 @@ python -m http.server 8000   # 然后浏览器打开 http://localhost:8000
 
 或使用 VS Code 的 Live Server 插件。
 
-深链:`#play` 直接进无尽模式,`#lv0` ~ `#lv4` 直接进对应关卡。
+深链:`#play` 直接进无尽模式,`#lv0` ~ `#lv9` 直接进对应关卡。
 
 ## 部署(传播层)
 
@@ -47,28 +47,28 @@ git push -u origin main    # 仓库 Settings → Pages → Source 选 main 根�
 index.html      入口骨架(style + canvas + module script)
 src/
   core.js       canvas/透视投影/常量/绘制原语(含接触影/DPR 适配)
-  config.js     关卡与收集品数据(6 关 18 风物,含文案/主场权重/里程碑)
-  save.js       localStorage 存档(带类型容错)
-  audio.js      WebAudio 合成音效 + 五声音阶 BGM
+  config.js     关卡与收集品数据(10 关 40 风物,含 mod 修饰器/cat/secret/riddle/鸭铺数值)
+  save.js       localStorage 存档(带类型容错与 6→10 关索引迁移)
+  audio.js      WebAudio 合成音效 + 五声音阶 BGM(每关根音递进)
   art/
-    photo.js    实景照片:预加载(带超时兜底)/远景背景(叠化)/拍立得风物卡
-    road.js     路面纹理(城砖/湖堤石板/花岗岩/石板街/沥青)
-    scenery.js  两侧走廊/穿越门/画舫(含剪影回退)
-    obstacles.js 障碍(按景点写实物件:城砖堆/敌楼/荷花缸/画舫/路锥…)
-    items.js    风物插画(无照片素材时的 fallback)
+    photo.js    实景照片:bg_* 开局预加载(超时兜底)/远景叠化/it_* 图鉴页懒加载
+    road.js     路面纹理(城砖/湖堤石板/花岗岩/石板街/沥青/梧桐柏油/老门东石板/枫叶砾石/琉璃砖/钢桥面)
+    scenery.js  两侧走廊/穿越门/画舫/地标剪影(每关母题独立)
+    obstacles.js 障碍(按景点写实物件,大桥专修:检修路障/钢桁架镂空/窄桥墩)
+    items.js    收集品插画(40 件深描边多色,路上/图鉴/放大层共用)
     player.js   主角:逃出鸭店的白胖鸭(3/4 背视角;15 星金鸭皮肤)
-  game.js       游戏状态与主更新逻辑(扫掠碰撞/连击/教学/里程碑/报站)
-  render.js     场景渲染(照片远景 → 路面 → 两侧 → 门 → 收集品 → 障碍 → 鸭子 → 晕影)
-  ui.js         HUD 与各界面(图鉴=相册,含键盘导航)
+  game.js       游戏状态与主更新逻辑(扫掠碰撞/连击/教学/里程碑/报站/道具/隐藏档)
+  render.js     场景渲染(照片远景 → 路面 → 两侧 → 门 → 收集品 → 道具 → 障碍 → 鸭子 → 晕影)
+  ui.js         HUD 与各界面(图鉴=四部风物谱,纵向滚动,含键盘导航)
   share.js      拍立得成绩卡生成与分享(navigator.share/下载)
-  input.js      键盘/触屏输入(多指/画布外松手/IME 容错)
+  input.js      键盘/触屏输入(多指/画布外松手/IME 容错/图鉴拖拽滚动)
   main.js       入口:照片预加载(缺图回退插画) + 主循环与深链 + 竖屏旋转引导层
   qr.js         零依赖 QR 生成器(V1~4 / L 纠错,分享卡回游二维码)
   track.js      轻量埋点(sendBeacon,TRACK_URL 留空则静默)
 assets/
-  fonts/        标题用子集化思源宋体(jinling-serif.woff2)与字符表 chars.txt
+  fonts/        三档子集化字体:铭心毛笔 jinling-brush.woff2、文楷 jinling-kai.woff2、系统黑体
   icons/        duck-512.png / duck-192.png(游戏图标,make_icon.py 生成)
-  img/          实景照片:bg_*.jpg(六张远景横幅)、it_*.jpg(风物卡)、CREDITS.md(署名)
+  img/          实景照片:bg_*.jpg(11 张远景横幅)、it_*.jpg(18 张风物实拍)、CREDITS.md(署名)
 tools/
   make_icon.py          生成 assets/icons 鸭子图标(Pillow)
   fetch_assets.py      从 Wikimedia Commons 抓候选照片(仅 CC0/CC-BY/CC-BY-SA/PD)
@@ -91,19 +91,21 @@ docs/           设计文档与审查报告(本地留档,不入库)
 ./.venv/Scripts/python tools/process_assets.py     # 产出 assets/img/*.jpg + CREDITS.md
 ```
 
-18 件风物全部为实景照片(雨花茶无本尊 CC 照片,以茶园实景代替;云锦用乾隆龙袍织金代表织金工艺;金箔缺南京本地的 CC 实拍图,条目已标注「工艺示意图」)。缺图时所有照片元素仍会自动回退到 `art/items.js` 的代码插画,游戏始终可运行。
+40 件风物中 18 件有实景照片(懒加载,图鉴放大层附「实景对照」;雨花茶以茶园实景代替,云锦用乾隆龙袍织金代表织金工艺,金箔条目已标注「工艺示意图」),22 件为纯插画;路上收集品一律显示插画。缺图时所有照片元素仍会自动回退到 `art/items.js` 的代码插画,游戏始终可运行。
 
-## 重新生成标题字体
+## 重新生成字体
 
-游戏用字变化后,用项目内 `.venv`(fonttools + brotli)重新子集化:
+游戏用字变化后,用项目内 `.venv`(fonttools + brotli)重新子集化。源字体:Ma Shan Zheng(马善政楷书,毛笔展示体)+ LXGW WenKai Medium(霞鹜文楷,正文展示体),本地缓存于系统临时目录;字符表由 `src/**/*.js + index.html` 扫描生成:
 
 ```bash
-# 1. 重新提取字符表(见 assets/fonts/chars.txt 的生成脚本,遍历 src/**/*.js + index.html)
-# 2. 下载 Noto Serif SC(可变字重),固定到 wght=600 后子集化:
-./.venv/Scripts/fonttools varLib.instancer NotoSerifSC.ttf wght=600 -o NotoSerif600.ttf
-./.venv/Scripts/pyftsubset NotoSerif600.ttf --text-file=assets/fonts/chars.txt \
-  --flavor=woff2 --output-file=assets/fonts/jinling-serif.woff2 --no-hinting --desubroutinize
+# 1. 扫描全部用字写入 assets/fonts/chars.txt(毛笔字白名单另存 chars-brush.txt)
+# 2. 子集化文楷:
+./.venv/Scripts/pyftsubset LXGWWenKai-Medium.ttf --text-file=assets/fonts/chars.txt \
+  --flavor=woff2 --output-file=assets/fonts/jinling-kai.woff2 --no-hinting --desubroutinize
+# 3. 子集化毛笔(参数同上,源字体 MaShanZheng.ttf,文本表 chars-brush.txt,产物 jinling-brush.woff2)
 ```
+
+三档字体分工(见 `ui.js text()`):书法体仅大标题(菜单主标题/过关/撞车),文楷承担 ≥14px 一切正文,<14px 数据与数字回系统黑体。
 
 ## 版本控制约定
 
