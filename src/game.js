@@ -14,6 +14,7 @@ export const G = {
   nextSpawn:0, nextGate:0, shake:0,
   buttons:[], albumFrom:'menu', slowmo:0, wipe:0, pressed:null,
   albumZoom:null,    // 图鉴放大查看的风物 id(纯 UI 状态)
+  albumScroll:0,     // 图鉴页纵向滚动偏移(px)
   egg:null,            // 彩蛋文案 { text, ttl, dur }
   newBest:false,       // 本局是否破了无尽纪录(结算页展示)
   kbSel:0, kbActive:false, // 菜单键盘导航焦点
@@ -23,6 +24,7 @@ export const G = {
   arcGot:{},           // 每弧线已收计数(一串全收判定)
   killedBy:null,       // 致死障碍类型(结算页死因提示)
   newItem:null,        // 新图鉴即时横幅 { id, ttl }
+  secretUnlock:{ baiju:false, baochuan:false },  // 局内隐藏件解锁标记(白局15连击/宝船3000m)
   msIdx:0, lmCyc:-1,   // 无尽:里程碑进度 / 报站周期
 };
 export const pl = { lane:0, x:0, y:0, vy:0, sliding:0, jumps:0 };
@@ -35,6 +37,7 @@ export function startRun(mode, lvIdx){
   G.nextSpawn = 40; G.paused = false; G.shake = 0; G.egg = null;
   G.slowmo = 0; G.newBest = false; G.kbSel = 0; G.kbActive = false;
   G.combo = 0; G.comboT = 0; G.killedBy = null; G.newItem = null;
+  G.secretUnlock = { baiju:false, baochuan:false };
   G.msIdx = 0; G.lmCyc = -1; G.arcGot = {};
   // 首局教学(仅冒险第一关、第一次):前几簇按教案出障碍,飘字按设备出文案
   // 教学完成标记改为「首次跨过第一个障碍后」再落盘,秒退者不丢教学
@@ -97,14 +100,27 @@ function spawnTutorial(z){
     spawnArc(z, freeLane);
   } else spawnArc(z, 0);   // 跳/铲教学:障碍在玩家道,弧线同路引导动作
 }
+/* 隐藏件条件判定(二期 §D2):条件未达成根本不进掉落池。
+   全局条件看存档(星/里程/图鉴/通关),局内条件看 G.secretUnlock。 */
+function secretReady(it){
+  if(it.id==='baiju') return G.secretUnlock.baiju;                 // 单局≥15连击(局内)
+  if(it.id==='baochuan') return G.secretUnlock.baochuan;           // 无尽单局≥3000m(局内)
+  if(it.id==='zhuangyuan') return save.stars.reduce((a,b)=>a+b,0) >= 25;   // 累计≥25星
+  if(it.id==='zifeng') return save.distTotal >= 10000;             // 累计≥10000m
+  if(it.id==='hufengdie') return ITEMS.filter(i=>i.cat==='creature' && !i.secret).every(i=>save.album[i.id]); // 集齐生之灵(常见件)
+  if(it.id==='jiangtun') return !!save.cleared[9];                 // 通关第10站
+  return true;
+}
+
 /* 收集品弧线:免费道上 4~6 个(玄武湖 longArc 修饰器加长到 5~7),若相邻道有 low 障碍则从其上方越过。
    栖霞山 arcDrift:弧线横向摆动,蛇形飘移 */
 function spawnArc(z, freeLane){
-  // 风物与关卡绑定:主场风物 3 倍权重;稀有款仅主场关或无尽 800m 后掉落
+  // 风物与关卡绑定:主场风物 3 倍权重;稀有款仅主场关或无尽 800m 后掉落;隐藏件条件未达成不进池
   const lvNow = G.mode==='adv' ? G.lvIdx : -1;
   const pool = [];
   for(const it of ITEMS){
     if(it.rare && !(it.home===lvNow || (G.mode==='endless' && G.dist>800))) continue;
+    if(it.secret && !secretReady(it)) continue;
     const w = it.home===lvNow ? 3 : 1;
     for(let k=0;k<w;k++) pool.push(it.id);
   }
@@ -208,6 +224,15 @@ export function update(dt){
   G.dist += G.speed * dt;
   // 连击窗口衰减
   if(G.comboT > 0){ G.comboT -= dt; if(G.comboT <= 0) G.combo = 0; }
+  // 局内隐藏件解锁:15 连击混入白局,无尽 3000m 混入宝船(彩蛋提示)
+  if(!G.secretUnlock.baiju && G.combo >= 15){
+    G.secretUnlock.baiju = true;
+    G.egg = { text:'有稀罕东西混进来了……', ttl:2.6, dur:2.6 };
+  }
+  if(!G.secretUnlock.baochuan && G.mode==='endless' && G.dist >= 3000){
+    G.secretUnlock.baochuan = true;
+    G.egg = { text:'有稀罕东西混进来了……', ttl:2.6, dur:2.6 };
+  }
   if(G.newItem){ G.newItem.ttl -= dt; if(G.newItem.ttl <= 0) G.newItem = null; }
   if(G.mode==='endless'){
     // 里程碑勋章
@@ -279,6 +304,7 @@ export function update(dt){
       if(!save.album[c.id]){
         save.album[c.id]=true; G.newIds.push(c.id); persist();
         const it = ITEMS.find(i=>i.id===c.id);
+        if(it && it.secret){ save.albumNew = true; persist(); }     // 隐藏件红点
         G.newItem = { id:c.id, ttl:2.0 }; sfx.newItem();          // 新图鉴即时横幅(2 秒,不挡视野)
         G.egg = { text:it && it.quip ? it.quip : '', ttl:3.2, dur:3.2 };
       } else if(Math.random() < 0.2){
@@ -319,6 +345,7 @@ export function gameOver(type){
     G.newBest = m > save.best;               // 先判后写,平局不误报
     if(G.newBest){ save.best = m; persist(); sfx.record(); }
   }
+  save.distTotal += Math.floor(G.dist); persist();   // 累计里程(隐藏件紫峰大厦判定)
   G.state = 'over';
   track('over', { mode:G.mode, dist:Math.floor(G.dist) });
 }
@@ -328,6 +355,7 @@ export function levelClear(){
   for(let i=0;i<3;i++) if(G.items>=need[i]) star = i+1;
   if(star > save.stars[G.lvIdx]) save.stars[G.lvIdx]=star;
   save.cleared[G.lvIdx] = true;   // 通关即解锁下一关,与星级脱钩
+  save.distTotal += Math.floor(G.dist);   // 累计里程
   persist();
   G.state = 'clear';
   track('clear', { lv:G.lvIdx, star, items:G.items });

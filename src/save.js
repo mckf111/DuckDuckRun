@@ -23,4 +23,6 @@ if(isOld6){ save.stars[9] = save.stars[5]; save.stars[5] = 0; save.cleared[9] = 
   for(const k of Object.keys(raw)) if(raw[k] && ITEMS.some(i=>i.id===k)) save.album[k] = true; }
 save.tut     = !!save.tut;                 // 首局教学已看过
 save.muted   = !!save.muted;
+save.distTotal = (typeof save.distTotal==='number' && isFinite(save.distTotal) && save.distTotal>0) ? Math.floor(save.distTotal) : 0; // 累计里程(米,隐藏件紫峰大厦判定)
+save.albumNew = !!save.albumNew;           // 隐藏件新获得红点(进图鉴页后清除)
 export function persist(){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify(save)); }catch(e){} }

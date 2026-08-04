@@ -26,11 +26,22 @@ addEventListener('keydown', e=>{
   }
 });
 
-// 触屏/鼠标:滑动 = 操作;点击 = 按钮
-let tStart = null;
+// 图鉴页滚动:滚轮 + 触屏拖拽(纵向,见 ui.js drawAlbum)
+cv.addEventListener('wheel', e=>{
+  if(G.state!=='album' || G.albumZoom) return;
+  G.albumScroll += e.deltaY * (e.deltaMode===1 ? 30 : 1);
+}, {passive:true});
+
+// 触屏/鼠标:滑动 = 操作;点击 = 按钮;图鉴页拖拽 = 滚动
+let tStart = null, dragScroll = null;
 cv.addEventListener('pointerdown', e=>{
   if(!e.isPrimary) return;   // M1:双指操作只认第一根手指,杜绝幽灵滑动
-  ac(); tStart = {x:e.clientX, y:e.clientY};
+  ac();
+  if(G.state==='album' && !G.albumZoom){   // 图鉴:拖拽滚动(不按按钮)
+    dragScroll = { y:e.clientY, scroll:G.albumScroll, moved:false };
+    return;
+  }
+  tStart = {x:e.clientX, y:e.clientY};
   // 记录按下的按钮(按压反馈)
   const r = cv.getBoundingClientRect();
   const px = (e.clientX-r.left)/r.width*W, py = (e.clientY-r.top)/r.height*H;
@@ -39,7 +50,23 @@ cv.addEventListener('pointerdown', e=>{
     if(px>=b.x && px<=b.x+b.w && py>=b.y && py<=b.y+b.h){ G.pressed = {id:b.id, data:b.data}; break; }
   }
 });
+cv.addEventListener('pointermove', e=>{
+  if(!dragScroll || !e.isPrimary) return;
+  const r = cv.getBoundingClientRect();
+  const dy = (e.clientY - dragScroll.y) * H / r.height;
+  if(Math.abs(dy) > 3) dragScroll.moved = true;
+  G.albumScroll = dragScroll.scroll - dy;
+});
 function endPointer(e){
+  if(dragScroll){
+    const wasMove = dragScroll.moved; dragScroll = null; G.pressed = null;
+    if(!e.isPrimary) return;
+    if(wasMove || G.wipe > 0) return;   // 拖过 = 滚动,不触发点击
+    const r = cv.getBoundingClientRect();
+    const px = (e.clientX-r.left)/r.width*W, py = (e.clientY-r.top)/r.height*H;
+    clickAt(px, py);
+    return;
+  }
   const was = tStart; tStart = null; G.pressed = null;
   if(!was || !e.isPrimary) return;
   if(G.wipe > 0) return;   // L1:界面切换过场动画期间不响应操作

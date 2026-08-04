@@ -79,25 +79,53 @@ export const MILESTONES = [
   [100, '跑出鸭店'], [500, '跑过中华门'], [1000, '跑过玄武湖'], [1500, '跑穿老城南'], [2000, '跑穿金陵'], [5000, '鸭界传说'],
 ];
 
-/* 收集品图鉴(拍立得照片/手绘插画 + 民俗小注 + 鸭鸭批注 + 去哪儿)
-   home:主场关卡(该关掉落加权);rare:稀有,仅主场关或无尽 800m 后掉落 */
+/* 收集品图鉴(全插画 + 民俗小注 + 鸭鸭批注 + 去哪儿)
+   home:主场关卡(该关掉落加权);rare:稀有,仅主场关或无尽 800m 后掉落;
+   secret:隐藏件,条件未达成根本不进掉落池,图鉴里显示谜面(判定见 game.js secretReady);
+   cat:四部归类 food食/craft工/ruin迹/creature灵(图鉴页按部陈列) */
 export const ITEMS = [
-  { id:'duck',  name:'盐水鸭',   note:'桂花鸭最负盛名,皮白肉嫩,金陵一绝', quip:'鸭鸭别过头去:不看,不听,不知道。', where:'📍 章云板鸭、金宏兴,老字号遍地' },
-  { id:'fans',  name:'鸭血粉丝汤', note:'鸭血滑嫩粉丝爽口,南京人的一碗乡愁', quip:'……这碗里没有鸭,放心。', where:'📍 回味、鸭得堡,夫子庙周边' },
-  { id:'tea',   name:'雨花茶',   note:'形如松针,绿意清雅,江苏名茶', quip:'松针似的茶叶,鸭掌泡不开。', where:'📍 雨花台风景区' },
-  { id:'taro',  name:'桂花糖芋苗', note:'红糖熬芋苗,桂花香里软糯拉丝', quip:'甜到拉丝的南京秋天。', where:'📍 老门东、南京老字号' },
-  { id:'plum',  name:'梅花',     note:'南京市花,梅花山上凌寒独放', quip:'市花戴在鸭头上,也算南京户口了。', where:'📍 明孝陵梅花山,2-3 月', home:1 },
-  { id:'stone', name:'雨花石',   note:'天赐国宝,一枚石子一山水', quip:'挑一块揣兜里,雨花台见。', where:'📍 雨花台、六合横梁', home:4 },
-  { id:'pot',   name:'牛肉锅贴', note:'七家湾老字号,金黄酥脆一口爆汁', quip:'鸭鸭:老板,再来二两!', where:'📍 李记清真馆、七家湾', home:3 },
-  { id:'bean',  name:'赤豆元宵', note:'桂花赤豆糊,小元宵软糯挂勺', quip:'跑完这一碗,还能再跑三关。', where:'📍 莲湖糕团店、老门东', home:3 },
-  { id:'cloud', name:'云锦',     note:'寸锦寸金,江宁织造的一寸光华', quip:'鸭鸭披上它,整个江宁都亮了。', where:'📍 南京云锦博物馆', home:0, rare:true },
-  { id:'gold',  name:'金箔',     note:'龙潭金箔,万锤打成的一片轻金(图为工艺示意)', quip:'轻得像鸭绒,亮得晃鸭眼。', where:'📍 栖霞龙潭金箔之乡', home:4, rare:true },
-  { id:'leaf',  name:'梧桐叶',   note:'陵园大道梧桐,南京秋天的入场券', quip:'一片叶子,就是一条颐和路。', where:'📍 陵园大道、颐和路', home:2 },
-  { id:'lamp',  name:'秦淮花灯', note:'正月里上灯,十里秦淮一夜鱼龙舞', quip:'鸭子提灯:照亮逃亡的路。', where:'📍 夫子庙花灯市场,正月', home:3, rare:true },
-  { id:'cake',  name:'梅花糕',   note:'相传乾隆下江南时得了这名字,一朵会爆浆的梅花', quip:'烫嘴也要趁热吃,鸭蹼拿不住也认了。', where:'📍 老门东、夫子庙,左师傅梅花糕', home:3 },
-  { id:'root',  name:'糖粥藕',   note:'糯米灌藕红糖慢熬,糖粥一浇软糯拉丝', quip:'甜党鸭认证:比糖芋苗还黏牙。', where:'📍 老门东、南京老字号', home:0 },
-  { id:'egg',   name:'活珠子',   note:'六合名产,十二天旺鸡蛋,鲜掉眉毛的勇士料理', quip:'鸭鸭报警了:你们管这叫小吃?!', where:'📍 六合、街头五香卤锅', home:4, rare:true },
-  { id:'elephant', name:'石象路', note:'明孝陵神道,石兽六百米,一站六百年', quip:'石象不追鸭,好评。', where:'📍 明孝陵景区,深秋最美', home:2 },
-  { id:'sakura', name:'樱花',    note:'鸡鸣寺路三月,下一场粉白色的雪', quip:'花瓣落鸭头,也算戴过春天了。', where:'📍 鸡鸣寺路、玄武湖樱洲', home:1 },
-  { id:'book',  name:'先锋书店', note:'地下车库里的先锋书店,大地上的异乡者', quip:'鸭鸭看不懂字,但很会装文化鸭。', where:'📍 五台山总店,广州路173号', home:0, rare:true },
+  /* ---- 食之属 14 ---- */
+  { id:'duck',  name:'盐水鸭',   note:'桂花鸭最负盛名,皮白肉嫩,金陵一绝', quip:'鸭鸭别过头去:不看,不听,不知道。', where:'📍 章云板鸭、金宏兴,老字号遍地', cat:'food' },
+  { id:'fans',  name:'鸭血粉丝汤', note:'鸭血滑嫩粉丝爽口,南京人的一碗乡愁', quip:'……这碗里没有鸭,放心。', where:'📍 回味、鸭得堡,夫子庙周边', cat:'food' },
+  { id:'tea',   name:'雨花茶',   note:'形如松针,绿意清雅,江苏名茶', quip:'松针似的茶叶,鸭掌泡不开。', where:'📍 雨花台风景区', cat:'food' },
+  { id:'taro',  name:'桂花糖芋苗', note:'红糖熬芋苗,桂花香里软糯拉丝', quip:'甜到拉丝的南京秋天。', where:'📍 老门东、南京老字号', cat:'food' },
+  { id:'pot',   name:'牛肉锅贴', note:'七家湾老字号,金黄酥脆一口爆汁', quip:'鸭鸭:老板,再来二两!', where:'📍 李记清真馆、七家湾', home:3, cat:'food' },
+  { id:'bean',  name:'赤豆元宵', note:'桂花赤豆糊,小元宵软糯挂勺', quip:'跑完这一碗,还能再跑三关。', where:'📍 莲湖糕团店、老门东', home:3, cat:'food' },
+  { id:'cake',  name:'梅花糕',   note:'相传乾隆下江南时得了这名字,一朵会爆浆的梅花', quip:'烫嘴也要趁热吃,鸭蹼拿不住也认了。', where:'📍 老门东、夫子庙,左师傅梅花糕', home:3, cat:'food' },
+  { id:'root',  name:'糖粥藕',   note:'糯米灌藕红糖慢熬,糖粥一浇软糯拉丝', quip:'甜党鸭认证:比糖芋苗还黏牙。', where:'📍 老门东、南京老字号', home:0, cat:'food' },
+  { id:'egg',   name:'活珠子',   note:'六合名产,十二天旺鸡蛋,鲜掉眉毛的勇士料理', quip:'鸭鸭报警了:你们管这叫小吃?!', where:'📍 六合、街头五香卤锅', home:4, rare:true, cat:'food' },
+  { id:'bao',   name:'小笼包',   note:'皮薄如纸,一吮一包汤,配姜丝香醋', quip:'鸭鸭用吸管喝汤包,被老板娘瞪了。', where:'📍 刘长兴、鸡鸣汤包,老门东就有', home:6, cat:'food' },
+  { id:'xiangdu', name:'南京香肚', note:'猪肚灌肉风干,金陵腊味一绝', quip:'挂起来像灯笼,吃起来像年味。', where:'📍 六合、老门东腊味铺', home:6, cat:'food' },
+  { id:'luhao', name:'芦蒿',     note:'春水芦蒿,南京人桌上的第一口春', quip:'鸭鸭嚼不动,但闻着很上头。', where:'📍 春分前后,菜场随便买', home:1, cat:'food' },
+  { id:'wufan', name:'乌饭',     note:'乌饭树叶染的糯米饭,四月初八的仪式感', quip:'黑得像墨,香得像春天。', where:'📍 农历四月初八,街头小摊', home:5, cat:'food' },
+  { id:'zhuangyuan', name:'状元豆', note:'黄豆煮糖卤,书生赶考前的甜头', quip:'吃了这颗豆,下辈子考状元。', where:'📍 夫子庙一带,旧时赶考路上', home:3, secret:true, riddle:'星光攒够了,状元及第的甜才轮得到你。', cat:'food' },
+  /* ---- 工之艺 8 ---- */
+  { id:'cloud', name:'云锦',     note:'寸锦寸金,江宁织造的一寸光华', quip:'鸭鸭披上它,整个江宁都亮了。', where:'📍 南京云锦博物馆', home:0, rare:true, cat:'craft' },
+  { id:'gold',  name:'金箔',     note:'龙潭金箔,万锤打成的一片轻金(图为工艺示意)', quip:'轻得像鸭绒,亮得晃鸭眼。', where:'📍 栖霞龙潭金箔之乡', home:4, rare:true, cat:'craft' },
+  { id:'lamp',  name:'秦淮花灯', note:'正月里上灯,十里秦淮一夜鱼龙舞', quip:'鸭子提灯:照亮逃亡的路。', where:'📍 夫子庙花灯市场,正月', home:3, rare:true, cat:'craft' },
+  { id:'ronghua', name:'南京绒花', note:'绒条捻出牡丹,曾是宫花,今是手作', quip:'戴头上比真花轻,拍照还上相。', where:'📍 老门东绒花坊', home:3, cat:'craft' },
+  { id:'zheshan', name:'金陵折扇', note:'竹骨宣面,一扇摇出金陵风', quip:'鸭鸭摇扇:本鸭可是文化鸭。', where:'📍 老门东、朝天宫周边', home:6, cat:'craft' },
+  { id:'jianzhi', name:'南京剪纸', note:'一把剪刀一张纸,剪出花鸟鱼虫', quip:'剪个鸭鸭贴在窗上,永不逃店。', where:'📍 老门东非遗馆', home:6, cat:'craft' },
+  { id:'kejing', name:'金陵刻经', note:'木版雕经,金陵刻经处的千年一版', quip:'字是刻的,心是静的。', where:'📍 淮海路金陵刻经处', home:8, cat:'craft' },
+  { id:'baiju', name:'南京白局', note:'方言说唱,老南京的市井小调', quip:'唱的是白话,押的是生活。', where:'📍 夫子庙茶楼、老城南', home:3, secret:true, riddle:'一口气不断腔,十五板眼唱到底。', cat:'craft' },
+  /* ---- 迹之忆 9 ---- */
+  { id:'elephant', name:'石象路', note:'明孝陵神道,石兽六百米,一站六百年', quip:'石象不追鸭,好评。', where:'📍 明孝陵景区,深秋最美', home:2, cat:'ruin' },
+  { id:'book',  name:'先锋书店', note:'地下车库里的先锋书店,大地上的异乡者', quip:'鸭鸭看不懂字,但很会装文化鸭。', where:'📍 五台山总店,广州路173号', home:0, rare:true, cat:'ruin' },
+  { id:'pibie', name:'辟邪',     note:'南朝石兽,镇守帝陵的瑞兽', quip:'比石象凶,但不会追鸭。', where:'📍 南京博物院、六朝石刻', home:7, cat:'ruin' },
+  { id:'wadang', name:'人面瓦当', note:'汉代瓦当上的神秘笑脸,从古城里挖出来', quip:'两千年前的鸭鸭同款微笑?', where:'📍 城墙博物馆、六朝博物馆', home:0, cat:'ruin' },
+  { id:'chengzhuan', name:'铭文城砖', note:'每块城砖都刻着造砖人的名字,明城墙的实名制', quip:'刻上名字的砖,质量不敢糊弄。', where:'📍 中华门城墙砖库', home:0, cat:'ruin' },
+  { id:'nanyanjing', name:'南京眼', note:'河西的摩天轮桥,江上的大眼睛', quip:'鸭鸭路过它,眼神一对就过江。', where:'📍 河西,晚上亮灯更好看', home:8, rare:true, cat:'ruin' },
+  { id:'baoenta', name:'大报恩寺塔', note:'琉璃塔复建,千年佛顶真骨安奉处', quip:'夜里亮灯时,整座城都在仰望。', where:'📍 大报恩寺遗址公园', home:8, cat:'ruin' },
+  { id:'zifeng', name:'紫峰大厦', note:'金陵第一高楼,云里雾里都看得见', quip:'跑够一万米,才抬头看得见金陵最高处。', where:'📍 鼓楼广场', home:1, secret:true, riddle:'跑够一万米,才抬头看得见金陵最高处。', cat:'ruin' },
+  { id:'baochuan', name:'郑和宝船', note:'七下西洋的宝船队,南京造的龙骨', quip:'跑到海的门口,宝船才起锚。', where:'📍 宝船厂遗址公园', home:9, rare:true, secret:true, riddle:'跑到海的门口,宝船才起锚。', cat:'ruin' },
+  /* ---- 生之灵 9 ---- */
+  { id:'plum',  name:'梅花',     note:'南京市花,梅花山上凌寒独放', quip:'市花戴在鸭头上,也算南京户口了。', where:'📍 明孝陵梅花山,2-3 月', home:1, cat:'creature' },
+  { id:'sakura', name:'樱花',    note:'鸡鸣寺路三月,下一场粉白色的雪', quip:'花瓣落鸭头,也算戴过春天了。', where:'📍 鸡鸣寺路、玄武湖樱洲', home:1, cat:'creature' },
+  { id:'leaf',  name:'梧桐叶',   note:'陵园大道梧桐,南京秋天的入场券', quip:'一片叶子,就是一条颐和路。', where:'📍 陵园大道、颐和路', home:2, cat:'creature' },
+  { id:'stone', name:'雨花石',   note:'天赐国宝,一枚石子一山水', quip:'挑一块揣兜里,雨花台见。', where:'📍 雨花台、六合横梁', home:4, cat:'creature' },
+  { id:'guihua', name:'桂花',    note:'金陵桂花,秋风吹过整条街都是甜的', quip:'桂花落进鸭汤,算是加餐。', where:'📍 灵谷寺桂王、街头巷尾', home:2, cat:'creature' },
+  { id:'baige', name:'白鸽',     note:'中山陵音乐台前的白鸽,扑棱棱起飞', quip:'鸽子和鸭子互相看不惯,但都怕人。', where:'📍 中山陵音乐台', home:2, cat:'creature' },
+  { id:'yinghuo', name:'萤火虫', note:'灵谷寺夏夜,萤光如银河落林', quip:'鸭鸭举着它当灯笼,照亮下山路。', where:'📍 灵谷寺,7-8 月夜晚', home:4, rare:true, cat:'creature' },
+  { id:'hufengdie', name:'中华虎凤蝶', note:'南京的蝴蝶名片,春天里振翅', quip:'花开满了,蝶自会来。', where:'📍 紫金山麓,四月', home:4, secret:true, riddle:'花开满了,蝶自会来。', cat:'creature' },
+  { id:'jiangtun', name:'江豚',  note:'长江的微笑精灵,比大熊猫还少', quip:'过江的那一夜,江里有微笑的影子。', where:'📍 长江南京段,江心洲附近', home:9, secret:true, riddle:'过江的那一夜,江里有微笑的影子。', cat:'creature' },
 ];

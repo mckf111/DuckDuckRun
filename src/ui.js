@@ -151,7 +151,7 @@ export function drawMenu(){
   text('没有一只鸭子能走出南京——除了我。', CX, H*0.50, 15, 'rgba(244,241,232,0.82)');
   button('adv','冒险模式', CX, H*0.62, 240, 54);
   button('endless','无尽模式', CX, H*0.73, 240, 54, {ghost:true});
-  button('album','金陵图鉴 ('+Object.keys(save.album).length+'/'+ITEMS.length+')', CX, H*0.84, 240, 54, {ghost:true});
+  button('album','金陵图鉴 ('+Object.keys(save.album).length+'/'+ITEMS.length+')'+(save.albumNew?' ●':''), CX, H*0.84, 240, 54, {ghost:true});
   text('背景风景,皆是实景南京', CX, H-22, 13, 'rgba(244,241,232,0.5)');
   // F6:微信内提示绕开内置浏览器限制(下载/分享被吞)
   if(/MicroMessenger/i.test(navigator.userAgent))
@@ -242,6 +242,7 @@ export function drawOver(){
     : LEVELS[G.lvIdx].name+' · 跑了 '+Math.floor(G.dist)+' m · 收集 '+G.items+' · 距终点还差 '+Math.max(0,Math.ceil(LEVELS[G.lvIdx].len-G.dist))+' m';
   text(line, CX, H*0.42, 20, '#f0b64c');
   if(got) text('新图鉴:'+G.newIds.map(id=>(ITEMS.find(i=>i.id===id)||{}).name||'').join('、'), CX, H*0.48, 16, '#a8d5a2');
+  if(G.newIds.some(id=>ITEMS.find(i=>i.id===id)?.secret)) text('隐藏风物现身!', CX, H*0.53, 15, '#f0b64c', 'center', 'bold');
   button('retry','再来一次 (Enter)', CX, H*0.56, 240, 52);
   button('share','分享成绩', CX-115, H*0.68, 210, 52, {ghost:true});
   button('copy','复制链接', CX+115, H*0.68, 210, 52, {ghost:true});
@@ -272,6 +273,7 @@ export function drawClear(){
   }
   if(G.stateT > 1.2) text('收集 8 / 14 / 20 件 = 1 / 2 / 3 星', CX, H*0.52, 13, '#d8c9a8');
   if(G.newIds.length) text('新图鉴:'+G.newIds.map(id=>(ITEMS.find(i=>i.id===id)||{}).name||'').join('、'), CX, H*0.58, 16, '#a8d5a2');
+  if(G.newIds.some(id=>ITEMS.find(i=>i.id===id)?.secret)) text('隐藏风物现身!', CX, H*0.63, 15, '#f0b64c', 'center', 'bold');
   if(G.lvIdx < LEVELS.length-1){
     const next = LEVELS[G.lvIdx+1];
     const albumFull = Object.keys(save.album).length >= ITEMS.length;
@@ -286,24 +288,55 @@ export function drawClear(){
 }
 export function drawAlbum(){
   dim(0.82);
-  text('金陵图鉴', CX, 46, 40, '#f6f1e7', 'center', 'bold', true);
-  text('鸭子逃亡路上收集的南京记忆 · 四季同框,有时有令 · 点击放大', CX, 78, 14, 'rgba(217,179,106,0.9)');
-  // 风物超过 12 件自动切 6 列紧凑网格;详情都收进放大层
-  const cols = ITEMS.length > 12 ? 6 : 4;
-  const cw = cols === 6 ? 150 : 220, pr = cols === 6 ? 24 : 26;
-  const y0 = cols === 6 ? 150 : 140, step = cols === 6 ? 138 : 128;
-  for(let i=0;i<ITEMS.length;i++){
-    const it = ITEMS[i], got = !!save.album[it.id];
-    const x = CX + (i%cols-(cols-1)/2)*cw, y = y0 + Math.floor(i/cols)*step;
-    // 缩略图:黛蓝圆底 + 插画(未获得灰调),统一与路上收集品同一套画
-    disc(x, y, pr+4, 'rgba(27,42,68,0.9)');
-    disc(x, y, pr+4, null, got ? '#e8c170' : 'rgba(127,170,200,0.4)', got?1.6:1);
-    drawItemIcon(it.id, x, y, got ? pr*0.72 : pr*0.68, !got);
-    text(got?it.name:'???', x, y+pr+16, cols===6?15:17, got?'#f7ead0':'#776e85', 'center', 'bold');
-    if(got && !G.albumZoom){
-      G.buttons.push({id:'item', x:x-65, y:y-56, w:130, h:124, data:it.id});
-      focusRing(G.buttons.length-1, x-65, y-56, 130, 124);
+  text('金陵风物谱', CX, 44, 38, '#f6f1e7', 'center', 'bold', true);
+  const albumN = Object.keys(save.album).length;
+  const secretN = ITEMS.filter(i=>i.secret && save.album[i.id]).length;
+  const secretAll = ITEMS.filter(i=>i.secret).length;
+  text('已集 '+albumN+' / '+ITEMS.length+' · 隐藏 '+secretN+' / '+secretAll, CX, 76, 14, 'rgba(217,179,106,0.9)');
+  // 纵向滚动列表:四部印章式部头 + 部内条目(6 列),位置记忆不重排
+  const COLS = 6, CW = 86, ROW = 82, HEAD = 52;
+  const cats = [
+    { head:'食', name:'食之属', list:ITEMS.filter(i=>i.cat==='food') },
+    { head:'工', name:'工之艺', list:ITEMS.filter(i=>i.cat==='craft') },
+    { head:'迹', name:'迹之忆', list:ITEMS.filter(i=>i.cat==='ruin') },
+    { head:'灵', name:'生之灵', list:ITEMS.filter(i=>i.cat==='creature') },
+  ];
+  let rows = 0; for(const c of cats) rows += Math.ceil(c.list.length / COLS);
+  const contentH = cats.length * HEAD + rows * ROW;
+  const maxScroll = Math.max(0, contentH - (H - 150));
+  G.albumScroll = Math.min(Math.max(0, G.albumScroll||0), maxScroll);
+  ctx.save(); ctx.translate(0, -G.albumScroll);
+  let y = 112;
+  for(const c of cats){
+    // 部头:朱砂方章 + 部名
+    rrect(CX - 170, y, 34, 34, 6, '#d85c47');
+    text(c.head, CX - 153, y + 18, 20, '#f4f1e8', 'center', 'bold');
+    text(c.name + ' · '+c.list.filter(i=>save.album[i.id]).length+' / '+c.list.length, CX - 128, y + 18, 16, '#f0c85a', 'left');
+    ctx.strokeStyle = 'rgba(232,193,112,0.35)'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(CX - 122, y + 26); ctx.lineTo(CX + 170, y + 26); ctx.stroke();
+    y += HEAD;
+    for(let i=0;i<c.list.length;i++){
+      const it = c.list[i], got = !!save.album[it.id];
+      const x = CX - 250 + (i%COLS)*CW, yy = y + Math.floor(i/COLS)*ROW + 20;
+      disc(x, yy, 23, got ? 'rgba(27,42,68,0.9)' : 'rgba(20,28,46,0.9)');
+      disc(x, yy, 23, null, got ? '#e8c170' : 'rgba(127,170,200,0.4)', got?1.4:1);
+      drawItemIcon(it.id, x, yy, got ? 16 : 15, !got);
+      text(got ? it.name : (it.secret ? '???' : '???'), x, yy + 34, 12, got?'#f4f1e8':'#6a6a78', 'center', 'bold');
+      // 隐藏未达成:灰色谜面小字(给玩家留线索)
+      if(!got && it.secret && it.riddle){
+        text(it.riddle, x, yy + 50, 9, 'rgba(216,201,168,0.5)', 'center');
+      }
+      if(got && !G.albumZoom){
+        const by = yy - 34 - G.albumScroll;   // 按钮用屏幕坐标(点击判定不随滚动)
+        G.buttons.push({id:'item', x:x-40, y:by, w:80, h:76, data:it.id});
+        focusRing(G.buttons.length-1, x-40, by, 80, 76);
+      }
     }
+    y += Math.ceil(c.list.length / COLS) * ROW;
+  }
+  ctx.restore();
+  if(maxScroll > 0){   // 滚动提示条
+    text('↑ 滚轮 / 上下拖动 ↑', CX, H - 34, 12, 'rgba(216,201,168,0.6)');
   }
   text('实景照片来自 Wikimedia Commons 与 Openverse,作者与授权见 assets/img/CREDITS.md', CX, H-14, 11, 'rgba(216,201,168,0.55)');
   button('back','返回 (Esc)', W-90, 46, 150, 44, {ghost:true});
@@ -345,6 +378,7 @@ export function handleButton(id, data){
   else if(id==='endless') startRun('endless', 0);
   else if(id==='album'){ G.albumFrom='menu'; G.albumZoom=null; G.state='album';
     loadItemPhotos(ITEMS.map(i=>i.id));   // 懒加载实景对照照片,不阻塞进页
+    if(save.albumNew){ save.albumNew=false; persist(); }   // 隐藏件红点看完即清
   }
   else if(id==='item') G.albumZoom = data;
   else if(id==='zoomclose') G.albumZoom = null;
