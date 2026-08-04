@@ -185,11 +185,52 @@ try{
       const crashStart=game.G.state;
       game.update(0.07); const crashHold=game.G.state;
       game.update(0.2); const crashEnd=game.G.state;
-      return {step1,step2,step3,completed,retryShield,bufferedBefore,bufferedAfter,crashStart,crashHold,crashEnd};
+
+      game.startRun('adv',0);game.G.nextSpawn=Infinity;game.G.nextPower=50;
+      game.G.obs=[{lane:-1,x:-1.25,z:50,type:'full'},{lane:0,x:0,z:50,type:'full'}];
+      game.update(1/60);
+      const power=game.G.powers[0];
+      const powerSafe=power.lane===1&&!game.G.obs.some(o=>o.lane===power.lane&&Math.abs(o.z-power.z)<8);
+
+      delete saves.save.album.baiju;saves.save.secretPending=['baiju'];
+      game.startRun('adv',0);game.G.nextSpawn=Infinity;
+      const firstSecret=game.G.secretQueue.find(entry=>entry.id==='baiju');
+      game.G.obs=[{lane:-1,x:-1.25,z:firstSecret.spawnAt,type:'full'},{lane:0,x:0,z:firstSecret.spawnAt,type:'full'}];
+      for(let i=0;i<30&&!firstSecret.spawned;i++)game.update(1/60);
+      const secretMarks=game.G.cols.filter(mark=>mark.id==='baiju');
+      const secretLane=Math.round(secretMarks[0].x/1.25);
+      const secretSafe=firstSecret.spawnAt<=75&&secretMarks.length===5
+        &&!game.G.obs.some(o=>o.lane===secretLane&&Math.abs(o.z-firstSecret.spawnAt)<9);
+      game.gameOver('full');
+      game.startRun('adv',0);game.G.nextSpawn=Infinity;
+      const guaranteedNextRun=game.G.secretQueue.some(entry=>entry.id==='baiju');
+      const nextSecret=game.G.secretQueue.find(entry=>entry.id==='baiju');
+      for(let i=0;i<30&&!nextSecret.spawned;i++)game.update(1/60);
+      const mark=game.G.cols.find(entry=>entry.id==='baiju');
+      game.pl.lane=Math.round(mark.x/1.25);game.pl.x=mark.x;game.pl.y=Math.max(0,mark.y-0.8);
+      game.G.dist=mark.z-0.1;game.update(1/60);
+      const secretCollected=!!saves.save.album.baiju&&!saves.save.secretPending.includes('baiju');
+
+      saves.save.albumDryRuns=0;
+      for(let i=0;i<3;i++){game.startRun('adv',0);game.gameOver('full');}
+      const dryRuns=saves.save.albumDryRuns;
+
+      const ui=await import('/src/ui.js');
+      const config=await import('/src/config.js');
+      saves.save.ups.magnet=0;saves.save.coins=0;game.G.state='shop';game.G.egg=null;
+      ui.handleButton('buy',0);
+      const shopFail={...game.G.shopFeedback,egg:game.G.egg};
+      saves.save.coins=50;game.G.egg=null;ui.handleButton('buy',0);
+      const shopSuccess={...game.G.shopFeedback,level:saves.save.ups.magnet,coins:saves.save.coins,egg:game.G.egg,final:config.SHOPS[0].levels[3]};
+      return {step1,step2,step3,completed,retryShield,bufferedBefore,bufferedAfter,crashStart,crashHold,crashEnd,
+        powerSafe,secretSafe,guaranteedNextRun,secretCollected,dryRuns,shopFail,shopSuccess};
     });
     assert.deepEqual(interaction,{
       step1:1,step2:2,step3:3,completed:true,retryShield:true,
       bufferedBefore:true,bufferedAfter:true,crashStart:'crashing',crashHold:'crashing',crashEnd:'over',
+      powerSafe:true,secretSafe:true,guaranteedNextRun:true,secretCollected:true,dryRuns:3,
+      shopFail:{type:'fail',index:0,missing:50,ttl:1.2,egg:null},
+      shopSuccess:{type:'success',index:0,spent:50,ttl:1.2,level:1,coins:0,egg:null,final:'12 秒'},
     });
     await context.close();
   }

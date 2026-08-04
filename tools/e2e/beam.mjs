@@ -96,3 +96,23 @@ export async function runBeamAudit(seedCount=200, meters=500){
   bgmStop();
   return failed;
 }
+
+export async function runRhythmAudit(seedCount=12,meters=1000){
+  const [{G,startRun,spawnCluster},{rnd},{save},{bgmStop}]=await gameModules();
+  const failures=[];
+  save.tutorialCompleted=true;save.tut=true;save.cleared[9]=true;
+  for(let level=0;level<10;level++)for(let seed=1;seed<=seedCount;seed++){
+    Math.random=mulberry32(level*1000+seed);
+    startRun('adv',level);
+    let next=40;
+    while(next<meters){spawnCluster(next);next+=rnd(16,24)*(9.5/G.speed)+4;}
+    const log=G.rhythmLog;
+    if(log.filter(entry=>entry.kind==='feature').length<2)failures.push(`lv${level}/s${seed}:feature`);
+    if(log.some(entry=>entry.actionStreak>2))failures.push(`lv${level}/s${seed}:action`);
+    for(let i=0;i<log.length-1;i++)if(log[i].pressure&&log[i+1].kind!=='relief'){
+      failures.push(`lv${level}/s${seed}:relief`);break;
+    }
+  }
+  bgmStop();
+  return failures;
+}

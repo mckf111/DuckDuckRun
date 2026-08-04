@@ -84,11 +84,11 @@ export const RUN_STAR_THRESHOLDS = [8, 14, 20];
 
 /* 鸭铺升级线(二期 §E3):三条线 × 3 级,花铜钱。星级门槛/过关条件/障碍数值一律不动 */
 export const SHOPS = [
-  { id:'magnet', name:'磁铁手艺', line:'局内磁铁时长', levels:['6 秒','8 秒','10 秒'], price:[50,150,400],
+  { id:'magnet', name:'磁铁手艺', line:'局内磁铁时长', levels:['6 秒','8 秒','10 秒','12 秒'], price:[50,150,400],
     note:'吸邻道收集品过来,吃得快', icon:'magnet' },
-  { id:'gui',    name:'金桂手艺', line:'局内金桂时长', levels:['6 秒','8 秒','10 秒'], price:[50,150,400],
+  { id:'gui',    name:'金桂手艺', line:'局内金桂时长', levels:['6 秒','8 秒','10 秒','12 秒'], price:[50,150,400],
     note:'只让铜钱翻倍,不影响印记与星级', icon:'gui' },
-  { id:'spawn',  name:'货郎吆喝', line:'道具出现间隔', levels:['×0.85','×0.7','×0.55'], price:[80,200,500],
+  { id:'spawn',  name:'货郎吆喝', line:'道具出现间隔', levels:['原间隔','×0.85','×0.7','×0.55'], price:[80,200,500],
     note:'路上的道具来得更勤', icon:'spawn' },
 ];
 

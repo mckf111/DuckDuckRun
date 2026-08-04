@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "test:syntax": "node tools/e2e/check_syntax.mjs",
-    "test:logic": "node --test tests/rules.test.js tests/beam.test.js",
+    "test:logic": "node --test tests/rules.test.js tests/beam.test.js tests/rhythm.test.js",
     "test:save": "node --test tests/migration.test.js tests/save-io.test.js",
     "test:resources": "node --test tests/content.test.js",
     "test:browser": "node tools/e2e/browser_test.mjs",

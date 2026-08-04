@@ -7,6 +7,7 @@ import {
   calculateRunStars,
   canPassObstacle,
   getBridgeUnlockStatus,
+  getCollectionWeight,
   getObstacleInstruction,
 } from '../src/rules.js';
 
@@ -22,6 +23,14 @@ test('障碍语法：low 只跳、high 只贴地滑铲、full 只能换道', () 
 
 test('星级只看本局实际印记', () => {
   assert.deepEqual([0, 7, 8, 14, 20, 999].map(n => calculateRunStars(n, RUN_STAR_THRESHOLDS)), [0, 0, 1, 2, 3, 3]);
+});
+
+test('普通风物掉落权重：已拥有 1、未拥有 6，三局无新物后提高', () => {
+  const item={id:'x',secret:false};
+  assert.equal(getCollectionWeight(item,{album:{x:true},albumDryRuns:9},-1),1);
+  assert.equal(getCollectionWeight(item,{album:{},albumDryRuns:2},-1),6);
+  assert.equal(getCollectionWeight(item,{album:{},albumDryRuns:3},-1),12);
+  assert.equal(getCollectionWeight({...item,secret:true},{album:{}},-1),0);
 });
 
 function bridgeSave({ ordinary=28, stars=15, missingClear=false, bridgeCleared=false } = {}){

@@ -1,9 +1,10 @@
 import { ITEMS, LEVELS } from './config.js';
 
-export const SAVE_SCHEMA = 2;
+export const SAVE_SCHEMA = 3;
 export const BRIDGE_INDEX = LEVELS.length - 1;
 export const NORMAL_ITEM_IDS = ITEMS.filter(item => !item.secret).map(item => item.id);
 const ITEM_IDS = new Set(ITEMS.map(item => item.id));
+const GUARANTEED_SECRET_IDS = new Set(ITEMS.filter(item => item.secret && item.id!=='jiangtun').map(item => item.id));
 
 export const OBSTACLE_RULES = {
   low:  { instruction:{ keyboard:'矮障碍要跳过去（↑）', touch:'矮障碍要上滑跳过去' } },
@@ -28,6 +29,15 @@ export function canPassObstacle(player, obstacle){
 export function getObstacleInstruction(type, touch=false){
   const rule=OBSTACLE_RULES[type];
   return rule ? rule.instruction[touch?'touch':'keyboard'] : '';
+}
+
+export function getCollectionWeight(item,candidateSave,levelIndex){
+  if(!item||item.secret)return 0;
+  const source=candidateSave&&typeof candidateSave==='object'?candidateSave:{};
+  const owned=!!(source.album&&source.album[item.id]);
+  const dryRuns=clampInt(source.albumDryRuns,0,99);
+  const base=owned?1:(dryRuns>=3?12:6);
+  return base*(item.home===levelIndex?3:1);
 }
 
 export function calculateRunStars(markCount, thresholds){
@@ -64,6 +74,8 @@ export function normalizeSave(raw){
   const tutorialCompleted = !!(source.tutorialCompleted ?? source.tut ?? source.tutorialDone);
   const upgrades = source.ups && typeof source.ups === 'object' && !Array.isArray(source.ups)
     ? source.ups : {};
+  const secretPending = Array.isArray(source.secretPending)
+    ? [...new Set(source.secretPending.filter(id => GUARANTEED_SECRET_IDS.has(id)))] : [];
   return {
     ...source,
     schema: SAVE_SCHEMA,
@@ -77,6 +89,8 @@ export function normalizeSave(raw){
     distTotal: Math.max(0, finiteInt(source.distTotal)),
     albumNew: !!source.albumNew,
     coins: Math.max(0, finiteInt(source.coins)),
+    albumDryRuns: clampInt(source.albumDryRuns, 0, 99),
+    secretPending,
     ups: {
       magnet: clampInt(upgrades.magnet, 0, 3),
       gui: clampInt(upgrades.gui, 0, 3),

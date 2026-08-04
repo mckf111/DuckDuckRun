@@ -248,12 +248,25 @@ export function drawShop(){
   dim(0.42);
   text('鸭 铺', CX, 46, 40, '#f4f1e8', 'center', null, true);
   text('◉ '+save.coins+' · 花铜钱把手艺学到精通 · 星级与障碍数值一律不动', CX, 80, 14, 'rgba(232,193,112,0.9)');
+  if(G.shopFeedback){
+    const msg=G.shopFeedback.type==='success'?'升级成功 · -'+G.shopFeedback.spent+' 枚':'还差 '+G.shopFeedback.missing+' 枚';
+    text(msg,CX,103,14,G.shopFeedback.type==='success'?'#a8d5a2':'#f0a080','center','bold');
+  }
   const cw = 250, ch = 268, gap = 20;
-  const x0 = CX - (cw*3 + gap*2) / 2, y0 = 108;
+  const x0 = CX - (cw*3 + gap*2) / 2, y0 = 116;
   const NAMEC = { magnet:'#b8533f', gui:'#b8934a', spawn:'#3f6e8c' };
   for(let i=0;i<SHOPS.length;i++){
     const s = SHOPS[i], lvl = save.ups[s.id], maxed = lvl >= 3;
     const cx = x0 + i*(cw+gap);
+    const feedback=G.shopFeedback&&G.shopFeedback.index===i?G.shopFeedback:null;
+    ctx.save();
+    if(feedback){
+      const age=1.2-feedback.ttl;
+      if(feedback.type==='success'){
+        const scale=1+Math.sin(Math.min(1,age/0.35)*Math.PI)*0.055;
+        ctx.translate(cx+cw/2,y0+ch/2);ctx.scale(scale,scale);ctx.translate(-cx-cw/2,-y0-ch/2);
+      }else ctx.translate(Math.sin(age*45)*5,0);
+    }
     rrect(cx, y0, cw, ch, 10, '#1b2a44');
     rrect(cx, y0, cw, ch, 10, null, 'rgba(232,193,112,0.5)', 1.4);
     // 实色名条
@@ -276,6 +289,7 @@ export function drawShop(){
     if(!maxed){
       text('下一级 · '+s.levels[lvl+1], cx+cw/2, y0+252, 11, 'rgba(244,241,232,0.45)');
     }
+    ctx.restore();
   }
   button('back','返回', CX, H-40, 140, 44, {ghost:true});
 }
@@ -431,16 +445,16 @@ export function handleButton(id, data){
   if(id==='adv') G.state='levels';
   else if(id==='tutorial') startRun('adv',0,true);
   else if(id==='endless') startRun('endless', 0);
-  else if(id==='shop') G.state='shop';
+  else if(id==='shop'){ G.shopFeedback=null; G.state='shop'; }
   else if(id==='buy'){   // 鸭铺购买:钱够扣钱升级,不够给提示
     const s = SHOPS[data], lvl = save.ups[s.id];
     if(lvl >= 3) return;
     if(save.coins >= s.price[lvl]){
-      save.coins -= s.price[lvl]; save.ups[s.id]++;
+      const spent=s.price[lvl];save.coins -= spent; save.ups[s.id]++;
       persist(); sfx.gate();
-      G.egg = { text:'手艺精进 · '+s.name+' Lv.'+(lvl+1)+'!', ttl:2, dur:2 };
+      G.shopFeedback={type:'success',index:data,spent,ttl:1.2};
     } else {
-      G.egg = { text:'铜钱不够,再去跑两圈吧', ttl:1.8, dur:1.8 };
+      G.shopFeedback={type:'fail',index:data,missing:s.price[lvl]-save.coins,ttl:1.2};
       sfx.click();
     }
   }
