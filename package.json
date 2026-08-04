@@ -3,6 +3,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test tests/*.test.js"
+    "test:syntax": "node tools/e2e/check_syntax.mjs",
+    "test:logic": "node --test tests/rules.test.js tests/beam.test.js",
+    "test:save": "node --test tests/migration.test.js tests/save-io.test.js",
+    "test:resources": "node --test tests/content.test.js",
+    "test:browser": "node tools/e2e/browser_test.mjs",
+    "test": "npm run test:syntax && npm run test:logic && npm run test:save && npm run test:resources && npm run test:browser"
   }
 }

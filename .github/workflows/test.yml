@@ -1,0 +1,22 @@
+name: trusted-experience
+
+on:
+  push:
+    branches: [codex/trusted-experience]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci --prefix tools/e2e
+      - run: npm exec --prefix tools/e2e -- playwright install --with-deps chromium
+      - run: npm run test:syntax
+      - run: npm run test:logic
+      - run: npm run test:save
+      - run: npm run test:resources
+      - run: npm run test:browser

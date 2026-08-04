@@ -1,14 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { ITEMS, RUN_STAR_THRESHOLDS } from '../src/config.js';
+import { RUN_STAR_THRESHOLDS } from '../src/config.js';
 import {
   BRIDGE_INDEX,
   NORMAL_ITEM_IDS,
-  SAVE_SCHEMA,
   calculateRunStars,
   canPassObstacle,
   getBridgeUnlockStatus,
-  normalizeSave,
 } from '../src/rules.js';
 
 test('障碍语法：low 只跳、high 只贴地滑铲、full 只能换道', () => {
@@ -52,30 +50,4 @@ test('已通大桥旧档继续开放，假图鉴键不能参与解锁', () => {
   const status = getBridgeUnlockStatus(dirty);
   assert.equal(status.ordinaryCount, 27);
   assert.equal(status.unlocked, false);
-});
-
-test('存档迁移覆盖标量、非法值、旧教学字段和超范围升级', () => {
-  const scalar = normalizeSave(123);
-  assert.equal(scalar.schema, SAVE_SCHEMA);
-  assert.equal(scalar.stars.length, 10);
-  const dirty = normalizeSave({
-    best:Infinity, stars:'bad', cleared:3, album:{ fake:true, [ITEMS[0].id]:true },
-    tutorialDone:1, coins:-9, distTotal:Infinity, ups:{ magnet:99, gui:-5, spawn:'bad' },
-  });
-  assert.equal(dirty.best, 0);
-  assert.deepEqual(dirty.album, { [ITEMS[0].id]:true });
-  assert.equal(dirty.tutorialCompleted, true);
-  assert.equal(dirty.coins, 0);
-  assert.deepEqual(dirty.ups, { magnet:3, gui:0, spawn:0 });
-});
-
-test('6 关旧档迁桥到第 10 站，重复迁移不再挪动', () => {
-  const migrated = normalizeSave({
-    stars:[3,2,1,0,0,2], cleared:[true,true,true,false,false,true], album:{ duck:true }, tut:true,
-  });
-  assert.equal(migrated.stars[5], 0);
-  assert.equal(migrated.cleared[5], false);
-  assert.equal(migrated.stars[9], 2);
-  assert.equal(migrated.cleared[9], true);
-  assert.deepEqual(normalizeSave(migrated), migrated);
 });
