@@ -3,7 +3,7 @@ import { G, startRun, update } from './game.js';
 import { render } from './render.js';
 import { loadAll } from './art/photo.js';
 import { bgmStop } from './audio.js';
-import { drawHUD, drawMenu, drawLevels, drawOver, drawClear, drawAlbum } from './ui.js';
+import { drawHUD, drawMenu, drawLevels, drawOver, drawClear, drawAlbum, drawShop } from './ui.js';
 import { track } from './track.js';
 import './input.js';
 
@@ -39,6 +39,7 @@ function frame(ts){
   else if(G.state==='over') drawOver();
   else if(G.state==='clear') drawClear();
   else if(G.state==='album') drawAlbum();
+  else if(G.state==='shop') drawShop();
   // 界面切换:卷轴自左向右揭开;离开游玩状态即停 BGM(菜单/结算不再无限循环)
   if(G.state !== prevState){
     if(prevState==='play' && G.state!=='play') bgmStop();

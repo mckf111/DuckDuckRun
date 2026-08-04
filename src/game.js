@@ -25,6 +25,10 @@ export const G = {
   killedBy:null,       // 致死障碍类型(结算页死因提示)
   newItem:null,        // 新图鉴即时横幅 { id, ttl }
   secretUnlock:{ baiju:false, baochuan:false },  // 局内隐藏件解锁标记(白局15连击/宝船3000m)
+  powers:[],           // 局内道具 { lane, x, z, kind }(磁铁/护盾/金桂)
+  nextPower:0,         // 下一个道具生成距离
+  powerT:{ magnet:0, gui:0 },   // 磁铁/金桂剩余时间(秒)
+  shield:false,        // 护盾:挡一次碰撞
   msIdx:0, lmCyc:-1,   // 无尽:里程碑进度 / 报站周期
 };
 export const pl = { lane:0, x:0, y:0, vy:0, sliding:0, jumps:0 };
@@ -38,6 +42,8 @@ export function startRun(mode, lvIdx){
   G.slowmo = 0; G.newBest = false; G.kbSel = 0; G.kbActive = false;
   G.combo = 0; G.comboT = 0; G.killedBy = null; G.newItem = null;
   G.secretUnlock = { baiju:false, baochuan:false };
+  G.powers = []; G.powerT = { magnet:0, gui:0 }; G.shield = false;
+  G.nextPower = 120;
   G.msIdx = 0; G.lmCyc = -1; G.arcGot = {};
   // 首局教学(仅冒险第一关、第一次):前几簇按教案出障碍,飘字按设备出文案
   // 教学完成标记改为「首次跨过第一个障碍后」再落盘,秒退者不丢教学
@@ -76,7 +82,7 @@ export function onPauseKey(){
     else G.state = G.albumFrom;
     sfx.click();
   }
-  else if(G.state==='levels' || G.state==='over' || G.state==='clear'){ G.state='menu'; sfx.click(); }
+  else if(G.state==='levels' || G.state==='over' || G.state==='clear' || G.state==='shop'){ G.state='menu'; sfx.click(); }
 }
 export function onEnter(){
   if(G.state==='over'){ startRun(G.mode, G.lvIdx); }
@@ -233,6 +239,15 @@ export function update(dt){
     G.secretUnlock.baochuan = true;
     G.egg = { text:'有稀罕东西混进来了……', ttl:2.6, dur:2.6 };
   }
+  // 道具计时(磁铁/金桂)
+  if(G.powerT.magnet > 0) G.powerT.magnet -= dt;
+  if(G.powerT.gui > 0) G.powerT.gui -= dt;
+  // 磁铁生效:邻道收集品横向吸向玩家道
+  if(G.powerT.magnet > 0){
+    for(const c of G.cols){
+      if(!c.got && Math.abs(c.x - pl.x) > 0.1) c.x += (pl.x - c.x) * Math.min(1, dt*4);
+    }
+  }
   if(G.newItem){ G.newItem.ttl -= dt; if(G.newItem.ttl <= 0) G.newItem = null; }
   if(G.mode==='endless'){
     // 里程碑勋章
@@ -254,6 +269,14 @@ export function update(dt){
     spawnCluster(G.nextSpawn);
     G.nextSpawn += (rnd(16,24) * (9.5/G.speed) + 4) * gapMul;
   }
+  // 局内道具:免费道形态的发光物件,每 150~250m 一个(货郎吆喝升级缩短间隔)
+  const spawnMul = [1, 0.85, 0.7, 0.55][save.ups.spawn] || 1;
+  while(G.nextPower < G.dist + DRAWD){
+    const kinds = ['magnet','shield','gui'];
+    G.powers.push({ lane: irnd(-1,1), x:0, z: G.nextPower, kind: kinds[irnd(0,2)] });
+    G.nextPower += rnd(150,250) * spawnMul;
+  }
+  G.powers = G.powers.filter(p=>p.z - G.dist + ZP > 1.2);
   // 穿越门:冒险约每 130~160m,无尽每 200m;不参与碰撞
   while(G.nextGate < G.dist + DRAWD){
     G.gates.push({ z: G.nextGate, passed:false, rz: G.nextGate - G.dist + ZP });
@@ -287,7 +310,13 @@ export function update(dt){
       const slideClear = pl.sliding > 0 && pl.y < 0.3;    // 贴地滑铲才可通过 high(空中快降不免疫)
       // H4:二段跳总高约 2.01,能从荷花缸/画舫/牌坊头顶飞过,给 full 加高度豁免,免于冤枉死
       const dead = (o.type==='full' && pl.y <= 1.9) || (o.type==='low' && !jumpClear) || (o.type==='high' && !slideClear);
-      if(dead){ o.hit = true; gameOver(o.type); return; }
+      if(dead){
+        if(G.shield){                                     // 护盾挡一次:荷叶飞散,不死
+          G.shield = false; o.hit = true;
+          const q = proj(o.x, 1.0, ZP); burst(q.x, q.y, '#7ba86f');
+          sfx.shieldBreak();
+        } else { o.hit = true; gameOver(o.type); return; }
+      }
     }
   }
   G.obs = G.obs.filter(o=>o.rz > 1.2);
@@ -297,7 +326,9 @@ export function update(dt){
     c.rz = c.z - G.dist + ZP;
     const inWin = (c.rz > ZP-0.5 && c.rz < ZP+0.5) || (prevRz > ZP && c.rz <= ZP);
     if(!c.got && inWin && Math.abs(c.x-pl.x)<0.6 && Math.abs(c.y-(pl.y+0.8))<0.95){
-      c.got = true; G.items++;
+      c.got = true;
+      const mul = G.powerT.gui > 0 ? 2 : 1;               // 金桂:铜钱与星级计数 ×2
+      G.items += mul; save.coins += mul; persist();
       G.arcGot[c.arc] = (G.arcGot[c.arc]||0) + 1;
       G.combo++; G.comboT = 3; sfx.collect(G.combo);
       const p = proj(c.x, c.y, ZP); burst(p.x, p.y, '#f0b64c');
@@ -326,6 +357,21 @@ export function update(dt){
     }
   }
   G.cols = G.cols.filter(c=>!c.got && c.rz > 1.2);
+  // 道具扫掠(同收集品判定窗;磁铁/护盾/金桂)
+  for(const p of G.powers){
+    const prevRz = p.rz===undefined ? Infinity : p.rz;
+    p.rz = p.z - G.dist + ZP;
+    const inWin = (p.rz > ZP-0.5 && p.rz < ZP+0.5) || (prevRz > ZP && p.rz <= ZP);
+    if(!p.got && inWin && p.lane === pl.lane){
+      p.got = true;
+      if(p.kind==='magnet'){ G.powerT.magnet = 6 + save.ups.magnet*2; sfx.magnet(); }
+      else if(p.kind==='shield'){ G.shield = true; sfx.shield(); }
+      else { G.powerT.gui = 6 + save.ups.gui*2; sfx.gui(); }
+      sfx.power();
+      const pr = proj(p.lane*LANEGAP, 0.9, ZP); burst(pr.x, pr.y, '#f0c85a');
+    }
+  }
+  G.powers = G.powers.filter(p=>!p.got && p.z - G.dist + ZP > 1.2);
   // 粒子
   ambient(lv);
   for(const p of G.parts){

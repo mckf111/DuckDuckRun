@@ -37,10 +37,52 @@ function vignette(){
   ctx.drawImage(vgCv, 0, 0, W, H);
 }
 
+/* 道具小图标(发光物件本体):磁铁 U 形 / 护盾荷叶帽 / 金桂桂枝 */
+export function drawPowerIcon(kind, x, y, r){
+  const out = 'rgba(14,11,20,0.5)';
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  if(kind==='magnet'){            // U 形磁铁:红身 + 白极
+    ctx.strokeStyle = '#c8342e'; ctx.lineWidth = r*0.34;
+    ctx.beginPath();
+    ctx.arc(x, y, r*0.62, Math.PI, 0);
+    ctx.lineTo(x+r*0.62, y+r*0.7);
+    ctx.arc(x+r*0.62, y+r*0.7, r*0.2, 0, -Math.PI/2, false);
+    ctx.arc(x-r*0.62, y+r*0.7, r*0.2, -Math.PI/2, 0, true);
+    ctx.stroke();
+    ctx.strokeStyle = out; ctx.lineWidth = r*0.36;
+    ctx.beginPath(); ctx.arc(x, y, r*0.62, Math.PI, 0); ctx.stroke();
+    ctx.fillStyle = '#f5f0e6';    // 白极
+    ctx.fillRect(x-r*0.78, y+r*0.45, r*0.32, r*0.5);
+    ctx.fillRect(x+r*0.46, y+r*0.45, r*0.32, r*0.5);
+  } else if(kind==='shield'){     // 荷叶帽:绿圆帽 + 梗
+    ctx.fillStyle = '#4a8a4a';
+    ctx.beginPath(); ctx.ellipse(x, y+r*0.1, r*0.9, r*0.28, 0, Math.PI, 0); ctx.fill();
+    ctx.strokeStyle = out; ctx.lineWidth = r*0.1; ctx.stroke();
+    ctx.fillStyle = '#5aa85a';    // 帽顶
+    ctx.beginPath(); ctx.ellipse(x, y-r*0.05, r*0.95, r*0.34, 0, 0, Math.PI); ctx.fill();
+    ctx.strokeStyle = out; ctx.lineWidth = r*0.1; ctx.stroke();
+    ctx.strokeStyle = '#3a6a3a'; ctx.lineWidth = r*0.09;   // 叶脉
+    ctx.beginPath(); ctx.moveTo(x-r*0.6, y-r*0.3); ctx.quadraticCurveTo(x, y-r*0.42, x+r*0.6, y-r*0.3); ctx.stroke();
+    ctx.strokeStyle = '#4a8a4a'; ctx.lineWidth = r*0.14;   // 梗
+    ctx.beginPath(); ctx.moveTo(x, y-r*0.36); ctx.lineTo(x, y-r*0.85); ctx.stroke();
+  } else {                        // 金桂:桂枝 + 花簇
+    ctx.strokeStyle = '#6a4a2c'; ctx.lineWidth = r*0.16;
+    ctx.beginPath(); ctx.moveTo(x-r*0.7, y+r*0.7); ctx.quadraticCurveTo(x-r*0.1, y+r*0.1, x+r*0.5, y-r*0.6); ctx.stroke();
+    ctx.strokeStyle = '#4a7a3a'; ctx.lineWidth = r*0.1;
+    ctx.beginPath(); ctx.moveTo(x-r*0.55, y+r*0.45); ctx.lineTo(x-r*0.2, y+r*0.55); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x-r*0.15, y+r*0.1); ctx.lineTo(x+r*0.15, y+r*0.02); ctx.stroke();
+    ctx.fillStyle = '#f0c85a';
+    for(const [px,py] of [[-0.3,0.05],[0,-0.15],[0.28,-0.35],[-0.12,-0.3],[0.45,-0.6],[0.1,0.2]]){
+      disc(x+px*r, y+py*r, r*0.16, '#f0c85a');
+      disc(x+px*r, y+py*r, r*0.07, '#f7e0a0');
+    }
+  }
+}
+
 /* ================= 渲染:场景(远/中/近三层视差) ================= */
 export function render(){
-  // 菜单/选关/图鉴:南京眼蓝调底图(缺图回退下方旧场景)
-  if((G.state==='menu'||G.state==='levels'||G.state==='album') && drawMenuBg()){ vignette(); return; }
+  // 菜单/选关/图鉴/鸭铺:南京眼蓝调底图(缺图回退下方旧场景)
+  if((G.state==='menu'||G.state==='levels'||G.state==='album'||G.state==='shop') && drawMenuBg()){ vignette(); return; }
   const lv = G.state==='play'||G.state==='over'||G.state==='clear' ? curLv() : LEVELS[3]; // 菜单用秦淮夜景
   // 无尽模式地标轮换(含长江大桥);冒险模式用本关地标
   const lmId = G.mode==='endless' && (G.state==='play'||G.state==='over'||G.state==='clear')
@@ -136,6 +178,22 @@ export function render(){
     ctx.beginPath(); ctx.arc(p.x, p.y, r*2.4, 0, TAU); ctx.fill();
     ctx.restore();
     drawItemIcon(c.id, p.x, p.y, r, false);
+  }
+  // 局内道具(发光物件,与收集品同层;免费道上不挡路)
+  for(const p of G.powers){
+    if(p.rz < 2 || p.rz > DRAWD) continue;
+    const pp = proj(p.lane*LANEGAP, 0.55 + Math.sin(G.t*3+p.z)*0.08, p.rz);
+    const gp = proj(p.lane*LANEGAP, 0, p.rz);
+    shadow(gp.x, gp.y, gp.s*0.3, 0.2);
+    const r = clamp(pp.s*0.38, 5, 21);
+    ctx.save();
+    const gl = ctx.createRadialGradient(pp.x, pp.y, r*0.2, pp.x, pp.y, r*2.6);
+    gl.addColorStop(0, 'rgba(240,200,90,0.35)');
+    gl.addColorStop(1, 'rgba(240,200,90,0)');
+    ctx.fillStyle = gl;
+    ctx.beginPath(); ctx.arc(pp.x, pp.y, r*2.6, 0, TAU); ctx.fill();
+    ctx.restore();
+    drawPowerIcon(p.kind, pp.x, pp.y, r);
   }
   // 障碍(远->近)
   const obs = G.obs.slice().sort((a,b)=>b.rz-a.rz);

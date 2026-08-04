@@ -25,4 +25,12 @@ save.tut     = !!save.tut;                 // 首局教学已看过
 save.muted   = !!save.muted;
 save.distTotal = (typeof save.distTotal==='number' && isFinite(save.distTotal) && save.distTotal>0) ? Math.floor(save.distTotal) : 0; // 累计里程(米,隐藏件紫峰大厦判定)
 save.albumNew = !!save.albumNew;           // 隐藏件新获得红点(进图鉴页后清除)
+// E 阶段:铜钱与鸭铺升级(三条线 0~3 级)
+save.coins = (typeof save.coins==='number' && isFinite(save.coins) && save.coins>=0) ? Math.floor(save.coins) : 0;
+{ const u = (save.ups && typeof save.ups==='object') ? save.ups : {};
+  save.ups = {
+    magnet: Math.min(3, Math.max(0, u.magnet|0)),
+    gui:    Math.min(3, Math.max(0, u.gui|0)),
+    spawn:  Math.min(3, Math.max(0, u.spawn|0)),
+  }; }
 export function persist(){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify(save)); }catch(e){} }

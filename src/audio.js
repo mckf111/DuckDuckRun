@@ -33,6 +33,11 @@ export const sfx = {
   gate(){ tone(660, 660, 0.12, 'triangle', 0.1); tone(880, 880, 0.2, 'triangle', 0.1, 0.09); }, // 穿门风铃
   newItem(){ [880,1109,1319].forEach((f,i)=>tone(f,f,0.22,'triangle',0.1,i*0.08)); },         // 新图鉴风铃
   record(){ [523,659,784,1047,1319].forEach((f,i)=>tone(f,f,0.26,'triangle',0.12,i*0.09)); }, // 破纪录琶音
+  power(){ tone(740, 980, 0.1, 'triangle', 0.12); },                                          // 道具拾取
+  magnet(){ tone(300, 900, 0.3, 'sine', 0.1); },                                               // 磁铁生效
+  shield(){ tone(400, 400, 0.12, 'square', 0.09); tone(600, 600, 0.12, 'square', 0.07, 0.1); }, // 护盾罩身
+  shieldBreak(){ tone(900, 200, 0.3, 'sawtooth', 0.1); tone(500, 150, 0.35, 'triangle', 0.08, 0.06); }, // 护盾碎
+  gui(){ [659, 880, 1319].forEach((f,i)=>tone(f,f,0.2,'triangle',0.1,i*0.07)); },               // 金桂生效
 };
 
 /* ---- BGM:五声音阶江南小调循环,每关换根音,垫底音量 ---- */

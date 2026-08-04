@@ -1,11 +1,12 @@
 import { ctx, W, H, CX, poly, disc, rrect, petalFlower, clamp } from './core.js';
-import { LEVELS, ITEMS, MILESTONES } from './config.js';
+import { LEVELS, ITEMS, MILESTONES, SHOPS } from './config.js';
 import { save, persist } from './save.js';
 import { sfx } from './audio.js';
 import { G, curLv, startRun, nextAfterClear } from './game.js';
 import { drawItemPhoto, hasPhoto, loadItemPhotos } from './art/photo.js';
 import { drawItemIcon } from './art/items.js';
 import { drawSide } from './art/scenery.js';
+import { drawPowerIcon } from './render.js';
 import { shareScore, copyText, shareLink } from './share.js';
 
 /* ================= 渲染:UI 组件 ================= */
@@ -83,7 +84,17 @@ export function drawHUD(){
   const lv = curLv();
   text(Math.floor(G.dist)+' m', 24, 30, 24, lv.hud, 'left', 'bold');
   text('风物 × '+G.items, 24, 64, 20, lv.hud, 'left', 'bold');
-  if(G.combo >= 2) text(G.combo+' 连击!', 24, 92, 16, '#f0b64c', 'left', 'bold');
+  text('◉ '+save.coins, 24, 92, 16, '#f0c85a', 'left', 'bold');            // 铜钱余额
+  if(G.combo >= 2) text(G.combo+' 连击!', 24, 118, 16, '#f0b64c', 'left', 'bold');
+  // 道具状态(磁铁/金桂剩余秒;护盾小图标)
+  let stY = 140, stX = 24;
+  if(G.powerT.magnet > 0){ text('磁铁 '+Math.ceil(G.powerT.magnet)+'s', stX, stY, 14, '#f0a860', 'left', 'bold'); stY += 22; }
+  if(G.powerT.gui > 0){ text('金桂 '+Math.ceil(G.powerT.gui)+'s', stX, stY, 14, '#f0c85a', 'left', 'bold'); stY += 22; }
+  if(G.shield){
+    disc(stX+8, stY, 8, '#4a8a4a'); disc(stX+8, stY, 8, null, '#7ba86f', 1.5);
+    ctx.fillStyle = '#5aa85a'; ctx.beginPath(); ctx.ellipse(stX+8, stY-1, 7, 3, 0, Math.PI, 0); ctx.fill();
+    text('护盾', stX+22, stY, 14, '#a8d5a2', 'left', 'bold');
+  }
   if(G.mode==='adv'){
     text(lv.name, CX, 30, 22, lv.hud, 'center', 'bold');
     // 进度条
@@ -149,9 +160,10 @@ export function drawMenu(){
   disc(CX, ty+68, 3, '#e8c170');
   text('—— 奔跑展开的金陵长卷 ——', CX, H*0.435, 18, '#e8c170');
   text('没有一只鸭子能走出南京——除了我。', CX, H*0.50, 15, 'rgba(244,241,232,0.82)');
-  button('adv','冒险模式', CX, H*0.62, 240, 54);
-  button('endless','无尽模式', CX, H*0.73, 240, 54, {ghost:true});
-  button('album','金陵图鉴 ('+Object.keys(save.album).length+'/'+ITEMS.length+')'+(save.albumNew?' ●':''), CX, H*0.84, 240, 54, {ghost:true});
+  button('adv','冒险模式', CX, H*0.60, 240, 50);
+  button('endless','无尽模式', CX, H*0.70, 240, 50, {ghost:true});
+  button('album','金陵图鉴 ('+Object.keys(save.album).length+'/'+ITEMS.length+')'+(save.albumNew?' ●':''), CX, H*0.80, 240, 50, {ghost:true});
+  button('shop','鸭铺 (◉ '+save.coins+')', CX, H*0.89, 240, 50, {ghost:true});
   text('背景风景,皆是实景南京', CX, H-22, 13, 'rgba(244,241,232,0.5)');
   // F6:微信内提示绕开内置浏览器限制(下载/分享被吞)
   if(/MicroMessenger/i.test(navigator.userAgent))
@@ -226,6 +238,44 @@ export function drawLevels(){
   }
   button('back','返回', CX, H-42, 140, 44, {ghost:true});
 }
+
+/* 鸭铺:三张价目牌(站牌风格统一:黛蓝卡 + 实色名条),花铜钱升级;满级「已精通」 */
+export function drawShop(){
+  dim(0.42);
+  text('鸭 铺', CX, 46, 40, '#f4f1e8', 'center', null, true);
+  text('◉ '+save.coins+' · 花铜钱把手艺学到精通 · 星级与障碍数值一律不动', CX, 80, 14, 'rgba(232,193,112,0.9)');
+  const cw = 250, ch = 268, gap = 20;
+  const x0 = CX - (cw*3 + gap*2) / 2, y0 = 108;
+  const NAMEC = { magnet:'#b8533f', gui:'#b8934a', spawn:'#3f6e8c' };
+  for(let i=0;i<SHOPS.length;i++){
+    const s = SHOPS[i], lvl = save.ups[s.id], maxed = lvl >= 3;
+    const cx = x0 + i*(cw+gap);
+    rrect(cx, y0, cw, ch, 10, '#1b2a44');
+    rrect(cx, y0, cw, ch, 10, null, 'rgba(232,193,112,0.5)', 1.4);
+    // 实色名条
+    ctx.fillStyle = NAMEC[s.id]; ctx.fillRect(cx, y0, cw, 34);
+    text(s.name, cx+cw/2, y0+18, 19, '#f4f1e8', 'center', 'bold');
+    // 图标 + 效果说明
+    drawPowerIcon(s.icon, cx+cw/2, y0+78, 22);
+    text(s.line, cx+cw/2, y0+124, 13, 'rgba(244,241,232,0.72)');
+    text('Lv.'+lvl+' · '+s.levels[lvl], cx+cw/2, y0+148, 16, lvl ? '#f0c85a' : 'rgba(244,241,232,0.55)', 'center', 'bold');
+    text(s.note, cx+cw/2, y0+172, 12, 'rgba(232,193,112,0.7)');
+    // 购买/已精通
+    if(maxed){
+      rrect(cx+cw/2-70, y0+196, 140, 44, 22, 'rgba(232,193,112,0.16)');
+      text('已 精 通', cx+cw/2, y0+219, 16, '#e8c170', 'center', 'bold');
+    } else {
+      const afford = save.coins >= s.price[lvl];
+      button('buy', '◉ '+s.price[lvl]+' 升级', cx+cw/2, y0+218, 150, 44, {bg: afford ? '#d85c47' : 'rgba(216,92,71,0.4)', data:i});
+    }
+    // 升级预览:下一级效果
+    if(!maxed){
+      text('下一级 · '+s.levels[lvl+1], cx+cw/2, y0+252, 11, 'rgba(244,241,232,0.45)');
+    }
+  }
+  button('back','返回', CX, H-40, 140, 44, {ghost:true});
+}
+
 const CRASH_TITLES = ['撞上了!','鸭鸭眼冒金星!','被金陵的墙留下了','差一步就出城了……'];
 const DEATH_TIPS = {
   low:'矮墩子要跳过去(↑)',
@@ -376,6 +426,19 @@ export function clickAt(px, py){
 export function handleButton(id, data){
   if(id==='adv') G.state='levels';
   else if(id==='endless') startRun('endless', 0);
+  else if(id==='shop') G.state='shop';
+  else if(id==='buy'){   // 鸭铺购买:钱够扣钱升级,不够给提示
+    const s = SHOPS[data], lvl = save.ups[s.id];
+    if(lvl >= 3) return;
+    if(save.coins >= s.price[lvl]){
+      save.coins -= s.price[lvl]; save.ups[s.id]++;
+      persist(); sfx.gate();
+      G.egg = { text:'手艺精进 · '+s.name+' Lv.'+(lvl+1)+'!', ttl:2, dur:2 };
+    } else {
+      G.egg = { text:'铜钱不够,再去跑两圈吧', ttl:1.8, dur:1.8 };
+      sfx.click();
+    }
+  }
   else if(id==='album'){ G.albumFrom='menu'; G.albumZoom=null; G.state='album';
     loadItemPhotos(ITEMS.map(i=>i.id));   // 懒加载实景对照照片,不阻塞进页
     if(save.albumNew){ save.albumNew=false; persist(); }   // 隐藏件红点看完即清
