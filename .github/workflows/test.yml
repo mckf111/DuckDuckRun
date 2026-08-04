@@ -14,7 +14,7 @@ jobs:
         with:
           node-version: 22
       - run: npm ci --prefix tools/e2e
-      - run: npm exec --prefix tools/e2e -- playwright install --with-deps chromium
+      - run: node tools/e2e/node_modules/playwright-core/cli.js install --with-deps chromium
       - run: npm run test:syntax
       - run: npm run test:logic
       - run: npm run test:save
