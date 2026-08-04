@@ -1,6 +1,7 @@
 import { ctx, W, H, CX, poly, disc, rrect, petalFlower, clamp } from './core.js';
-import { LEVELS, ITEMS, MILESTONES, SHOPS } from './config.js';
+import { LEVELS, ITEMS, MILESTONES, SHOPS, RUN_STAR_THRESHOLDS } from './config.js';
 import { save, persist } from './save.js';
+import { getBridgeUnlockStatus } from './rules.js';
 import { sfx } from './audio.js';
 import { G, curLv, startRun, nextAfterClear } from './game.js';
 import { drawItemPhoto, hasPhoto, loadItemPhotos } from './art/photo.js';
@@ -83,7 +84,7 @@ export function dim(alpha){ ctx.fillStyle=`rgba(8,6,14,${alpha})`; ctx.fillRect(
 export function drawHUD(){
   const lv = curLv();
   text(Math.floor(G.dist)+' m', 24, 30, 24, lv.hud, 'left', 'bold');
-  text('风物 × '+G.items, 24, 64, 20, lv.hud, 'left', 'bold');
+  text('印记 × '+G.runMarks, 24, 64, 20, lv.hud, 'left', 'bold');
   text('◉ '+save.coins, 24, 92, 16, '#f0c85a', 'left', 'bold');            // 铜钱余额
   if(G.combo >= 2) text(G.combo+' 连击!', 24, 118, 16, '#f0b64c', 'left', 'bold');
   // 道具状态(磁铁/金桂剩余秒;护盾小图标)
@@ -187,6 +188,7 @@ export function drawLevels(){
   const albumN = Object.keys(save.album).length;
   text('已集风物 '+albumN+' / '+ITEMS.length+' · 总星 '+totalStars, CX, 72, 13, 'rgba(232,193,112,0.9)');
   const n = LEVELS.length;
+  const bridgeStatus = getBridgeUnlockStatus(save);
   const cols = n <= 6 ? n : 5;
   const rows = Math.ceil(n / cols);
   const gap = 10;
@@ -194,10 +196,9 @@ export function drawLevels(){
   const ch = rows > 1 ? 178 : 214;
   const x0 = CX - (cols*cw + (cols-1)*gap) / 2;
   const y0 = rows > 1 ? 94 : 118;
-  const albumFull = albumN >= ITEMS.length;
   for(let i=0;i<n;i++){
     const lv = LEVELS[i];
-    const unlocked = lv.hidden ? (albumFull && totalStars>=15) : (i===0 || save.cleared[i-1]);
+    const unlocked = lv.hidden ? bridgeStatus.unlocked : (i===0 || save.cleared[i-1]);
     const cx0 = x0 + (i%cols)*(cw+gap), cy0 = y0 + Math.floor(i/cols)*(ch+gap);
     const bandY = cy0 + Math.round(ch*0.52), bandH = 28;
     // 站牌底:上半该关天色,下半黛蓝面板
@@ -219,8 +220,10 @@ export function drawLevels(){
       text(lv.sub, cx0+cw/2, bandY+bandH+22, fitSize(lv.sub, cw-12, 11), 'rgba(244,241,232,0.72)', 'center');
       stars(save.stars[i], cx0+cw/2, cy0+ch-22, 9);
     } else {
-      const riddle = lv.hidden ? '图鉴集齐十五星,江上双虹夜放行' : lv.sub;
-      const lock = lv.hidden ? '🔒 图鉴集齐 + 15 星解锁' : '🔒 通关「'+LEVELS[i-1].name+'」解锁';
+      const riddle = lv.hidden ? '九站走遍,星与风物皆有凭' : lv.sub;
+      const lock = lv.hidden
+        ? '🔒 前九关 · '+bridgeStatus.starCount+'/15 星 · '+bridgeStatus.ordinaryCount+'/28 风物'
+        : '🔒 通关「'+LEVELS[i-1].name+'」解锁';
       text(riddle, cx0+cw/2, bandY+bandH+20, fitSize(riddle, cw-12, 11), 'rgba(232,193,112,0.75)', 'center');
       text(lock, cx0+cw/2, cy0+ch-20, fitSize(lock, cw-12, 12), 'rgba(244,241,232,0.78)');
       // 锁定压暗(名条除外,留个念想)
@@ -288,8 +291,8 @@ export function drawOver(){
   text(CRASH_TITLES[Math.floor(G.dist)%CRASH_TITLES.length], CX, H*0.26, 52, '#f4f1e8', 'center', null, true);
   if(G.killedBy && DEATH_TIPS[G.killedBy]) text('小提示:'+DEATH_TIPS[G.killedBy], CX, H*0.35, 15, '#a8d5a2');
   const line = G.mode==='endless'
-    ? '跑了 '+Math.floor(G.dist)+' m · 收集 '+G.items+(G.newBest?' · 新纪录!':'')
-    : LEVELS[G.lvIdx].name+' · 跑了 '+Math.floor(G.dist)+' m · 收集 '+G.items+' · 距终点还差 '+Math.max(0,Math.ceil(LEVELS[G.lvIdx].len-G.dist))+' m';
+    ? '跑了 '+Math.floor(G.dist)+' m · 印记 '+G.runMarks+(G.newBest?' · 新纪录!':'')
+    : LEVELS[G.lvIdx].name+' · 跑了 '+Math.floor(G.dist)+' m · 印记 '+G.runMarks+' · 距终点还差 '+Math.max(0,Math.ceil(LEVELS[G.lvIdx].len-G.dist))+' m';
   text(line, CX, H*0.42, 20, '#f0b64c');
   if(got) text('新图鉴:'+G.newIds.map(id=>(ITEMS.find(i=>i.id===id)||{}).name||'').join('、'), CX, H*0.48, 16, '#a8d5a2');
   if(G.newIds.some(id=>ITEMS.find(i=>i.id===id)?.secret)) text('隐藏风物现身!', CX, H*0.53, 15, '#f0b64c', 'center', 'bold');
@@ -314,22 +317,24 @@ export function drawClear(){
   const lv = LEVELS[G.lvIdx];
   text('过关!', CX, H*0.2, 58, '#f4f1e8', 'center', null, true);
   text(lv.sub, CX, H*0.29, 15, '#d8c9a8');
-  text(lv.name+' · 收集 '+G.items+' 件金陵风物', CX, H*0.36, 20, '#f0b64c');
+  text(lv.name+' · 本局拾取 '+G.runMarks+' 枚印记', CX, H*0.36, 20, '#f0b64c');
   // 星星逐颗弹入
-  const n = save.stars[G.lvIdx];
+  const n = G.runStars;
   for(let i=0;i<3;i++){
     const k = clamp((G.stateT-0.35-i*0.25)/0.2, 0, 1);
     if(k>0) star(CX+(i-1)*52, H*0.45, 20, i<n, 1.6-0.6*k);
   }
-  if(G.stateT > 1.2) text('收集 8 / 14 / 20 件 = 1 / 2 / 3 星', CX, H*0.52, 13, '#d8c9a8');
+  if(G.stateT > 1.2){
+    text('本局 '+G.runStars+' 星 · 历史最佳 '+save.stars[G.lvIdx]+' 星', CX, H*0.515, 15, '#f7ead0', 'center', 'bold');
+    text('印记 '+RUN_STAR_THRESHOLDS.join(' / ')+' = 1 / 2 / 3 星', CX, H*0.555, 13, '#d8c9a8');
+  }
   if(G.newIds.length) text('新图鉴:'+G.newIds.map(id=>(ITEMS.find(i=>i.id===id)||{}).name||'').join('、'), CX, H*0.58, 16, '#a8d5a2');
   if(G.newIds.some(id=>ITEMS.find(i=>i.id===id)?.secret)) text('隐藏风物现身!', CX, H*0.63, 15, '#f0b64c', 'center', 'bold');
   if(G.lvIdx < LEVELS.length-1){
     const next = LEVELS[G.lvIdx+1];
-    const albumFull = Object.keys(save.album).length >= ITEMS.length;
-    const totalStars = save.stars.reduce((a,b)=>a+b,0);
-    if(!next.hidden || (albumFull && totalStars>=15)) button('next','下一关:'+next.name+' (Enter)', CX, H*0.66, 300, 52);
-    else text('图鉴集齐 + 15 星,解锁隐藏关「'+next.name+'」', CX, H*0.66, 16, '#f7ead0');
+    const bridgeStatus = getBridgeUnlockStatus(save);
+    if(!next.hidden || bridgeStatus.unlocked) button('next','下一关:'+next.name+' (Enter)', CX, H*0.66, 300, 52);
+    else text('前九关通关 + 15 星 + 28/34 普通风物,解锁「'+next.name+'」', CX, H*0.66, 15, '#f7ead0');
   } else if(G.lvIdx===LEVELS.length-1) text('你已跑过长江大桥!金陵再也没墙拦得住鸭鸭', CX, H*0.66, 18, '#f7ead0');
   else text('你已跑遍金陵五景!图鉴还在继续等你集齐', CX, H*0.66, 18, '#f7ead0');
   button('share','分享成绩', CX-115, H*0.76, 210, 52, {ghost:true});
@@ -417,7 +422,9 @@ function drawAlbumZoom(){
 
 /* ---- 点击 ---- */
 export function clickAt(px, py){
-  for(const b of G.buttons){
+  // 后绘制的按钮在视觉顶层，必须先命中（图鉴遮罩优先于下方卡片）。
+  for(let i=G.buttons.length-1;i>=0;i--){
+    const b = G.buttons[i];
     if(px>=b.x && px<=b.x+b.w && py>=b.y && py<=b.y+b.h){
       sfx.click(); handleButton(b.id, b.data); return;
     }

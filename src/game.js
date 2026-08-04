@@ -1,6 +1,7 @@
 import { clamp, lerp, rnd, irnd, proj, LANEGAP, ZP, DRAWD, TAU } from './core.js';
-import { LEVELS, ITEMS, LM_CYCLE, LM_NAME, MILESTONES } from './config.js';
-import { save, persist } from './save.js';
+import { LEVELS, ITEMS, LM_CYCLE, LM_NAME, MILESTONES, RUN_STAR_THRESHOLDS } from './config.js';
+import { save, persist, queuePersist } from './save.js';
+import { canPassObstacle, calculateRunStars, getBridgeUnlockStatus } from './rules.js';
 import { sfx, bgm } from './audio.js';
 import { track } from './track.js';
 
@@ -9,7 +10,7 @@ export const G = {
   state:'menu',      // menu | levels | play | over | clear | album
   mode:'adv',        // adv | endless
   lvIdx:0, paused:false, t:0,
-  dist:0, speed:0, items:0, newIds:[],
+  dist:0, speed:0, runMarks:0, runStars:0, newIds:[],
   obs:[], cols:[], parts:[], gates:[],
   nextSpawn:0, nextGate:0, shake:0,
   buttons:[], albumFrom:'menu', slowmo:0, wipe:0, pressed:null,
@@ -35,7 +36,7 @@ export const pl = { lane:0, x:0, y:0, vy:0, sliding:0, jumps:0 };
 
 export function startRun(mode, lvIdx){
   G.mode = mode; G.lvIdx = lvIdx;
-  G.dist = 0; G.items = 0; G.newIds = []; G.t = 0;
+  G.dist = 0; G.runMarks = 0; G.runStars = 0; G.newIds = []; G.t = 0;
   G.obs = []; G.cols = []; G.parts = []; G.gates = [];
   G.speed = mode==='adv' ? LEVELS[lvIdx].speed : 9.5;
   G.nextSpawn = 40; G.paused = false; G.shake = 0; G.egg = null;
@@ -125,6 +126,7 @@ function spawnArc(z, freeLane){
   const lvNow = G.mode==='adv' ? G.lvIdx : -1;
   const pool = [];
   for(const it of ITEMS){
+    if(it.id==='jiangtun') continue;   // 江豚只由首次通关大桥授予,永不进随机池
     if(it.rare && !(it.home===lvNow || (G.mode==='endless' && G.dist>800))) continue;
     if(it.secret && !secretReady(it)) continue;
     const w = it.home===lvNow ? 3 : 1;
@@ -306,10 +308,7 @@ export function update(dt){
     // 扫掠判定:在判定窗内,或本帧整体跨过玩家平面(防高速低帧率隧穿)
     const inWin = (o.rz > ZP-0.45 && o.rz < ZP+0.45) || (prevRz > ZP && o.rz <= ZP);
     if(inWin && Math.abs(o.x - pl.x) < 0.55){
-      const jumpClear = pl.y > 0.72;                      // 跳起可通过 low
-      const slideClear = pl.sliding > 0 && pl.y < 0.3;    // 贴地滑铲才可通过 high(空中快降不免疫)
-      // H4:二段跳总高约 2.01,能从荷花缸/画舫/牌坊头顶飞过,给 full 加高度豁免,免于冤枉死
-      const dead = (o.type==='full' && pl.y <= 1.9) || (o.type==='low' && !jumpClear) || (o.type==='high' && !slideClear);
+      const dead = !canPassObstacle(pl, o);
       if(dead){
         if(G.shield){                                     // 护盾挡一次:荷叶飞散,不死
           G.shield = false; o.hit = true;
@@ -327,17 +326,16 @@ export function update(dt){
     const inWin = (c.rz > ZP-0.5 && c.rz < ZP+0.5) || (prevRz > ZP && c.rz <= ZP);
     if(!c.got && inWin && Math.abs(c.x-pl.x)<0.6 && Math.abs(c.y-(pl.y+0.8))<0.95){
       c.got = true;
-      const mul = G.powerT.gui > 0 ? 2 : 1;               // 金桂:铜钱与星级计数 ×2
-      G.items += mul; save.coins += mul; persist();
+      const coinMul = G.powerT.gui > 0 ? 2 : 1;            // 金桂只翻倍铜钱
+      G.runMarks += 1;
+      G.runStars = calculateRunStars(G.runMarks, RUN_STAR_THRESHOLDS);
+      save.coins += coinMul;
+      queuePersist();
       G.arcGot[c.arc] = (G.arcGot[c.arc]||0) + 1;
       G.combo++; G.comboT = 3; sfx.collect(G.combo);
       const p = proj(c.x, c.y, ZP); burst(p.x, p.y, '#f0b64c');
       if(!save.album[c.id]){
-        save.album[c.id]=true; G.newIds.push(c.id); persist();
-        const it = ITEMS.find(i=>i.id===c.id);
-        if(it && it.secret){ save.albumNew = true; persist(); }     // 隐藏件红点
-        G.newItem = { id:c.id, ttl:2.0 }; sfx.newItem();          // 新图鉴即时横幅(2 秒,不挡视野)
-        G.egg = { text:it && it.quip ? it.quip : '', ttl:3.2, dur:3.2 };
+        grantAlbumItem(c.id);
       } else if(Math.random() < 0.2){
         const it = ITEMS.find(i=>i.id===c.id);
         if(it && it.quip) G.egg = { text:it.quip, ttl:2.6, dur:2.6 };
@@ -349,8 +347,7 @@ export function update(dt){
       }
       // 冒险模式:星级门槛即时提示
       if(G.mode==='adv'){
-        const need = [8,14,20];
-        for(let i=0;i<3;i++) if(G.items === need[i]){
+        for(let i=0;i<3;i++) if(G.runMarks === RUN_STAR_THRESHOLDS[i]){
           G.egg = { text:'★'.repeat(i+1)+' 达成!', ttl:2.2, dur:2.2 }; sfx.gate();
         }
       }
@@ -397,24 +394,36 @@ export function gameOver(type){
 }
 export function levelClear(){
   sfx.clear();
-  const need = [8,14,20]; let star = 0;
-  for(let i=0;i<3;i++) if(G.items>=need[i]) star = i+1;
-  if(star > save.stars[G.lvIdx]) save.stars[G.lvIdx]=star;
+  G.runStars = calculateRunStars(G.runMarks, RUN_STAR_THRESHOLDS);
+  if(G.runStars > save.stars[G.lvIdx]) save.stars[G.lvIdx]=G.runStars;
   save.cleared[G.lvIdx] = true;   // 通关即解锁下一关,与星级脱钩
+  if(G.lvIdx === LEVELS.length-1) grantAlbumItem('jiangtun');
   save.distTotal += Math.floor(G.dist);   // 累计里程
   persist();
   G.state = 'clear';
-  track('clear', { lv:G.lvIdx, star, items:G.items });
+  track('clear', { lv:G.lvIdx, star:G.runStars, marks:G.runMarks });
 }
 export function nextAfterClear(){
   if(G.lvIdx < LEVELS.length-1){
     const next = LEVELS[G.lvIdx+1];
     // 隐藏关(大桥)未达成解锁条件时不允许 Enter 直进
     if(next.hidden){
-      const albumFull = Object.keys(save.album).length >= ITEMS.length;
-      const totalStars = save.stars.reduce((a,b)=>a+b,0);
-      if(!(albumFull && totalStars >= 15)){ G.state = 'menu'; return; }
+      if(!getBridgeUnlockStatus(save).unlocked){ G.state = 'menu'; return; }
     }
     startRun('adv', G.lvIdx+1);
   } else G.state = 'menu';
+}
+
+/* 路上拾取与关卡奖励共用，保证图鉴、红点和本局新物品不串账。 */
+export function grantAlbumItem(id){
+  const item = ITEMS.find(entry => entry.id === id);
+  if(!item || save.album[id]) return false;
+  save.album[id] = true;
+  G.newIds.push(id);
+  if(item.secret) save.albumNew = true;
+  G.newItem = { id, ttl:2.0 };
+  G.egg = { text:item.quip || '', ttl:3.2, dur:3.2 };
+  queuePersist();
+  sfx.newItem();
+  return true;
 }

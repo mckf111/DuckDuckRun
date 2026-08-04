@@ -95,8 +95,12 @@ function fallbackCopy(text, done){
 
 export function shareScore(){
   // L4:进异步回调前捕获本局数据,避免玩家在此期间重开导致文案变「跑了 0 m」
-  const dist = Math.floor(G.dist), items = G.items, albumN = Object.keys(save.album).length;
-  const endless = G.mode==='endless';
+  const snapshot = {
+    dist:Math.floor(G.dist), marks:G.runMarks, stars:G.runStars,
+    endless:G.mode==='endless', levelName:LEVELS[G.lvIdx].name,
+    albumN:Object.keys(save.album).length,
+  };
+  const { dist, marks, stars, endless, levelName, albumN } = snapshot;
   const link = shareLink();
   const text = '我在《金陵快跑》跑了 ' + dist + ' m,集齐 ' + albumN + '/' + ITEMS.length
     + ' 件金陵风物!没有一只鸭子能走出南京——除了我。 ' + link;
@@ -117,13 +121,13 @@ export function shareScore(){
   x2.strokeStyle = '#f0b64c'; x2.lineWidth = 1.5;
   x2.beginPath(); x2.moveTo(150, 130); x2.lineTo(450, 130); x2.stroke();
   drawDuck(x2, 300, 320, 130, gold);
-  const title = endless ? '无尽模式' : LEVELS[G.lvIdx].name;
+  const title = endless ? '无尽模式' : levelName;
   x2.fillStyle = '#f7ead0'; x2.font = '26px "JinlingKai","KaiTi","Microsoft YaHei",serif';
   x2.fillText(title + ' · ' + dist + ' m', 300, 448);
   x2.fillStyle = '#c9b88f'; x2.font = '18px "JinlingKai","KaiTi","Microsoft YaHei",serif';
-  let sub = '收集风物 ' + items + ' 件 · 图鉴 ' + albumN + '/' + ITEMS.length;
+  let sub = '本局印记 ' + marks + ' 枚' + (endless ? '' : ' · '+stars+' 星') + ' · 图鉴 ' + albumN + '/' + ITEMS.length;
   if(endless){
-    const ms = MILESTONES.filter(m => save.best >= m[0]).pop();
+    const ms = MILESTONES.filter(m => dist >= m[0]).pop();
     if(ms) sub += ' · ' + ms[1];
   }
   x2.fillText(sub, 300, 482);
@@ -133,7 +137,7 @@ export function shareScore(){
   x2.fillText('背景风景,皆是实景南京', 300, 622);
   x2.fillStyle = '#a89a78'; x2.font = '14px "JinlingKai","KaiTi","Microsoft YaHei",serif';
   const totalStars = save.stars.reduce((a,b)=>a+b,0);
-  x2.fillText('无尽最佳 ' + save.best + ' m · 星星 ' + totalStars + '/18', 300, 680);
+  x2.fillText('无尽最佳 ' + save.best + ' m · 星星 ' + totalStars + '/' + (LEVELS.length*3), 300, 680);
   // 右下角二维码 + 回游链接(传播第一跳的入口)
   drawQR(x2, 516, 655, 92);
   x2.font = '11px "Microsoft YaHei","PingFang SC",sans-serif';
