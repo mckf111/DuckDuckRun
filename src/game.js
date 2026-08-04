@@ -1,27 +1,30 @@
 import { clamp, lerp, rnd, irnd, proj, LANEGAP, ZP, DRAWD, TAU } from './core.js';
 import { LEVELS, ITEMS, LM_CYCLE, LM_NAME, MILESTONES, RUN_STAR_THRESHOLDS } from './config.js';
 import { save, persist, queuePersist } from './save.js';
-import { canPassObstacle, calculateRunStars, getBridgeUnlockStatus } from './rules.js';
+import { canPassObstacle, calculateRunStars, getBridgeUnlockStatus, getObstacleInstruction } from './rules.js';
 import { sfx, bgm } from './audio.js';
 import { track } from './track.js';
 
 /* ================= 游戏状态 ================= */
 export const G = {
-  state:'menu',      // menu | levels | play | over | clear | album
+  state:'menu',      // menu | levels | play | crashing | over | clear | album
   mode:'adv',        // adv | endless
   lvIdx:0, paused:false, t:0,
   dist:0, speed:0, runMarks:0, runStars:0, newIds:[],
   obs:[], cols:[], parts:[], gates:[],
   nextSpawn:0, nextGate:0, shake:0,
-  buttons:[], albumFrom:'menu', slowmo:0, wipe:0, pressed:null,
+  buttons:[], albumFrom:'menu', wipe:0, pressed:null,
   albumZoom:null,    // 图鉴放大查看的风物 id(纯 UI 状态)
   albumScroll:0,     // 图鉴页纵向滚动偏移(px)
   egg:null,            // 彩蛋文案 { text, ttl, dur }
   newBest:false,       // 本局是否破了无尽纪录(结算页展示)
   kbSel:0, kbActive:false, // 菜单键盘导航焦点
   combo:0, comboT:0,   // 连击与剩余窗口
-  tut:null,            // 首局教学飘字 [{z,text}]
-  tutStage:0,          // 教学簇进度:0=整墙 1=矮墩 2=高门 3=结束
+  tut:null,            // 教学飘字 [{z,text}]
+  tutStage:4,          // 兼容测试快照；0~3 对应四步教学，4=结束
+  tutorial:null,       // {step,targetZ,targetLane,actionDone,retries}
+  inputBuffer:{jump:0,slide:0},
+  crashT:0,
   arcGot:{},           // 每弧线已收计数(一串全收判定)
   killedBy:null,       // 致死障碍类型(结算页死因提示)
   newItem:null,        // 新图鉴即时横幅 { id, ttl }
@@ -34,7 +37,7 @@ export const G = {
 };
 export const pl = { lane:0, x:0, y:0, vy:0, sliding:0, jumps:0 };
 
-export function startRun(mode, lvIdx){
+export function startRun(mode, lvIdx, forceTutorial=false){
   if(mode==='adv' && (!LEVELS[lvIdx] || (LEVELS[lvIdx].hidden && !getBridgeUnlockStatus(save).unlocked))){
     G.state = 'levels';
     return false;
@@ -44,23 +47,20 @@ export function startRun(mode, lvIdx){
   G.obs = []; G.cols = []; G.parts = []; G.gates = [];
   G.speed = mode==='adv' ? LEVELS[lvIdx].speed : 9.5;
   G.nextSpawn = 40; G.paused = false; G.shake = 0; G.egg = null;
-  G.slowmo = 0; G.newBest = false; G.kbSel = 0; G.kbActive = false;
+  G.newBest = false; G.kbSel = 0; G.kbActive = false;
   G.combo = 0; G.comboT = 0; G.killedBy = null; G.newItem = null;
   G.secretUnlock = { baiju:false, baochuan:false };
   G.powers = []; G.powerT = { magnet:0, gui:0 }; G.shield = false;
   G.nextPower = 120;
   G.msIdx = 0; G.lmCyc = -1; G.arcGot = {};
-  // 首局教学(仅冒险第一关、第一次):前几簇按教案出障碍,飘字按设备出文案
-  // 教学完成标记改为「首次跨过第一个障碍后」再落盘,秒退者不丢教学
-  G.tut = null;
-  if(mode==='adv' && lvIdx===0 && !save.tut){
-    const touch = 'ontouchstart' in window;
-    G.tut = [{ z:138, text: touch?'空中再上滑 = 二段跳':'空中再按 ↑ = 二段跳' }];
-    G.tutStage = 0;
-  } else G.tutStage = 3;
+  G.inputBuffer={jump:0,slide:0}; G.crashT=0;
+  const teach=mode==='adv' && lvIdx===0 && (forceTutorial || !save.tutorialCompleted);
+  G.tut=null; G.tutorial=null; G.tutStage=teach?0:4;
+  if(teach) G.nextSpawn=Infinity;
   G.nextGate = mode==='adv' ? 130 : 200;
   pl.lane = 0; pl.x = 0; pl.y = 0; pl.vy = 0; pl.sliding = 0; pl.jumps = 0;
   G.state = 'play';
+  if(teach) beginTutorialStep(0);
   bgm(LEVELS[lvIdx].motif);
   track('start', { mode, lv:lvIdx });
   return true;
@@ -68,18 +68,21 @@ export function startRun(mode, lvIdx){
 export const curLv = ()=> G.mode==='adv' ? LEVELS[G.lvIdx] : LEVELS[Math.floor(G.dist/600)%LEVELS.length];
 
 /* ---- 操作回调 ---- */
-export function onLeft(){ if(G.state==='play'&&!G.paused){ if(pl.lane>-1){ pl.lane--; sfx.lane(); } } }
-export function onRight(){ if(G.state==='play'&&!G.paused){ if(pl.lane<1){ pl.lane++; sfx.lane(); } } }
+function noteTutorialAction(kind){
+  if(!G.tutorial) return;
+  if((G.tutorial.step===0 && kind==='lane') || (G.tutorial.step===1 && kind==='jump')
+    || (G.tutorial.step===2 && kind==='slide') || (G.tutorial.step===3 && kind==='double'))
+    G.tutorial.actionDone=true;
+}
+export function onLeft(){ if(G.state==='play'&&!G.paused){ if(pl.lane>-1){ pl.lane--; noteTutorialAction('lane'); sfx.lane(); } } }
+export function onRight(){ if(G.state==='play'&&!G.paused){ if(pl.lane<1){ pl.lane++; noteTutorialAction('lane'); sfx.lane(); } } }
 export function onJump(){
   if(G.state!=='play'||G.paused) return;
-  if(pl.y<=0.01){ pl.vy = 6.4; pl.jumps = 1; sfx.jump(); }
-  else if(pl.jumps===1){ pl.vy = 5.6; pl.jumps = 2; sfx.jump(); }
-  pl.sliding = 0;
+  G.inputBuffer.jump=0.1; G.inputBuffer.slide=0;
 }
 export function onSlide(){
   if(G.state!=='play'||G.paused) return;
-  if(pl.y>0.01){ pl.vy = Math.min(pl.vy, -7); } // 空中快降
-  pl.sliding = 0.75; sfx.slide();
+  G.inputBuffer.slide=0.1; G.inputBuffer.jump=0;
 }
 export function onPauseKey(){
   if(G.state==='play'){ G.paused = !G.paused; sfx.click(); }
@@ -96,21 +99,59 @@ export function onEnter(){
 }
 
 /* ---- 生成器:障碍簇 + 收集品引导线 ---- */
-/* 教学簇:首关前几簇按教案出障碍(整墙→矮墩→高门),配对应飘字,保证新手每个机制都遇到 */
-function spawnTutorial(z){
-  const touch = 'ontouchstart' in window;
-  const type = ['full','low','high'][G.tutStage]; G.tutStage++;
-  const tip = type==='full' ? (touch?'整墙:左右滑换道!':'整墙:← → 换道!')
-            : type==='low'  ? (touch?'上滑跳过矮墩':'↑ 跳过矮墩')
-            : (touch?'下滑滑铲钻高门':'↓ 滑铲钻高门');
-  G.tut.push({ z: z-14, text: tip });
-  G.obs.push({ lane:0, x:0, z, type });
-  if(type==='full'){
-    // 整墙堵死玩家道:邻道随机一个障碍,逃生道留给弧线(避免免费道被墙封的教学死局)
-    const freeLane = Math.random()<0.5 ? -1 : 1;
-    G.obs.push({ lane:-freeLane, x:-freeLane*LANEGAP, z, type: Math.random()<0.5?'low':'high' });
-    spawnArc(z, freeLane);
-  } else spawnArc(z, 0);   // 跳/铲教学:障碍在玩家道,弧线同路引导动作
+const TUTORIAL_TYPES=['full','low','high','double'];
+function beginTutorialStep(step,retry=false){
+  const lane=pl.lane, z=G.dist+(retry?30:34), previous=G.tutorial;
+  G.obs=G.obs.filter(obstacle=>obstacle.tutorialStep===undefined);
+  G.cols=G.cols.filter(mark=>mark.tutorialStep===undefined);
+  G.tutStage=step;
+  G.tutorial={step,targetZ:z,targetLane:lane,actionDone:false,retries:retry?(previous?.retries||0)+1:0};
+  const touch='ontouchstart' in window;
+  const type=TUTORIAL_TYPES[step];
+  const tip=step===3 ? (touch?'空中再上滑一次，够到高处印记':'空中再按一次 ↑，够到高处印记')
+    : getObstacleInstruction(type,touch);
+  G.tut=[{z:z-12,text:'第 '+(step+1)+'/4 步 · '+tip}];
+  if(step<3){
+    G.obs.push({lane,x:lane*LANEGAP,z,type,tutorialStep:step});
+  }else{
+    for(let i=0;i<3;i++) G.cols.push({
+      x:lane*LANEGAP,z:z-2+i*2,y:2.6+i*0.2,id:'plum',got:false,
+      arc:'tutorial-'+z,arcN:3,tutorialStep:3,tutorialGoal:i===2,
+    });
+  }
+}
+function retryTutorial(){
+  if(!G.tutorial) return;
+  const step=G.tutorial.step;
+  G.egg={text:'临时护盾接住了，再试一次',ttl:2,dur:2};
+  sfx.shieldBreak();
+  beginTutorialStep(step,true);
+}
+function completeTutorialStep(step){
+  if(!G.tutorial || G.tutorial.step!==step) return;
+  if(step<3){
+    G.egg={text:'做对了！下一步',ttl:1.5,dur:1.5};
+    beginTutorialStep(step+1,false);
+    return;
+  }
+  save.tutorialCompleted=true; save.tut=true; persist();
+  G.obs=G.obs.filter(obstacle=>obstacle.tutorialStep===undefined);
+  G.cols=G.cols.filter(mark=>mark.tutorialStep===undefined);
+  G.tutorial=null; G.tut=null; G.tutStage=4; G.nextSpawn=G.dist+40;
+  G.egg={text:'四步全会了，开跑！',ttl:2.4,dur:2.4};
+}
+function consumeInputBuffer(dt){
+  if(G.inputBuffer.jump>0){
+    let used=false;
+    if(pl.y<=0.01){pl.vy=6.4;pl.jumps=1;used=true;noteTutorialAction('jump');}
+    else if(pl.jumps===1){pl.vy=5.6;pl.jumps=2;used=true;noteTutorialAction('double');}
+    if(used){pl.sliding=0;G.inputBuffer.jump=0;sfx.jump();}
+    else G.inputBuffer.jump=Math.max(0,G.inputBuffer.jump-dt);
+  }
+  if(G.inputBuffer.slide>0){
+    if(pl.y>0.01) pl.vy=Math.min(pl.vy,-7);
+    pl.sliding=0.75;G.inputBuffer.slide=0;noteTutorialAction('slide');sfx.slide();
+  }
 }
 /* 隐藏件条件判定(二期 §D2):条件未达成根本不进掉落池。
    全局条件看存档(星/里程/图鉴/通关),局内条件看 G.secretUnlock。 */
@@ -151,7 +192,6 @@ function spawnArc(z, freeLane){
 export function spawnCluster(z){
   const lv = curLv();
   const diff = G.mode==='endless' ? clamp(G.dist/2500,0,1) : 0.25 + G.lvIdx*0.15;
-  if(G.tutStage < 3){ spawnTutorial(z); return; }
   const lanes = [-1,0,1];
   for(let i=lanes.length-1;i>0;i--){ const j=irnd(0,i), t=lanes[i]; lanes[i]=lanes[j]; lanes[j]=t; } // L3:Fisher-Yates 均匀洗牌
   /* ---- 关内修饰器(二期 §C3):明城墙瓮城双墙,强制折返 ---- */
@@ -230,11 +270,19 @@ function gateShower(lv){
 export function update(dt){
   if(G.egg){ G.egg.ttl -= dt; if(G.egg.ttl<=0) G.egg = null; } // 彩蛋文案倒计时
   G.shake = Math.max(0, G.shake - dt*3);                        // 震屏衰减(撞车后也能平息)
+  if(G.state==='crashing'){
+    G.crashT-=dt;
+    if(G.crashT<=0) G.state='over';
+    else if(G.crashT<0.18) G.t+=dt*0.3;   // 80ms 定格后，180ms 慢放翻倒
+    return;
+  }
   if(G.state!=='play' || G.paused) return;
+  consumeInputBuffer(dt);
   G.t += dt;   // 世界时钟:暂停时冻结,画舫/粒子等不动
   const lv = curLv();
   if(G.mode==='endless') G.speed = Math.min(20, 9.5 + G.dist/280);
-  G.dist += G.speed * dt;
+  const nearLesson=G.tutorial && !G.tutorial.actionDone && G.tutorial.targetZ-G.dist<20;
+  G.dist += G.speed * dt * (nearLesson?0.45:1);
   // 连击窗口衰减
   if(G.comboT > 0){ G.comboT -= dt; if(G.comboT <= 0) G.combo = 0; }
   // 局内隐藏件解锁:15 连击混入白局,无尽 3000m 混入宝船(彩蛋提示)
@@ -272,13 +320,13 @@ export function update(dt){
 
   // 生成(老门东巷窄:簇间距 ×0.9)
   const gapMul = curLv().mod==='alleyNarrow' ? 0.9 : 1;
-  while(G.nextSpawn < G.dist + DRAWD){
+  while(!G.tutorial && G.nextSpawn < G.dist + DRAWD){
     spawnCluster(G.nextSpawn);
     G.nextSpawn += (rnd(16,24) * (9.5/G.speed) + 4) * gapMul;
   }
   // 局内道具:免费道形态的发光物件,每 150~250m 一个(货郎吆喝升级缩短间隔)
   const spawnMul = [1, 0.85, 0.7, 0.55][save.ups.spawn] || 1;
-  while(G.nextPower < G.dist + DRAWD){
+  while(!G.tutorial && G.nextPower < G.dist + DRAWD){
     const kinds = ['magnet','shield','gui'];
     G.powers.push({ lane: irnd(-1,1), x:0, z: G.nextPower, kind: kinds[irnd(0,2)] });
     G.nextPower += rnd(150,250) * spawnMul;
@@ -308,20 +356,25 @@ export function update(dt){
     const prevRz = o.rz===undefined ? Infinity : o.rz;
     o.rz = o.z - G.dist + ZP;
     if(o.hit) continue;
-    // 教学完成标记:首次跨过(不限于躲过)第一个障碍后落盘,秒退者下次还有教学
-    if(G.tut && !save.tut && prevRz > ZP && o.rz <= ZP){ save.tut = true; persist(); }
+    const crossed=prevRz>ZP && o.rz<=ZP;
     // 扫掠判定:在判定窗内,或本帧整体跨过玩家平面(防高速低帧率隧穿)
     const inWin = (o.rz > ZP-0.45 && o.rz < ZP+0.45) || (prevRz > ZP && o.rz <= ZP);
     if(inWin && Math.abs(o.x - pl.x) < 0.55){
       const dead = !canPassObstacle(pl, o);
       if(dead){
-        if(G.shield){                                     // 护盾挡一次:荷叶飞散,不死
+        if(o.tutorialStep!==undefined){
+          o.hit=true;
+          const q=proj(o.x,1.0,ZP);burst(q.x,q.y,'#7ba86f');
+          retryTutorial();
+          return;
+        }else if(G.shield){                               // 护盾挡一次:荷叶飞散,不死
           G.shield = false; o.hit = true;
           const q = proj(o.x, 1.0, ZP); burst(q.x, q.y, '#7ba86f');
           sfx.shieldBreak();
         } else { o.hit = true; gameOver(o.type); return; }
       }
     }
+    if(crossed && o.tutorialStep!==undefined){completeTutorialStep(o.tutorialStep);return;}
   }
   G.obs = G.obs.filter(o=>o.rz > 1.2);
   // 收集品(同样扫掠,防高速漏捡)
@@ -356,7 +409,9 @@ export function update(dt){
           G.egg = { text:'★'.repeat(i+1)+' 达成!', ttl:2.2, dur:2.2 }; sfx.gate();
         }
       }
+      if(c.tutorialGoal && G.tutorial?.step===3 && G.tutorial.actionDone){completeTutorialStep(3);return;}
     }
+    if(!c.got && c.tutorialGoal && c.rz<=1.2){retryTutorial();return;}
   }
   G.cols = G.cols.filter(c=>!c.got && c.rz > 1.2);
   // 道具扫掠(同收集品判定窗;磁铁/护盾/金桂)
@@ -385,7 +440,7 @@ export function update(dt){
 }
 
 export function gameOver(type){
-  sfx.hit(); G.shake = 1; G.slowmo = 0.22;   // 震屏 + 0.2s 慢动作
+  sfx.hit(); G.shake = 1; G.crashT = 0.26;   // 80ms 定格 + 180ms 慢放
   G.killedBy = type || null;                 // 死因(结算页教学提示)
   G.newBest = false;
   if(G.mode==='endless'){
@@ -394,7 +449,7 @@ export function gameOver(type){
     if(G.newBest){ save.best = m; persist(); sfx.record(); }
   }
   save.distTotal += Math.floor(G.dist); persist();   // 累计里程(隐藏件紫峰大厦判定)
-  G.state = 'over';
+  G.state = 'crashing';
   track('over', { mode:G.mode, dist:Math.floor(G.dist) });
 }
 export function levelClear(){

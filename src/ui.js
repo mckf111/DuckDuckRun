@@ -1,7 +1,7 @@
 import { ctx, W, H, CX, poly, disc, rrect, petalFlower, clamp } from './core.js';
 import { LEVELS, ITEMS, MILESTONES, SHOPS, RUN_STAR_THRESHOLDS } from './config.js';
 import { save, persist } from './save.js';
-import { getBridgeUnlockStatus } from './rules.js';
+import { getBridgeUnlockStatus, getObstacleInstruction } from './rules.js';
 import { sfx } from './audio.js';
 import { G, curLv, startRun, nextAfterClear } from './game.js';
 import { drawItemPhoto, hasPhoto, loadItemPhotos } from './art/photo.js';
@@ -165,6 +165,7 @@ export function drawMenu(){
   button('endless','无尽模式', CX, H*0.70, 240, 50, {ghost:true});
   button('album','金陵图鉴 ('+Object.keys(save.album).length+'/'+ITEMS.length+')'+(save.albumNew?' ●':''), CX, H*0.80, 240, 50, {ghost:true});
   button('shop','鸭铺 (◉ '+save.coins+')', CX, H*0.89, 240, 50, {ghost:true});
+  button('tutorial','重玩教学', 90, H-28, 140, 36, {ghost:true,size:14});
   text('背景风景,皆是实景南京', CX, H-22, 13, 'rgba(244,241,232,0.5)');
   // F6:微信内提示绕开内置浏览器限制(下载/分享被吞)
   if(/MicroMessenger/i.test(navigator.userAgent))
@@ -280,16 +281,12 @@ export function drawShop(){
 }
 
 const CRASH_TITLES = ['撞上了!','鸭鸭眼冒金星!','被金陵的墙留下了','差一步就出城了……'];
-const DEATH_TIPS = {
-  low:'矮墩子要跳过去(↑)',
-  high:'高门楼要滑铲钻过去(↓)',
-  full:'整堵墙只能换道(←→)',
-};
 export function drawOver(){
   dim(0.55);
   const got = G.newIds.length;
   text(CRASH_TITLES[Math.floor(G.dist)%CRASH_TITLES.length], CX, H*0.26, 52, '#f4f1e8', 'center', null, true);
-  if(G.killedBy && DEATH_TIPS[G.killedBy]) text('小提示:'+DEATH_TIPS[G.killedBy], CX, H*0.35, 15, '#a8d5a2');
+  const deathTip=getObstacleInstruction(G.killedBy,'ontouchstart' in window);
+  if(deathTip) text('小提示:'+deathTip, CX, H*0.35, 15, '#a8d5a2');
   const line = G.mode==='endless'
     ? '跑了 '+Math.floor(G.dist)+' m · 印记 '+G.runMarks+(G.newBest?' · 新纪录!':'')
     : LEVELS[G.lvIdx].name+' · 跑了 '+Math.floor(G.dist)+' m · 印记 '+G.runMarks+' · 距终点还差 '+Math.max(0,Math.ceil(LEVELS[G.lvIdx].len-G.dist))+' m';
@@ -432,6 +429,7 @@ export function clickAt(px, py){
 }
 export function handleButton(id, data){
   if(id==='adv') G.state='levels';
+  else if(id==='tutorial') startRun('adv',0,true);
   else if(id==='endless') startRun('endless', 0);
   else if(id==='shop') G.state='shop';
   else if(id==='buy'){   // 鸭铺购买:钱够扣钱升级,不够给提示

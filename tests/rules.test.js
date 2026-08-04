@@ -7,6 +7,7 @@ import {
   calculateRunStars,
   canPassObstacle,
   getBridgeUnlockStatus,
+  getObstacleInstruction,
 } from '../src/rules.js';
 
 test('障碍语法：low 只跳、high 只贴地滑铲、full 只能换道', () => {
@@ -15,6 +16,8 @@ test('障碍语法：low 只跳、high 只贴地滑铲、full 只能换道', () 
   assert.equal(canPassObstacle({ y:0, sliding:0.4 }, { type:'high' }), true);
   assert.equal(canPassObstacle({ y:0.4, sliding:0.4 }, { type:'high' }), false);
   assert.equal(canPassObstacle({ y:99, sliding:1 }, { type:'full' }), false);
+  assert.match(getObstacleInstruction('full'), /只能换道/);
+  assert.match(getObstacleInstruction('high',true), /下滑/);
 });
 
 test('星级只看本局实际印记', () => {

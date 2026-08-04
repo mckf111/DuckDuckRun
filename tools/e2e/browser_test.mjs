@@ -137,6 +137,60 @@ try{
     assert.equal(ledger.jiangtun,true);
     assert.ok(ledger.newIds.includes('jiangtun'));
     assert.equal(ledger.red,true);
+
+    const interaction=await page.evaluate(async()=>{
+      const game=await import('/src/game.js');
+      const saves=await import('/src/save.js');
+
+      saves.save.tutorialCompleted=false; saves.save.tut=false;
+      game.startRun('adv',0,true);
+      game.onRight(); game.pl.x=game.pl.lane*1.25;
+      game.G.dist=game.G.tutorial.targetZ-0.1; game.update(0.02);
+      const step1=game.G.tutorial?.step;
+
+      game.onJump();
+      for(let i=0;i<10;i++) game.update(1/60);
+      game.G.dist=game.G.tutorial.targetZ-0.1; game.update(1/60);
+      const step2=game.G.tutorial?.step;
+
+      for(let i=0;i<50&&game.pl.y>0;i++) game.update(1/60);
+      game.onSlide(); game.update(1/60);
+      game.G.dist=game.G.tutorial.targetZ-0.1; game.update(1/60);
+      const step3=game.G.tutorial?.step;
+
+      game.pl.y=0; game.pl.vy=0; game.pl.jumps=0;
+      game.onJump(); game.update(1/60);
+      game.onJump(); game.update(1/60);
+      game.pl.y=2.1; game.pl.jumps=2;
+      game.G.dist=game.G.tutorial.targetZ+1.9; game.update(1/60);
+      const completed=saves.save.tutorialCompleted && !game.G.tutorial;
+
+      saves.save.tutorialCompleted=false; saves.save.tut=false;
+      game.startRun('adv',0,true);
+      game.G.dist=game.G.tutorial.targetZ-0.1; game.update(0.05);
+      const retryShield=game.G.state==='play' && game.G.tutorial?.step===0 && game.G.tutorial.retries===1;
+
+      saves.save.tutorialCompleted=true; saves.save.tut=true;
+      game.startRun('adv',0);
+      game.G.nextSpawn=Infinity; game.G.nextGate=Infinity; game.G.nextPower=Infinity; game.G.obs=[];
+      game.onJump();
+      const bufferedBefore=game.pl.vy===0 && game.G.inputBuffer.jump>0;
+      game.update(1/60);
+      const bufferedAfter=game.pl.vy>0 && game.G.inputBuffer.jump===0;
+
+      game.startRun('adv',0);
+      game.G.nextSpawn=Infinity; game.G.nextGate=Infinity; game.G.nextPower=Infinity;
+      game.G.obs=[{lane:0,x:0,z:0.1,type:'full'}]; game.pl.lane=0; game.pl.x=0;
+      game.update(1/60);
+      const crashStart=game.G.state;
+      game.update(0.07); const crashHold=game.G.state;
+      game.update(0.2); const crashEnd=game.G.state;
+      return {step1,step2,step3,completed,retryShield,bufferedBefore,bufferedAfter,crashStart,crashHold,crashEnd};
+    });
+    assert.deepEqual(interaction,{
+      step1:1,step2:2,step3:3,completed:true,retryShield:true,
+      bufferedBefore:true,bufferedAfter:true,crashStart:'crashing',crashHold:'crashing',crashEnd:'over',
+    });
     await context.close();
   }
 

@@ -5,6 +5,12 @@ export const BRIDGE_INDEX = LEVELS.length - 1;
 export const NORMAL_ITEM_IDS = ITEMS.filter(item => !item.secret).map(item => item.id);
 const ITEM_IDS = new Set(ITEMS.map(item => item.id));
 
+export const OBSTACLE_RULES = {
+  low:  { instruction:{ keyboard:'矮障碍要跳过去（↑）', touch:'矮障碍要上滑跳过去' } },
+  high: { instruction:{ keyboard:'高横梁要贴地滑铲（↓）', touch:'高横梁要下滑钻过去' } },
+  full: { instruction:{ keyboard:'整堵墙只能换道（← →）', touch:'整堵墙只能左右滑换道' } },
+};
+
 const finiteInt = (value, fallback = 0) =>
   typeof value === 'number' && Number.isFinite(value) ? Math.floor(value) : fallback;
 const clampInt = (value, min, max) => Math.min(max, Math.max(min, finiteInt(value)));
@@ -17,6 +23,11 @@ export function canPassObstacle(player, obstacle){
   if(type === 'high') return !!(player && player.sliding > 0 && y < 0.3);
   if(type === 'full') return false;
   return true;
+}
+
+export function getObstacleInstruction(type, touch=false){
+  const rule=OBSTACLE_RULES[type];
+  return rule ? rule.instruction[touch?'touch':'keyboard'] : '';
 }
 
 export function calculateRunStars(markCount, thresholds){

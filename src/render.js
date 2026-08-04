@@ -83,9 +83,10 @@ export function drawPowerIcon(kind, x, y, r){
 export function render(){
   // 菜单/选关/图鉴/鸭铺:南京眼蓝调底图(缺图回退下方旧场景)
   if((G.state==='menu'||G.state==='levels'||G.state==='album'||G.state==='shop') && drawMenuBg()){ vignette(); return; }
-  const lv = G.state==='play'||G.state==='over'||G.state==='clear' ? curLv() : LEVELS[3]; // 菜单用秦淮夜景
+  const active=G.state==='play'||G.state==='crashing'||G.state==='over'||G.state==='clear';
+  const lv = active ? curLv() : LEVELS[3]; // 菜单用秦淮夜景
   // 无尽模式地标轮换(含长江大桥);冒险模式用本关地标
-  const lmId = G.mode==='endless' && (G.state==='play'||G.state==='over'||G.state==='clear')
+  const lmId = G.mode==='endless' && active
     ? LM_CYCLE[Math.floor(G.dist/600)%LM_CYCLE.length]
     : lv.landmark;
   // 天空
@@ -94,7 +95,7 @@ export function render(){
   ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
   // 实景照片远景(无尽模式在 600m 边界叠化);缺图回退到代码剪影
   let drewPhoto = false;
-  if(G.mode==='endless' && (G.state==='play'||G.state==='over'||G.state==='clear')){
+  if(G.mode==='endless' && active){
     const cyc = Math.floor(G.dist/600);
     const mixB = clamp(((G.dist % 600) - 540) / 60, 0, 1);
     drewPhoto = drawBackdrop(LM_CYCLE[cyc % LM_CYCLE.length], lv, G.dist, 1-mixB);
@@ -199,12 +200,12 @@ export function render(){
   const obs = G.obs.slice().sort((a,b)=>b.rz-a.rz);
   for(const o of obs){ if(o.rz > 2 && o.rz < DRAWD) drawObstacle(o, lv); }
   // 玩家(鸭子):障碍逼近时惊恐表情,撞车后保持四脚朝天
-  if(G.state==='play' || G.state==='over'){
+  if(G.state==='play' || G.state==='crashing' || G.state==='over'){
     let panic = false;
     for(const o of G.obs){
       if(!o.hit && o.rz > ZP && o.rz < ZP+12){ panic = true; break; }
     }
-    drawPlayer(pl, G.t, { panic, crashed: G.state==='over' });
+    drawPlayer(pl, G.t, { panic, crashed: G.state==='crashing'||G.state==='over' });
   }
   // 粒子(收集/穿门为剪纸碎片,环境粒子为柔边圆点)
   for(const pt of G.parts){

@@ -25,7 +25,7 @@ checkRotate();
 let lastT = 0, prevState = G.state;
 let perfStart = 0, perfFrames = 0, perfPrev = 0, assetKey = '';
 function syncAssets(){
-  if(G.state!=='play' && G.state!=='over' && G.state!=='clear'){
+  if(G.state!=='play' && G.state!=='crashing' && G.state!=='over' && G.state!=='clear'){
     loadMenuBackground();
     return;
   }
@@ -52,10 +52,7 @@ function monitorFrameBudget(ts){
 function frame(ts){
   monitorFrameBudget(ts);
   const raw = Math.min(0.05, (ts-lastT)/1000 || 0.016); lastT = ts;
-  // 撞车慢动作:0.3 倍速 0.22 秒
-  let dt = raw;
-  if(G.slowmo > 0){ dt = raw*0.3; G.slowmo -= raw; }
-  update(dt);
+  update(raw);
   syncAssets();
   G.buttons = [];
   ctx.save();
@@ -72,7 +69,8 @@ function frame(ts){
   // 界面切换:卷轴自左向右揭开;离开游玩状态即停 BGM(菜单/结算不再无限循环)
   if(G.state !== prevState){
     if(prevState==='play' && G.state!=='play') bgmStop();
-    prevState = G.state; G.wipe = 0.32; G.kbSel = 0; G.kbActive = false; G.stateT = 0;
+    const crashTransition=G.state==='crashing'||prevState==='crashing';
+    prevState = G.state; G.wipe = crashTransition?0:0.32; G.kbSel = 0; G.kbActive = false; G.stateT = 0;
   }
   G.stateT = (G.stateT||0) + raw;
   if(G.wipe > 0){
