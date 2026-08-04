@@ -3,15 +3,18 @@ import { LEVELS, ITEMS, MILESTONES } from './config.js';
 import { save, persist } from './save.js';
 import { sfx } from './audio.js';
 import { G, curLv, startRun, nextAfterClear } from './game.js';
-import { drawItemPhoto } from './art/photo.js';
+import { drawItemPhoto, hasPhoto, loadItemPhotos } from './art/photo.js';
+import { drawItemIcon } from './art/items.js';
 import { drawSide } from './art/scenery.js';
 import { shareScore, copyText, shareLink } from './share.js';
 
 /* ================= 渲染:UI 组件 ================= */
 export function text(str, x, y, size, color, align, weight, soft){
-  // 大字号标题用宋体系(金陵长卷气质),小字号 UI 保留黑体
-  const family = size >= 30 ? '"JinlingSong","STSong","SimSun",serif' : '"Microsoft YaHei","PingFang SC",sans-serif';
-  ctx.font = (weight ? weight + ' ' : '') + size + 'px ' + family;
+  // 三档字体:soft=书法体大标题(铭心毛笔);≥14px=文楷;<14px 与数字提示=黑体
+  const family = soft ? '"JinlingBrush","KaiTi","Microsoft YaHei",serif'
+    : size >= 14 ? '"JinlingKai","KaiTi","Microsoft YaHei",serif'
+    : '"Microsoft YaHei","PingFang SC",sans-serif';
+  ctx.font = (weight && !soft ? weight + ' ' : '') + size + 'px ' + family;
   ctx.textAlign = align||'center'; ctx.textBaseline = 'middle';
   // 统一深色描边:任何实景照片背景上都可读;soft=大标题用细淡描边(现代感)
   ctx.lineJoin = 'round';
@@ -102,7 +105,9 @@ export function drawHUD(){
     const it = ITEMS.find(i=>i.id===G.newItem.id);
     const a = clamp(Math.min((2.0-G.newItem.ttl)*5, G.newItem.ttl*2), 0, 1);
     ctx.save(); ctx.globalAlpha = a;
-    drawItemPhoto(G.newItem.id, W-96, 96, 15, -0.06, false);
+    disc(W-96, 96, 30, 'rgba(27,42,68,0.8)');
+    disc(W-96, 96, 30, null, '#e8c170', 1.5);
+    drawItemIcon(G.newItem.id, W-96, 96, 22, false);
     text('新图鉴:'+(it?it.name:''), W-96, 132, 15, '#f0b64c', 'center', 'bold');
     ctx.restore();
   }
@@ -290,31 +295,40 @@ export function drawAlbum(){
   for(let i=0;i<ITEMS.length;i++){
     const it = ITEMS[i], got = !!save.album[it.id];
     const x = CX + (i%cols-(cols-1)/2)*cw, y = y0 + Math.floor(i/cols)*step;
-    ctx.globalAlpha = got?1:0.75;
-    drawItemPhoto(it.id, x, y, pr, i%2?-0.06:0.05, !got);
+    // 缩略图:黛蓝圆底 + 插画(未获得灰调),统一与路上收集品同一套画
+    disc(x, y, pr+4, 'rgba(27,42,68,0.9)');
+    disc(x, y, pr+4, null, got ? '#e8c170' : 'rgba(127,170,200,0.4)', got?1.6:1);
+    drawItemIcon(it.id, x, y, got ? pr*0.72 : pr*0.68, !got);
     text(got?it.name:'???', x, y+pr+16, cols===6?15:17, got?'#f7ead0':'#776e85', 'center', 'bold');
     if(got && !G.albumZoom){
       G.buttons.push({id:'item', x:x-65, y:y-56, w:130, h:124, data:it.id});
       focusRing(G.buttons.length-1, x-65, y-56, 130, 124);
     }
-    ctx.globalAlpha = 1;
   }
   text('实景照片来自 Wikimedia Commons 与 Openverse,作者与授权见 assets/img/CREDITS.md', CX, H-14, 11, 'rgba(216,201,168,0.55)');
   button('back','返回 (Esc)', W-90, 46, 150, 44, {ghost:true});
   if(G.albumZoom) drawAlbumZoom();
 }
 
-/* 图鉴放大层:大号拍立得实图 + 完整文案;点击任意处 / Enter / Esc 关闭 */
+/* 图鉴放大层:大插画 + 完整文案;有实拍(hasPhoto)的条目右侧附「实景对照」小拍立得 */
 function drawAlbumZoom(){
   const it = ITEMS.find(i=>i.id===G.albumZoom);
   if(!it){ G.albumZoom = null; return; }
   G.buttons.push({id:'zoomclose', x:0, y:0, w:W, h:H});
   dim(0.88);
-  drawItemPhoto(it.id, CX, H*0.36, 118, -0.03, false);
+  const hasReal = hasPhoto('it_'+it.id);
+  const ix = hasReal ? CX-190 : CX;   // 有实景对照时大插画左移,给拍立得让位
+  disc(ix, H*0.36, 88, 'rgba(27,42,68,0.92)');
+  disc(ix, H*0.36, 88, null, '#e8c170', 2);
+  drawItemIcon(it.id, ix, H*0.36, 64, false);
   text(it.name, CX, H*0.72, 34, '#f6f1e7', 'center', 'bold', true);
   text(it.note, CX, H*0.775, 14, '#d8c9a8');
   text(it.quip, CX, H*0.825, 14, '#f0b64c');
   text(it.where, CX, H*0.875, 13, '#a8d5a2');
+  if(hasReal){
+    drawItemPhoto(it.id, CX+190, H*0.36, 62, 0.04, false);
+    text('实景对照', CX+190, H*0.62, 13, 'rgba(216,201,168,0.75)');
+  }
   text('点击任意处关闭', CX, H-18, 12, 'rgba(246,241,231,0.55)');
 }
 
@@ -329,7 +343,9 @@ export function clickAt(px, py){
 export function handleButton(id, data){
   if(id==='adv') G.state='levels';
   else if(id==='endless') startRun('endless', 0);
-  else if(id==='album'){ G.albumFrom='menu'; G.albumZoom=null; G.state='album'; }
+  else if(id==='album'){ G.albumFrom='menu'; G.albumZoom=null; G.state='album';
+    loadItemPhotos(ITEMS.map(i=>i.id));   // 懒加载实景对照照片,不阻塞进页
+  }
   else if(id==='item') G.albumZoom = data;
   else if(id==='zoomclose') G.albumZoom = null;
   else if(id==='lv') startRun('adv', data);

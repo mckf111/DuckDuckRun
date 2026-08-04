@@ -120,14 +120,22 @@ export function render(){
     }
   }
   // 收集品(远->近;贴地投影 + 落地影,近处尺寸收敛不挡视野)
+  // 二期:全插画化——金色柔光晕 + 深描边本体,路上 r≈15px 一眼认出
   const cols = G.cols.slice().sort((a,b)=>b.rz-a.rz);
   for(const c of cols){
     if(c.rz < 2 || c.rz > DRAWD) continue;
     const p = proj(c.x, c.y + Math.sin(G.t*3+c.z)*0.08, c.rz);
     const gp = proj(c.x, 0, c.rz);
     shadow(gp.x, gp.y, gp.s*0.28, 0.18);
-    if(hasPhoto('it_'+c.id)) drawItemPhoto(c.id, p.x, p.y, clamp(p.s*0.34, 4, 19), Math.sin(G.t*2+c.z)*0.08, false);
-    else drawItemIcon(c.id, p.x, p.y, clamp(p.s*0.32, 3, 17), false);
+    const r = clamp(p.s*0.34, 4, 19);
+    ctx.save();
+    const glow = ctx.createRadialGradient(p.x, p.y, r*0.25, p.x, p.y, r*2.4);
+    glow.addColorStop(0, 'rgba(240,196,90,0.30)');
+    glow.addColorStop(1, 'rgba(240,196,90,0)');
+    ctx.fillStyle = glow;
+    ctx.beginPath(); ctx.arc(p.x, p.y, r*2.4, 0, TAU); ctx.fill();
+    ctx.restore();
+    drawItemIcon(c.id, p.x, p.y, r, false);
   }
   // 障碍(远->近)
   const obs = G.obs.slice().sort((a,b)=>b.rz-a.rz);
