@@ -8,6 +8,11 @@
 - `bg_zhaobi` — [File:Confucius Temple and Qinhuai River, Nanjing Night.jpg](https://commons.wikimedia.org/wiki/File%3AConfucius_Temple_and_Qinhuai_River%2C_Nanjing_Night.jpg),作者:Dick Rochester,授权:CC BY-SA 2.0
 - `bg_observatory` — [File:Purple_Mountain_Observatory_2016.7.16-1.jpg](https://commons.wikimedia.org/wiki/File%3APurple_Mountain_Observatory_2016.7.16-1.jpg),作者:Gmbsfd,授权:CC BY-SA 4.0
 - `bg_bridge` — [File:Nanjing Yangtze River Bridge.jpg](https://commons.wikimedia.org/wiki/File%3ANanjing_Yangtze_River_Bridge.jpg),作者:Jack No1,授权:CC BY 3.0
+- `bg_menu` — [File:Full view of Nanjing Eye Pedestrian Bridge.jpg](https://commons.wikimedia.org/wiki/File%3AFull_view_of_Nanjing_Eye_Pedestrian_Bridge.jpg),作者:Uyiliu2,授权:CC BY-SA 4.0
+- `bg_yihe` — [File:Former Consulate of Mexico in Nanjing 2012-11.JPG](https://commons.wikimedia.org/wiki/File%3AFormer_Consulate_of_Mexico_in_Nanjing_2012-11.JPG),作者:猫猫的日记本,授权:CC BY-SA 3.0
+- `bg_mendong` — [File:老门东20200125 09.jpg](https://commons.wikimedia.org/wiki/File%3A%E8%80%81%E9%97%A8%E4%B8%9C20200125_09.jpg),作者:西安兵马俑,授权:CC BY-SA 4.0
+- `bg_qixia` — [File:Qixia Mountain Autumn.jpg](https://commons.wikimedia.org/wiki/File%3AQixia_Mountain_Autumn.jpg),作者:Haha169,授权:CC BY-SA 4.0
+- `bg_baoen` — [File:2024Apr - Glass Pagoda of Nanjing - img 03.jpg](https://commons.wikimedia.org/wiki/File%3A2024Apr_-_Glass_Pagoda_of_Nanjing_-_img_03.jpg),作者:Chainwit.,授权:CC BY 4.0
 - `it_duck` — [File:Nanjing Salted Duck.jpg](https://commons.wikimedia.org/wiki/File%3ANanjing_Salted_Duck.jpg),作者:AddisWang,授权:CC BY-SA 3.0
 - `it_fans` — [File:Duck blood and vermicelli soup (20150819124849).JPG](https://commons.wikimedia.org/wiki/File%3ADuck_blood_and_vermicelli_soup_%2820150819124849%29.JPG),作者:N509FZ,授权:CC BY-SA 4.0
 - `it_taro` — [File:Tangyumiao.JPG](https://commons.wikimedia.org/wiki/File%3ATangyumiao.JPG),作者:AddisWang,授权:CC BY-SA 3.0
@@ -17,7 +22,7 @@
 - `it_pot` — [File:牛肉锅贴 Pan-fried Beef Dumplings - Ants Bistro.jpg](https://commons.wikimedia.org/wiki/File%3A%E7%89%9B%E8%82%89%E9%94%85%E8%B4%B4_Pan-fried_Beef_Dumplings_-_Ants_Bistro.jpg),作者:avlxyz,授权:CC BY-SA 2.0
 - `it_bean` — [Julia and Alpha's 红豆沙 汤圆 Red Bean Dessert with Rice Dumplings](https://www.flickr.com/photos/10559879@N00/2139376304),作者:avlxyz,授权:CC BY SA 2.0
 - `it_cloud` — [File:Drachenrobe-Qianlong.JPG](https://commons.wikimedia.org/wiki/File%3ADrachenrobe-Qianlong.JPG),作者:Dr. Meierhofer,授权:CC BY-SA 3.0
-- `it_gold` — [File:Kanazawa Gold Factory.jpg](https://commons.wikimedia.org/wiki/File%3AKanazawa_Gold_Factory.jpg),作者:Eckhard Pecher,授权:CC BY 2.5,用途:**工艺示意图**(南京金箔暂缺 CC 实拍图,游戏内条目已注明;口号口径为「背景风景,皆是实景南京」)
+- `it_gold` — [File:Kanazawa Gold Factory.jpg](https://commons.wikimedia.org/wiki/File%3AKanazawa_Gold_Factory.jpg),作者:Eckhard Pecher,授权:CC BY 2.5,用途:**工艺示意图**(南京金箔暂缺 CC 实拍图,游戏内条目已注明)
 - `it_leaf` — [File:南京-玄午湖公园梧桐大道 - panoramio.jpg](https://commons.wikimedia.org/wiki/File%3A%E5%8D%97%E4%BA%AC-%E7%8E%84%E5%8D%88%E6%B9%96%E5%85%AC%E5%9B%AD%E6%A2%A7%E6%A1%90%E5%A4%A7%E9%81%93_-_panoramio.jpg),作者:Nyx Ning,授权:CC BY-SA 3.0
 - `it_lamp` — [17 (QinHuai Lantern Festival)](https://www.flickr.com/photos/65305775@N08/29241346700),作者:Ralph.Torello,授权:Public Domain Mark
 - `it_cake` — [Red Bean Plum Blossom Cake (1)](https://commons.wikimedia.org/w/index.php?curid=144437655),作者:François Nguyen,授权:CC BY 2.0

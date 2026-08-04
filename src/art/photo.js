@@ -4,7 +4,7 @@ import { drawItemIcon } from './items.js';
 /* ================= 实景照片:加载 / 远景 / 拍立得风物卡 ================= */
 // 命名约定:背景 assets/img/bg_<landmarkId>.jpg;风物 assets/img/it_<itemId>.jpg
 // landmarkId 与 config.js 的 LEVELS.landmark / LM_CYCLE 一致;itemId 与 ITEMS.id 一致。
-const BG_IDS = ['zhonghua', 'jiming', 'sunyard', 'zhaobi', 'observatory', 'bridge'];
+const BG_IDS = ['menu', 'zhonghua', 'jiming', 'sunyard', 'zhaobi', 'observatory', 'bridge'];
 const IT_IDS = ['duck', 'fans', 'taro', 'plum', 'stone', 'tea',
                 'pot', 'bean', 'cloud', 'gold', 'leaf', 'lamp',
                 'cake', 'root', 'egg', 'elephant', 'sakura', 'book'];   // 18 件全实图
@@ -61,6 +61,28 @@ export function drawBackdrop(id, lv, dist, mix){
   ctx.fillStyle = grad;
   ctx.fillRect(0, dh - band, W, band);
   ctx.globalAlpha = 1;
+  return true;
+}
+
+/* 菜单/选关/图鉴底图:南京眼蓝调时刻,cover 铺满;底部压入黛蓝,界面元素坐得稳。
+   缺图返回 false,render 回退旧场景。 */
+export function drawMenuBg(){
+  const key = 'bg_menu';
+  if(!hasPhoto(key)) return false;
+  const img = IMGS[key];
+  const s = Math.max(W / img.naturalWidth, H / img.naturalHeight);
+  const dw = img.naturalWidth * s, dh = img.naturalHeight * s;
+  ctx.drawImage(img, (W - dw) / 2, (H - dh) / 2, dw, dh);
+  const g = ctx.createLinearGradient(0, H * 0.5, 0, H);
+  g.addColorStop(0, 'rgba(27,42,68,0)');
+  g.addColorStop(1, 'rgba(27,42,68,0.85)');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, H * 0.5, W, H * 0.5);
+  const g2 = ctx.createLinearGradient(0, 0, 0, H * 0.3);
+  g2.addColorStop(0, 'rgba(13,10,20,0.38)');
+  g2.addColorStop(1, 'rgba(13,10,20,0)');
+  ctx.fillStyle = g2;
+  ctx.fillRect(0, 0, W, H * 0.3);
   return true;
 }
 

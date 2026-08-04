@@ -17,6 +17,7 @@ OUT = ROOT / "assets" / "img"
 PICK = {
     "bg_zhonghua": 2, "bg_jiming": 9, "bg_sunyard": 9,
     "bg_zhaobi": 1, "bg_observatory": 9, "bg_bridge": 2,
+    "bg_menu": 1, "bg_yihe": 2, "bg_mendong": 2, "bg_qixia": 1, "bg_baoen": 1,
     "it_duck": 2, "it_fans": 1,
     "it_taro": 1, "it_plum": 1, "it_stone": 2,
     "it_tea": 2,        # 雨花茶无本尊 CC 照片,用茶园实景(打开思路后的替代)
@@ -36,6 +37,11 @@ GRADE = {
     # 紫金山关是夜奔主题(路面/天空深紫):白天原片压暗 + 蓝紫色罩,调成黄昏入夜
     "bg_observatory": dict(warm=-22, bright=0.52, contrast=1.06, sat=0.72, crop_y=0.48, tint=(58,42,110,0.38)),
     "bg_bridge":      dict(warm=6,  bright=1.00, contrast=1.00, sat=1.00, crop_y=0.50),
+    "bg_menu":        dict(warm=2,  bright=1.03, contrast=1.03, sat=1.06, crop_y=0.55),  # 南京眼:环脚+桥面+江面,裁掉前景摊位
+    "bg_yihe":        dict(warm=8,  bright=1.01, contrast=1.02, sat=1.06, crop_y=0.45),  # 黄墙瓦顶+远处高楼
+    "bg_mendong":     dict(warm=6,  bright=1.02, contrast=1.02, sat=1.08, crop_y=0.30),  # 牌幌灯笼屋面,裁掉街道人群
+    "bg_qixia":       dict(warm=10, bright=1.01, contrast=1.02, sat=1.12, crop_y=0.50),  # 枫叶+白石桥
+    "bg_baoen":       dict(warm=2,  bright=1.01, contrast=1.02, sat=1.06, crop_y=0.42),  # 塔身+金墙+天空
     "it_duck":  dict(warm=8, bright=1.02, contrast=1.05, sat=1.10),
     "it_fans":  dict(warm=8, bright=1.02, contrast=1.05, sat=1.10),
     "it_tea":   dict(warm=2, bright=1.02, contrast=1.03, sat=1.06),

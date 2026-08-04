@@ -4,7 +4,7 @@ import { G, pl, curLv } from './game.js';
 import { drawItemIcon } from './art/items.js';
 import { drawObstacle } from './art/obstacles.js';
 import { drawSide, drawSkyline, drawLandmark, drawBoat, drawGate, drawNear } from './art/scenery.js';
-import { drawBackdrop, drawItemPhoto, hasPhoto } from './art/photo.js';
+import { drawBackdrop, drawMenuBg } from './art/photo.js';
 import { drawRoad } from './art/road.js';
 import { drawPlayer } from './art/player.js';
 
@@ -25,8 +25,22 @@ function softDot(x, y, r, color){
   ctx.drawImage(sp, x - r, y - r, r * 2, r * 2);
 }
 
+/* 全局轻晕影(预渲染一次,统一照片层与手绘层质感) */
+function vignette(){
+  if(!vgCv){
+    vgCv = document.createElement('canvas'); vgCv.width = 480; vgCv.height = 270;
+    const c = vgCv.getContext('2d');
+    const g2 = c.createRadialGradient(240, 124, 114, 240, 140, 232);
+    g2.addColorStop(0, 'rgba(0,0,0,0)'); g2.addColorStop(1, 'rgba(8,6,14,0.34)');
+    c.fillStyle = g2; c.fillRect(0, 0, 480, 270);
+  }
+  ctx.drawImage(vgCv, 0, 0, W, H);
+}
+
 /* ================= 渲染:场景(远/中/近三层视差) ================= */
 export function render(){
+  // 菜单/选关/图鉴:南京眼蓝调底图(缺图回退下方旧场景)
+  if((G.state==='menu'||G.state==='levels'||G.state==='album') && drawMenuBg()){ vignette(); return; }
   const lv = G.state==='play'||G.state==='over'||G.state==='clear' ? curLv() : LEVELS[3]; // 菜单用秦淮夜景
   // 无尽模式地标轮换(含长江大桥);冒险模式用本关地标
   const lmId = G.mode==='endless' && (G.state==='play'||G.state==='over'||G.state==='clear')
@@ -97,7 +111,7 @@ export function render(){
       const p = proj(0, 2.4, rz);
       ctx.save();
       ctx.globalAlpha = clamp((rz-2.5)/3, 0, 1) * clamp((40-rz)/10, 0, 1);
-      ctx.font = 'bold 22px "Microsoft YaHei","PingFang SC",sans-serif';
+      ctx.font = '22px "JinlingKai","KaiTi","Microsoft YaHei",serif';
       ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
       ctx.lineWidth = 5; ctx.strokeStyle = 'rgba(10,8,16,0.7)'; ctx.lineJoin = 'round';
       ctx.strokeText(tu.text, p.x, p.y);
@@ -143,13 +157,5 @@ export function render(){
     }
   }
   ctx.globalAlpha = 1;
-  // 全局轻晕影(预渲染一次,统一照片层与手绘层质感)
-  if(!vgCv){
-    vgCv = document.createElement('canvas'); vgCv.width = 480; vgCv.height = 270;
-    const c = vgCv.getContext('2d');
-    const g2 = c.createRadialGradient(240, 124, 114, 240, 140, 232);
-    g2.addColorStop(0, 'rgba(0,0,0,0)'); g2.addColorStop(1, 'rgba(8,6,14,0.34)');
-    c.fillStyle = g2; c.fillRect(0, 0, 480, 270);
-  }
-  ctx.drawImage(vgCv, 0, 0, W, H);
+  vignette();
 }

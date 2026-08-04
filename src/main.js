@@ -56,7 +56,7 @@ function frame(ts){
 /* 照片预加载:完成后再进主循环(缺图不阻塞,对应元素走代码插画回退) */
 function drawLoading(p){
   ctx.fillStyle = '#0d0a14'; ctx.fillRect(0,0,W,H);
-  ctx.fillStyle = '#f7ead0'; ctx.font = 'bold 44px "JinlingSong","STSong","SimSun",serif';
+  ctx.fillStyle = '#f4f1e8'; ctx.font = '44px "JinlingBrush","KaiTi","Microsoft YaHei",serif';
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   ctx.fillText('金陵快跑', CX, H*0.38);
   ctx.fillStyle = 'rgba(247,234,208,0.25)'; ctx.fillRect(CX-140, H*0.52, 280, 6);

@@ -112,15 +112,15 @@ export function shareScore(){
   // 卡面内容
   x2.textAlign = 'center'; x2.textBaseline = 'middle';
   x2.fillStyle = '#f0b64c';
-  x2.font = 'bold 30px "JinlingSong","STSong","SimSun",serif';
+  x2.font = '32px "JinlingBrush","KaiTi","Microsoft YaHei",serif';
   x2.fillText('金 陵 快 跑', 300, 105);
   x2.strokeStyle = '#f0b64c'; x2.lineWidth = 1.5;
   x2.beginPath(); x2.moveTo(150, 130); x2.lineTo(450, 130); x2.stroke();
   drawDuck(x2, 300, 320, 130, gold);
   const title = endless ? '无尽模式' : LEVELS[G.lvIdx].name;
-  x2.fillStyle = '#f7ead0'; x2.font = 'bold 26px "Microsoft YaHei","PingFang SC",sans-serif';
+  x2.fillStyle = '#f7ead0'; x2.font = '26px "JinlingKai","KaiTi","Microsoft YaHei",serif';
   x2.fillText(title + ' · ' + dist + ' m', 300, 448);
-  x2.fillStyle = '#c9b88f'; x2.font = '18px "Microsoft YaHei","PingFang SC",sans-serif';
+  x2.fillStyle = '#c9b88f'; x2.font = '18px "JinlingKai","KaiTi","Microsoft YaHei",serif';
   let sub = '收集风物 ' + items + ' 件 · 图鉴 ' + albumN + '/' + ITEMS.length;
   if(endless){
     const ms = MILESTONES.filter(m => save.best >= m[0]).pop();
@@ -128,10 +128,10 @@ export function shareScore(){
   }
   x2.fillText(sub, 300, 482);
   // 底部文案
-  x2.fillStyle = '#6b5a3a'; x2.font = '16px "Microsoft YaHei","PingFang SC",sans-serif';
+  x2.fillStyle = '#6b5a3a'; x2.font = '16px "JinlingKai","KaiTi","Microsoft YaHei",serif';
   x2.fillText('—— 奔跑展开的金陵长卷 ——', 300, 590);
   x2.fillText('背景风景,皆是实景南京', 300, 622);
-  x2.fillStyle = '#a89a78'; x2.font = '14px "Microsoft YaHei","PingFang SC",sans-serif';
+  x2.fillStyle = '#a89a78'; x2.font = '14px "JinlingKai","KaiTi","Microsoft YaHei",serif';
   const totalStars = save.stars.reduce((a,b)=>a+b,0);
   x2.fillText('无尽最佳 ' + save.best + ' m · 星星 ' + totalStars + '/18', 300, 680);
   // 右下角二维码 + 回游链接(传播第一跳的入口)

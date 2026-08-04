@@ -6,6 +6,7 @@ import { mkdirSync } from 'fs';
 const BASE = 'http://127.0.0.1:8123/';
 const ALL = {
   menu: [BASE, 2500],
+  levels: [BASE, 2500, 'click'],   // 点「冒险模式」进选关页
   lv0: [BASE + '#lv0', 3900],
   lv1: [BASE + '#lv1', 3900],
   lv2: [BASE + '#lv2', 3900],
@@ -36,11 +37,18 @@ async function playInputs(ms){
   }
 }
 
-for (const [name, [url, wait]] of shots) {
+for (const [name, [url, wait, mode]] of shots) {
   errors.length = 0;
   await page.goto('about:blank');   // 强制整页重载,否则仅哈希变化不会重跑深链逻辑
   await page.goto(url);
-  if (name === 'menu') await page.waitForTimeout(wait);
+  if (mode === 'click') {
+    const box = await page.locator('canvas').boundingBox();
+    const at = (x, y) => [box.x + x / 960 * box.width, box.y + y / 540 * box.height];
+    await page.waitForTimeout(1200);
+    const [ax, ay] = at(480, 540 * 0.62);   // 冒险模式按钮
+    await page.mouse.click(ax, ay);
+    await page.waitForTimeout(1500);
+  } else if (name === 'menu') await page.waitForTimeout(wait);
   else await playInputs(wait);
   await page.screenshot({ path: `tools/e2e/shots/${name}.png` });
   console.log(name, errors.length ? 'ERRORS:\n  ' + errors.join('\n  ') : 'ok');
