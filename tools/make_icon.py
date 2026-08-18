@@ -1,49 +1,62 @@
 #!/usr/bin/env python3
-"""生成游戏图标:简笔白胖鸭(深底圆角 + 白鸭 + 橙喙 + 桂花枝)。
-产出 assets/icons/duck-512.png 与 duck-192.png(192 供 apple-touch-icon)。
+"""从正式鸭子动作图生成应用图标，避免图标与局内角色长得像两个物种。"""
 
-用法: ./.venv/Scripts/python tools/make_icon.py
-"""
 from pathlib import Path
-from PIL import Image, ImageDraw
+
+from PIL import Image, ImageDraw, ImageFilter
 
 ROOT = Path(__file__).resolve().parent.parent
+ATLAS = ROOT / "assets" / "game" / "duck-atlas.webp"
 OUT = ROOT / "assets" / "icons"
 OUT.mkdir(parents=True, exist_ok=True)
 
 
-def draw_duck(size: int) -> Image.Image:
-    S = size
-    img = Image.new("RGBA", (S, S), (0, 0, 0, 0))
-    d = ImageDraw.Draw(img)
-    # 深色圆角底
-    d.rounded_rectangle([0, 0, S - 1, S - 1], radius=int(S * 0.18), fill="#0d0a14")
-    d.rounded_rectangle([S * 0.05, S * 0.05, S * 0.95, S * 0.95],
-                        radius=int(S * 0.14), outline="#3a2f1f", width=max(2, S // 110))
-    # 桂花枝(在头顶)
-    bx, by = S * 0.30, S * 0.24
-    d.line([S * 0.30, S * 0.30, S * 0.38, S * 0.13], fill="#7ba05b", width=max(3, S // 40))
-    for (ox, oy, rr) in [(0.40, 0.12, 0.05), (0.45, 0.18, 0.04), (0.35, 0.10, 0.04)]:
-        d.ellipse([S * ox - rr * S, S * oy - rr * S, S * ox + rr * S, S * oy + rr * S], fill="#f0b64c")
-    # 头
-    hx, hy, hr = S * 0.42, S * 0.52, S * 0.17
-    d.ellipse([hx - hr, hy - hr, hx + hr, hy + hr], fill="#f5f0e6")
-    # 喙(右缘,3/4 视角)
-    d.polygon([(hx + hr * 0.55, hy - hr * 0.18), (hx + hr * 1.55, hy), (hx + hr * 0.55, hy + hr * 0.18)], fill="#f08c1e")
-    # 眼睛
-    d.ellipse([hx + hr * 0.15, hy - hr * 0.5, hx + hr * 0.6, hy - hr * 0.08], fill="#1a1220")
-    # 身体(梨形)
-    d.ellipse([S * 0.16, S * 0.56, S * 0.68, S * 0.88], fill="#f5f0e6")
-    # 腹影
-    d.ellipse([S * 0.24, S * 0.66, S * 0.60, S * 0.86], fill="#e3d9c8")
-    # 尾羽
-    d.polygon([(S * 0.24, S * 0.62), (S * 0.10, S * 0.68), (S * 0.26, S * 0.72)], fill="#e3d9c8")
-    # 脚蹼(两片橙)
-    d.ellipse([S * 0.34, S * 0.87, S * 0.52, S * 0.95], fill="#f08c1e")
-    d.ellipse([S * 0.55, S * 0.87, S * 0.72, S * 0.95], fill="#f08c1e")
-    return img
+def atlas_frame(index: int) -> Image.Image:
+    atlas = Image.open(ATLAS).convert("RGBA")
+    cols, rows = 4, 3
+    col, row = index % cols, index // cols
+    x0, x1 = round(col * atlas.width / cols), round((col + 1) * atlas.width / cols)
+    y0, y1 = round(row * atlas.height / rows), round((row + 1) * atlas.height / rows)
+    frame = atlas.crop((x0, y0, x1, y1))
+    bbox = frame.getchannel("A").getbbox()
+    return frame.crop(bbox) if bbox else frame
 
 
-for size in (512, 192):
-    draw_duck(size).save(OUT / f"duck-{size}.png")
-    print(f"OK {OUT / f'duck-{size}.png'}")
+def make_icon(size: int) -> Image.Image:
+    radius = round(size * 0.2)
+    mask = Image.new("L", (size, size), 0)
+    ImageDraw.Draw(mask).rounded_rectangle((0, 0, size - 1, size - 1), radius=radius, fill=255)
+
+    top = Image.new("RGB", (size, size), "#102843")
+    bottom = Image.new("RGB", (size, size), "#07111f")
+    gradient = Image.linear_gradient("L").resize((size, size))
+    base = Image.composite(bottom, top, gradient).convert("RGBA")
+
+    duck = atlas_frame(0)
+    duck.thumbnail((round(size * 0.82), round(size * 0.78)), Image.Resampling.LANCZOS)
+    x = (size - duck.width) // 2
+    y = round(size * 0.53 - duck.height / 2)
+
+    glow = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    glow_draw = ImageDraw.Draw(glow)
+    glow_draw.ellipse((size * 0.17, size * 0.18, size * 0.83, size * 0.88), fill=(71, 173, 218, 86))
+    glow = glow.filter(ImageFilter.GaussianBlur(size * 0.08))
+    base.alpha_composite(glow)
+    base.alpha_composite(duck, (x, y))
+
+    draw = ImageDraw.Draw(base)
+    inset = max(4, round(size * 0.045))
+    draw.rounded_rectangle(
+        (inset, inset, size - inset - 1, size - inset - 1),
+        radius=max(1, radius - inset),
+        outline="#e7c367",
+        width=max(2, round(size * 0.012)),
+    )
+    base.putalpha(mask)
+    return base
+
+
+for icon_size in (512, 192):
+    path = OUT / f"duck-{icon_size}.png"
+    make_icon(icon_size).save(path, optimize=True)
+    print(f"OK {path}")

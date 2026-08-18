@@ -1,4 +1,5 @@
 import { ctx, TAU, proj, poly, disc, petalFlower } from '../core.js';
+import { drawSpriteFrame, getSprite } from './sprites.js';
 
 /* ================= 障碍:按景点写实物件 ================= */
 // 三类:low(跳过)/high(滑铲钻过)/full(必须换道);碰撞逻辑在 game.js,此处仅绘制。
@@ -52,10 +53,25 @@ function tree(x, y, s, g1, g2, trunk){
   poly([[x - 0.1 * s, y - 2.1 * s], [x - 0.5 * s, y - 1.55 * s], [x + 0.15 * s, y - 1.6 * s]], 'rgba(230,240,235,0.25)'); // 月色轮廓光
 }
 
+function drawCrenelSprite(ob, p){
+  const image = getSprite('crenelObstacles');
+  if(!image) return false;
+  const frame = ob.type==='low' ? 0 : ob.type==='high' ? 1 : 2;
+  const dh = p.s * (ob.type==='low' ? 2.45 : ob.type==='high' ? 2.68 : 2.62);
+  const dw = p.s * (ob.type==='low' ? 2.0 : 1.65);
+  shadow(p.x, p.y + 0.03*p.s, p.s * (ob.type==='low' ? 0.55 : 0.62));
+  ctx.save();
+  ctx.imageSmoothingEnabled = true;
+  drawSpriteFrame(ctx, image, 3, 1, frame, p.x-dw/2, p.y-dh*0.82, dw, dh);
+  ctx.restore();
+  return true;
+}
+
 export function drawObstacle(ob, lv){
   const p = proj(ob.x, 0, ob.rz);
   const s = p.s, x = p.x, y = p.y;
   const m = lv.motif;
+  if(m==='crenel' && drawCrenelSprite(ob, p)) return;
 
   if(ob.type === 'low'){
     shadow(x, y + 0.03 * s, 0.55 * s);

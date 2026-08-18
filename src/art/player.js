@@ -1,5 +1,6 @@
 import { ctx, TAU, ZP, LANEGAP, proj, poly, disc, shadow, clamp } from '../core.js';
 import { save } from '../save.js';
+import { drawSpriteFrame, getSprite } from './sprites.js';
 
 /* ================= 剪纸绘制:玩家(逃跑的盐水鸭) ================= */
 // 一只从桂花鸭店橱窗逃出的白胖鸭:橘喙脚蹼、头顶桂花枝(它的标志物)
@@ -34,7 +35,7 @@ function osmanthus(ox, oy, s, bristle){
    panic 时扭头回望镜头——瞪眼张嘴冒汗(兼作障碍逼近提示);bob 为桂花枝弹跳 */
 function headBack(hx, hy, s, panic, bob){
   ctx.save(); ctx.translate(hx, hy);
-  disc(0, 0, 0.3*s, BODY);
+  disc(0, 0, 0.34*s, BODY);
   ctx.fillStyle = BELLY;                                              // 颈部分界阴
   ctx.beginPath(); ctx.ellipse(0, 0.2*s, 0.24*s, 0.12*s, 0, 0, TAU); ctx.fill();
   if(panic){
@@ -167,6 +168,34 @@ function spark(sx, sy, r){
         [sx,sy+r],[sx-r*0.35,sy+r*0.35],[sx-r,sy],[sx-r*0.35,sy-r*0.35]], OSM);
 }
 
+function spriteFrame(pl, t, opts){
+  if(opts.crashed) return 10;                              // 屁股墩 + 金星，滑稽但不恶心
+  if(pl.sliding) return 8;
+  if(pl.y > 0.05){
+    if(pl.vy < 0) return 7;
+    return pl.jumps === 2 ? 6 : 5;
+  }
+  if(opts.panic) return 9;                                // 临近障碍时张翼急刹
+  return Math.floor(t * 8) % 4;                           // 四帧摇摆跑
+}
+
+function drawSpritePlayer(pl, t, opts, p, gold){
+  const image = getSprite('duck');
+  if(!image) return false;
+  // 图集角色收回到原剪纸鸭的量级；后视角脚蹼对齐地面，避免像贴纸浮在路上。
+  const dh = p.s * 1.72;
+  const dw = dh * 0.75;                                   // 图集单格约 3:4
+  const frame = spriteFrame(pl, t, opts);
+  ctx.save();
+  ctx.translate(p.x, p.y);
+  if(!opts.crashed) ctx.rotate(clamp((pl.lane*LANEGAP-pl.x)*0.18, -0.2, 0.2));
+  if(gold && 'filter' in ctx) ctx.filter = 'sepia(.55) saturate(1.35) hue-rotate(350deg)';
+  ctx.imageSmoothingEnabled = true;
+  drawSpriteFrame(ctx, image, 4, 3, frame, -dw/2, -dh*0.88, dw, dh);
+  ctx.restore();
+  return true;
+}
+
 // opts: { panic: 障碍逼近, crashed: 撞车定格 }
 export function drawPlayer(pl, t, opts){
   opts = opts || {};
@@ -180,7 +209,8 @@ export function drawPlayer(pl, t, opts){
   // 接地影:随起跳高度收缩变淡
   const gp = proj(pl.x, 0, ZP);
   const shK = Math.max(0.3, 1 - pl.y*0.55);
-  shadow(gp.x, gp.y + 0.05*s, s*0.6*shK, 0.26*shK);
+  shadow(gp.x, gp.y + 0.02*s, s*0.9*shK, 0.32*shK);
+  if(drawSpritePlayer(pl, t, opts, p, gold)) return;
   ctx.save();
   ctx.translate(x, y);
   if(!opts.crashed){   // 换道时身体侧倾
