@@ -20,13 +20,12 @@ function lantern(x, y, r){
 export function drawSide(motif, x, y, s, lv, mirror){
   const m = mirror ? -1 : 1;
   shadow(x, y+0.02*s, 1.05*s, 0.22);   // 接触影:装饰"落地"
-  if(motif==='crenel'){          // 城墙段:青砖 + 垛口 + 墙头红灯笼
+  if(motif==='crenel'){          // 城墙段:暖砖绘本垛口,和鸭子同一套描边
     const wall = ctx.createLinearGradient(x-1.2*s,y-0.88*s,x+1.2*s,y);
-    wall.addColorStop(0,'#526579'); wall.addColorStop(0.42,'#35495d'); wall.addColorStop(1,'#1b2a3a');
-    poly([[x-1.2*s,y],[x-1.2*s,y-0.88*s],[x+1.2*s,y-0.88*s],[x+1.2*s,y]], wall);
-    ctx.fillStyle = 'rgba(151,184,207,0.38)'; ctx.fillRect(x-1.2*s, y-0.88*s, 2.4*s, 0.09*s); // 月光顶面
-    ctx.fillStyle = 'rgba(5,13,24,0.34)'; ctx.fillRect(x+0.98*s, y-0.79*s, 0.22*s, 0.79*s);   // 右侧压暗
-    ctx.strokeStyle = 'rgba(15,26,39,0.52)'; ctx.lineWidth = Math.max(1, s*0.018);
+    wall.addColorStop(0,'#e2c49a'); wall.addColorStop(0.45,'#c49a6a'); wall.addColorStop(1,'#8a6038');
+    poly([[x-1.2*s,y],[x-1.2*s,y-0.88*s],[x+1.2*s,y-0.88*s],[x+1.2*s,y]], wall, '#5a3a20', Math.max(1.6,s*0.035));
+    ctx.fillStyle = 'rgba(255,236,200,0.55)'; ctx.fillRect(x-1.2*s, y-0.88*s, 2.4*s, 0.09*s);
+    ctx.strokeStyle = 'rgba(90,50,24,0.35)'; ctx.lineWidth = Math.max(1, s*0.02);
     for(let row=0;row<3;row++){
       const yy=y-(row+1)*0.27*s;
       ctx.beginPath();ctx.moveTo(x-1.2*s,yy);ctx.lineTo(x+1.2*s,yy);ctx.stroke();
@@ -37,11 +36,11 @@ export function drawSide(motif, x, y, s, lv, mirror){
     }
     for(let i=0;i<4;i++){
       const bx=x-1.15*s+i*0.62*s;
-      ctx.fillStyle = '#34495d';ctx.fillRect(bx,y-1.1*s,0.34*s,0.23*s);
-      ctx.fillStyle = 'rgba(161,194,216,0.5)';ctx.fillRect(bx,y-1.1*s,0.34*s,0.04*s);
-      ctx.fillStyle = 'rgba(9,18,29,0.32)';ctx.fillRect(bx+0.27*s,y-1.06*s,0.07*s,0.19*s);
+      ctx.fillStyle = '#d2a878'; ctx.strokeStyle = '#5a3a20'; ctx.lineWidth = Math.max(1.4,s*0.03);
+      ctx.fillRect(bx,y-1.1*s,0.34*s,0.23*s); ctx.strokeRect(bx,y-1.1*s,0.34*s,0.23*s);
+      ctx.fillStyle = 'rgba(255,236,200,0.55)'; ctx.fillRect(bx,y-1.1*s,0.34*s,0.05*s);
     }
-    ctx.strokeStyle = '#8a6a3a'; ctx.lineWidth = Math.max(1, s*0.02);    // 灯笼绳
+    ctx.strokeStyle = '#8a6a3a'; ctx.lineWidth = Math.max(1, s*0.02);
     ctx.beginPath(); ctx.moveTo(x+m*0.7*s, y-1.1*s); ctx.lineTo(x+m*0.7*s, y-0.94*s); ctx.stroke();
     lantern(x+m*0.7*s, y-0.73*s, 0.13*s);
   } else if(motif==='lotus'){    // 湖堤:矮石栏 + 荷叶荷花 + 垂柳(树冠成团)

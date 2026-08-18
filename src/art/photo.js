@@ -108,6 +108,13 @@ export function drawBackdrop(id, lv, dist, mix){
   grad.addColorStop(1, `rgba(${r2},${g2},${b2},1)`);
   ctx.fillStyle = grad;
   ctx.fillRect(0, dh - band, W, band);
+  // 绘本滤镜:压掉照片锐利感,让远景给鸭子让路。
+  ctx.globalCompositeOperation = 'multiply';
+  ctx.fillStyle = 'rgba(228,198,150,0.38)';
+  ctx.fillRect(0, 0, W, dh);
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.fillStyle = 'rgba(255,244,220,0.16)';
+  ctx.fillRect(0, 0, W, dh);
   ctx.globalAlpha = 1;
   return true;
 }
@@ -140,6 +147,9 @@ export function drawMenuBg(){
   g2.addColorStop(1, 'rgba(13,10,20,0)');
   ctx.fillStyle = g2;
   ctx.fillRect(0, 0, W, H * 0.3);
+  ctx.globalCompositeOperation = 'multiply';
+  ctx.fillStyle = 'rgba(232,208,168,0.28)';
+  ctx.fillRect(0, 0, W, H);
   ctx.restore();
   return true;
 }
