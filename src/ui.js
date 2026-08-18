@@ -7,21 +7,23 @@ import { G, curLv, startRun, nextAfterClear } from './game.js';
 import { drawItemPhoto, hasPhoto, loadItemPhotos } from './art/photo.js';
 import { drawItemIcon } from './art/items.js';
 import { drawSide } from './art/scenery.js';
-import { drawPowerIcon } from './render.js';
+import { drawPickupMedallion, drawPowerIcon } from './render.js';
 import { shareScore, copyText, shareLink } from './share.js';
+import { COPYRIGHT_LINE, CREDIT_SECTIONS, PHOTO_CREDITS, SHOP_DISCLAIMER } from './legal.js';
 
 /* ================= 渲染:UI 组件 ================= */
 export function text(str, x, y, size, color, align, weight, soft){
   // 三档字体:soft=书法体大标题(铭心毛笔);≥14px=文楷;<14px 与数字提示=黑体
-  const family = soft ? '"JinlingBrush","KaiTi","Microsoft YaHei",serif'
+  const clean = soft==='clean';
+  const family = soft===true ? '"JinlingBrush","KaiTi","Microsoft YaHei",serif'
     : size >= 14 ? '"JinlingKai","KaiTi","Microsoft YaHei",serif'
     : '"Microsoft YaHei","PingFang SC",sans-serif';
-  ctx.font = (weight && !soft ? weight + ' ' : '') + size + 'px ' + family;
+  ctx.font = (weight && soft!==true ? weight + ' ' : '') + size + 'px ' + family;
   ctx.textAlign = align||'center'; ctx.textBaseline = 'middle';
   // 统一深色描边:任何实景照片背景上都可读;soft=大标题用细淡描边(现代感)
   ctx.lineJoin = 'round';
-  ctx.lineWidth = Math.max(2, size*(soft?0.08:0.16));
-  ctx.strokeStyle = soft ? 'rgba(10,8,16,0.42)' : 'rgba(10,8,16,0.6)';
+  ctx.lineWidth = Math.max(clean?1.4:2, size*(soft===true?0.08:clean?0.045:0.16));
+  ctx.strokeStyle = soft ? 'rgba(7,17,30,0.44)' : 'rgba(10,8,16,0.6)';
   ctx.strokeText(str, x, y);
   ctx.fillStyle = color; ctx.fillText(str, x, y);
 }
@@ -33,14 +35,20 @@ export function button(id, label, x, y, w, h, opts){
   ctx.save();
   if(pressed){ ctx.translate(x,y); ctx.scale(0.94,0.94); ctx.translate(-x,-y); } // 按压回弹
   ctx.globalAlpha = opts.disabled ? 0.45 : 1;
-  const r = h/2;   // 药丸形
+  const r = Math.min(14,h/2);
+  ctx.shadowColor = 'rgba(2,9,18,0.42)'; ctx.shadowBlur = pressed?4:12; ctx.shadowOffsetY = pressed?2:5;
   if(opts.ghost){  // 次级按钮:黛蓝底 + 湖青描边
-    rrect(x-w/2, y-h/2, w, h, r, 'rgba(27,42,68,0.42)', 'rgba(127,170,200,0.55)', 1.5);
-  } else {         // 主按钮:柔和朱红(opts.bg 可覆盖)
-    rrect(x-w/2, y-h/2, w, h, r, opts.bg || '#d85c47');
-    rrect(x-w/2+1.5, y-h/2+1.5, w-3, h*0.42, r*0.8, 'rgba(255,255,255,0.10)'); // 顶部柔光
+    rrect(x-w/2, y-h/2, w, h, r, 'rgba(9,25,43,0.72)', 'rgba(139,207,235,0.48)', 1.4);
+  } else {
+    const fill = opts.bg || (()=>{
+      const g=ctx.createLinearGradient(x-w/2,y-h/2,x+w/2,y+h/2);
+      g.addColorStop(0,'#f6df95'); g.addColorStop(1,'#dfa84a'); return g;
+    })();
+    rrect(x-w/2, y-h/2, w, h, r, fill, 'rgba(255,238,178,0.62)', 1);
+    rrect(x-w/2+2, y-h/2+2, w-4, h*0.34, r*0.7, 'rgba(255,255,255,0.13)');
   }
-  text(label, x, y+1, opts.size||22, '#f4f1e8', 'center', 'bold');
+  ctx.shadowBlur=0;ctx.shadowOffsetY=0;
+  text(label, x, y+1, opts.size||20, opts.fg||(opts.ghost||opts.bg?'#f4f7fb':'#17243a'), 'center', 'bold', 'clean');
   if(pressed) rrect(x-w/2, y-h/2, w, h, r, 'rgba(0,0,0,0.22)');
   ctx.globalAlpha = 1;
   ctx.restore();
@@ -80,15 +88,30 @@ export function stars(n, x, y, r){
 }
 export function dim(alpha){ ctx.fillStyle=`rgba(8,6,14,${alpha})`; ctx.fillRect(0,0,W,H); }
 
+function glassPanel(x,y,w,h,r=14){
+  ctx.save();
+  ctx.shadowColor='rgba(0,8,18,0.38)';ctx.shadowBlur=18;ctx.shadowOffsetY=7;
+  rrect(x,y,w,h,r,'rgba(7,22,39,0.76)','rgba(142,205,232,0.30)',1.2);
+  ctx.shadowBlur=0;ctx.shadowOffsetY=0;
+  rrect(x+1.5,y+1.5,w-3,h*0.36,r-2,'rgba(255,255,255,0.045)');
+  ctx.restore();
+}
+
 /* ---- HUD ---- */
 export function drawHUD(){
   const lv = curLv();
-  text(Math.floor(G.dist)+' m', 24, 30, 24, lv.hud, 'left', 'bold');
-  text('印记 × '+G.runMarks, 24, 64, 20, lv.hud, 'left', 'bold');
-  text('◉ '+save.coins, 24, 92, 16, '#f0c85a', 'left', 'bold');            // 铜钱余额
-  if(G.combo >= 2) text(G.combo+' 连击!', 24, 118, 16, '#f0b64c', 'left', 'bold');
+  glassPanel(16,14,154,102);
+  text(Math.floor(G.dist)+' m', 30, 38, 24, '#f4f8fb', 'left', 'bold', 'clean');
+  text('本局印记', 30, 68, 12, 'rgba(218,235,244,0.70)', 'left', null, 'clean');
+  text(String(G.runMarks), 140, 68, 17, '#f1c86b', 'right', 'bold', 'clean');
+  drawPickupMedallion('gold',31,94,7,0);
+  text('铜钱 '+save.coins, 47, 94, 13, '#f1c86b', 'left', 'bold', 'clean');
+  if(G.combo >= 2){
+    glassPanel(18,124,112,32,10);
+    text(G.combo+' 连击', 74, 140, 14, '#f5d47f', 'center', 'bold', 'clean');
+  }
   // 道具状态(磁铁/金桂剩余秒;护盾小图标)
-  let stY = 140, stX = 24;
+  let stY = G.combo>=2 ? 176 : 140, stX = 24;
   if(G.powerT.magnet > 0){ text('磁铁 '+Math.ceil(G.powerT.magnet)+'s', stX, stY, 14, '#f0a860', 'left', 'bold'); stY += 22; }
   if(G.powerT.gui > 0){ text('金桂 '+Math.ceil(G.powerT.gui)+'s', stX, stY, 14, '#f0c85a', 'left', 'bold'); stY += 22; }
   if(G.shield){
@@ -97,15 +120,16 @@ export function drawHUD(){
     text('护盾', stX+22, stY, 14, '#a8d5a2', 'left', 'bold');
   }
   if(G.mode==='adv'){
-    text(lv.name, CX, 30, 22, lv.hud, 'center', 'bold');
-    // 进度条
-    const pw = 260, px = CX-pw/2, py = 48;
-    ctx.fillStyle='rgba(255,255,255,0.18)'; ctx.fillRect(px, py, pw, 6);
-    ctx.fillStyle=lv.accent; ctx.fillRect(px, py, pw*clamp(G.dist/lv.len,0,1), 6);
+    glassPanel(CX-154,14,308,54);
+    text(lv.name, CX, 32, 18, '#f4f8fb', 'center', 'bold', 'clean');
+    const pw = 266, px = CX-pw/2, py = 53;
+    rrect(px,py,pw,6,3,'rgba(255,255,255,0.12)');
+    rrect(px,py,pw*clamp(G.dist/lv.len,0,1),6,3,lv.accent);
   } else {
-    text('无尽模式 · 最佳 '+save.best+' m', CX, 30, 20, lv.hud, 'center', 'bold');
+    glassPanel(CX-170,14,340,58);
+    text('无尽模式 · 最佳 '+save.best+' m', CX, 32, 17, '#f4f8fb', 'center', 'bold', 'clean');
     if(G.msIdx < MILESTONES.length)
-      text('距「'+MILESTONES[G.msIdx][1]+'」还差 '+Math.max(0,Math.ceil(MILESTONES[G.msIdx][0]-G.dist))+' m', CX, 54, 13, lv.hud, 'center');
+      text('距「'+MILESTONES[G.msIdx][1]+'」还差 '+Math.max(0,Math.ceil(MILESTONES[G.msIdx][0]-G.dist))+' m', CX, 57, 12, 'rgba(218,235,244,0.72)', 'center', null, 'clean');
   }
   // 右上角:暂停 + 静音按钮(F3 触屏可暂停;M4 移动端可静音)
   if(!G.paused){
@@ -126,7 +150,14 @@ export function drawHUD(){
   // 底部操作提示:开场 5 秒内显示后淡出,暂停时重新出现;触屏设备显示手势
   const hint = ('ontouchstart' in window) ? '左右滑换道  上滑跳  下滑铲  右上角可暂停'
     : '←→换道  ↑跳  ↓滑铲  P暂停  M静音'+(save.muted?'(已静音)':'');
-  if(G.paused || G.t < 5){
+  if(G.tutorial){
+    const tw=520,tx=CX-tw/2,ty=H-100;
+    glassPanel(tx,ty,tw,76,16);
+    text('教学 '+(G.tutorial.step+1)+' / 4',tx+22,ty+22,13,'#8fd6f2','left','bold','clean');
+    for(let i=0;i<4;i++) disc(tx+tw-86+i*18,ty+22,4,i<=G.tutorial.step?'#f1c86b':'rgba(255,255,255,0.18)');
+    text(G.tutorial.tip, CX, ty+50, 17, '#f5f7f3', 'center', 'bold', 'clean');
+  }
+  if(!G.tutorial && (G.paused || G.t < 5)){
     ctx.globalAlpha = G.paused ? 1 : clamp(5-G.t, 0, 1);
     text(hint, CX, H-16, 13, lv.hud, 'center');
     ctx.globalAlpha = 1;
@@ -135,7 +166,7 @@ export function drawHUD(){
   if(G.egg && G.egg.text){
     const a = clamp(Math.min((G.egg.dur-G.egg.ttl)*4, G.egg.ttl), 0, 1);
     ctx.globalAlpha = a;
-    text(G.egg.text, CX, H-48, 16, '#f0b64c', 'center', 'bold');
+    text(G.egg.text, CX, G.tutorial?H-116:H-48, 16, '#f0b64c', 'center', 'bold', 'clean');
     ctx.globalAlpha = 1;
   }
   if(G.paused){
@@ -148,25 +179,24 @@ export function drawHUD(){
 
 /* ---- 界面 ---- */
 export function drawMenu(){
-  dim(0.16);   // 轻压一层,统一照片与 UI
-  // 标题:书法体 + 大字距,坐在照片天空区
-  const ty = H*0.25;
+  dim(0.22);
+  const ty = H*0.24;
+  text('奔跑展开的金陵长卷', CX, H*0.09, 12, 'rgba(174,220,239,0.78)', 'center', 'bold', 'clean');
   ctx.save();
-  if('letterSpacing' in ctx) ctx.letterSpacing = '14px';
-  text('金陵快跑', CX, ty, 96, '#f4f1e8', 'center', null, true);
+  if('letterSpacing' in ctx) ctx.letterSpacing = '4px';
+  text('冲鸭！金陵！', CX, ty, 72, '#f7f5ee', 'center', 'bold', 'clean');
   ctx.restore();
-  // 标题下短金线 + 单圆点收口
-  ctx.strokeStyle = '#e8c170'; ctx.lineWidth = 2;
-  ctx.beginPath(); ctx.moveTo(CX-46, ty+68); ctx.lineTo(CX+46, ty+68); ctx.stroke();
-  disc(CX, ty+68, 3, '#e8c170');
-  text('—— 奔跑展开的金陵长卷 ——', CX, H*0.435, 18, '#e8c170');
-  text('没有一只鸭子能走出南京——除了我。', CX, H*0.50, 15, 'rgba(244,241,232,0.82)');
-  button('adv','冒险模式', CX, H*0.60, 240, 50);
-  button('endless','无尽模式', CX, H*0.70, 240, 50, {ghost:true});
-  button('album','金陵图鉴 ('+Object.keys(save.album).length+'/'+ITEMS.length+')'+(save.albumNew?' ●':''), CX, H*0.80, 240, 50, {ghost:true});
-  button('shop','鸭铺 (◉ '+save.coins+')', CX, H*0.89, 240, 50, {ghost:true});
+  ctx.strokeStyle = '#f1c86b'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(CX-58, ty+54); ctx.lineTo(CX+58, ty+54); ctx.stroke();
+  disc(CX, ty+54, 3, '#f1c86b');
+  text('一只认真逃跑的白鸭 · 十站金陵 · 四十件风物', CX, H*0.43, 15, 'rgba(228,239,245,0.82)', 'center', null, 'clean');
+  button('adv','开始冒险', CX, H*0.58, 224, 48);
+  button('endless','无尽奔跑', CX, H*0.68, 224, 46, {ghost:true});
+  button('album','风物图鉴 '+Object.keys(save.album).length+'/'+ITEMS.length+(save.albumNew?'  ●':''), CX, H*0.78, 224, 46, {ghost:true});
+  button('shop','鸭铺升级 · '+save.coins+' 枚', CX, H*0.88, 224, 46, {ghost:true});
   button('tutorial','重玩教学', 90, H-28, 140, 36, {ghost:true,size:14});
-  text('背景风景,皆是实景南京', CX, H-22, 13, 'rgba(244,241,232,0.5)');
+  button('credits','素材与授权', W-90, H-28, 150, 36, {ghost:true,size:14});
+  text(COPYRIGHT_LINE, CX, H-18, 11, 'rgba(211,230,240,0.48)', 'center', null, 'clean');
   // F6:微信内提示绕开内置浏览器限制(下载/分享被吞)
   if(/MicroMessenger/i.test(navigator.userAgent))
     text('微信内体验有限:点右上角 ··· → 在浏览器打开', CX, H-44, 12, 'rgba(246,241,231,0.42)');
@@ -294,7 +324,7 @@ export function drawShop(){
   button('back','返回', CX, H-40, 140, 44, {ghost:true});
 }
 
-const CRASH_TITLES = ['撞上了!','鸭鸭眼冒金星!','被金陵的墙留下了','差一步就出城了……'];
+const CRASH_TITLES = ['差点撞上，先缓一缓','鸭蹼打了个滑','城墙比想象中结实','慢半拍，再来一次'];
 export function drawOver(){
   dim(0.55);
   const got = G.newIds.length;
@@ -404,7 +434,8 @@ export function drawAlbum(){
   if(maxScroll > 0){   // 滚动提示条
     text('↑ 滚轮 / 上下拖动 ↑', CX, H - 34, 12, 'rgba(216,201,168,0.6)');
   }
-  text('实景照片来自 Wikimedia Commons 与 Openverse,作者与授权见 assets/img/CREDITS.md', CX, H-14, 11, 'rgba(216,201,168,0.55)');
+  text(SHOP_DISCLAIMER, CX, H-28, 11, 'rgba(216,201,168,0.55)');
+  text('照片作者与许可证见「素材与授权」', CX, H-14, 11, 'rgba(216,201,168,0.45)');
   button('back','返回 (Esc)', W-90, 46, 150, 44, {ghost:true});
   if(G.albumZoom) drawAlbumZoom();
 }
@@ -424,11 +455,66 @@ function drawAlbumZoom(){
   text(it.note, CX, H*0.775, 14, '#d8c9a8');
   text(it.quip, CX, H*0.825, 14, '#f0b64c');
   text(it.where, CX, H*0.875, 13, '#a8d5a2');
+  text(SHOP_DISCLAIMER, CX, H-36, 11, 'rgba(216,201,168,0.5)');
   if(hasReal){
     drawItemPhoto(it.id, CX+190, H*0.36, 62, 0.04, false);
     text('实景对照', CX+190, H*0.62, 13, 'rgba(216,201,168,0.75)');
   }
   text('点击任意处关闭', CX, H-18, 12, 'rgba(246,241,231,0.55)');
+}
+
+function wrapLine(str, maxW, size){
+  ctx.font = size + 'px "JinlingKai","KaiTi","Microsoft YaHei",serif';
+  if(ctx.measureText(str).width <= maxW) return [str];
+  const out = [];
+  let line = '';
+  for(const ch of str){
+    const next = line + ch;
+    if(ctx.measureText(next).width > maxW && line){ out.push(line); line = ch; }
+    else line = next;
+  }
+  if(line) out.push(line);
+  return out;
+}
+
+/* 素材与授权:玩家不用翻仓库就能看到版权口径和照片署名 */
+export function drawCredits(){
+  dim(0.82);
+  text('素材与授权', CX, 40, 34, '#f6f1e7', 'center', 'bold', true);
+  text(COPYRIGHT_LINE, CX, 70, 13, 'rgba(232,193,112,0.9)');
+  const lines = [];
+  for(const section of CREDIT_SECTIONS){
+    lines.push({ kind:'h', text:section.title });
+    for(const body of section.lines) lines.push({ kind:'p', text:body });
+  }
+  lines.push({ kind:'h', text:'照片署名' });
+  for(const [id, name, author, license] of PHOTO_CREDITS)
+    lines.push({ kind:'p', text:id+' · '+name+' · '+author+' · '+license });
+  const maxW = 760;
+  const packed = [];
+  for(const line of lines){
+    if(line.kind==='h') packed.push(line);
+    else for(const piece of wrapLine(line.text, maxW, 14)) packed.push({ kind:'p', text:piece });
+  }
+  const contentH = packed.length * 22 + 40;
+  const maxScroll = Math.max(0, contentH - (H - 130));
+  G.creditsScroll = Math.min(Math.max(0, G.creditsScroll||0), maxScroll);
+  ctx.save();
+  ctx.beginPath(); ctx.rect(80, 88, W-160, H-150); ctx.clip();
+  ctx.translate(0, -G.creditsScroll);
+  let y = 108;
+  for(const line of packed){
+    if(line.kind==='h'){
+      y += 10;
+      text(line.text, CX, y, 16, '#f0c85a', 'center', 'bold', 'clean');
+    } else {
+      text(line.text, CX, y, 14, 'rgba(244,241,232,0.82)', 'center', null, 'clean');
+    }
+    y += 22;
+  }
+  ctx.restore();
+  if(maxScroll > 0) text('↑ 滚轮 / 上下拖动 ↑', CX, H-38, 12, 'rgba(216,201,168,0.6)');
+  button('back','返回 (Esc)', CX, H-22, 150, 40, {ghost:true,size:14});
 }
 
 /* ---- 点击 ---- */
@@ -458,6 +544,7 @@ export function handleButton(id, data){
       sfx.click();
     }
   }
+  else if(id==='credits'){ G.creditsScroll=0; G.state='credits'; }
   else if(id==='album'){ G.albumFrom='menu'; G.albumZoom=null; G.state='album';
     loadItemPhotos(ITEMS.filter(i=>i.photo).map(i=>i.id));   // 只请求 config 标记的 18 张实景照片
     if(save.albumNew){ save.albumNew=false; persist(); }   // 隐藏件红点看完即清
@@ -475,6 +562,6 @@ export function handleButton(id, data){
   else if(id==='share') shareScore();
   else if(id==='copy'){
     const dist = Math.floor(G.dist), albumN = Object.keys(save.album).length;
-    copyText('我在《金陵快跑》跑了 '+dist+' m,集齐 '+albumN+'/'+ITEMS.length+' 件金陵风物!没有一只鸭子能走出南京——除了我。 '+shareLink());
+    copyText('我在《冲鸭！金陵！》跑了 '+dist+' m,集齐 '+albumN+'/'+ITEMS.length+' 件金陵风物!这只鸭已经跑遍南京。 '+shareLink());
   }
 }

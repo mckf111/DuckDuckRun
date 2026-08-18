@@ -3,7 +3,7 @@ import { ctx, W, H, proj, clamp, TAU, ROAD_HALF, LANEGAP, DRAWD, ZP } from '../c
 /* ================= 路面:按景点写实纹理(砖/石板/花岗岩/沥青) ================= */
 // 以 lv.motif 关联路面材质:course=横向缝间距(米), joint=缝色, speck=噪点不透明度
 const TEX = {
-  crenel:  { course: 2.2, joint: '#5f2f28', speck: 0.10, name: '城砖' },
+  crenel:  { course: 2.2, joint: '#17283b', speck: 0.07, vanguard:true, name: '城砖' },
   lotus:   { course: 3.0, joint: '#14382f', speck: 0.10, water: true, name: '湖堤石板' },
   steps:   { course: 4.0, joint: '#93a7bd', speck: 0.08, name: '花岗岩' },
   lantern: { course: 2.6, joint: '#120d1c', speck: 0.12, warm: true, name: '石板街' },
@@ -49,6 +49,14 @@ export function drawRoad(lv, dist){
     for(let x = 0; x < W; x += 256)
       ctx.drawImage(tile, x, y);
   ctx.globalAlpha = 1;
+  if(t.vanguard){
+    // 标杆关用一束冷光把照片、路面和预渲染物件收进同一套光照。
+    const sheen = ctx.createLinearGradient(W*0.18,0,W*0.82,0);
+    sheen.addColorStop(0,'rgba(70,145,190,0)');
+    sheen.addColorStop(0.5,'rgba(92,170,214,0.13)');
+    sheen.addColorStop(1,'rgba(70,145,190,0)');
+    ctx.fillStyle = sheen; ctx.fillRect(0,0,W,H);
+  }
   // 横向缝(透视投影,兼作前进感条纹)
   const z0 = Math.floor((dist - ZP) / t.course) * t.course + t.course;
   for(let z = z0; z < dist - ZP + DRAWD; z += t.course){
@@ -114,8 +122,10 @@ export function drawRoad(lv, dist){
   // 车道分隔线(保留原手感;大桥 lane 加宽 1px,钢桥面标线更清晰)
   for(const lx of [-LANEGAP / 2, LANEGAP / 2]){
     const a = proj(lx, 0, 2.2), b = proj(lx, 0, DRAWD);
-    ctx.strokeStyle = lv.lane; ctx.globalAlpha = 0.5; ctx.lineWidth = t.wide ? 3 : 2;
+    ctx.strokeStyle = lv.lane; ctx.globalAlpha = t.vanguard ? 0.64 : 0.5; ctx.lineWidth = t.wide ? 3 : 2;
+    if(t.vanguard){ ctx.shadowColor='rgba(84,188,232,0.55)'; ctx.shadowBlur=8; }
     ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke(); ctx.globalAlpha = 1;
+    ctx.shadowBlur = 0;
   }
   // 路缘石(亮一线,界定路肩)
   for(const m of [-1, 1]){

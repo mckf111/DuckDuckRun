@@ -7,6 +7,7 @@ import { drawSide, drawSkyline, drawLandmark, drawBoat, drawGate, drawNear } fro
 import { drawBackdrop, drawMenuBg } from './art/photo.js';
 import { drawRoad } from './art/road.js';
 import { drawPlayer } from './art/player.js';
+import { drawSpriteFrame, getSprite } from './art/sprites.js';
 
 let vgCv = null;   // 晕影离屏缓存
 const dotCache = new Map();   // 柔边粒子精灵(按颜色缓存)
@@ -79,6 +80,26 @@ export function drawPowerIcon(kind, x, y, r){
   }
 }
 
+/* 风物环：预渲染金蓝金属环负责体积，原图鉴插画负责内容。 */
+export function drawPickupMedallion(id, x, y, r, frame){
+  const image = getSprite('pickup');
+  if(!image) return false;
+  const index = ((frame||0)%4+4)%4;
+  const squash = [1,0.72,0.16,0.72][index];
+  ctx.save();
+  ctx.translate(x,y);
+  ctx.scale(squash,1);
+  drawItemIcon(id, 0, 0, r*0.58, false);
+  ctx.restore();
+  const dw = r*2.18;
+  const dh = dw * (image.naturalHeight / (image.naturalWidth/4));
+  ctx.save();
+  ctx.imageSmoothingEnabled = true;
+  drawSpriteFrame(ctx, image, 4, 1, index, x-dw/2, y-dh/2, dw, dh);
+  ctx.restore();
+  return true;
+}
+
 /* ================= 渲染:场景(远/中/近三层视差) ================= */
 export function render(){
   // 菜单/选关/图鉴/鸭铺:南京眼蓝调底图(缺图回退下方旧场景)
@@ -146,29 +167,15 @@ export function render(){
   // 穿越门(远->近,在收集品与障碍之后)
   const gates = G.gates.slice().sort((a,b)=>b.rz-a.rz);
   for(const g of gates){ if(g.rz > 2 && g.rz < DRAWD) drawGate(g, lv); }
-  // 首局教学飘字(世界坐标,随距离逼近)
-  if(G.tut){
-    for(const tu of G.tut){
-      const rz = tu.z - G.dist + ZP;
-      if(rz < 2.5 || rz > 40) continue;
-      const p = proj(0, 2.4, rz);
-      ctx.save();
-      ctx.globalAlpha = clamp((rz-2.5)/3, 0, 1) * clamp((40-rz)/10, 0, 1);
-      ctx.font = '22px "JinlingKai","KaiTi","Microsoft YaHei",serif';
-      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      ctx.lineWidth = 5; ctx.strokeStyle = 'rgba(10,8,16,0.7)'; ctx.lineJoin = 'round';
-      ctx.strokeText(tu.text, p.x, p.y);
-      ctx.fillStyle = '#f7ead0'; ctx.fillText(tu.text, p.x, p.y);
-      ctx.restore();
-    }
-  }
   // 收集品(远->近;贴地投影 + 落地影,近处尺寸收敛不挡视野)
   // 二期:全插画化——金色柔光晕 + 深描边本体,路上 r≈15px 一眼认出
-  const cols = G.cols.slice().sort((a,b)=>b.rz-a.rz);
+  const cols = G.cols.slice().sort((a,b)=>(b.rz??b.z-G.dist+ZP)-(a.rz??a.z-G.dist+ZP));
   for(const c of cols){
-    if(c.rz < 2 || c.rz > DRAWD) continue;
-    const p = proj(c.x, c.y + Math.sin(G.t*3+c.z)*0.08, c.rz);
-    const gp = proj(c.x, 0, c.rz);
+    // 教学切到第 4 步的同一帧，新增印记尚未经过 update；先按世界坐标投影，避免 NaN 让主循环停摆。
+    const rz = c.rz ?? c.z-G.dist+ZP;
+    if(rz < 2 || rz > DRAWD) continue;
+    const p = proj(c.x, c.y + Math.sin(G.t*3+c.z)*0.08, rz);
+    const gp = proj(c.x, 0, rz);
     shadow(gp.x, gp.y, gp.s*0.28, 0.18);
     const r = clamp(p.s*0.34, 4, 19);
     ctx.save();
@@ -178,7 +185,8 @@ export function render(){
     ctx.fillStyle = glow;
     ctx.beginPath(); ctx.arc(p.x, p.y, r*2.4, 0, TAU); ctx.fill();
     ctx.restore();
-    drawItemIcon(c.id, p.x, p.y, r, false);
+    const spin = Math.floor((G.t*8+c.z*0.25)%4);
+    if(!drawPickupMedallion(c.id, p.x, p.y, r, spin)) drawItemIcon(c.id, p.x, p.y, r, false);
   }
   // 局内道具(发光物件,与收集品同层;免费道上不挡路)
   for(const p of G.powers){

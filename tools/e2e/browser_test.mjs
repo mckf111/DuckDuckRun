@@ -97,11 +97,14 @@ try{
     const context=await browser.newContext({viewport:{width:1000,height:600}});
     const page=await context.newPage();
     await seedPage(page);
+    const interactionErrors=watchErrors(page);
     const backgrounds=[];
-    page.on('request',request=>{ if(/\/assets\/img\/bg_/.test(request.url())) backgrounds.push(request.url().split('/').pop()); });
+    page.on('request',request=>{
+      if(/\/assets\/(?:img\/bg_|game\/(?:menu-background|bg-))/.test(request.url())) backgrounds.push(request.url().split('/').pop());
+    });
     await openMenu(page);
     await page.waitForTimeout(200);
-    assert.deepEqual([...new Set(backgrounds)],['bg_menu.webp']);
+    assert.deepEqual([...new Set(backgrounds)],['menu-background.webp']);
     const first=await canvasShot(page);
     await page.reload({waitUntil:'domcontentloaded'});
     await page.evaluate(async()=>{ window.__GAME=(await import('/src/game.js')).G; });
@@ -111,9 +114,9 @@ try{
     await page.evaluate(async()=>{ (await import('/src/game.js')).startRun('adv',0); });
     await page.waitForTimeout(500);
     const requested=[...new Set(backgrounds)];
-    assert.ok(requested.includes('bg_zhonghua.webp'));
+    assert.ok(requested.includes('bg-zhonghua.webp'));
     assert.ok(requested.includes('bg_jiming.webp'));
-    assert.equal(requested.filter(name=>name!=='bg_menu.webp'&&name!=='bg_zhonghua.webp'&&name!=='bg_jiming.webp').length,0);
+    assert.equal(requested.filter(name=>name!=='menu-background.webp'&&name!=='bg-zhonghua.webp'&&name!=='bg_jiming.webp').length,0);
 
     // 金桂只翻铜钱；首次通桥直接授予江豚并写入本局新物品。
     const ledger=await page.evaluate(async()=>{
@@ -142,33 +145,49 @@ try{
       const game=await import('/src/game.js');
       const saves=await import('/src/save.js');
 
+      const tickUntil=(condition,max=2400)=>{
+        for(let i=0;i<max;i++){
+          game.update(1/60);
+          if(condition()) return i+1;
+        }
+        throw new Error('教学实输入超时');
+      };
+      const approach=margin=>tickUntil(()=>game.G.tutorial.targetZ-game.G.dist<=margin);
+      const playTutorial=async()=>{
+        game.onRight();
+        tickUntil(()=>game.G.tutorial?.step===1);
+        const step1=game.G.tutorial?.step;
+
+        approach(2.8); game.onJump();
+        tickUntil(()=>game.G.tutorial?.step===2);
+        const step2=game.G.tutorial?.step;
+
+        approach(2.8); game.onSlide();
+        tickUntil(()=>game.G.tutorial?.step===3);
+        const step3=game.G.tutorial?.step;
+
+        // 留出一个真实绘制帧，专门防住“进入第 4 步首帧 NaN 导致主循环冻结”的回归。
+        await new Promise(resolve=>requestAnimationFrame(()=>resolve()));
+
+        tickUntil(()=>game.pl.y<=0.01,240);
+        game.onJump(); game.update(1/60);
+        game.onJump(); game.update(1/60);
+        return {step1,step2,step3,completed:saves.save.tutorialCompleted&&!game.G.tutorial,
+          resetDist:game.G.dist,state:game.G.state};
+      };
+
       saves.save.tutorialCompleted=false; saves.save.tut=false;
       game.startRun('adv',0,true);
-      game.onRight(); game.pl.x=game.pl.lane*1.25;
-      game.G.dist=game.G.tutorial.targetZ-0.1; game.update(0.02);
-      const step1=game.G.tutorial?.step;
-
-      game.onJump();
-      for(let i=0;i<10;i++) game.update(1/60);
-      game.G.dist=game.G.tutorial.targetZ-0.1; game.update(1/60);
-      const step2=game.G.tutorial?.step;
-
-      for(let i=0;i<50&&game.pl.y>0;i++) game.update(1/60);
-      game.onSlide(); game.update(1/60);
-      game.G.dist=game.G.tutorial.targetZ-0.1; game.update(1/60);
-      const step3=game.G.tutorial?.step;
-
-      game.pl.y=0; game.pl.vy=0; game.pl.jumps=0;
-      game.onJump(); game.update(1/60);
-      game.onJump(); game.update(1/60);
-      game.pl.y=2.1; game.pl.jumps=2;
-      game.G.dist=game.G.tutorial.targetZ+1.9; game.update(1/60);
-      const completed=saves.save.tutorialCompleted && !game.G.tutorial;
+      const replayTutorial=await playTutorial();
 
       saves.save.tutorialCompleted=false; saves.save.tut=false;
       game.startRun('adv',0,true);
-      game.G.dist=game.G.tutorial.targetZ-0.1; game.update(0.05);
+      tickUntil(()=>game.G.tutorial?.retries===1);
       const retryShield=game.G.state==='play' && game.G.tutorial?.step===0 && game.G.tutorial.retries===1;
+
+      saves.save.tutorialCompleted=false; saves.save.tut=false;
+      game.startRun('adv',0,false);
+      const firstRunTutorial=await playTutorial();
 
       saves.save.tutorialCompleted=true; saves.save.tut=true;
       game.startRun('adv',0);
@@ -222,23 +241,26 @@ try{
       const shopFail={...game.G.shopFeedback,egg:game.G.egg};
       saves.save.coins=50;game.G.egg=null;ui.handleButton('buy',0);
       const shopSuccess={...game.G.shopFeedback,level:saves.save.ups.magnet,coins:saves.save.coins,egg:game.G.egg,final:config.SHOPS[0].levels[3]};
-      return {step1,step2,step3,completed,retryShield,bufferedBefore,bufferedAfter,crashStart,crashHold,crashEnd,
+      return {replayTutorial,firstRunTutorial,retryShield,bufferedBefore,bufferedAfter,crashStart,crashHold,crashEnd,
         powerSafe,secretSafe,guaranteedNextRun,secretCollected,dryRuns,shopFail,shopSuccess};
     });
     assert.deepEqual(interaction,{
-      step1:1,step2:2,step3:3,completed:true,retryShield:true,
+      replayTutorial:{step1:1,step2:2,step3:3,completed:true,resetDist:0,state:'play'},
+      firstRunTutorial:{step1:1,step2:2,step3:3,completed:true,resetDist:0,state:'play'},
+      retryShield:true,
       bufferedBefore:true,bufferedAfter:true,crashStart:'crashing',crashHold:'crashing',crashEnd:'over',
       powerSafe:true,secretSafe:true,guaranteedNextRun:true,secretCollected:true,dryRuns:3,
       shopFail:{type:'fail',index:0,missing:50,ttl:1.2,egg:null},
       shopSuccess:{type:'success',index:0,spent:50,ttl:1.2,level:1,coins:0,egg:null,final:'12 秒'},
     });
+    assert.deepEqual(interactionErrors,[],'教学或第一关产生浏览器错误');
     await context.close();
   }
 
   // 慢图、全部图片失败和存档写入失败都不能挡住菜单或开跑。
   {
     const context=await browser.newContext({viewport:{width:1000,height:600}});
-    await context.route('**/assets/img/bg_menu.webp',async route=>{
+    await context.route('**/assets/game/menu-background.webp',async route=>{
       await new Promise(resolve=>setTimeout(resolve,1200));
       await route.continue().catch(()=>{});
     });
@@ -250,19 +272,19 @@ try{
   }
   {
     const context=await browser.newContext({viewport:{width:1000,height:600}});
-    await context.route('**/assets/img/bg_menu.webp',route=>route.fulfill({status:404,body:''}));
+    await context.route('**/assets/game/menu-background.webp',route=>route.fulfill({status:404,body:''}));
     const page=await context.newPage();
     const images=[];
-    page.on('request',request=>{ if(/bg_menu\.(webp|jpg)$/.test(request.url())) images.push(request.url().split('/').pop()); });
+    page.on('request',request=>{ if(/(menu-background|bg_menu)\.(webp|jpg)$/.test(request.url())) images.push(request.url().split('/').pop()); });
     await seedPage(page);
     await openMenu(page);
     await page.waitForTimeout(150);
-    assert.deepEqual([...new Set(images)],['bg_menu.webp','bg_menu.jpg']);
+    assert.deepEqual([...new Set(images)],['menu-background.webp','bg_menu.webp']);
     await context.close();
   }
   {
     const context=await browser.newContext({viewport:{width:1000,height:600}});
-    await context.route('**/assets/img/bg_menu.webp',route=>route.fulfill({status:200,contentType:'image/webp',body:'not-an-image'}));
+    await context.route('**/assets/game/menu-background.webp',route=>route.fulfill({status:200,contentType:'image/webp',body:'not-an-image'}));
     const page=await context.newPage();
     await seedPage(page);
     await openMenu(page);
@@ -273,6 +295,7 @@ try{
   {
     const context=await browser.newContext({viewport:{width:1000,height:600}});
     await context.route('**/assets/img/**',route=>route.abort('internetdisconnected'));
+    await context.route('**/assets/game/**',route=>route.abort('internetdisconnected'));
     const page=await context.newPage();
     await seedPage(page);
     await openMenu(page);

@@ -3,10 +3,10 @@
 // mod:关卡修饰器(game.js spawnCluster 层分发,见迭代方案 §C3)
 export const LEVELS = [
   { name:'明城墙', sub:'六百年城砖,从台城跑到中华门',
-    sky:['#16222e','#3a5468'], ground:'#7d3a32', road:'#93504a', lane:'#e8d9b0',
-    side:'#4a2c28', sideTop:'#5d3833', accent:'#e8b04b', motif:'crenel',
-    hud:'#f3e6c8', textDark:false, speed:9.5, len:520,
-    landmark:'zhonghua', lmColor:'#3a2320',   // 中华门瓮城
+    sky:['#09182e','#315879'], ground:'#1d2a3a', road:'#31465b', lane:'#d9b45d',
+    side:'#142033', sideTop:'#21344b', accent:'#f1c86b', motif:'crenel',
+    hud:'#edf7ff', textDark:false, speed:9.5, len:520,
+    landmark:'zhonghua', lmColor:'#17243a',   // 中华门瓮城
     side2:'紫峰剪影', weight:{low:.5,high:.28,full:.22}, mod:'wallPair' },
   { name:'玄武湖', sub:'湖堤十里,荷风四面',
     sky:['#0f2e2c','#2f6f66'], ground:'#1e4a44', road:'#2a5f57', lane:'#cfe8d8',
@@ -127,7 +127,7 @@ export const ITEMS = [
   { id:'pibie', name:'辟邪',     note:'南朝石兽,镇守帝陵的瑞兽', quip:'比石象凶,但不会追鸭。', where:'📍 南京博物院、六朝石刻', home:7, cat:'ruin' },
   { id:'wadang', name:'人面瓦当', note:'汉代瓦当上的神秘笑脸,从古城里挖出来', quip:'两千年前的鸭鸭同款微笑?', where:'📍 城墙博物馆、六朝博物馆', home:0, cat:'ruin' },
   { id:'chengzhuan', name:'铭文城砖', note:'每块城砖都刻着造砖人的名字,明城墙的实名制', quip:'刻上名字的砖,质量不敢糊弄。', where:'📍 中华门城墙砖库', home:0, cat:'ruin' },
-  { id:'nanyanjing', name:'南京眼', note:'河西的摩天轮桥,江上的大眼睛', quip:'鸭鸭路过它,眼神一对就过江。', where:'📍 河西,晚上亮灯更好看', home:8, rare:true, cat:'ruin' },
+  { id:'nanyanjing', name:'南京眼', note:'连接河西与江心洲的步行斜拉桥,江上的一只大眼睛', quip:'鸭鸭路过它,眼神一对就过江。', where:'📍 河西滨江,晚上亮灯更好看', home:8, rare:true, cat:'ruin' },
   { id:'baoenta', name:'大报恩寺塔', note:'琉璃塔复建,千年佛顶真骨安奉处', quip:'夜里亮灯时,整座城都在仰望。', where:'📍 大报恩寺遗址公园', home:8, cat:'ruin' },
   { id:'zifeng', name:'紫峰大厦', note:'金陵第一高楼,云里雾里都看得见', quip:'跑够一万米,才抬头看得见金陵最高处。', where:'📍 鼓楼广场', home:1, secret:true, riddle:'跑够一万米,才抬头看得见金陵最高处。', cat:'ruin' },
   { id:'baochuan', name:'郑和宝船', note:'七下西洋的宝船队,南京造的龙骨', quip:'跑到海的门口,宝船才起锚。', where:'📍 宝船厂遗址公园', home:9, rare:true, secret:true, riddle:'跑到海的门口,宝船才起锚。', cat:'ruin' },

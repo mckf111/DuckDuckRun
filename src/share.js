@@ -102,7 +102,7 @@ export function shareScore(){
   };
   const { dist, marks, stars, endless, levelName, albumN } = snapshot;
   const link = shareLink();
-  const text = '我在《金陵快跑》跑了 ' + dist + ' m,集齐 ' + albumN + '/' + ITEMS.length
+  const text = '我在《冲鸭！金陵！》跑了 ' + dist + ' m,集齐 ' + albumN + '/' + ITEMS.length
     + ' 件金陵风物!没有一只鸭子能走出南京——除了我。 ' + link;
   const gold = save.stars.reduce((a,b)=>a+b,0) >= 15;
 
@@ -117,7 +117,7 @@ export function shareScore(){
   x2.textAlign = 'center'; x2.textBaseline = 'middle';
   x2.fillStyle = '#f0b64c';
   x2.font = '32px "JinlingBrush","KaiTi","Microsoft YaHei",serif';
-  x2.fillText('金 陵 快 跑', 300, 105);
+  x2.fillText('冲鸭！金陵！', 300, 105);
   x2.strokeStyle = '#f0b64c'; x2.lineWidth = 1.5;
   x2.beginPath(); x2.moveTo(150, 130); x2.lineTo(450, 130); x2.stroke();
   drawDuck(x2, 300, 320, 130, gold);
@@ -134,7 +134,7 @@ export function shareScore(){
   // 底部文案
   x2.fillStyle = '#6b5a3a'; x2.font = '16px "JinlingKai","KaiTi","Microsoft YaHei",serif';
   x2.fillText('—— 奔跑展开的金陵长卷 ——', 300, 590);
-  x2.fillText('背景风景,皆是实景南京', 300, 622);
+  x2.fillText('南京地标取景 · 游戏美术化呈现', 300, 622);
   x2.fillStyle = '#a89a78'; x2.font = '14px "JinlingKai","KaiTi","Microsoft YaHei",serif';
   const totalStars = save.stars.reduce((a,b)=>a+b,0);
   x2.fillText('无尽最佳 ' + save.best + ' m · 星星 ' + totalStars + '/' + (LEVELS.length*3), 300, 680);
@@ -143,7 +143,7 @@ export function shareScore(){
   x2.font = '11px "Microsoft YaHei","PingFang SC",sans-serif';
   x2.fillText('扫码开跑', 516, 718);
 
-  const fname = '金陵快跑-' + dist + 'm.png';
+  const fname = '冲鸭金陵-' + dist + 'm.png';
   track('share');
   c.toBlob(blob => {
     if(!blob) return;
@@ -158,7 +158,7 @@ export function shareScore(){
     try{ if(typeof File === 'function') file = new File([blob], fname, { type:'image/png' }); }catch(e){}
     if(file && navigator.canShare && navigator.canShare({ files:[file] })){
       try{
-        navigator.share({ files:[file], title:'金陵快跑', text })
+        navigator.share({ files:[file], title:'冲鸭！金陵！', text })
           .then(()=>track('shareOk'))
           .catch(e=>{
             if(e.name !== 'AbortError') downloadBlob(blob, fname);   // L11:用户取消不触发下载

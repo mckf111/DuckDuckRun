@@ -1,63 +1,138 @@
 import { save } from './save.js';
 
-/* ================= 音频(WebAudio 合成) ================= */
-let AC = null;
+/* ================= 音频：轻量分层 WebAudio ================= */
+let AC = null, BUS = null, noiseBuffer = null;
+
+function buildBus(a){
+  const master=a.createGain(), compressor=a.createDynamicsCompressor();
+  const music=a.createGain(), effects=a.createGain();
+  master.gain.value=0.72; music.gain.value=0.34; effects.gain.value=0.78;
+  compressor.threshold.value=-18;compressor.knee.value=18;compressor.ratio.value=4;
+  compressor.attack.value=0.006;compressor.release.value=0.2;
+  music.connect(master);effects.connect(master);master.connect(compressor);compressor.connect(a.destination);
+  BUS={master,music,effects};
+}
+
 export function ac(){
-  if(!AC){ try{ AC = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} }
-  if(AC && AC.state === 'suspended') AC.resume().catch(()=>{});
+  if(!AC){
+    try{ AC=new (window.AudioContext||window.webkitAudioContext)();buildBus(AC); }
+    catch(e){}
+  }
+  if(AC&&AC.state==='suspended') AC.resume().catch(()=>{});
   return AC;
 }
+
 export function suspendAudio(){
-  if(AC && AC.state==='running') AC.suspend().catch(()=>{});
+  if(AC&&AC.state==='running') AC.suspend().catch(()=>{});
 }
-export function tone(f0, f1, dur, type, vol, delay){
-  if(save.muted) return; const a = ac(); if(!a || a.state!=='running') return; // suspended 时不排队,避免解锁瞬间连发爆音
-  const t0 = a.currentTime + (delay||0);
-  const o = a.createOscillator(), g = a.createGain();
-  o.type = type||'sine'; o.frequency.setValueAtTime(f0, t0);
-  if(f1) o.frequency.exponentialRampToValueAtTime(Math.max(f1,1), t0+dur);
-  g.gain.setValueAtTime(0, t0);
-  g.gain.linearRampToValueAtTime(vol||0.15, t0+0.01);
-  g.gain.exponentialRampToValueAtTime(0.0001, t0+dur);
-  o.connect(g); g.connect(a.destination);
-  o.start(t0); o.stop(t0+dur+0.05);
+
+function targetBus(kind){return kind==='music'?BUS?.music:BUS?.effects;}
+
+function oscAt(f0,f1,dur,type,vol,when,kind='effects',cutoff=0){
+  if(save.muted) return;
+  const a=ac(),out=targetBus(kind);if(!a||a.state!=='running'||!out)return;
+  const t0=Math.max(a.currentTime,when??a.currentTime),o=a.createOscillator(),g=a.createGain();
+  const filter=cutoff?a.createBiquadFilter():null;
+  o.type=type||'sine';o.frequency.setValueAtTime(Math.max(1,f0),t0);
+  if(f1)o.frequency.exponentialRampToValueAtTime(Math.max(1,f1),t0+dur);
+  g.gain.setValueAtTime(0.0001,t0);g.gain.exponentialRampToValueAtTime(Math.max(0.0002,vol||0.1),t0+0.008);
+  g.gain.exponentialRampToValueAtTime(0.0001,t0+dur);
+  if(filter){filter.type='lowpass';filter.frequency.setValueAtTime(cutoff,t0);filter.Q.value=0.7;o.connect(filter);filter.connect(g);}
+  else o.connect(g);
+  g.connect(out);o.start(t0);o.stop(t0+dur+0.03);
 }
-export const sfx = {
-  jump(){ tone(300, 620, 0.18, 'triangle', 0.12); },
-  slide(){ tone(500, 180, 0.2, 'sawtooth', 0.05); },
-  lane(){ tone(420, 500, 0.08, 'square', 0.05); },
-  collect(n){ // 五声音阶拨弦,连击越高音越高
-    const p = [523,587,659,784,880]; const f = p[(n||0)%5] * ((n||0)>=5 ? 2 : 1);
-    tone(f, f, 0.25, 'sine', 0.14); tone(f*2, f*2, 0.18, 'sine', 0.05);
+
+export function tone(f0,f1,dur,type,vol,delay){
+  const a=ac();if(!a)return;
+  oscAt(f0,f1,dur,type,vol,a.currentTime+(delay||0));
+}
+
+function getNoise(a){
+  if(noiseBuffer&&noiseBuffer.sampleRate===a.sampleRate)return noiseBuffer;
+  const len=a.sampleRate,buffer=a.createBuffer(1,len,a.sampleRate),data=buffer.getChannelData(0);
+  for(let i=0;i<len;i++)data[i]=Math.random()*2-1;
+  noiseBuffer=buffer;return buffer;
+}
+
+function noiseAt(when,dur,vol,filterType,frequency,kind='effects'){
+  if(save.muted)return;
+  const a=ac(),out=targetBus(kind);if(!a||a.state!=='running'||!out)return;
+  const t0=Math.max(a.currentTime,when??a.currentTime),src=a.createBufferSource(),f=a.createBiquadFilter(),g=a.createGain();
+  src.buffer=getNoise(a);f.type=filterType||'bandpass';f.frequency.setValueAtTime(frequency||1200,t0);f.Q.value=1.1;
+  g.gain.setValueAtTime(Math.max(0.0002,vol),t0);g.gain.exponentialRampToValueAtTime(0.0001,t0+dur);
+  src.connect(f);f.connect(g);g.connect(out);src.start(t0);src.stop(t0+dur+0.02);
+}
+
+function pluckAt(freq,when,vol=0.07,kind='music'){
+  const a=ac(),out=targetBus(kind);if(save.muted||!a||a.state!=='running'||!out)return;
+  const o=a.createOscillator(),f=a.createBiquadFilter(),g=a.createGain();
+  o.type='triangle';o.frequency.setValueAtTime(freq,when);
+  f.type='lowpass';f.frequency.setValueAtTime(2600,when);f.frequency.exponentialRampToValueAtTime(720,when+0.22);
+  g.gain.setValueAtTime(0.0001,when);g.gain.exponentialRampToValueAtTime(vol,when+0.006);g.gain.exponentialRampToValueAtTime(0.0001,when+0.28);
+  o.connect(f);f.connect(g);g.connect(out);o.start(when);o.stop(when+0.31);
+}
+
+function kickAt(when,vol){oscAt(118,42,0.19,'sine',vol,when,'music');}
+function hatAt(when,vol){noiseAt(when,0.045,vol,'highpass',6200,'music');}
+function snareAt(when,vol){noiseAt(when,0.13,vol,'bandpass',1800,'music');}
+
+export const sfx={
+  jump(){const a=ac();if(!a)return;oscAt(260,660,0.16,'sine',0.11,a.currentTime);noiseAt(a.currentTime,0.1,0.025,'highpass',3600);},
+  slide(){const a=ac();if(!a)return;noiseAt(a.currentTime,0.22,0.075,'bandpass',780);oscAt(140,82,0.18,'sine',0.035,a.currentTime);},
+  lane(){const a=ac();if(!a)return;pluckAt(520,a.currentTime,0.045,'effects');},
+  collect(n){
+    const a=ac();if(!a)return;const p=[523,587,659,784,880],f=p[(n||0)%5]*((n||0)>=8?2:1);
+    pluckAt(f,a.currentTime,0.105,'effects');oscAt(f*2,f*1.8,0.11,'sine',0.025,a.currentTime+0.02);
   },
-  hit(){ tone(160, 40, 0.4, 'sawtooth', 0.2); tone(90, 30, 0.5, 'square', 0.12, 0.03); },
-  clear(){ [523,659,784,1047].forEach((f,i)=>tone(f,f,0.3,'triangle',0.13,i*0.12)); },
-  click(){ tone(700, 700, 0.06, 'square', 0.06); },
-  gate(){ tone(660, 660, 0.12, 'triangle', 0.1); tone(880, 880, 0.2, 'triangle', 0.1, 0.09); }, // 穿门风铃
-  newItem(){ [880,1109,1319].forEach((f,i)=>tone(f,f,0.22,'triangle',0.1,i*0.08)); },         // 新图鉴风铃
-  record(){ [523,659,784,1047,1319].forEach((f,i)=>tone(f,f,0.26,'triangle',0.12,i*0.09)); }, // 破纪录琶音
-  power(){ tone(740, 980, 0.1, 'triangle', 0.12); },                                          // 道具拾取
-  magnet(){ tone(300, 900, 0.3, 'sine', 0.1); },                                               // 磁铁生效
-  shield(){ tone(400, 400, 0.12, 'square', 0.09); tone(600, 600, 0.12, 'square', 0.07, 0.1); }, // 护盾罩身
-  shieldBreak(){ tone(900, 200, 0.3, 'sawtooth', 0.1); tone(500, 150, 0.35, 'triangle', 0.08, 0.06); }, // 护盾碎
-  gui(){ [659, 880, 1319].forEach((f,i)=>tone(f,f,0.2,'triangle',0.1,i*0.07)); },               // 金桂生效
+  hit(){const a=ac();if(!a)return;kickAt(a.currentTime,0.19);noiseAt(a.currentTime,0.28,0.12,'lowpass',520);},
+  clear(){const a=ac();if(!a)return;[523,659,784,1047].forEach((f,i)=>pluckAt(f,a.currentTime+i*0.1,0.09,'effects'));},
+  click(){const a=ac();if(!a)return;pluckAt(760,a.currentTime,0.035,'effects');},
+  gate(){const a=ac();if(!a)return;[660,880].forEach((f,i)=>pluckAt(f,a.currentTime+i*0.08,0.075,'effects'));},
+  newItem(){const a=ac();if(!a)return;[880,1109,1319].forEach((f,i)=>pluckAt(f,a.currentTime+i*0.07,0.075,'effects'));},
+  record(){const a=ac();if(!a)return;[523,659,784,1047,1319].forEach((f,i)=>pluckAt(f,a.currentTime+i*0.075,0.08,'effects'));},
+  power(){const a=ac();if(!a)return;oscAt(620,1080,0.18,'sine',0.09,a.currentTime);},
+  magnet(){const a=ac();if(!a)return;oscAt(260,900,0.3,'sine',0.075,a.currentTime);},
+  shield(){const a=ac();if(!a)return;[420,620].forEach((f,i)=>oscAt(f,f,0.18,'sine',0.055,a.currentTime+i*0.08));},
+  shieldBreak(){const a=ac();if(!a)return;noiseAt(a.currentTime,0.26,0.09,'highpass',2400);oscAt(420,160,0.24,'triangle',0.055,a.currentTime);},
+  gui(){const a=ac();if(!a)return;[659,880,1319].forEach((f,i)=>pluckAt(f,a.currentTime+i*0.06,0.07,'effects'));},
 };
 
-/* ---- BGM:五声音阶江南小调循环,每关换根音,垫底音量 ---- */
-const PENTA = [1, 9/8, 5/4, 3/2, 5/3];
-const PATTERN = [2,1,0,1, 2,3,4,3, 2,1,0,2, 1,0,1,2];
-const ROOTS = { crenel:220, lotus:196, steps:247, lantern:175, pine:208,
-                plane:233, street:262, maple:294, pagoda:330, bridge:349 };
-let bgmTimer = null, bgmRoot = 220, bgmStep = 0;
-export function bgmStop(){ if(bgmTimer){ clearInterval(bgmTimer); bgmTimer = null; } }
+/* 104 BPM：低频、拨弦与轻打击分层；强度随跑速/连击增加，不再是单线蜂鸣循环。 */
+const PENTA=[1,9/8,5/4,3/2,5/3];
+const MELODY=[0,null,2,null,3,null,2,1,0,null,4,3,2,null,1,null];
+const ROOTS={crenel:110,lotus:98,steps:123.5,lantern:87.5,pine:104,plane:116.5,street:131,maple:147,pagoda:165,bridge:174.5};
+const BGM={timer:null,root:110,step:0,next:0,intensity:0.28};
+
+export function setBgmIntensity(value){BGM.intensity=Math.max(0,Math.min(1,value));}
+
+function scheduleMusicStep(when,step){
+  const beat=step%16,intensity=BGM.intensity,root=BGM.root;
+  if(beat===0||beat===8)kickAt(when,0.045+intensity*0.025);
+  if((beat===4||beat===12)&&intensity>0.2)snareAt(when,0.018+intensity*0.022);
+  if(beat%2===1&&intensity>0.12)hatAt(when,0.008+intensity*0.013);
+  if([0,6,8,14].includes(beat))oscAt(root,root,0.34,'triangle',0.027+intensity*0.018,when,'music',420);
+  const degree=MELODY[beat];
+  if(degree!==null)pluckAt(root*2*PENTA[degree],when,0.026+intensity*0.025,'music');
+  if(beat===0||beat===8){
+    oscAt(root*2,root*2,0.82,'sine',0.011,when,'music');
+    oscAt(root*2*1.5,root*2*1.5,0.82,'sine',0.008,when,'music');
+  }
+}
+
+function musicTick(){
+  if(save.muted||!AC||AC.state!=='running')return;
+  if(!BGM.next||BGM.next<AC.currentTime-0.2)BGM.next=AC.currentTime+0.04;
+  const stepDur=60/104/4;
+  while(BGM.next<AC.currentTime+0.12){scheduleMusicStep(BGM.next,BGM.step++);BGM.next+=stepDur;}
+}
+
+export function bgmStop(){
+  if(BGM.timer){clearInterval(BGM.timer);BGM.timer=null;}
+  BGM.next=0;BGM.step=0;
+}
+
 export function bgm(motif){
-  if(motif && ROOTS[motif]) bgmRoot = ROOTS[motif];
-  if(bgmTimer) return;
-  bgmTimer = setInterval(()=>{
-    if(save.muted || !AC || AC.state!=='running') return;
-    const f = bgmRoot * PENTA[PATTERN[bgmStep % PATTERN.length]];
-    bgmStep++;
-    tone(f, f, 0.5, 'sine', 0.03);
-    if(bgmStep % 4 === 0) tone(f/2, f/2, 0.9, 'triangle', 0.018); // 低音垫
-  }, 460);
+  if(motif&&ROOTS[motif])BGM.root=ROOTS[motif];
+  if(BGM.timer)return;
+  BGM.timer=setInterval(musicTick,35);
 }

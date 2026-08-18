@@ -21,18 +21,29 @@ export function drawSide(motif, x, y, s, lv, mirror){
   const m = mirror ? -1 : 1;
   shadow(x, y+0.02*s, 1.05*s, 0.22);   // 接触影:装饰"落地"
   if(motif==='crenel'){          // 城墙段:青砖 + 垛口 + 墙头红灯笼
-    const w = '#6b6560', wl = '#8a837a', wd = '#544e48';
-    poly([[x-1.2*s,y],[x-1.2*s,y-1.5*s],[x+1.2*s,y-1.5*s],[x+1.2*s,y]], w);
-    ctx.fillStyle = wl; ctx.fillRect(x-1.2*s, y-1.5*s, 2.4*s, 0.14*s);   // 墙顶受光
-    ctx.strokeStyle = wd; ctx.lineWidth = Math.max(1, s*0.02);
-    for(let i=1;i<=2;i++){ ctx.beginPath(); ctx.moveTo(x-1.2*s, y-i*0.5*s); ctx.lineTo(x+1.2*s, y-i*0.5*s); ctx.stroke(); } // 砖缝
-    ctx.fillStyle = w;
-    for(let i=0;i<4;i++) ctx.fillRect(x-1.15*s+i*0.62*s, y-1.72*s, 0.34*s, 0.25*s);  // 垛口
-    ctx.fillStyle = wl;
-    for(let i=0;i<4;i++) ctx.fillRect(x-1.15*s+i*0.62*s, y-1.72*s, 0.34*s, 0.05*s);
+    const wall = ctx.createLinearGradient(x-1.2*s,y-0.88*s,x+1.2*s,y);
+    wall.addColorStop(0,'#526579'); wall.addColorStop(0.42,'#35495d'); wall.addColorStop(1,'#1b2a3a');
+    poly([[x-1.2*s,y],[x-1.2*s,y-0.88*s],[x+1.2*s,y-0.88*s],[x+1.2*s,y]], wall);
+    ctx.fillStyle = 'rgba(151,184,207,0.38)'; ctx.fillRect(x-1.2*s, y-0.88*s, 2.4*s, 0.09*s); // 月光顶面
+    ctx.fillStyle = 'rgba(5,13,24,0.34)'; ctx.fillRect(x+0.98*s, y-0.79*s, 0.22*s, 0.79*s);   // 右侧压暗
+    ctx.strokeStyle = 'rgba(15,26,39,0.52)'; ctx.lineWidth = Math.max(1, s*0.018);
+    for(let row=0;row<3;row++){
+      const yy=y-(row+1)*0.27*s;
+      ctx.beginPath();ctx.moveTo(x-1.2*s,yy);ctx.lineTo(x+1.2*s,yy);ctx.stroke();
+      const shift=row%2?0.28:0;
+      for(let bx=-0.9+shift;bx<1.05;bx+=0.58){
+        ctx.beginPath();ctx.moveTo(x+bx*s,yy);ctx.lineTo(x+bx*s,yy+0.27*s);ctx.stroke();
+      }
+    }
+    for(let i=0;i<4;i++){
+      const bx=x-1.15*s+i*0.62*s;
+      ctx.fillStyle = '#34495d';ctx.fillRect(bx,y-1.1*s,0.34*s,0.23*s);
+      ctx.fillStyle = 'rgba(161,194,216,0.5)';ctx.fillRect(bx,y-1.1*s,0.34*s,0.04*s);
+      ctx.fillStyle = 'rgba(9,18,29,0.32)';ctx.fillRect(bx+0.27*s,y-1.06*s,0.07*s,0.19*s);
+    }
     ctx.strokeStyle = '#8a6a3a'; ctx.lineWidth = Math.max(1, s*0.02);    // 灯笼绳
-    ctx.beginPath(); ctx.moveTo(x+m*0.7*s, y-1.72*s); ctx.lineTo(x+m*0.7*s, y-1.62*s); ctx.stroke();
-    lantern(x+m*0.7*s, y-1.42*s, 0.14*s);
+    ctx.beginPath(); ctx.moveTo(x+m*0.7*s, y-1.1*s); ctx.lineTo(x+m*0.7*s, y-0.94*s); ctx.stroke();
+    lantern(x+m*0.7*s, y-0.73*s, 0.13*s);
   } else if(motif==='lotus'){    // 湖堤:矮石栏 + 荷叶荷花 + 垂柳(树冠成团)
     ctx.fillStyle = '#7a8a80'; ctx.fillRect(x-0.9*s, y-0.34*s, 1.8*s, 0.34*s);   // 矮石栏
     ctx.fillStyle = '#93a298'; ctx.fillRect(x-0.9*s, y-0.34*s, 1.8*s, 0.08*s);
@@ -380,12 +391,13 @@ export function drawGate(g, lv){
 /* 近层装饰(快速掠过):栏杆柱/垂柳/灯笼串/松枝 */
 export function drawNear(motif, x, y, s, lv, mirror){
   const m = mirror ? -1 : 1;
-  if(motif==='crenel' || motif==='steps'){   // 石栏柱(两色受光)
-    ctx.fillStyle = motif==='crenel' ? '#6b6560' : '#9db1c6';
+  if(motif==='crenel') return;               // 实景城墙已承担近景，删掉重复石柱让跑道更干净
+  if(motif==='steps'){                        // 石栏柱(两色受光)
+    ctx.fillStyle = '#9db1c6';
     ctx.fillRect(x-0.12*s, y-1.1*s, 0.24*s, 1.1*s);
     ctx.fillStyle = 'rgba(255,255,255,0.16)';
     ctx.fillRect(x-0.12*s, y-1.1*s, 0.06*s, 1.1*s);
-    disc(x, y-1.18*s, 0.17*s, motif==='crenel' ? '#8a837a' : '#c6d0de');
+    disc(x, y-1.18*s, 0.17*s, '#c6d0de');
   } else if(motif==='lotus'){                // 垂柳
     ctx.strokeStyle = '#4a3a2c'; ctx.lineWidth = Math.max(1.5, s*0.05);
     ctx.beginPath(); ctx.moveTo(x, y); ctx.quadraticCurveTo(x+m*0.2*s, y-1.2*s, x+m*0.1*s, y-2.0*s); ctx.stroke();

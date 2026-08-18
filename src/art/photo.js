@@ -47,7 +47,12 @@ function loadWithFallback(key, urls){
 }
 
 export function loadBackground(id){
+  const featured = {
+    menu:'assets/game/menu-background.webp',
+    zhonghua:'assets/game/bg-zhonghua.webp',
+  }[id];
   return loadWithFallback('bg_' + id, [
+    ...(featured ? [featured] : []),
     'assets/img/bg_' + id + '.webp',
     'assets/img/bg_' + id + '.jpg',
   ]);

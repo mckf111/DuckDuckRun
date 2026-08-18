@@ -3,8 +3,9 @@ import { G, startRun, update, curLv } from './game.js';
 import { LEVELS, LM_CYCLE } from './config.js';
 import { render } from './render.js';
 import { loadMenuBackground, loadBackground, prefetchBackground } from './art/photo.js';
+import { preloadGameSprites } from './art/sprites.js';
 import { bgmStop } from './audio.js';
-import { drawHUD, drawMenu, drawLevels, drawOver, drawClear, drawAlbum, drawShop } from './ui.js';
+import { drawHUD, drawMenu, drawLevels, drawOver, drawClear, drawAlbum, drawShop, drawCredits } from './ui.js';
 import { track } from './track.js';
 import './input.js';
 
@@ -66,6 +67,7 @@ function frame(ts){
   else if(G.state==='clear') drawClear();
   else if(G.state==='album') drawAlbum();
   else if(G.state==='shop') drawShop();
+  else if(G.state==='credits') drawCredits();
   // 界面切换:卷轴自左向右揭开;离开游玩状态即停 BGM(菜单/结算不再无限循环)
   if(G.state !== prevState){
     if(prevState==='play' && G.state!=='play') bgmStop();
@@ -85,6 +87,7 @@ function frame(ts){
 // HTML 与模块就绪即开循环；照片只负责渐入，失败或挂起不再挡住菜单。
 requestAnimationFrame(frame);
 track('view');
+preloadGameSprites();
 loadMenuBackground();
 if(location.hash==='#play') startRun('endless', 0);
 else if(/^#lv\d$/.test(location.hash)) startRun('adv', +location.hash.slice(3));

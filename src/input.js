@@ -28,8 +28,9 @@ addEventListener('keydown', e=>{
 
 // 图鉴页滚动:滚轮 + 触屏拖拽(纵向,见 ui.js drawAlbum)
 cv.addEventListener('wheel', e=>{
-  if(G.state!=='album' || G.albumZoom) return;
-  G.albumScroll += e.deltaY * (e.deltaMode===1 ? 30 : 1);
+  const delta = e.deltaY * (e.deltaMode===1 ? 30 : 1);
+  if(G.state==='album' && !G.albumZoom) G.albumScroll += delta;
+  else if(G.state==='credits') G.creditsScroll += delta;
 }, {passive:true});
 
 // 触屏/鼠标:滑动 = 操作;点击 = 按钮;图鉴页拖拽 = 滚动
@@ -37,9 +38,14 @@ let tStart = null, dragScroll = null;
 cv.addEventListener('pointerdown', e=>{
   if(!e.isPrimary) return;   // M1:双指操作只认第一根手指,杜绝幽灵滑动
   ac();
-  if(G.state==='album' && !G.albumZoom){   // 图鉴:拖拽滚动(不按按钮)
+  if((G.state==='album' && !G.albumZoom) || G.state==='credits'){
     tStart = null;
-    dragScroll = { y:e.clientY, scroll:G.albumScroll, moved:false };
+    dragScroll = {
+      y:e.clientY,
+      scroll: G.state==='credits' ? G.creditsScroll : G.albumScroll,
+      moved:false,
+      key: G.state==='credits' ? 'creditsScroll' : 'albumScroll',
+    };
     return;
   }
   dragScroll = null;
@@ -57,7 +63,7 @@ cv.addEventListener('pointermove', e=>{
   const r = cv.getBoundingClientRect();
   const dy = (e.clientY - dragScroll.y) * H / r.height;
   if(Math.abs(dy) > 3) dragScroll.moved = true;
-  G.albumScroll = dragScroll.scroll - dy;
+  G[dragScroll.key] = dragScroll.scroll - dy;
 });
 function endPointer(e){
   if(dragScroll){
