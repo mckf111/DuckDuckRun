@@ -3,9 +3,9 @@
 // mod:关卡修饰器(game.js spawnCluster 层分发,见迭代方案 §C3)
 export const LEVELS = [
   { name:'明城墙', sub:'六百年城砖,从台城跑到中华门',
-    sky:['#09182e','#315879'], ground:'#1d2a3a', road:'#31465b', lane:'#d9b45d',
-    side:'#142033', sideTop:'#21344b', accent:'#f1c86b', motif:'crenel',
-    hud:'#edf7ff', textDark:false, speed:9.5, len:520,
+    sky:['#6e8aaa','#f0d8b0'], ground:'#7a5a3c', road:'#c4a07a', lane:'#f3e2b8',
+    side:'#8a6848', sideTop:'#b08960', accent:'#d89a3a', motif:'crenel',
+    hud:'#3a2614', textDark:true, speed:9.5, len:520,
     landmark:'zhonghua', lmColor:'#17243a',   // 中华门瓮城
     side2:'紫峰剪影', weight:{low:.5,high:.28,full:.22}, mod:'wallPair' },
   { name:'玄武湖', sub:'湖堤十里,荷风四面',
@@ -79,15 +79,27 @@ export const MILESTONES = [
   [100, '跑出鸭店'], [500, '跑过中华门'], [1000, '跑过玄武湖'], [1500, '跑穿老城南'], [2000, '跑穿金陵'], [5000, '鸭界传说'],
 ];
 
+/* 鸭子嘟囔。音效用合成呱呱，字只从这里出。 */
+export const QUACKS = {
+  idle:['腿好短。','桂花还在吧。','前面那墙……是墙。','再跑两步就到。','肚子空空的。'],
+  egg:['真香。','又一个。','蛋比我圆。'],
+  combo:['停不下来。','再来一串。'],
+  magnet:['蛋会自己过来。','这铁真沉。'],
+  shield:['这叶子能挡一下。','先顶一次。'],
+  gui:['桂花香，蛋翻倍。','发财了。'],
+  panic:['啊？','那是墙！'],
+  crash:['……蛋还在就行。','城墙比我硬。'],
+};
+
 /* 迭代 0 的统一星级口径；迭代 3 再按关卡实测拆分。 */
 export const RUN_STAR_THRESHOLDS = [8, 14, 20];
 
 /* 鸭铺升级线(二期 §E3):三条线 × 3 级,花铜钱。星级门槛/过关条件/障碍数值一律不动 */
 export const SHOPS = [
   { id:'magnet', name:'磁铁手艺', line:'局内磁铁时长', levels:['6 秒','8 秒','10 秒','12 秒'], price:[50,150,400],
-    note:'吸邻道收集品过来,吃得快', icon:'magnet' },
+    note:'吸邻道鸭蛋过来,吃得快', icon:'magnet' },
   { id:'gui',    name:'金桂手艺', line:'局内金桂时长', levels:['6 秒','8 秒','10 秒','12 秒'], price:[50,150,400],
-    note:'只让铜钱翻倍,不影响印记与星级', icon:'gui' },
+    note:'只让鸭蛋翻倍,不影响星级', icon:'gui' },
   { id:'spawn',  name:'货郎吆喝', line:'道具出现间隔', levels:['原间隔','×0.85','×0.7','×0.55'], price:[80,200,500],
     note:'路上的道具来得更勤', icon:'spawn' },
 ];

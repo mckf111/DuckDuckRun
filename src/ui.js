@@ -90,10 +90,10 @@ export function dim(alpha){ ctx.fillStyle=`rgba(8,6,14,${alpha})`; ctx.fillRect(
 
 function glassPanel(x,y,w,h,r=14){
   ctx.save();
-  ctx.shadowColor='rgba(0,8,18,0.38)';ctx.shadowBlur=18;ctx.shadowOffsetY=7;
-  rrect(x,y,w,h,r,'rgba(7,22,39,0.76)','rgba(142,205,232,0.30)',1.2);
+  ctx.shadowColor='rgba(70,40,16,0.28)';ctx.shadowBlur=14;ctx.shadowOffsetY=5;
+  rrect(x,y,w,h,r,'rgba(246,236,214,0.90)','rgba(90,54,24,0.45)',1.4);
   ctx.shadowBlur=0;ctx.shadowOffsetY=0;
-  rrect(x+1.5,y+1.5,w-3,h*0.36,r-2,'rgba(255,255,255,0.045)');
+  rrect(x+1.5,y+1.5,w-3,h*0.34,r-2,'rgba(255,248,230,0.45)');
   ctx.restore();
 }
 
@@ -101,14 +101,14 @@ function glassPanel(x,y,w,h,r=14){
 export function drawHUD(){
   const lv = curLv();
   glassPanel(16,14,154,102);
-  text(Math.floor(G.dist)+' m', 30, 38, 24, '#f4f8fb', 'left', 'bold', 'clean');
-  text('本局印记', 30, 68, 12, 'rgba(218,235,244,0.70)', 'left', null, 'clean');
-  text(String(G.runMarks), 140, 68, 17, '#f1c86b', 'right', 'bold', 'clean');
+  text(Math.floor(G.dist)+' m', 30, 38, 24, '#3a2614', 'left', 'bold', 'clean');
+  text('本局鸭蛋', 30, 68, 12, 'rgba(90,54,24,0.62)', 'left', null, 'clean');
+  text(String(G.runMarks), 140, 68, 17, '#b86a20', 'right', 'bold', 'clean');
   drawPickupMedallion('gold',31,94,7,0);
-  text('铜钱 '+save.coins, 47, 94, 13, '#f1c86b', 'left', 'bold', 'clean');
+  text('鸭蛋 '+save.coins, 47, 94, 13, '#b86a20', 'left', 'bold', 'clean');
   if(G.combo >= 2){
     glassPanel(18,124,112,32,10);
-    text(G.combo+' 连击', 74, 140, 14, '#f5d47f', 'center', 'bold', 'clean');
+    text(G.combo+' 连击', 74, 140, 14, '#b86a20', 'center', 'bold', 'clean');
   }
   // 道具状态(磁铁/金桂剩余秒;护盾小图标)
   let stY = G.combo>=2 ? 176 : 140, stX = 24;
@@ -121,15 +121,15 @@ export function drawHUD(){
   }
   if(G.mode==='adv'){
     glassPanel(CX-154,14,308,54);
-    text(lv.name, CX, 32, 18, '#f4f8fb', 'center', 'bold', 'clean');
+    text(lv.name, CX, 32, 18, '#3a2614', 'center', 'bold', 'clean');
     const pw = 266, px = CX-pw/2, py = 53;
     rrect(px,py,pw,6,3,'rgba(255,255,255,0.12)');
     rrect(px,py,pw*clamp(G.dist/lv.len,0,1),6,3,lv.accent);
   } else {
     glassPanel(CX-170,14,340,58);
-    text('无尽模式 · 最佳 '+save.best+' m', CX, 32, 17, '#f4f8fb', 'center', 'bold', 'clean');
+    text('无尽模式 · 最佳 '+save.best+' m', CX, 32, 17, '#3a2614', 'center', 'bold', 'clean');
     if(G.msIdx < MILESTONES.length)
-      text('距「'+MILESTONES[G.msIdx][1]+'」还差 '+Math.max(0,Math.ceil(MILESTONES[G.msIdx][0]-G.dist))+' m', CX, 57, 12, 'rgba(218,235,244,0.72)', 'center', null, 'clean');
+      text('距「'+MILESTONES[G.msIdx][1]+'」还差 '+Math.max(0,Math.ceil(MILESTONES[G.msIdx][0]-G.dist))+' m', CX, 57, 12, 'rgba(90,54,24,0.62)', 'center', null, 'clean');
   }
   // 右上角:暂停 + 静音按钮(F3 触屏可暂停;M4 移动端可静音)
   if(!G.paused){
@@ -153,9 +153,9 @@ export function drawHUD(){
   if(G.tutorial){
     const tw=520,tx=CX-tw/2,ty=H-100;
     glassPanel(tx,ty,tw,76,16);
-    text('教学 '+(G.tutorial.step+1)+' / 4',tx+22,ty+22,13,'#8fd6f2','left','bold','clean');
-    for(let i=0;i<4;i++) disc(tx+tw-86+i*18,ty+22,4,i<=G.tutorial.step?'#f1c86b':'rgba(255,255,255,0.18)');
-    text(G.tutorial.tip, CX, ty+50, 17, '#f5f7f3', 'center', 'bold', 'clean');
+    text('教学 '+(G.tutorial.step+1)+' / 4',tx+22,ty+22,13,'#8a5a28','left','bold','clean');
+    for(let i=0;i<4;i++) disc(tx+tw-86+i*18,ty+22,4,i<=G.tutorial.step?'#d89a3a':'rgba(90,54,24,0.18)');
+    text(G.tutorial.tip, CX, ty+50, 17, '#3a2614', 'center', 'bold', 'clean');
   }
   if(!G.tutorial && (G.paused || G.t < 5)){
     ctx.globalAlpha = G.paused ? 1 : clamp(5-G.t, 0, 1);
@@ -193,7 +193,7 @@ export function drawMenu(){
   button('adv','开始冒险', CX, H*0.58, 224, 48);
   button('endless','无尽奔跑', CX, H*0.68, 224, 46, {ghost:true});
   button('album','风物图鉴 '+Object.keys(save.album).length+'/'+ITEMS.length+(save.albumNew?'  ●':''), CX, H*0.78, 224, 46, {ghost:true});
-  button('shop','鸭铺升级 · '+save.coins+' 枚', CX, H*0.88, 224, 46, {ghost:true});
+  button('shop','鸭铺升级 · '+save.coins+' 蛋', CX, H*0.88, 224, 46, {ghost:true});
   button('tutorial','重玩教学', 90, H-28, 140, 36, {ghost:true,size:14});
   button('credits','素材与授权', W-90, H-28, 150, 36, {ghost:true,size:14});
   text(COPYRIGHT_LINE, CX, H-18, 11, 'rgba(211,230,240,0.48)', 'center', null, 'clean');
@@ -277,7 +277,7 @@ export function drawLevels(){
 export function drawShop(){
   dim(0.42);
   text('鸭 铺', CX, 46, 40, '#f4f1e8', 'center', null, true);
-  text('◉ '+save.coins+' · 花铜钱把手艺学到精通 · 星级与障碍数值一律不动', CX, 80, 14, 'rgba(232,193,112,0.9)');
+  text('◉ '+save.coins+' · 花鸭蛋把手艺学到精通 · 星级与障碍数值一律不动', CX, 80, 14, 'rgba(232,193,112,0.9)');
   if(G.shopFeedback){
     const msg=G.shopFeedback.type==='success'?'升级成功 · -'+G.shopFeedback.spent+' 枚':'还差 '+G.shopFeedback.missing+' 枚';
     text(msg,CX,103,14,G.shopFeedback.type==='success'?'#a8d5a2':'#f0a080','center','bold');
@@ -332,8 +332,8 @@ export function drawOver(){
   const deathTip=getObstacleInstruction(G.killedBy,'ontouchstart' in window);
   if(deathTip) text('小提示:'+deathTip, CX, H*0.35, 15, '#a8d5a2');
   const line = G.mode==='endless'
-    ? '跑了 '+Math.floor(G.dist)+' m · 印记 '+G.runMarks+(G.newBest?' · 新纪录!':'')
-    : LEVELS[G.lvIdx].name+' · 跑了 '+Math.floor(G.dist)+' m · 印记 '+G.runMarks+' · 距终点还差 '+Math.max(0,Math.ceil(LEVELS[G.lvIdx].len-G.dist))+' m';
+    ? '跑了 '+Math.floor(G.dist)+' m · 鸭蛋 '+G.runMarks+(G.newBest?' · 新纪录!':'')
+    : LEVELS[G.lvIdx].name+' · 跑了 '+Math.floor(G.dist)+' m · 鸭蛋 '+G.runMarks+' · 距终点还差 '+Math.max(0,Math.ceil(LEVELS[G.lvIdx].len-G.dist))+' m';
   text(line, CX, H*0.42, 20, '#f0b64c');
   if(got) text('新图鉴:'+G.newIds.map(id=>(ITEMS.find(i=>i.id===id)||{}).name||'').join('、'), CX, H*0.48, 16, '#a8d5a2');
   if(G.newIds.some(id=>ITEMS.find(i=>i.id===id)?.secret)) text('隐藏风物现身!', CX, H*0.53, 15, '#f0b64c', 'center', 'bold');
@@ -358,7 +358,7 @@ export function drawClear(){
   const lv = LEVELS[G.lvIdx];
   text('过关!', CX, H*0.2, 58, '#f4f1e8', 'center', null, true);
   text(lv.sub, CX, H*0.29, 15, '#d8c9a8');
-  text(lv.name+' · 本局拾取 '+G.runMarks+' 枚印记', CX, H*0.36, 20, '#f0b64c');
+  text(lv.name+' · 本局拾取 '+G.runMarks+' 枚鸭蛋', CX, H*0.36, 20, '#f0b64c');
   // 星星逐颗弹入
   const n = G.runStars;
   for(let i=0;i<3;i++){
@@ -367,7 +367,7 @@ export function drawClear(){
   }
   if(G.stateT > 1.2){
     text('本局 '+G.runStars+' 星 · 历史最佳 '+save.stars[G.lvIdx]+' 星', CX, H*0.515, 15, '#f7ead0', 'center', 'bold');
-    text('印记 '+RUN_STAR_THRESHOLDS.join(' / ')+' = 1 / 2 / 3 星', CX, H*0.555, 13, '#d8c9a8');
+    text('鸭蛋 '+RUN_STAR_THRESHOLDS.join(' / ')+' = 1 / 2 / 3 星', CX, H*0.555, 13, '#d8c9a8');
   }
   if(G.newIds.length) text('新图鉴:'+G.newIds.map(id=>(ITEMS.find(i=>i.id===id)||{}).name||'').join('、'), CX, H*0.58, 16, '#a8d5a2');
   if(G.newIds.some(id=>ITEMS.find(i=>i.id===id)?.secret)) text('隐藏风物现身!', CX, H*0.63, 15, '#f0b64c', 'center', 'bold');

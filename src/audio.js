@@ -95,6 +95,13 @@ export const sfx={
   shield(){const a=ac();if(!a)return;[420,620].forEach((f,i)=>oscAt(f,f,0.18,'sine',0.055,a.currentTime+i*0.08));},
   shieldBreak(){const a=ac();if(!a)return;noiseAt(a.currentTime,0.26,0.09,'highpass',2400);oscAt(420,160,0.24,'triangle',0.055,a.currentTime);},
   gui(){const a=ac();if(!a)return;[659,880,1319].forEach((f,i)=>pluckAt(f,a.currentTime+i*0.06,0.07,'effects'));},
+  quack(pitch=1){
+    const a=ac();if(!a)return;
+    const p=Math.max(0.7,Math.min(1.35,pitch));
+    noiseAt(a.currentTime,0.08,0.065,'bandpass',880*p);
+    oscAt(300*p,128*p,0.15,'triangle',0.07,a.currentTime);
+    oscAt(190*p,86*p,0.17,'sine',0.035,a.currentTime+0.015);
+  },
 };
 
 /* 104 BPM：低频、拨弦与轻打击分层；强度随跑速/连击增加，不再是单线蜂鸣循环。 */

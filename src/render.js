@@ -1,4 +1,4 @@
-import { ctx, W, H, HOR, TAU, proj, poly, disc, clamp, shadow, ROAD_HALF, LANEGAP, ZP, DRAWD } from './core.js';
+import { ctx, W, H, HOR, TAU, proj, poly, disc, rrect, clamp, shadow, ROAD_HALF, LANEGAP, ZP, DRAWD } from './core.js';
 import { LEVELS, LM_CYCLE } from './config.js';
 import { G, pl, curLv } from './game.js';
 import { drawItemIcon } from './art/items.js';
@@ -80,10 +80,46 @@ export function drawPowerIcon(kind, x, y, r){
   }
 }
 
-/* 风物环：预渲染金蓝金属环负责体积，原图鉴插画负责内容。 */
+export function drawEgg(x, y, r, wobble){
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(wobble || 0);
+  ctx.fillStyle = 'rgba(90,50,20,0.18)';
+  ctx.beginPath(); ctx.ellipse(0, r*0.72, r*0.72, r*0.22, 0, 0, TAU); ctx.fill();
+  ctx.fillStyle = '#f7ecd0';
+  ctx.strokeStyle = '#5a3a20';
+  ctx.lineWidth = Math.max(1.6, r*0.12);
+  ctx.beginPath(); ctx.ellipse(0, 0, r*0.72, r, 0, 0, TAU); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = 'rgba(255,248,230,0.7)';
+  ctx.beginPath(); ctx.ellipse(-r*0.18, -r*0.28, r*0.22, r*0.16, -0.4, 0, TAU); ctx.fill();
+  ctx.fillStyle = '#d2a06a';
+  for(const [dx,dy,s] of [[0.16,0.08,0.09],[0.02,0.32,0.07],[-0.22,0.18,0.06]]){
+    ctx.beginPath(); ctx.ellipse(dx*r, dy*r, s*r, s*r*0.7, 0.4, 0, TAU); ctx.fill();
+  }
+  ctx.restore();
+}
+
+export function drawRelic(id, x, y, r){
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.fillStyle = '#e8c98a';
+  ctx.strokeStyle = '#5a3a20';
+  ctx.lineWidth = Math.max(1.5, r*0.1);
+  ctx.beginPath();
+  ctx.moveTo(-r*1.05, -r*0.7); ctx.lineTo(r*1.05, -r*0.7);
+  ctx.lineTo(r*0.9, r*0.75); ctx.lineTo(-r*0.9, r*0.75);
+  ctx.closePath(); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = '#c45a3a';
+  ctx.fillRect(-r*0.18, -r*0.7, r*0.36, r*0.22);
+  ctx.restore();
+  drawItemIcon(id, x, y+r*0.04, r*0.55, false);
+}
+
+/* 旧金环仍给 HUD 小图标兜底。 */
 export function drawPickupMedallion(id, x, y, r, frame){
+  if(id==='gold' || id==='egg'){ drawEgg(x, y, r*1.15, 0); return true; }
   const image = getSprite('pickup');
-  if(!image) return false;
+  if(!image){ drawRelic(id, x, y, r); return true; }
   const index = ((frame||0)%4+4)%4;
   const squash = [1,0.72,0.16,0.72][index];
   ctx.save();
@@ -103,7 +139,7 @@ export function drawPickupMedallion(id, x, y, r, frame){
 /* ================= 渲染:场景(远/中/近三层视差) ================= */
 export function render(){
   // 菜单/选关/图鉴/鸭铺:南京眼蓝调底图(缺图回退下方旧场景)
-  if((G.state==='menu'||G.state==='levels'||G.state==='album'||G.state==='shop') && drawMenuBg()){ vignette(); return; }
+  if((G.state==='menu'||G.state==='levels'||G.state==='album'||G.state==='shop'||G.state==='credits') && drawMenuBg()){ vignette(); return; }
   const active=G.state==='play'||G.state==='crashing'||G.state==='over'||G.state==='clear';
   const lv = active ? curLv() : LEVELS[3]; // 菜单用秦淮夜景
   // 无尽模式地标轮换(含长江大桥);冒险模式用本关地标
@@ -178,15 +214,8 @@ export function render(){
     const gp = proj(c.x, 0, rz);
     shadow(gp.x, gp.y, gp.s*0.28, 0.18);
     const r = clamp(p.s*0.34, 4, 19);
-    ctx.save();
-    const glow = ctx.createRadialGradient(p.x, p.y, r*0.25, p.x, p.y, r*2.4);
-    glow.addColorStop(0, 'rgba(240,196,90,0.30)');
-    glow.addColorStop(1, 'rgba(240,196,90,0)');
-    ctx.fillStyle = glow;
-    ctx.beginPath(); ctx.arc(p.x, p.y, r*2.4, 0, TAU); ctx.fill();
-    ctx.restore();
-    const spin = Math.floor((G.t*8+c.z*0.25)%4);
-    if(!drawPickupMedallion(c.id, p.x, p.y, r, spin)) drawItemIcon(c.id, p.x, p.y, r, false);
+    if(c.kind==='relic') drawRelic(c.id, p.x, p.y, r*1.15);
+    else drawEgg(p.x, p.y, r, Math.sin(G.t*4+c.z)*0.12);
   }
   // 局内道具(发光物件,与收集品同层;免费道上不挡路)
   for(const p of G.powers){
@@ -214,6 +243,17 @@ export function render(){
       if(!o.hit && o.rz > ZP && o.rz < ZP+12){ panic = true; break; }
     }
     drawPlayer(pl, G.t, { panic, crashed: G.state==='crashing'||G.state==='over' });
+    if(G.speech && G.speech.text){
+      const p = proj(pl.x, pl.y+1.85, ZP);
+      const a = clamp(Math.min((G.speech.dur-G.speech.ttl)*6, G.speech.ttl*4), 0, 1);
+      ctx.save(); ctx.globalAlpha = a;
+      ctx.font = '15px "JinlingKai","KaiTi","Microsoft YaHei",serif';
+      const tw = Math.min(220, ctx.measureText(G.speech.text).width + 18);
+      rrect(p.x-tw/2, p.y-18, tw, 26, 10, 'rgba(246,236,214,0.94)', '#5a3a20', 1.3);
+      ctx.fillStyle = '#3a2614'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(G.speech.text, p.x, p.y-5);
+      ctx.restore();
+    }
   }
   // 粒子(收集/穿门为剪纸碎片,环境粒子为柔边圆点)
   for(const pt of G.parts){

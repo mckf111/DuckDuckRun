@@ -125,7 +125,7 @@ export function shareScore(){
   x2.fillStyle = '#f7ead0'; x2.font = '26px "JinlingKai","KaiTi","Microsoft YaHei",serif';
   x2.fillText(title + ' · ' + dist + ' m', 300, 448);
   x2.fillStyle = '#c9b88f'; x2.font = '18px "JinlingKai","KaiTi","Microsoft YaHei",serif';
-  let sub = '本局印记 ' + marks + ' 枚' + (endless ? '' : ' · '+stars+' 星') + ' · 图鉴 ' + albumN + '/' + ITEMS.length;
+  let sub = '本局鸭蛋 ' + marks + ' 枚' + (endless ? '' : ' · '+stars+' 星') + ' · 图鉴 ' + albumN + '/' + ITEMS.length;
   if(endless){
     const ms = MILESTONES.filter(m => dist >= m[0]).pop();
     if(ms) sub += ' · ' + ms[1];
