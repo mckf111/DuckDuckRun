@@ -1,5 +1,5 @@
 import { clamp, lerp, rnd, irnd, proj, LANEGAP, ZP, DRAWD, TAU } from './core.js';
-import { LEVELS, ITEMS, LM_CYCLE, LM_NAME, MILESTONES, RUN_STAR_THRESHOLDS, QUACKS } from './config.js';
+import { LEVELS, ITEMS, LM_CYCLE, LM_NAME, MILESTONES, RUN_STAR_THRESHOLDS, QUACKS, CRASH_LINES } from './config.js';
 import { save, persist, queuePersist } from './save.js';
 import { canPassObstacle, calculateRunStars, getBridgeUnlockStatus, getCollectionWeight, getObstacleInstruction } from './rules.js';
 import { sfx, bgm, setBgmIntensity } from './audio.js';
@@ -25,7 +25,7 @@ export const G = {
   tutStage:4,          // 兼容测试快照；0~3 对应四步教学，4=结束
   tutorial:null,       // {step,targetZ,targetLane,actionDone,retries,tip}
   inputBuffer:{jump:0,slide:0},
-  crashT:0,
+  crashT:0, crashLen:0.54, crashLine:'',
   rhythm:null, rhythmLog:[], featureMarks:[],
   secretQueue:[], runFoundNew:false, runFinalized:false,
   shopFeedback:null,
@@ -61,7 +61,7 @@ export function startRun(mode, lvIdx, forceTutorial=false){
   G.nextPower = 120;
   G.nextRelic = 70;
   G.msIdx = 0; G.lmCyc = -1; G.arcGot = {};
-  G.inputBuffer={jump:0,slide:0}; G.crashT=0;
+  G.inputBuffer={jump:0,slide:0}; G.crashT=0; G.crashLen=0.54; G.crashLine='';
   G.rhythm={pressureStreak:0,lastAction:null,actionStreak:0,reliefNext:false};G.rhythmLog=[];
   G.featureMarks=mode==='adv'?[LEVELS[lvIdx].len*0.28,LEVELS[lvIdx].len*0.62]:[];
   G.secretQueue=[];G.runFoundNew=false;G.runFinalized=false;G.shopFeedback=null;
@@ -354,8 +354,26 @@ export function update(dt){
   G.shake = Math.max(0, G.shake - dt*3);                        // 震屏衰减(撞车后也能平息)
   if(G.state==='crashing'){
     G.crashT-=dt;
+    const freeze = G.crashT > G.crashLen - 0.09;
+    if(!freeze){
+      G.t += dt * 0.42;
+      for(const p of G.parts){
+        p.life -= dt; p.x += p.vx*dt; p.y += p.vy*dt;
+        if(!p.ambient) p.vy -= 7*dt;
+        if(p.shard || p.egg) p.rot += (p.vr||0)*dt;
+      }
+      G.parts = G.parts.filter(p=>p.life>0);
+    }
     if(G.crashT<=0) G.state='over';
-    else if(G.crashT<0.18) G.t+=dt*0.3;   // 80ms 定格后，180ms 慢放翻倒
+    return;
+  }
+  if(G.state==='over'){
+    for(const p of G.parts){
+      p.life -= dt; p.x += p.vx*dt; p.y += p.vy*dt;
+      if(!p.ambient) p.vy -= 7*dt;
+      if(p.shard || p.egg) p.rot += (p.vr||0)*dt;
+    }
+    G.parts = G.parts.filter(p=>p.life>0);
     return;
   }
   if(G.state!=='play' || G.paused) return;
@@ -544,10 +562,28 @@ export function update(dt){
   G.parts = G.parts.filter(p=>p.life>0);
 }
 
+function scatterCrashBits(){
+  const n = Math.min(8, 2 + G.runMarks);
+  for(let i=0;i<n;i++){
+    G.parts.push({
+      x:pl.x+rnd(-0.15,0.15), y:0.7+rnd(0,0.4), z:ZP,
+      vx:rnd(-2.8,2.8), vy:rnd(3.2,6.2), vr:rnd(-10,10), rot:rnd(0,TAU),
+      life:rnd(0.7,1.15), egg:true, size:rnd(7,11),
+    });
+  }
+  G.parts.push({
+    x:pl.x+0.12, y:1.3, z:ZP, vx:rnd(0.6,1.8), vy:rnd(2.4,3.6), vr:rnd(-6,6), rot:0.4,
+    life:1.1, flower:true, size:10,
+  });
+}
+
 export function gameOver(type){
-  sfx.hit(); duckSay('crash', true, 0.78);
-  G.shake = 1; G.crashT = 0.26;   // 80ms 定格 + 180ms 慢放
-  G.killedBy = type || null;                 // 死因(结算页教学提示)
+  G.killedBy = type || 'full';
+  const lines = CRASH_LINES[G.killedBy] || CRASH_LINES.full;
+  G.crashLine = lines[irnd(0, lines.length-1)];
+  sfx.bonk(); duckSay('crash', true, 0.78);
+  scatterCrashBits();
+  G.shake = 1.35; G.crashT = G.crashLen;   // 90ms 定格 + 450ms 出洋相
   G.newBest = false;
   if(G.mode==='endless'){
     const m = Math.floor(G.dist);

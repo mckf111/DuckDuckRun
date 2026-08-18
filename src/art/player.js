@@ -168,8 +168,23 @@ function spark(sx, sy, r){
         [sx,sy+r],[sx-r*0.35,sy+r*0.35],[sx-r,sy],[sx-r*0.35,sy-r*0.35]], OSM);
 }
 
+function crashXform(kind, age){
+  if(age < 0.09){
+    const k = age / 0.09;
+    return { sx:1.42-k*0.12, sy:0.38+k*0.18, rot:0, dx:0, dy:0 };
+  }
+  const t = clamp((age-0.09)/0.45, 0, 1);
+  if(kind==='low') return { sx:1.08, sy:0.82+t*0.12, rot:0.35+t*1.15, dx:t*0.22, dy:0.04+t*0.08 };
+  if(kind==='high') return { sx:1, sy:1, rot:-t*3.4, dx:0, dy:Math.sin(t*Math.PI)*0.62 };
+  const peel = t<0.45 ? 0.2+t*0.25 : 0.42+(t-0.45)*1.05;
+  return { sx:1.55-t*0.35, sy:Math.max(0.2, peel), rot:t*0.55, dx:0, dy:t<0.45?0:(t-0.45)*0.18 };
+}
+
 function spriteFrame(pl, t, opts){
-  if(opts.crashed) return 10;                              // 屁股墩 + 金星，滑稽但不恶心
+  if(opts.crashed){
+    if((opts.crashAge||0) < 0.16) return opts.crashKind==='high' ? 6 : 9;
+    return 10;
+  }
   if(pl.sliding) return 8;
   if(pl.y > 0.05){
     if(pl.vy < 0) return 7;
@@ -188,7 +203,14 @@ function drawSpritePlayer(pl, t, opts, p, gold){
   const frame = spriteFrame(pl, t, opts);
   ctx.save();
   ctx.translate(p.x, p.y);
-  if(!opts.crashed) ctx.rotate(clamp((pl.lane*LANEGAP-pl.x)*0.18, -0.2, 0.2));
+  if(opts.crashed){
+    const xf = crashXform(opts.crashKind||'full', opts.crashAge||0.54);
+    ctx.translate(xf.dx*p.s, -xf.dy*p.s);
+    ctx.rotate(xf.rot);
+    ctx.scale(xf.sx, xf.sy);
+  } else {
+    ctx.rotate(clamp((pl.lane*LANEGAP-pl.x)*0.18, -0.2, 0.2));
+  }
   if(gold && 'filter' in ctx) ctx.filter = 'sepia(.55) saturate(1.35) hue-rotate(350deg)';
   ctx.imageSmoothingEnabled = true;
   drawSpriteFrame(ctx, image, 4, 3, frame, -dw/2, -dh*0.88, dw, dh);
@@ -213,7 +235,12 @@ export function drawPlayer(pl, t, opts){
   if(drawSpritePlayer(pl, t, opts, p, gold)) return;
   ctx.save();
   ctx.translate(x, y);
-  if(!opts.crashed){   // 换道时身体侧倾
+  if(opts.crashed){
+    const xf = crashXform(opts.crashKind||'full', opts.crashAge||0.54);
+    ctx.translate(xf.dx*s, -xf.dy*s);
+    ctx.rotate(xf.rot);
+    ctx.scale(xf.sx, xf.sy);
+  } else {
     ctx.rotate(clamp((pl.lane*LANEGAP - pl.x)*0.35, -0.35, 0.35));
   }
   if(opts.crashed) drawCrash(t, s, run);

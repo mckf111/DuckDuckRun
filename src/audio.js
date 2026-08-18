@@ -85,6 +85,14 @@ export const sfx={
     pluckAt(f,a.currentTime,0.105,'effects');oscAt(f*2,f*1.8,0.11,'sine',0.025,a.currentTime+0.02);
   },
   hit(){const a=ac();if(!a)return;kickAt(a.currentTime,0.19);noiseAt(a.currentTime,0.28,0.12,'lowpass',520);},
+  bonk(){
+    const a=ac();if(!a)return;
+    oscAt(180,70,0.16,'sine',0.16,a.currentTime);
+    noiseAt(a.currentTime,0.12,0.11,'bandpass',420);
+    oscAt(520,180,0.11,'triangle',0.05,a.currentTime+0.03);
+    noiseAt(a.currentTime+0.07,0.08,0.045,'highpass',2400);
+    noiseAt(a.currentTime+0.12,0.06,0.03,'highpass',2800);
+  },
   clear(){const a=ac();if(!a)return;[523,659,784,1047].forEach((f,i)=>pluckAt(f,a.currentTime+i*0.1,0.09,'effects'));},
   click(){const a=ac();if(!a)return;pluckAt(760,a.currentTime,0.035,'effects');},
   gate(){const a=ac();if(!a)return;[660,880].forEach((f,i)=>pluckAt(f,a.currentTime+i*0.08,0.075,'effects'));},

@@ -1,4 +1,4 @@
-import { ctx, W, H, HOR, TAU, proj, poly, disc, rrect, clamp, shadow, ROAD_HALF, LANEGAP, ZP, DRAWD } from './core.js';
+import { ctx, W, H, CX, HOR, TAU, proj, poly, disc, rrect, clamp, shadow, ROAD_HALF, LANEGAP, ZP, DRAWD } from './core.js';
 import { LEVELS, LM_CYCLE } from './config.js';
 import { G, pl, curLv } from './game.js';
 import { drawItemIcon } from './art/items.js';
@@ -242,7 +242,23 @@ export function render(){
     for(const o of G.obs){
       if(!o.hit && o.rz > ZP && o.rz < ZP+12){ panic = true; break; }
     }
-    drawPlayer(pl, G.t, { panic, crashed: G.state==='crashing'||G.state==='over' });
+    const crashAge = G.state==='crashing' ? (G.crashLen-G.crashT) : G.crashLen;
+    drawPlayer(pl, G.t, {
+      panic,
+      crashed: G.state==='crashing'||G.state==='over',
+      crashAge,
+      crashKind: G.killedBy,
+    });
+    if(G.state==='crashing' && G.crashLine && (G.crashLen-G.crashT)>0.22){
+      const a = clamp(((G.crashLen-G.crashT)-0.22)*6, 0, 1);
+      ctx.save(); ctx.globalAlpha = a;
+      ctx.font = '42px "JinlingBrush","KaiTi","Microsoft YaHei",serif';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.lineJoin = 'round'; ctx.lineWidth = 8; ctx.strokeStyle = 'rgba(58,38,20,0.55)';
+      ctx.strokeText(G.crashLine, CX, H*0.22);
+      ctx.fillStyle = '#f6edd4'; ctx.fillText(G.crashLine, CX, H*0.22);
+      ctx.restore();
+    }
     if(G.speech && G.speech.text){
       const p = proj(pl.x, pl.y+1.85, ZP);
       const a = clamp(Math.min((G.speech.dur-G.speech.ttl)*6, G.speech.ttl*4), 0, 1);
@@ -259,7 +275,20 @@ export function render(){
   for(const pt of G.parts){
     const p = proj(pt.x, pt.y, pt.z);
     ctx.globalAlpha = clamp(pt.life, 0, 1) * (pt.ambient?0.4:1);
-    if(pt.shard){
+    if(pt.egg){
+      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(pt.rot||0);
+      ctx.fillStyle = '#f7ecd0'; ctx.strokeStyle = '#5a3a20'; ctx.lineWidth = 1.6;
+      ctx.beginPath(); ctx.ellipse(0, 0, pt.size*0.72, pt.size, 0, 0, TAU); ctx.fill(); ctx.stroke();
+      ctx.restore();
+    } else if(pt.flower){
+      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(pt.rot||0.4);
+      ctx.fillStyle = '#7ba05b'; ctx.fillRect(-1.5, -pt.size, 3, pt.size);
+      ctx.fillStyle = '#f0b64c';
+      for(const [dx,dy] of [[0,-pt.size],[4,-pt.size+3],[-4,-pt.size+2]]){
+        ctx.beginPath(); ctx.arc(dx, dy, 3.2, 0, TAU); ctx.fill();
+      }
+      ctx.restore();
+    } else if(pt.shard){
       ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(pt.rot);
       const sz = pt.size;
       if(pt.dia) poly([[0,-sz],[sz*0.7,0],[0,sz],[-sz*0.7,0]], pt.color);   // 菱形纸片

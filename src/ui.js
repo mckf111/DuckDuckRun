@@ -324,23 +324,22 @@ export function drawShop(){
   button('back','返回', CX, H-40, 140, 44, {ghost:true});
 }
 
-const CRASH_TITLES = ['差点撞上，先缓一缓','鸭蹼打了个滑','城墙比想象中结实','慢半拍，再来一次'];
 export function drawOver(){
-  dim(0.55);
+  dim(0.28);
   const got = G.newIds.length;
-  text(CRASH_TITLES[Math.floor(G.dist)%CRASH_TITLES.length], CX, H*0.26, 52, '#f4f1e8', 'center', null, true);
+  text(G.crashLine || '墙说不行。鸭说再试。', CX, H*0.22, 46, '#f6edd4', 'center', null, true);
   const deathTip=getObstacleInstruction(G.killedBy,'ontouchstart' in window);
-  if(deathTip) text('小提示:'+deathTip, CX, H*0.35, 15, '#a8d5a2');
+  if(deathTip) text(deathTip, CX, H*0.33, 13, 'rgba(246,237,212,0.55)');
   const line = G.mode==='endless'
     ? '跑了 '+Math.floor(G.dist)+' m · 鸭蛋 '+G.runMarks+(G.newBest?' · 新纪录!':'')
     : LEVELS[G.lvIdx].name+' · 跑了 '+Math.floor(G.dist)+' m · 鸭蛋 '+G.runMarks+' · 距终点还差 '+Math.max(0,Math.ceil(LEVELS[G.lvIdx].len-G.dist))+' m';
-  text(line, CX, H*0.42, 20, '#f0b64c');
-  if(got) text('新图鉴:'+G.newIds.map(id=>(ITEMS.find(i=>i.id===id)||{}).name||'').join('、'), CX, H*0.48, 16, '#a8d5a2');
-  if(G.newIds.some(id=>ITEMS.find(i=>i.id===id)?.secret)) text('隐藏风物现身!', CX, H*0.53, 15, '#f0b64c', 'center', 'bold');
-  button('retry','再来一次 (Enter)', CX, H*0.56, 240, 52);
-  button('share','分享成绩', CX-115, H*0.68, 210, 52, {ghost:true});
-  button('copy','复制链接', CX+115, H*0.68, 210, 52, {ghost:true});
-  button('quit','回主菜单', CX, H*0.78, 240, 52, {ghost:true});
+  text(line, CX, H*0.40, 18, '#e8c170');
+  if(got) text('新图鉴:'+G.newIds.map(id=>(ITEMS.find(i=>i.id===id)||{}).name||'').join('、'), CX, H*0.46, 16, '#a8d5a2');
+  if(G.newIds.some(id=>ITEMS.find(i=>i.id===id)?.secret)) text('隐藏风物现身!', CX, H*0.51, 15, '#f0b64c', 'center', 'bold');
+  button('retry','起来再跑 (Enter)', CX, H*0.50, 240, 50);
+  button('share','分享成绩', CX-115, H*0.61, 210, 46, {ghost:true});
+  button('copy','复制链接', CX+115, H*0.61, 210, 46, {ghost:true});
+  button('quit','回主菜单', CX, H*0.72, 240, 46, {ghost:true});
 }
 function star(x, y, r, on, k){
   ctx.save(); ctx.translate(x, y); ctx.scale(k, k);
