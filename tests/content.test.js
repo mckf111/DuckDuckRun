@@ -8,6 +8,16 @@ import { ITEMS, LEVELS } from '../src/config.js';
 const root = fileURLToPath(new URL('..', import.meta.url));
 const read = file => readFileSync(join(root, file), 'utf8');
 
+test('游戏本体保留所有权利且不开放 MIT 复用', () => {
+  const license = read('LICENSE.md');
+  assert.match(license, /保留一切权利|保留所有权利/);
+  assert.match(license, /禁止/);
+  assert.doesNotMatch(license, /MIT License|Permission is hereby granted, free of charge/);
+  assert.equal(existsSync(join(root, 'assets', 'fonts', 'OFL.txt')), true);
+  assert.match(read('src/config.js'), /步行斜拉桥/);
+  assert.doesNotMatch(read('src/config.js'), /摩天轮桥/);
+});
+
 test('版本口径统一为十关、四十风物和动态总星', () => {
   assert.equal(LEVELS.length, 10);
   assert.equal(ITEMS.length, 40);
