@@ -60,17 +60,23 @@ export function loadBackground(id){
 export function loadMenuBackground(){ return loadBackground('menu'); }
 export function prefetchBackground(id, delayMs=120){
   let cancelled = false;
-  let handle = null;
-  const run = () => { if(!cancelled) loadBackground(id); };
-  if(typeof requestIdleCallback === 'function'){
-    handle = requestIdleCallback(run, { timeout:delayMs });
-    return () => {
-      cancelled = true;
-      if(typeof cancelIdleCallback === 'function') cancelIdleCallback(handle);
-    };
-  }
-  handle = setTimeout(run, delayMs);
-  return () => { cancelled = true; clearTimeout(handle); };
+  let idleHandle = null;
+  let timerHandle = null;
+  const run = () => {
+    if(cancelled) return;
+    cancelled = true;
+    if(timerHandle) clearTimeout(timerHandle);
+    if(idleHandle!==null && typeof cancelIdleCallback === 'function') cancelIdleCallback(idleHandle);
+    loadBackground(id);
+  };
+  // 有空闲回调时尽早执行；无头/节流环境若迟迟不给 idle，定时兜底仍履行预取契约。
+  if(typeof requestIdleCallback === 'function') idleHandle = requestIdleCallback(run, { timeout:delayMs });
+  timerHandle = setTimeout(run, delayMs);
+  return () => {
+    cancelled = true;
+    if(timerHandle) clearTimeout(timerHandle);
+    if(idleHandle!==null && typeof cancelIdleCallback === 'function') cancelIdleCallback(idleHandle);
+  };
 }
 
 /* 图鉴风物照片懒加载:首次进图鉴页时调用,逐张异步;已加载/加载中不重复。
