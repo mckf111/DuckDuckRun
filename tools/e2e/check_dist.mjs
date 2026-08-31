@@ -30,7 +30,9 @@ async function waitServer(){
 try{
   await waitServer();
   const paths = ['/', '/build-info.json', ...info.files.map(file => `/${info.releasePath}${file}`)];
-  const results = await Promise.all(paths.map(async path => ({ path, status:(await fetch(base + path)).status })));
+  // Python 静态服务在受限 CI 上对高并发 keep-alive 偶有解析竞态；逐项检查不缩小覆盖范围且更可复现。
+  const results = [];
+  for(const path of paths) results.push({ path, status:(await fetch(base + path)).status });
   const failed = results.filter(result => result.status >= 400);
   assert.deepEqual(failed, [], `制品资源 404/5xx：${JSON.stringify(failed)}`);
   console.log(`PASS | 制品完整性：${paths.length} 个入口/资源均可达，版本 ${info.buildId}`);
