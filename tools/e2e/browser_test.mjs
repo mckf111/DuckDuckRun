@@ -21,6 +21,13 @@ async function waitServer(){
 }
 
 async function launchBrowser(){
+  const explicit = process.env.PLAYWRIGHT_EXECUTABLE_PATH;
+  const systemChromium = process.platform==='linux' && existsSync('/usr/bin/chromium') ? '/usr/bin/chromium' : null;
+  if(explicit || systemChromium) return chromium.launch({
+    headless:true,
+    executablePath:explicit || systemChromium,
+    args:['--no-sandbox'],
+  });
   try{ return await chromium.launch({headless:true}); }catch(e){}
   try{ return await chromium.launch({channel:'chrome',headless:true}); }catch(e){}
   return chromium.launch({channel:'msedge',headless:true});
@@ -203,7 +210,8 @@ try{
       game.update(1/60);
       const crashStart=game.G.state;
       game.update(0.07); const crashHold=game.G.state;
-      game.update(0.2); const crashEnd=game.G.state;
+      for(let i=0;i<10&&game.G.state==='crashing';i++) game.update(0.1);
+      const crashEnd=game.G.state;
 
       game.startRun('adv',0);game.G.nextSpawn=Infinity;game.G.nextPower=50;
       game.G.obs=[{lane:-1,x:-1.25,z:50,type:'full'},{lane:0,x:0,z:50,type:'full'}];
@@ -315,7 +323,61 @@ try{
     assert.equal(await page.evaluate(()=>window.__GAME.state),'play');
     await context.close();
   }
-  console.log('PASS | 浏览器门禁：3 视口、按需加载、慢网/离线/404/解码失败、脏写入、确定性截图');
+  // 运行时必须能销毁和重新启动一次；主循环、输入和音频资源不能因重复启动叠加。
+  {
+    const context=await browser.newContext({viewport:{width:1000,height:600}});
+    const page=await context.newPage();
+    await seedPage(page);
+    await openMenu(page);
+    assert.equal(await page.evaluate(async()=>!(await import('/src/audio.js')).ac()),true,'冷启动不应创建 AudioContext');
+    await page.keyboard.press('ArrowRight');
+    assert.equal(await page.evaluate(async()=>!!(await import('/src/audio.js')).ac()),true,'键盘手势应解锁 AudioContext');
+    await page.setViewportSize({width:844,height:390});
+    await page.waitForTimeout(80);
+    const resize=await page.evaluate(()=>{
+      const canvas=document.querySelector('#cv'), rect=canvas.getBoundingClientRect();
+      return { width:rect.width, height:rect.height, ratio:canvas.width/rect.width };
+    });
+    assert.ok(resize.width>0&&resize.height>0&&resize.ratio>=0.99,'resize 后 Canvas 尺寸无效：'+JSON.stringify(resize));
+    const lifecycle=await page.evaluate(async()=>{
+      const runtime=await import('/src/main.js');
+      return {
+        duplicateStart:runtime.startApp(),
+        disposed:runtime.disposeApp(),
+        disposedAgain:runtime.disposeApp(),
+        restarted:runtime.startApp(),
+        duplicateAfterRestart:runtime.startApp(),
+        finalDispose:runtime.disposeApp(),
+      };
+    });
+    assert.deepEqual(lifecycle,{duplicateStart:false,disposed:true,disposedAgain:false,restarted:true,duplicateAfterRestart:false,finalDispose:true});
+    await context.close();
+  }
+  // ?demo&seed= 固定本局随机源；同一 seed 两次开局应产生相同的首个障碍簇。
+  {
+    const context=await browser.newContext({viewport:{width:1000,height:600}});
+    const page=await context.newPage();
+    await seedPage(page,101);
+    await page.goto(base+'/?demo&seed=20260901',{waitUntil:'domcontentloaded'});
+    await page.evaluate(async()=>{ window.__GAME=(await import('/src/game.js')).G; });
+    await page.waitForFunction(()=>window.__GAME.state==='menu'&&window.__GAME.buttons.length>=4);
+    const replay=await page.evaluate(async()=>{
+      const game=await import('/src/game.js');
+      const save=await import('/src/save.js');
+      save.save.tutorialCompleted=true; save.save.tut=true;
+      const snapshot=()=>{
+        game.startRun('adv',0);
+        game.spawnCluster(40);
+        return { replay:{...game.G.replay}, cluster:game.G.obs.map(({lane,z,type})=>({lane,z,type})) };
+      };
+      return {first:snapshot(),second:snapshot()};
+    });
+    assert.equal(replay.first.replay.seed,20260901);
+    assert.equal(replay.first.replay.source,'demo');
+    assert.deepEqual(replay.first.cluster,replay.second.cluster,'同一固定 seed 重开后障碍簇不一致');
+    await context.close();
+  }
+  console.log('PASS | 浏览器门禁：3 视口、按需加载、慢网/离线/404/解码失败、脏写入、固定 seed、生命周期、输入、尺寸与音频解锁');
 } finally {
   if(browser) await browser.close().catch(()=>{});
   server.kill();

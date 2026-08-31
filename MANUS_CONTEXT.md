@@ -2,45 +2,70 @@
 
 ## 当前任务状态
 
-这是 DuckDuckRun 改进计划的第 1 阶段承接点。审查已在 `manus/duckduckrun-hardening` 分支完成，代码基线为 `b90462e1c182`。本阶段只允许新增/更新审查和承接文档；**未修改**游戏源码、依赖、锁文件、工作流、资产或部署。架构决定已经记录为“保留并修复”，不是重写 [1]。
+第 2 阶段“工程稳健化与核心故障修复”已在 `manus/duckduckrun-hardening` 上完成本地实现和验证。阶段起点为 `5a8631be20eb0d3d3c257636fe526d1f646c747f`；该提交相对阶段 1 记录的游戏代码基线 `b90462e1c182fc0fee5ee1fe29c9b6789690d9a9` 只新增审查/承接文档。ADR-001 的决定仍是 **保留并修复**，本阶段未重写 Canvas、状态机或引擎。[1]
 
-## 不可忽略的事实
+> **状态：本地质量门禁为绿，仍禁止发布。** A-02（线上 Pages 旧版本）因本阶段明确不部署而保持 P1；A-04/A-09 因没有物理 Android/iPhone/微信证据而保持移动发布阻断。提交后须等待本分支远端 CI 绿色，才可把本阶段标记为完整交付。
 
-| 事实 | 处理要求 |
+## 本阶段关键决定与变更
+
+| 编号 | 决定/变更 | 证据/回归命令 |
+|---|---|---|
+| A-01 | 背景契约固定为“菜单只加载菜单背景；开局加载当前背景并在 120 ms 空闲窗口预取下一背景”；预取可取消 | `npm run test:browser` |
+| A-02/A-06 | 零依赖构建输出 `dist/releases/<build-id>/`、build ID、`build-info.json`、根跳转；CI 只生成不可变工件而不部署 | `npm run build && npm run test:dist` |
+| A-03 | 根 `package-lock.json`、`packageManager: npm@10.9.2`、`check`、`verify`、体积预算命令 | `npm ci && npm run verify` |
+| A-04 | 保留集中 DPR 质量档和自动降档；补前后同口径模拟测量，不在无真机证据时盲目裁剪 | `docs/qa/engineering-hardening-report.md` |
+| A-05 | `src/input.js` 重构为带 `dispose()` 的统一输入控制器；`src/main.js` 单实例管理窗口监听、RAF 和方向/resize | `npm run test:browser` |
+| A-07 | `src/core.js` 新增 seedable 玩法随机流；`?demo&seed=20260901` 可复放；视觉/音频随机不干扰玩法序列 | `npm run test:logic && npm run test:browser` |
+| A-08 | `tools/generate_asset_sbom.mjs` 生成 `docs/qa/asset-sbom.json` 的 41 条文件/哈希/来源映射 | `node tools/generate_asset_sbom.mjs` |
+| A-09 | 浏览器冒烟新增启动、重开、输入、resize、AudioContext 用户手势解锁和 `disposeApp()`/`startApp()` 覆盖 | `npm run test:browser` |
+
+## 已实际运行的命令和结果
+
+| 命令 | 结果 |
 |---|---|
-| `npm test` 失败于 `tools/e2e/browser_test.mjs:118` | 先判定照片预取的产品契约，不能直接删断言或升级依赖 |
-| GitHub Pages 可访问但为旧版本 | 在关闭 A-02 前，禁止把线上 URL 当作当前提交的验证证据 |
-| CI 工作流仅在 `codex/trusted-experience` push 时发布预览 | 调整分支/制品前必须先理解现有意图，并用最小改动保留回滚 |
-| 横屏 DPR2 自动化捕获到最高 147 ms 长任务 | 这是风险信号，不是“真机必卡”的结论；先做实机归因 |
-| 竖屏旋转层有效，横屏触摸可换道 | 保留横屏主玩法，改善引导/替代与可访问性，而非直接废弃旋转策略 |
-| 十次重开无显性崩溃 | 不要夸大为无内存泄漏；堆/监听器度量仍缺失 |
-| 图片/字体多为 CC/OFL 或原创声明 | 不要删除署名；补 SBOM 和不可变来源证据 |
+| `npm ci && npm ci --prefix tools/e2e` | 通过；根项目零依赖，浏览器子工具锁定安装 |
+| `npm run typecheck` / `npm run lint` | 通过；21 个运行时模块语法检查（原生 JavaScript 无独立类型系统/ESLint） |
+| `npm run test:logic` | 8/8 通过，包括 200 个固定 seed 的可生还路径和 seed 精确复放 |
+| `npm run test:save` | 3/3 通过 |
+| `npm run test:resources` | 4/4 通过 |
+| `npm run test:browser` | 通过；三视口、按需预取、失败降级、输入、尺寸、音频与生命周期均通过 |
+| `npm run build && npm run test:dist && npm run test:size` | 通过；78 个制品入口/资源 HTTP 无 4xx/5xx；首屏 480.5 KiB、会话 5.50 MiB |
+| `npm run verify` | 通过；为提交前本地绿色总门禁 |
 
-## 工作方法
+## 前后测量摘要
 
-后续变更应使用短小、可回滚的分支提交。每个提交说明和 PR（仅在项目负责人未来授权后）都必须包含对应 A 编号、复现命令、前后行为和回滚点。涉及线上版本时，先记录候选提交 SHA、制品文件列表、部署结果与线上 SHA/构建标识；任何一个不一致都视为 A-02 未关闭。
+| 指标 | 改动前 | 改动后 | 判定 |
+|---|---:|---:|---|
+| 桌面模拟 4G 首个可玩菜单 | 1,714 ms | 1,674 ms | 通过 ≤4 s |
+| 移动触摸模拟 4G 首个可玩菜单 | 1,497 ms | 1,519 ms | 通过 ≤4 s |
+| 首屏传输 | 252,575 B | 257,636 B | 通过 ≤6 MiB |
+| 完整首次会话传输 | 1,431,858 B | 1,437,219 B | 通过 ≤20 MiB |
+| 桌面模拟平均 FPS | 37.99 | 38.86 | 自动化信号，未达 60；非真机结论 |
+| 移动模拟平均 FPS | 40.68 | 40.23 | 未达 45；移动 release blocker |
+| 连续重开 10 局 JS 堆增长（桌面/移动） | +7.11% / +7.13% | +7.11% / +7.19% | 通过 ≤15% |
+| console/网络错误；运行时外部域名 | 0/0；0 | 0/0；0 | 通过 |
 
-若涉及浏览器自动化，区分三种结果：真实物理设备、自动化浏览器、视口/触摸模拟。不得把后两者写为“微信已兼容”或“低端机已通过”。若涉及音频，必须从用户手势启动、切后台、返回前台和静音切换四个方向复测。若涉及随机性，产出须带 seed、游戏版本、设备摘要和输入/事件摘要。
+测量方法为本地 Chromium 无头自动化、CDP 4G 模拟和 CDP JS 堆；移动项只是 844×390 DPR2 触摸模拟，绝不能写成真机结果。完整口径、长任务和限制见 `docs/qa/engineering-hardening-report.md`。
 
-## 允许与禁止
+## 变更文件
 
-| 允许（阶段 2 起，需独立授权执行） | 禁止，直至另有明确决定 |
-|---|---|
-| 修 A-01/A-02 发布可信度，补质量命令、真机矩阵、性能采样、无障碍渐进增强、随机可重放、资产 SBOM | 直接改默认分支；P1 未关闭即部署；借升级依赖掩盖失败；删断言凑绿；扩关卡/道具/商业化/账户/后端/PWA；替换 Canvas 或引入重型框架 |
+运行时：`src/main.js`、`src/input.js`、`src/audio.js`、`src/core.js`、`src/game.js`、`src/art/photo.js`。测试与构建：`tests/runtime.test.js`、`tools/e2e/beam.mjs`、`tools/e2e/browser_test.mjs`、`tools/e2e/check_dist.mjs`、`tools/e2e/check_size_budget.mjs`、`tools/build_static.mjs`、`tools/generate_asset_sbom.mjs`、`package.json`、`package-lock.json`、`.github/workflows/test.yml`。文档：`PLAN.md`、`STRUCTURE.md`、`MEMORY.md`、`ASSETS.md`、`docs/qa/asset-sbom.json`、`docs/qa/engineering-hardening-report.md`、本文件。
 
-## 文档入口
+## 未关闭问题与下一阶段前提
 
-| 问题 | 文档 |
-|---|---|
-| 全部事实、问题与修复边界 | `docs/review/first-principles-adversarial-audit.md` |
-| 权重评分与硬阻断 | `docs/review/scorecard.md` |
-| 原始证据和截图 | `docs/review/evidence-index.md` |
-| 保留并修复的架构决定 | `docs/architecture/ADR-001-target-architecture.md` |
-| 实机验收门槛 | `docs/qa/device-and-browser-matrix.md` |
-| 后续阶段计划 | `PLAN.md` |
-| 结构责任 | `STRUCTURE.md` |
-| 素材/许可承接 | `ASSETS.md` |
+| 优先级 | 编号 | 当前状态 | 下一阶段前提 |
+|---|---|---|---|
+| P1 | A-02 | 线上 Pages 仍是旧制品；本阶段未部署 | 取得部署授权后仅发布 `dist/`，核验线上 build ID/清单/commit SHA 和缓存回滚 |
+| P2 | A-04 | 模拟移动平均 40.23 FPS，低于 45；无温控/耗电数据 | Android 中端/低端与 iPhone 采样后才按瓶颈做最小性能裁剪 |
+| P2 | A-05 | 仍缺 Canvas 语义替代、缩放与老少适配收敛 | 保持横屏主玩法，做渐进增强并用回归测试验证 |
+| P2 | A-06 | 本地原子制品未经历真实 CDN/Pages 缓存切换/回滚 | 获授权的预览/发布演练 |
+| P2 | A-08 | 历史 source revision/oldid、下载日期、处理记录和 CC BY-SA 评估缺失 | 许可证据回溯与独立法务复核 |
+| P2 | A-09 | iPhone Safari/微信和 Android Chrome/微信无实机数据 | 按 `docs/qa/device-and-browser-matrix.md` 完成 S1–S8 |
+
+## 回滚点与禁止项
+
+阶段起点 `5a8631be20eb0d3d3c257636fe526d1f646c747f` 是本阶段的无损代码回滚点。提交完成后，将以阶段 2 提交 SHA 作为下一阶段回滚点。不得直接改默认分支，不得创建 PR，不得部署；不得以升级依赖、替换引擎、重写架构、增加内容/账号/后端/PWA 来替代上述未关闭问题。
 
 ## 参考资料
 
-[1]: docs/architecture/ADR-001-target-architecture.md "ADR-001：以保留并修复作为目标架构"
+[1]: docs/architecture/ADR-001-target-architecture.md "保留并修复的目标架构"

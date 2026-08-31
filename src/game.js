@@ -1,4 +1,4 @@
-import { clamp, lerp, rnd, irnd, proj, LANEGAP, ZP, DRAWD, TAU } from './core.js';
+import { clamp, lerp, rnd, irnd, proj, LANEGAP, ZP, DRAWD, TAU, getRandomSeed, restartRandomSequence } from './core.js';
 import { LEVELS, ITEMS, LM_CYCLE, LM_NAME, MILESTONES, RUN_STAR_THRESHOLDS, QUACKS, CRASH_LINES } from './config.js';
 import { save, persist, queuePersist } from './save.js';
 import { canPassObstacle, calculateRunStars, getBridgeUnlockStatus, getCollectionWeight, getObstacleInstruction } from './rules.js';
@@ -34,6 +34,7 @@ export const G = {
   newItem:null,        // 新图鉴即时横幅 { id, ttl }
   secretUnlock:{ baiju:false, baochuan:false },  // 局内隐藏件解锁标记(白局15连击/宝船3000m)
   powers:[],           // 局内道具 { lane, x, z, kind }(磁铁/护盾/金桂)
+  replay:null,         // 固定 seed 演示/问题复现信息，由入口初始化
   nextPower:0,         // 下一个道具生成距离
   nextRelic:0,         // 下一个风物画卷
   speech:null,         // 头顶嘟囔 {text,ttl,dur}
@@ -49,7 +50,9 @@ export function startRun(mode, lvIdx, forceTutorial=false){
     G.state = 'levels';
     return false;
   }
+  if(getRandomSeed() !== null) restartRandomSequence();
   G.mode = mode; G.lvIdx = lvIdx;
+  if(G.replay) G.replay = { ...G.replay, seed:getRandomSeed(), mode, lvIdx };
   G.dist = 0; G.runMarks = 0; G.runStars = 0; G.newIds = []; G.t = 0;
   G.obs = []; G.cols = []; G.parts = []; G.gates = [];
   G.speed = mode==='adv' ? LEVELS[lvIdx].speed : 9.5;
@@ -160,7 +163,7 @@ function consumeInputBuffer(dt){
     else if(pl.jumps===1){pl.vy=5.6;pl.jumps=2;used=true;noteTutorialAction('double');}
     if(used){
       pl.sliding=0;G.inputBuffer.jump=0;sfx.jump();
-      if(Math.random()<0.3) duckSay(null, true, 0.85);
+      if(rnd(0,1)<0.3) duckSay(null, true, 0.85);
       // 第四步只考“按出了二段跳”，不再附带窄时机的高空拾取考试。
       if(G.tutorial?.step===3 && pl.jumps===2){ completeTutorialStep(3); return true; }
     }
@@ -237,7 +240,7 @@ function chooseType(lv){
   const w={...lv.weight};
   if(lv.mod==='lanternDense'){w.low-=0.1;w.high+=0.1;}
   if(lv.mod==='alleyNarrow'){w.low-=0.08;w.full+=0.08;}
-  const roll=Math.random();
+  const roll=rnd(0,1);
   let type=roll<w.low?'low':roll<w.low+w.high?'high':'full';
   if(G.rhythm.actionStreak>=2&&actionForType(type)===G.rhythm.lastAction){
     type=G.rhythm.lastAction==='jump'?'high':G.rhythm.lastAction==='slide'?'full':'low';
@@ -276,7 +279,7 @@ export function spawnCluster(z){
     G.featureMarks.shift();spawnFeatureSegment(z,lanes,lv);return;
   }
   /* ---- 关内修饰器(二期 §C3):明城墙瓮城双墙,强制折返 ---- */
-  if(lv.mod==='wallPair' && G.rhythm.lastAction!=='lane' && diff > 0.3 && Math.random() < 0.15){
+  if(lv.mod==='wallPair' && G.rhythm.lastAction!=='lane' && diff > 0.3 && rnd(0,1) < 0.15){
     G.obs.push({ lane:lanes[0], x:lanes[0]*LANEGAP, z, type:'full' });
     G.obs.push({ lane:lanes[1], x:lanes[1]*LANEGAP, z:z+6, type:'full' });
     spawnArc(z, lanes[2]);
@@ -284,13 +287,13 @@ export function spawnCluster(z){
     return;
   }
   /* 中山陵台阶节奏:同一种强制动作最多连续 2 次。 */
-  if(lv.mod==='stepRhythm' && G.rhythm.lastAction!=='jump' && Math.random() < 0.12){
+  if(lv.mod==='stepRhythm' && G.rhythm.lastAction!=='jump' && rnd(0,1) < 0.12){
     for(let k=0;k<2;k++) G.obs.push({ lane:lanes[0], x:lanes[0]*LANEGAP, z:z+k*4, type:'low' });
     spawnArc(z, lanes[1]);
     recordRhythm('jump',true,z,'stepRhythm',2);
     return;
   }
-  let nBlock = Math.random() < 0.35 + diff*0.45 ? 2 : 1; // 堵 1~2 条道
+  let nBlock = rnd(0,1) < 0.35 + diff*0.45 ? 2 : 1; // 堵 1~2 条道
   if(G.rhythm.lastAction==='lane'&&G.rhythm.actionStreak>=2)nBlock=1;
   const freeLane = lanes[nBlock];                          // 必定留出的道
   const types=[];
@@ -298,16 +301,16 @@ export function spawnCluster(z){
     const type=chooseType(lv);types.push(type);
     G.obs.push({ lane:lanes[i], x:lanes[i]*LANEGAP, z, type });
     // 颐和路:梧桐落枝成对出现(40% 同 lane z+4 再补一根)
-    if(type==='low' && lv.mod==='planeFall' && Math.random() < 0.4)
+    if(type==='low' && lv.mod==='planeFall' && rnd(0,1) < 0.4)
       G.obs.push({ lane:lanes[i], x:lanes[i]*LANEGAP, z:z+4, type:'low' });
     // 难度高时同簇追加前后错位障碍;H1/H2 约束:禁止落免费道,偏移上限随速度收缩,
     // 与下一簇保持 >= 6m 反应余量(高速下自然少出,速度封顶时几乎不出)
-    if(diff > 0.5 && Math.random() < 0.3){
+    if(diff > 0.5 && rnd(0,1) < 0.3){
       const maxOff = Math.min(9, 16*(9.5/G.speed) - 2);
       if(maxOff > 4){
         let l2 = irnd(-1,1);
         while(l2 === lanes[i] || l2 === freeLane) l2 = irnd(-1,1);
-        G.obs.push({ lane:l2, x:l2*LANEGAP, z:z+rnd(4,maxOff), type: Math.random()<0.5?'low':'high' });
+        G.obs.push({ lane:l2, x:l2*LANEGAP, z:z+rnd(4,maxOff), type: rnd(0,1)<0.5?'low':'high' });
       }
     }
   }
@@ -320,12 +323,12 @@ export function burst(x, y, color){
   // 剪纸碎片:三角/菱形小纸片,旋转变速下落
   for(let i=0;i<12;i++) G.parts.push({
     x, y, z:ZP, vx:rnd(-2.5,2.5), vy:rnd(1,4.5), life:rnd(0.5,0.9), color, size:rnd(3,6),
-    shard:true, dia:Math.random()<0.5, rot:rnd(0,TAU), vr:rnd(-8,8),
+    shard:true, dia:rnd(0,1)<0.5, rot:rnd(0,TAU), vr:rnd(-8,8),
   });
 }
 export function ambient(lv){
   // 梅花瓣/灯火/星尘 环境粒子(大、淡、柔边,求"飘絮"不求"撒盐")
-  if(Math.random() > 0.12) return;
+  if(rnd(0,1) > 0.12) return;
   const colors = { crenel:'#e8b04b', lotus:'#d98ba0', steps:'#ffffff', lantern:'#f0b64c', pine:'#c9a2ff',
     plane:'#d8b04a', street:'#f0a04a', maple:'#e0783a', pagoda:'#e8c170', bridge:'#9fc0e8' };
   const windy = lv.mod==='riverWind';   // 大桥江风:粒子横向速度加大
@@ -410,7 +413,7 @@ export function update(dt){
   if(G.speech){ G.speech.ttl -= dt; if(G.speech.ttl<=0) G.speech=null; }
   G.talkCd = Math.max(0, G.talkCd-dt);
   G.idleTalk -= dt;
-  if(!G.tutorial && G.idleTalk<=0){ duckSay(Math.random()<0.55?'idle':null, Math.random()<0.45); G.idleTalk=rnd(8,12); }
+  if(!G.tutorial && G.idleTalk<=0){ duckSay(rnd(0,1)<0.55?'idle':null, rnd(0,1)<0.45); G.idleTalk=rnd(8,12); }
   let panicNow=false;
   for(const o of G.obs){ if(!o.hit && o.rz>ZP && o.rz<ZP+10){ panicNow=true; break; } }
   if(panicNow && !G.lastPanic) duckSay('panic', true, 1.18);
@@ -438,6 +441,7 @@ export function update(dt){
   for(const entry of G.secretQueue){
     if(!entry.spawned&&entry.spawnAt<G.dist+DRAWD)spawnGuaranteedSecret(entry);
   }
+  protectGuaranteedSecrets();
   // 局内道具:免费道形态的发光物件,每 150~250m 一个(货郎吆喝升级缩短间隔)
   const spawnMul = [1, 0.85, 0.7, 0.55][save.ups.spawn] || 1;
   while(!G.tutorial && G.nextPower < G.dist + DRAWD){
@@ -656,9 +660,19 @@ function safestLaneAt(z,span=8){
 function spawnGuaranteedSecret(entry){
   const lane=safestLaneAt(entry.spawnAt,9).lane,z=entry.spawnAt;
   G.obs=G.obs.filter(o=>!(o.lane===lane&&Math.abs(o.z-z)<9));
-  G.cols.push({
-    x:lane*LANEGAP,z,y:1.05,id:entry.id,kind:'relic',got:false,
-    arc:'secret-'+entry.id+'-'+z,arcN:1,guaranteedSecret:true,
+  const arc='secret-'+entry.id+'-'+z;
+  for(let i=0;i<5;i++) G.cols.push({
+    x:lane*LANEGAP,z:z-3+i*1.5,y:1.05+i*0.12,id:entry.id,kind:'relic',got:false,
+    arc,arcN:5,guaranteedSecret:true,
   });
   entry.spawned=true;
+}
+function protectGuaranteedSecrets(){
+  for(const entry of G.secretQueue){
+    if(!entry.spawned) continue;
+    const mark=G.cols.find(col=>col.id===entry.id&&col.guaranteedSecret&&!col.got);
+    if(!mark) continue;
+    const lane=Math.round(mark.x/LANEGAP);
+    G.obs=G.obs.filter(obstacle=>!(obstacle.lane===lane&&Math.abs(obstacle.z-mark.z)<9));
+  }
 }

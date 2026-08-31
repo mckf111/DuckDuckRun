@@ -10,20 +10,35 @@ function buildBus(a){
   compressor.threshold.value=-18;compressor.knee.value=18;compressor.ratio.value=4;
   compressor.attack.value=0.006;compressor.release.value=0.2;
   music.connect(master);effects.connect(master);master.connect(compressor);compressor.connect(a.destination);
-  BUS={master,music,effects};
+  BUS={master,music,effects,compressor};
 }
 
-export function ac(){
+// AudioContext 只在真实指针/键盘手势中创建或恢复；游戏状态机和主循环不能绕过该门槛。
+export function unlockAudio(){
   if(!AC){
     try{ AC=new (window.AudioContext||window.webkitAudioContext)();buildBus(AC); }
-    catch(e){}
+    catch(e){ return null; }
   }
-  if(AC&&AC.state==='suspended') AC.resume().catch(()=>{});
+  if(AC.state==='suspended') AC.resume().catch(()=>{});
   return AC;
 }
 
+// 保持旧调用点的无副作用访问：没有手势解锁时返回 null，而不是暗中创建音频上下文。
+export function ac(){ return AC; }
+
 export function suspendAudio(){
   if(AC&&AC.state==='running') AC.suspend().catch(()=>{});
+}
+
+export function disposeAudio(){
+  bgmStop();
+  const nodes = BUS ? [BUS.music, BUS.effects, BUS.master, BUS.compressor] : [];
+  for(const node of nodes){ try{ node.disconnect(); }catch(e){} }
+  const context = AC;
+  AC = null;
+  BUS = null;
+  noiseBuffer = null;
+  if(context && context.state!=='closed') context.close().catch(()=>{});
 }
 
 function targetBus(kind){return kind==='music'?BUS?.music:BUS?.effects;}

@@ -58,10 +58,19 @@ export function loadBackground(id){
   ]);
 }
 export function loadMenuBackground(){ return loadBackground('menu'); }
-export function prefetchBackground(id){
-  const run = () => loadBackground(id);
-  if(typeof requestIdleCallback === 'function') requestIdleCallback(run, { timeout:1800 });
-  else setTimeout(run, 120);
+export function prefetchBackground(id, delayMs=120){
+  let cancelled = false;
+  let handle = null;
+  const run = () => { if(!cancelled) loadBackground(id); };
+  if(typeof requestIdleCallback === 'function'){
+    handle = requestIdleCallback(run, { timeout:delayMs });
+    return () => {
+      cancelled = true;
+      if(typeof cancelIdleCallback === 'function') cancelIdleCallback(handle);
+    };
+  }
+  handle = setTimeout(run, delayMs);
+  return () => { cancelled = true; clearTimeout(handle); };
 }
 
 /* 图鉴风物照片懒加载:首次进图鉴页时调用,逐张异步;已加载/加载中不重复。

@@ -1,8 +1,8 @@
-name: trusted-experience
+name: quality-gate
 
 on:
   push:
-    branches: [codex/trusted-experience]
+    branches: [manus/duckduckrun-hardening]
   pull_request:
 
 permissions:
@@ -20,37 +20,18 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            tools/e2e/package-lock.json
+      - run: npm ci
       - run: npm ci --prefix tools/e2e
       - run: node tools/e2e/node_modules/playwright-core/cli.js install --with-deps chromium
-      - run: npm run test:syntax
-      - run: npm run test:logic
-      - run: npm run test:save
-      - run: npm run test:resources
-      - run: npm run test:browser
-
-  preview:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/codex/trusted-experience'
-    needs: test
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/configure-pages@v5
-      - name: Prepare static preview
-        run: |
-          mkdir _site
-          cp index.html _site/
-          cp -r src assets _site/
-          touch _site/.nojekyll
-      - uses: actions/upload-pages-artifact@v4
+      - run: npm run verify
+      - name: Upload immutable static artifact
+        uses: actions/upload-artifact@v4
         with:
-          path: _site
-      - name: Deploy implementation preview
-        id: deployment
-        uses: actions/deploy-pages@v4
+          name: duckduckrun-${{ github.sha }}
+          path: dist/
+          if-no-files-found: error
+          retention-days: 14
