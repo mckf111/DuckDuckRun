@@ -1,6 +1,6 @@
 {
   "schema": "duckduckrun-asset-sbom/v1",
-  "generated_at": "2026-08-31T22:12:14.889Z",
+  "generated_at": "2026-09-01",
   "scope": "Third-party photos and local fonts shipped by the static runtime. Original program/art assets remain governed by LICENSE.md.",
   "known_gaps": [
     "Pre-stage-2 download dates, original source revision/oldid and processing history were not recorded and must not be inferred.",

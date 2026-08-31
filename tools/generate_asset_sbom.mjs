@@ -64,7 +64,7 @@ for(const file of readdirSync(join(root, 'assets/fonts')).filter(file => file.en
 entries.sort((a,b) => a.local_path.localeCompare(b.local_path));
 const output = {
   schema:'duckduckrun-asset-sbom/v1',
-  generated_at:new Date().toISOString(),
+  generated_at:'2026-09-01', // 阶段 2 基线日期；输入未变时生成结果必须稳定。
   scope:'Third-party photos and local fonts shipped by the static runtime. Original program/art assets remain governed by LICENSE.md.',
   known_gaps:[
     'Pre-stage-2 download dates, original source revision/oldid and processing history were not recorded and must not be inferred.',
