@@ -9,7 +9,7 @@
 | 阶段 2 起点 | `5a8631be20eb0d3d3c257636fe526d1f646c747f`（仅审查/承接文档） |
 | 工作分支 | `manus/duckduckrun-hardening` |
 | 当前架构决定 | **保留并修复**；见 [`ADR-001`](docs/architecture/ADR-001-target-architecture.md) |
-| 第 2 阶段状态 | 本地实现与 `npm run verify` 已通过；尚待提交后的远端 CI 复核 |
+| 第 2 阶段状态 | 本地 `npm run verify` 与 `e271ac2` 的远端 CI（run 33445931085）均已通过；文档收尾提交仍将触发一次等价复核 |
 | 发布状态 | **不通过**：A-02 线上版本漂移且本阶段未部署；A-04/A-09 缺物理设备性能/容器证据 |
 
 ## 阶段 2 已完成的事实

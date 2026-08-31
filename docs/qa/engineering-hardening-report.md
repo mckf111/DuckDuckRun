@@ -60,7 +60,7 @@
 | 浏览器冒烟 | `npm run test:browser` | 三视口、预取、慢网/离线/404/解码失败、脏写入、重开、输入、resize、音频手势、dispose/restart、固定 seed | 通过 |
 | 完整本地门禁 | `npm run verify` | 上述测试加构建、制品全文件 HTTP 404 检查与体积预算 | 通过 |
 
-GitHub Actions 仅监听工作分支和 pull request，执行 `npm ci`、子目录锁定安装、Chromium 安装、`npm run verify`，并保留 14 天、以提交 SHA 命名的 `dist/` 工件。工作流不再部署 GitHub Pages，符合本阶段“不要部署”的约束；未来 A-02 的关闭须以经批准的部署操作和线上构建 ID/SHA 核验为准。[11]
+GitHub Actions 仅监听工作分支和 pull request，执行 `npm ci`、子目录锁定安装、Chromium 安装、`npm run verify`，并保留 14 天、以提交 SHA 命名的 `dist/` 工件。`e271ac27f90506b38fe177919930ce5472388a87` 已在 [run 33445931085](https://github.com/mckf111/DuckDuckRun/actions/runs/33445931085) 通过该完整门禁。工作流不再部署 GitHub Pages，符合本阶段“不要部署”的约束；未来 A-02 的关闭须以经批准的部署操作和线上构建 ID/SHA 核验为准。[11]
 
 ## 5. 仍存在的 P1/P2 与 release blocker
 
