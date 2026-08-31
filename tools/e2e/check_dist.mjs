@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { spawn } from 'node:child_process';
+import { get } from 'node:http';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -20,9 +21,19 @@ assert.ok(!index.includes('__BUILD_ID__'), '制品仍含未替换的版本占位
 for(const file of info.files) assert.ok(existsSync(join(release, file)), `清单文件缺失：${file}`);
 
 const server = spawn('python3', ['-m', 'http.server', '8125', '--bind', '127.0.0.1'], { cwd:dist, stdio:'ignore' });
+function requestStatus(path){
+  return new Promise((resolve, reject) => {
+    const request = get(base + path, response => {
+      const status = response.statusCode || 0;
+      response.resume();
+      response.once('end', () => resolve(status));
+    });
+    request.once('error', reject);
+  });
+}
 async function waitServer(){
   for(let i=0;i<50;i++){
-    try{ if((await fetch(base + '/build-info.json')).ok) return; }catch(e){}
+    try{ if((await requestStatus('/build-info.json'))<400) return; }catch(e){}
     await new Promise(resolve=>setTimeout(resolve, 100));
   }
   throw new Error('制品检查 HTTP 服务未启动');
@@ -30,9 +41,9 @@ async function waitServer(){
 try{
   await waitServer();
   const paths = ['/', '/build-info.json', ...info.files.map(file => `/${info.releasePath}${file}`)];
-  // Python 静态服务在受限 CI 上对高并发 keep-alive 偶有解析竞态；逐项检查不缩小覆盖范围且更可复现。
+  // 原生 HTTP 客户端逐项消费响应，避开受限 CI 中 Undici 响应暂停断言，同时不缩小覆盖范围。
   const results = [];
-  for(const path of paths) results.push({ path, status:(await fetch(base + path)).status });
+  for(const path of paths) results.push({ path, status:await requestStatus(path) });
   const failed = results.filter(result => result.status >= 400);
   assert.deepEqual(failed, [], `制品资源 404/5xx：${JSON.stringify(failed)}`);
   console.log(`PASS | 制品完整性：${paths.length} 个入口/资源均可达，版本 ${info.buildId}`);
