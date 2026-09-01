@@ -18,7 +18,7 @@
 | 资源失败演练 | 注入 1 个关键菜单背景 404 后仍到达菜单，错误边界未显示，无非预期错误。 | [1] | 绿色 |
 | 资源、字体与境外关键依赖 | 运行时请求全部同源；字体和图片随构建发布并内容指纹化，无 Google Fonts、海外图床或分析 SDK。 | `release-cross-platform.json` [5]；`asset-sbom.json` [6] | 绿色 |
 | 资产授权登记 | 44/44 条均含本地路径、SHA-256、来源/生成来源、作者/权利人、许可、许可义务与玩家可见归属入口。历史下载日期/原始 revision 不可追溯，但没有未登记的已发布素材。 | `npm run test:assets`；[6] | 绿色（非正式法律意见） |
-| CI | push 工作流与 PR 工作流均成功；二者均执行 Node 22、依赖安装、Chromium 安装、`npm run verify` 与不可变制品上传。 | [push run 33460221271](https://github.com/mckf111/DuckDuckRun/actions/runs/33460221271)；[PR run 33460259091](https://github.com/mckf111/DuckDuckRun/actions/runs/33460259091) | 绿色 |
+| CI | push 工作流与 PR 工作流均成功；二者均执行 Node 22、依赖安装、Chromium 安装、`npm run verify` 与不可变制品上传。 | [push run 33462223416](https://github.com/mckf111/DuckDuckRun/actions/runs/33462223416)；[PR run 33462225469](https://github.com/mckf111/DuckDuckRun/actions/runs/33462225469) | 绿色 |
 
 ## 2. 跨端、访问性与生命周期验收
 
