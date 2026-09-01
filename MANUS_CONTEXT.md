@@ -32,7 +32,7 @@
 | `npm run test:save` | 3/3 通过 |
 | `npm run test:resources` | 4/4 通过 |
 | `npm run test:browser` | 通过；三视口、按需预取、失败降级、输入、尺寸、音频与生命周期均通过 |
-| `npm run build && npm run test:dist && npm run test:size` | 通过；81 个制品入口/资源 HTTP 无 4xx/5xx；首屏 483.5 KiB、会话 5.69 MiB |
+| `npm run build && npm run test:dist && npm run test:size` | 通过；81 个制品入口/资源 HTTP 无 4xx/5xx；首屏 483.6 KiB、会话 5.69 MiB |
 | `npm run verify` | 通过；第 3 阶段提交前本地绿色总门禁（制品版本 `5c13a81023cf`） |
 | `node tools/e2e/measure_slice_performance.mjs` | 通过；切片对比既有首关：桌面 60.09 vs 50.30 FPS、移动模拟 42.91 vs 34.26 FPS，且资源请求少 3 个/传输少 249,000 B；只作为自动化信号 |
 | `node tools/e2e/capture_slice_evidence.mjs` | 通过；生成桌面、移动横/竖屏与短演示关键帧；`slice-demo.mp4` 是六个真实 Canvas 状态帧编码的 12 秒摘要，不是实时录屏 |
