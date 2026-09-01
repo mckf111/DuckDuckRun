@@ -1,6 +1,7 @@
 import { ctx, W, H, HOR, clamp } from '../core.js';
 import { ITEMS } from '../config.js';
 import { drawItemIcon } from './items.js';
+import { assetUrl } from '../asset-url.js';
 
 /* ================= 实景照片:加载 / 远景 / 拍立得风物卡 ================= */
 // 命名约定:背景 assets/img/bg_<landmarkId>.jpg;风物 assets/img/it_<itemId>.jpg
@@ -55,7 +56,7 @@ export function loadBackground(id){
     ...(featured ? [featured] : []),
     'assets/img/bg_' + id + '.webp',
     'assets/img/bg_' + id + '.jpg',
-  ]);
+  ].map(assetUrl));
 }
 export function loadMenuBackground(){ return loadBackground('menu'); }
 export function prefetchBackground(id, delayMs=120){
@@ -84,7 +85,7 @@ export function prefetchBackground(id, delayMs=120){
 export function loadItemPhoto(id){
   const key = 'it_' + id;
   if(!PHOTO_ITEMS.has(id)) return Promise.resolve(null);
-  return loadWithFallback(key, ['assets/img/it_' + id + '.jpg']);
+  return loadWithFallback(key, [assetUrl('assets/img/it_' + id + '.jpg')]);
 }
 export function loadItemPhotos(ids){
   return Promise.all(ids.map(loadItemPhoto));

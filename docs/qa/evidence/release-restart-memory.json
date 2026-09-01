@@ -1,0 +1,71 @@
+{
+  "schema": "duckduckrun-release-restart-memory/v1",
+  "capturedAt": "2026-09-01T01:58:24.020Z",
+  "environment": "Local headless Chromium touch simulation (844×390, DPR 2); CDP JavaScript heap only, not device or GPU memory.",
+  "cycles": 10,
+  "errors": [],
+  "heapBefore": {
+    "usedSize": 3041696,
+    "totalSize": 3727360,
+    "embedderHeapUsedSize": 1155664,
+    "backingStorageSize": 437274
+  },
+  "restart1": {
+    "state": "play",
+    "mode": "slice",
+    "paused": false
+  },
+  "restart2": {
+    "state": "play",
+    "mode": "slice",
+    "paused": false
+  },
+  "restart3": {
+    "state": "play",
+    "mode": "slice",
+    "paused": false
+  },
+  "restart4": {
+    "state": "play",
+    "mode": "slice",
+    "paused": false
+  },
+  "restart5": {
+    "state": "play",
+    "mode": "slice",
+    "paused": false
+  },
+  "restart6": {
+    "state": "play",
+    "mode": "slice",
+    "paused": false
+  },
+  "restart7": {
+    "state": "play",
+    "mode": "slice",
+    "paused": false
+  },
+  "restart8": {
+    "state": "play",
+    "mode": "slice",
+    "paused": false
+  },
+  "restart9": {
+    "state": "play",
+    "mode": "slice",
+    "paused": false
+  },
+  "restart10": {
+    "state": "play",
+    "mode": "slice",
+    "paused": false
+  },
+  "heapAfter": {
+    "usedSize": 2531024,
+    "totalSize": 3465216,
+    "embedderHeapUsedSize": 1583208,
+    "backingStorageSize": 437525
+  },
+  "heapDeltaPct": -16.79,
+  "passed": true
+}

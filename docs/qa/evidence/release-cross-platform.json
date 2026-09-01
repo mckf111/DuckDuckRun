@@ -1,0 +1,124 @@
+{
+  "schema": "duckduckrun-release-cross-platform/v1",
+  "capturedAt": "2026-09-01T01:58:00.772Z",
+  "buildId": "1634d51bc5b8",
+  "binary": "Chromium 151 on Linux; Edge and WebKit binaries unavailable in this environment.",
+  "profiles": [
+    {
+      "id": "desktop_chromium",
+      "label": "桌面 Chromium（真实 Linux Chromium）",
+      "coverage": "browser-binary",
+      "menuMs": 589,
+      "audioUnlocked": true,
+      "pausedOnBackground": true,
+      "resumed": true,
+      "portraitBlocked": null,
+      "landscapeRestored": null,
+      "final": {
+        "buildId": "1634d51bc5b8",
+        "state": "play",
+        "mode": "slice",
+        "dprRatio": 1,
+        "fontsReady": true,
+        "accessibleCanvas": true,
+        "errorBoundaryVisible": false,
+        "noExternalRuntime": true
+      },
+      "errors": [],
+      "screenshot": "docs/qa/evidence/release-desktop_chromium.png"
+    },
+    {
+      "id": "desktop_chrome_ua",
+      "label": "桌面 Chrome（Chromium 内核 + Chrome UA 模拟）",
+      "coverage": "ua-simulation",
+      "menuMs": 389,
+      "audioUnlocked": true,
+      "pausedOnBackground": true,
+      "resumed": true,
+      "portraitBlocked": null,
+      "landscapeRestored": null,
+      "final": {
+        "buildId": "1634d51bc5b8",
+        "state": "play",
+        "mode": "slice",
+        "dprRatio": 1,
+        "fontsReady": true,
+        "accessibleCanvas": true,
+        "errorBoundaryVisible": false,
+        "noExternalRuntime": true
+      },
+      "errors": [],
+      "screenshot": "docs/qa/evidence/release-desktop_chrome_ua.png"
+    },
+    {
+      "id": "desktop_edge_ua",
+      "label": "桌面 Edge（Chromium 内核 + Edge UA 模拟）",
+      "coverage": "ua-simulation",
+      "menuMs": 380,
+      "audioUnlocked": true,
+      "pausedOnBackground": true,
+      "resumed": true,
+      "portraitBlocked": null,
+      "landscapeRestored": null,
+      "final": {
+        "buildId": "1634d51bc5b8",
+        "state": "play",
+        "mode": "slice",
+        "dprRatio": 1,
+        "fontsReady": true,
+        "accessibleCanvas": true,
+        "errorBoundaryVisible": false,
+        "noExternalRuntime": true
+      },
+      "errors": [],
+      "screenshot": "docs/qa/evidence/release-desktop_edge_ua.png"
+    },
+    {
+      "id": "android_chrome_ua",
+      "label": "Android Chrome（触控/DPR/Chrome UA 模拟）",
+      "coverage": "ua-viewport-simulation",
+      "menuMs": 304,
+      "audioUnlocked": true,
+      "pausedOnBackground": true,
+      "resumed": true,
+      "portraitBlocked": true,
+      "landscapeRestored": true,
+      "final": {
+        "buildId": "1634d51bc5b8",
+        "state": "play",
+        "mode": "slice",
+        "dprRatio": 1.5,
+        "fontsReady": true,
+        "accessibleCanvas": true,
+        "errorBoundaryVisible": false,
+        "noExternalRuntime": true
+      },
+      "errors": [],
+      "screenshot": "docs/qa/evidence/release-android_chrome_ua.png"
+    },
+    {
+      "id": "ios_safari_ua",
+      "label": "iOS Safari（触控/DPR/Safari UA 模拟，非 WebKit）",
+      "coverage": "ua-viewport-simulation",
+      "menuMs": 254,
+      "audioUnlocked": true,
+      "pausedOnBackground": true,
+      "resumed": true,
+      "portraitBlocked": true,
+      "landscapeRestored": true,
+      "final": {
+        "buildId": "1634d51bc5b8",
+        "state": "play",
+        "mode": "slice",
+        "dprRatio": 1.5,
+        "fontsReady": true,
+        "accessibleCanvas": true,
+        "errorBoundaryVisible": false,
+        "noExternalRuntime": true
+      },
+      "errors": [],
+      "screenshot": "docs/qa/evidence/release-ios_safari_ua.png"
+    }
+  ],
+  "passed": true
+}

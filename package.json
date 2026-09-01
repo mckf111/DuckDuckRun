@@ -16,6 +16,13 @@
     "test:playability": "node tools/e2e/audit_slice_playability.mjs",
     "test:dist": "node tools/e2e/check_dist.mjs",
     "test:size": "node tools/e2e/check_size_budget.mjs",
+    "test:assets": "node tools/generate_asset_sbom.mjs && node tools/e2e/check_asset_registry.mjs",
+    "test:release:transport": "node tools/e2e/release_transport_test.mjs",
+    "test:release:cross": "node tools/e2e/release_cross_platform.mjs",
+    "test:release:wechat": "node tools/e2e/release_wechat_smoke.mjs",
+    "test:release:memory": "node tools/e2e/release_restart_memory.mjs",
+    "test:release:soak": "node tools/e2e/release_soak.mjs",
+    "test:release": "npm run build && npm run test:dist && npm run test:size && npm run test:assets && npm run test:release:transport && npm run test:release:cross && npm run test:release:wechat && npm run test:release:memory",
     "test": "npm run check && npm run test:logic && npm run test:save && npm run test:playability && npm run test:browser",
     "verify": "npm run typecheck && npm test && npm run build && npm run test:dist && npm run test:size"
   }

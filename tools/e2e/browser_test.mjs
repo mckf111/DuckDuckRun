@@ -83,13 +83,15 @@ try{
     const errors=watchErrors(page);
     const readyMs=await openMenu(page);
     assert.ok(readyMs<=2500,profile.name+' 菜单可操作耗时 '+readyMs+'ms');
+    const focusable=await page.evaluate(()=>{ const canvas=document.querySelector('#cv'); canvas.focus(); return document.activeElement===canvas && canvas.getAttribute('aria-describedby')==='gameInstructions'; });
+    assert.equal(focusable,true,profile.name+' 画布缺少键盘焦点或操作说明');
     const box=await page.locator('#cv').boundingBox();
     if(profile.options.deviceScaleFactor===2){
       const ratios=[];
       ratios.push(await page.evaluate(()=>document.querySelector('#cv').width/document.querySelector('#cv').getBoundingClientRect().width));
       ratios.push(await page.evaluate(async()=>{ (await import('/src/core.js')).downgradeQuality(); const c=document.querySelector('#cv'); return c.width/c.getBoundingClientRect().width; }));
       ratios.push(await page.evaluate(async()=>{ (await import('/src/core.js')).downgradeQuality(); const c=document.querySelector('#cv'); return c.width/c.getBoundingClientRect().width; }));
-      assert.deepEqual(ratios.map(value=>Math.round(value*10)/10),[2,1.5,1]);
+      assert.deepEqual(ratios.map(value=>Math.round(value*10)/10),[1.5,1,1]);
     }
     const x=box.x+box.width*0.5, y=box.y+box.height*0.60;
     if(profile.options.hasTouch) await page.touchscreen.tap(x,y); else await page.mouse.click(x,y);
@@ -268,14 +270,16 @@ try{
   // 慢图、全部图片失败和存档写入失败都不能挡住菜单或开跑。
   {
     const context=await browser.newContext({viewport:{width:1000,height:600}});
+    const slowImageDelayMs=2000;
     await context.route('**/assets/game/menu-background.webp',async route=>{
-      await new Promise(resolve=>setTimeout(resolve,1200));
+      await new Promise(resolve=>setTimeout(resolve,slowImageDelayMs));
       await route.continue().catch(()=>{});
     });
     const page=await context.newPage();
     await seedPage(page);
     const readyMs=await openMenu(page);
-    assert.ok(readyMs<1000,'慢图阻塞了菜单: '+readyMs+'ms');
+    // 菜单必须显著早于被故意延迟的资源就绪；留出共享 CI 的冷启动抖动余量。
+    assert.ok(readyMs < slowImageDelayMs - 500,'慢图阻塞了菜单: '+readyMs+'ms');
     await context.close();
   }
   {
@@ -347,10 +351,22 @@ try{
         disposedAgain:runtime.disposeApp(),
         restarted:runtime.startApp(),
         duplicateAfterRestart:runtime.startApp(),
+        contextLost:(()=>{ const e=new Event('contextlost',{cancelable:true}); document.querySelector('#cv').dispatchEvent(e); return !document.querySelector('#canvasRecovery').hidden && e.defaultPrevented; })(),
+        contextRestored:(()=>{ document.querySelector('#cv').dispatchEvent(new Event('contextrestored')); return document.querySelector('#canvasRecovery').hidden; })(),
         finalDispose:runtime.disposeApp(),
       };
     });
-    assert.deepEqual(lifecycle,{duplicateStart:false,disposed:true,disposedAgain:false,restarted:true,duplicateAfterRestart:false,finalDispose:true});
+    assert.deepEqual(lifecycle,{duplicateStart:false,disposed:true,disposedAgain:false,restarted:true,duplicateAfterRestart:false,contextLost:true,contextRestored:true,finalDispose:true});
+    await context.close();
+  }
+  // 遇到未捕获运行时异常时，玩家不应只看到空白画布；必须可见地降级为重开入口。
+  {
+    const context=await browser.newContext({viewport:{width:1000,height:600}});
+    const page=await context.newPage();
+    await seedPage(page);
+    await openMenu(page);
+    const boundary=await page.evaluate(()=>{ window.__duckDuckRunShowError(); const error=document.querySelector('#appError'); return {visible:!error.hidden,focused:document.activeElement===error,canvasHidden:document.querySelector('#cv').getAttribute('aria-hidden')==='true'}; });
+    assert.deepEqual(boundary,{visible:true,focused:true,canvasHidden:true});
     await context.close();
   }
   // ?demo&seed= 固定本局随机源；同一 seed 两次开局应产生相同的首个障碍簇。
@@ -402,7 +418,7 @@ try{
     assert.equal(requests.some(url=>/menu-background|\/assets\/img\/bg_/.test(url)),false,'切片深链不应预载菜单或实景背景');
     await context.close();
   }
-  console.log('PASS | 浏览器门禁：3 视口、按需加载、慢网/离线/404/解码失败、脏写入、固定 seed、生命周期、输入、尺寸与音频解锁、南京切片');
+  console.log('PASS | 浏览器门禁：3 视口、按需加载、慢网/离线/404/解码失败、脏写入、错误边界、画布恢复、键盘焦点、固定 seed、生命周期、输入、尺寸与音频解锁、南京切片');
 } finally {
   if(browser) await browser.close().catch(()=>{});
   server.kill();

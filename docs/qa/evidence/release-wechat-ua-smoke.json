@@ -1,0 +1,15 @@
+{
+  "schema": "duckduckrun-release-wechat-ua-smoke/v1",
+  "capturedAt": "2026-09-01T01:58:19.773Z",
+  "environment": "Chromium with iPhone/MicroMessenger user-agent and touch viewport. This is a container-style simulation, not a real WeChat WebView or physical-phone result.",
+  "buildId": "1634d51bc5b8",
+  "errors": [],
+  "share": {
+    "layerVisible": true,
+    "copyToast": "链接已复制,发给朋友直接玩",
+    "cleanShareLink": "http://127.0.0.1:8134/releases/1634d51bc5b8/",
+    "versionedPath": true
+  },
+  "audioUnlocked": true,
+  "passed": true
+}

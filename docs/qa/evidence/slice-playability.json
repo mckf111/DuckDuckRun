@@ -1,8 +1,8 @@
 {
   "schema": 1,
-  "generatedAt": "2026-09-01T00:35:31.284Z",
+  "generatedAt": "2026-09-01T01:07:47.728Z",
   "source": "deterministic simulation; no human participant or physical-device claim",
-  "commit": "766dfb5dafe2f60cf15aa031401b7ca07cb879c0",
+  "commit": "3e46040dc2db5e38579bcddb5cb6ff0ba9d60431",
   "referenceSeed": 20260903,
   "checks": {
     "threeNewcomerPaths": true,

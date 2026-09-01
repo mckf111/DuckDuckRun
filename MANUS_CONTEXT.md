@@ -2,9 +2,11 @@
 
 ## 当前任务状态
 
-第 4 阶段已在 `manus/duckduckrun-hardening` 上将南京代表性垂直切片设为唯一扩展基线，`vertical_slice_status: approved`。阶段起点仍为第 2 阶段承接提交 `5a8631be20eb0d3d3c257636fe526d1f646c747f`；ADR-001 的决定仍是 **保留并修复**。本阶段未重写 Canvas、状态机或引擎，未部署、未创建 PR、未改默认分支，也未将一个切片扩展为多关内容。[1]
+第 5 阶段在 `manus/duckduckrun-hardening` 完成**技术发布候选**准备。第 4 阶段南京垂直切片仍为唯一扩展基线，ADR-001 仍为 **保留并修复**；本阶段没有增加关卡、账号、后端、数据库、PWA、分析 SDK 或引擎重写，仅修复发布阻断和必要 P2。[1]
 
-> **状态：第 4 阶段本地质量门禁与可玩性审计通过，仍禁止发布。** 第 2 阶段提交 `e271ac27f90506b38fe177919930ce5472388a87` 的远端质量门禁已成功（[run 33445931085](https://github.com/mckf111/DuckDuckRun/actions/runs/33445931085)）；本次尚未推送，远端复核待提交后发生。A-02（线上 Pages 旧版本）因本阶段明确不部署而保持 P1；A-04/A-09 因没有物理 Android/iPhone/微信证据而保持移动发布阻断。
+> **状态：候选构建 ID 为 `1634d51bc5b8`，RC tag 为 `v0.5.0-rc.1`，PR 为 [#1](https://github.com/mckf111/DuckDuckRun/pull/1)，尚未生产发布、尚未修改 DNS。** `npm run verify`、`npm run test:release` 与 20 分钟 `npm run test:release:soak` 均通过；模拟 4G 首个可玩画面为 1,977 ms（≤8 s），10 次失败—重开 JS 堆变化 -16.79%（≤15%），20 分钟运行时浸泡堆变化 +1.35%，均无非预期 console/page/network error。此前远端 push CI [33460221271](https://github.com/mckf111/DuckDuckRun/actions/runs/33460221271) 和 PR CI [33460259091](https://github.com/mckf111/DuckDuckRun/actions/runs/33460259091) 均绿色；本次慢图CI抗抖动修复提交推送后需等待最新远端工作流复核。唯一明确的人工 QA 门槛是一次真实手机**微信 WebView**五分钟烟测；Chrome/Edge/Android/iOS/微信的其他候选结论均已明确区分真实 Chromium 与 UA/视口模拟，绝不冒充真机。部署仍因未提供大陆云账号、备案域名、DNS/CDN 配置与受保护 Secrets 而停止；这些是部署输入，不是另一个人工 QA 门槛。
+
+第 5 阶段新增 `docs/qa/release-candidate-report.md`、`docs/deployment/domestic-hosting-decision.md`、`docs/deployment/runbook.md`、`docs/deployment/rollback.md`，并增加内容哈希静态制品、`scripts/deploy_aliyun_oss.sh`、发布传输/跨端/微信模拟/重开内存/浸泡与资产登记检查。主部署决策是：若已有备案域名和大陆阿里云账号，使用 OSS + 中国内地 CDN + HTTPS 子域名；无备案时仅以香港 OSS 作预览/备用，GitHub Pages、境外免费托管与 manus.space 不作为国内访问优先主站。生产上传或 DNS 修改前，只向用户询问一次明确确认。
 
 ## 本阶段关键决定与变更
 

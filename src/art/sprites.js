@@ -1,10 +1,12 @@
+import { assetUrl } from '../asset-url.js';
+
 /* 预渲染游戏素材：异步加载失败时，各绘制模块继续走原 Canvas 兜底。 */
 const SOURCES = {
-  duck: new URL('../../assets/game/duck-atlas.webp?v=derp1', import.meta.url).href,
-  pickup: new URL('../../assets/game/pickup-ring.webp', import.meta.url).href,
-  crenelObstacles: new URL('../../assets/game/obstacles-crenel.webp?v=wall1', import.meta.url).href,
-  sliceToken: new URL('../../assets/game/nanjing-slice/salted-duck-token.webp?v=slice1', import.meta.url).href,
-  sliceMarker: new URL('../../assets/game/nanjing-slice/qinhuai-lantern-marker.webp?v=slice1', import.meta.url).href,
+  duck: assetUrl('assets/game/duck-atlas.webp'),
+  pickup: assetUrl('assets/game/pickup-ring.webp'),
+  crenelObstacles: assetUrl('assets/game/obstacles-crenel.webp'),
+  sliceToken: assetUrl('assets/game/nanjing-slice/salted-duck-token.webp'),
+  sliceMarker: assetUrl('assets/game/nanjing-slice/qinhuai-lantern-marker.webp'),
 };
 
 const CACHE = new Map();

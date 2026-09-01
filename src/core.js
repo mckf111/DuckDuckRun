@@ -10,7 +10,9 @@ const QUALITY_LEVELS = [
   { name:'medium', dpr:1.5 },
   { name:'low', dpr:1 },
 ];
-let qualityIndex = 0;
+// 触控设备默认从 1.5 DPR 起步：优先保证中端移动端的帧时间，再在桌面保留 2 DPR 上限。
+const defaultQualityIndex = typeof matchMedia === 'function' && matchMedia('(pointer:coarse)').matches ? 1 : 0;
+let qualityIndex = defaultQualityIndex;
 
 export function getQuality(){ return QUALITY_LEVELS[qualityIndex]; }
 export function downgradeQuality(){
@@ -19,12 +21,16 @@ export function downgradeQuality(){
   fit();
   return true;
 }
-export function resetQuality(){ qualityIndex = 0; fit(); }
+export function resetQuality(){ qualityIndex = defaultQualityIndex; fit(); }
 
 export function fit(){
   const cap = getQuality().dpr;
   const dpr = Math.min(cap, Math.max(1, window.devicePixelRatio || 1));
-  const s = Math.min(innerWidth / W, innerHeight / H);
+  const wrap = document.getElementById('wrap');
+  const style = wrap ? getComputedStyle(wrap) : null;
+  const safeWidth = Math.max(1, innerWidth - (parseFloat(style?.paddingLeft)||0) - (parseFloat(style?.paddingRight)||0));
+  const safeHeight = Math.max(1, innerHeight - (parseFloat(style?.paddingTop)||0) - (parseFloat(style?.paddingBottom)||0));
+  const s = Math.min(safeWidth / W, safeHeight / H);
   const cssW = W * s, cssH = H * s;
   cv.style.width = cssW + 'px'; cv.style.height = cssH + 'px';
   // 背板 = CSS 显示尺寸 × cappedDPR，逻辑坐标仍为 960×540。

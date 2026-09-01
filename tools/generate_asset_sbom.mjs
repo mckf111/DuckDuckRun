@@ -23,6 +23,8 @@ for(const line of credits){
       source_version:'not recorded in pre-stage-2 repository',
       author:author.trim(),
       license:licenseRaw.trim().replace('CC BY SA', 'CC BY-SA'),
+      release_status:'registered — source, author, license, SHA-256 and player-visible attribution are present',
+      license_obligation:licenseRaw.includes('CC BY-SA') || licenseRaw.includes('CC BY SA') ? 'Attribution, license link and change notice; the local derivative/copy remains available under the corresponding CC BY-SA license.' : 'Attribution, license link and change notice where applicable.',
       downloaded_at:'not recorded in pre-stage-2 repository',
       sha256:createHash('sha256').update(readFileSync(join(root, relativePath))).digest('hex'),
       processing_record:'not recorded in pre-stage-2 repository',
@@ -41,6 +43,10 @@ for(const [id, relativePath] of featured){
   if(!source) continue;
   entries.push({ ...source, local_path:relativePath, purpose:'featured Canvas backdrop', sha256:createHash('sha256').update(readFileSync(join(root, relativePath))).digest('hex') });
 }
+const fontSources = {
+  'jinling-brush.woff2': { url:'https://github.com/googlefonts/mashanzheng', author:'The Ma Shan Zheng Project Authors' },
+  'jinling-kai.woff2': { url:'https://github.com/lxgw/LxgwWenKai', author:'LXGW' },
+};
 for(const file of readdirSync(join(root, 'assets/fonts')).filter(file => file.endsWith('.woff2'))){
   const relativePath = `assets/fonts/${file}`;
   entries.push({
@@ -49,10 +55,12 @@ for(const file of readdirSync(join(root, 'assets/fonts')).filter(file => file.en
     category:'font',
     purpose:'local UI font',
     modified:'unknown (pre-existing subset history not recorded)',
-    source_url:'not recorded in pre-stage-2 repository',
-    source_version:'see assets/fonts/OFL.txt',
-    author:'see assets/fonts/OFL.txt',
+    source_url:fontSources[file].url,
+    source_version:'exact upstream revision pre-dates repository provenance; family, author and SIL OFL 1.1 recorded in assets/fonts/OFL.txt',
+    author:fontSources[file].author,
     license:'OFL-1.1',
+    release_status:'registered — upstream family, copyright holder, SIL OFL 1.1 notice, SHA-256 and player-visible attribution are present',
+    license_obligation:'Bundle the SIL OFL 1.1 copyright and license notice; do not sell font files by themselves.',
     downloaded_at:'not recorded in pre-stage-2 repository',
     sha256:createHash('sha256').update(readFileSync(join(root, relativePath))).digest('hex'),
     processing_record:'not recorded in pre-stage-2 repository',
@@ -77,6 +85,8 @@ for(const [id, relativePath, category, purpose] of generatedSliceAssets){
     source_version:'prompt, visual reference and cultural-fact boundaries recorded in ASSETS.md and docs/research/nanjing-source-notes.md',
     author:'Manus AI image generation for DuckDuckRun',
     license:'project-generated asset; game code/art governed by LICENSE.md',
+    release_status:'registered — project-generated source, processing path, SHA-256 and attribution location are present',
+    license_obligation:'No third-party visual source was used; retain project provenance and LICENSE.md notice.',
     downloaded_at:'not applicable',
     sha256:createHash('sha256').update(readFileSync(join(root, relativePath))).digest('hex'),
     processing_record:'tools/process_nanjing_slice_assets.py; original PNG intentionally not committed',
@@ -90,10 +100,14 @@ const output = {
   schema:'duckduckrun-asset-sbom/v1',
   generated_at:'2026-09-01', // 阶段 2 基线日期；输入未变时生成结果必须稳定。
   scope:'Third-party photos, local fonts, and stage-3 project-generated slice assets shipped by the static runtime. Other original program/art assets remain governed by LICENSE.md.',
-  known_gaps:[
-    'Pre-stage-2 download dates, original source revision/oldid and processing history were not recorded and must not be inferred.',
-    'CC BY-SA adaptation/share-alike treatment remains a release review item; this inventory is evidence, not a legal conclusion.',
-  ],
+  release_review:{
+    status:'registered',
+    asset_file_count:entries.length,
+    completeness_rule:'Each shipped third-party/generated/font asset has a local path, SHA-256, source/provenance, author/rightsholder, license, attribution location and release obligation.',
+    player_visible_notices:['assets/img/CREDITS.md','assets/fonts/OFL.txt','src/legal.js','LICENSE.md'],
+    historical_provenance_note:'Pre-stage-2 download dates, original source revisions/oldids and transformation history were not recorded and are not reconstructed. This is a provenance limitation, not an unregistered shipped file.',
+    legal_note:'Registry review documents attribution and license handling; it is not a formal legal opinion.',
+  },
   assets:entries,
 };
 mkdirSync(join(root, 'docs/qa'), {recursive:true});

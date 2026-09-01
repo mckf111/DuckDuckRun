@@ -39,7 +39,7 @@ const profiles=[
   {name:'mobile_simulated',options:{viewport:{width:844,height:390},hasTouch:true,isMobile:true,deviceScaleFactor:2}},
 ];
 const results={
-  capturedAt:'2026-09-01T00:00:00+08:00',
+  capturedAt:new Date().toISOString(),
   environment:'Local headless Chromium; no network throttling; mobile is touch/DPR simulation, not a physical device.',
   profiles:{},
 };

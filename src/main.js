@@ -22,6 +22,29 @@ let perfStart = 0;
 let perfFrames = 0;
 let perfPrev = 0;
 let assetKey = '';
+let canvasRecovering = false;
+
+function setCanvasRecovery(visible){
+  const el = document.getElementById('canvasRecovery');
+  if(el) el.hidden = !visible;
+}
+
+function recoverCanvas(){
+  // Canvas 2D 在支持 contextlost/contextrestored 的浏览器中会复用同一上下文；重置尺寸和资源键可强制重绘。
+  canvasRecovering = false;
+  fit();
+  assetKey = '';
+  syncAssets();
+  setCanvasRecovery(false);
+}
+
+function onCanvasContextLost(event){
+  event.preventDefault?.();
+  canvasRecovering = true;
+  setCanvasRecovery(true);
+}
+
+function onCanvasContextRestored(){ recoverCanvas(); }
 
 function parseSeed(raw){
   if(raw === null || raw === '') return null;
@@ -100,6 +123,7 @@ function monitorFrameBudget(ts){
 
 function frame(ts){
   if(!started || disposed) return;
+  if(canvasRecovering){ frameId = requestAnimationFrame(frame); return; }
   monitorFrameBudget(ts);
   const raw = Math.min(0.05, (ts-lastT)/1000 || 0.016);
   lastT = ts;
@@ -147,6 +171,9 @@ export function startApp(){
   inputController = createInputController();
   addEventListener('resize', resizeRuntime);
   addEventListener('orientationchange', resizeRuntime);
+  const canvas = document.getElementById('cv');
+  canvas?.addEventListener('contextlost', onCanvasContextLost);
+  canvas?.addEventListener('contextrestored', onCanvasContextRestored);
   resizeRuntime();
   track('view');
   preloadGameSprites();
@@ -167,6 +194,9 @@ export function disposeApp(){
   frameId = 0;
   removeEventListener('resize', resizeRuntime);
   removeEventListener('orientationchange', resizeRuntime);
+  const canvas = document.getElementById('cv');
+  canvas?.removeEventListener('contextlost', onCanvasContextLost);
+  canvas?.removeEventListener('contextrestored', onCanvasContextRestored);
   inputController?.dispose();
   inputController = null;
   clearPrefetch();
@@ -177,9 +207,14 @@ export function disposeApp(){
   perfFrames = 0;
   perfPrev = 0;
   assetKey = '';
+  canvasRecovering = false;
+  setCanvasRecovery(false);
   prevState = G.state;
   return true;
 }
 
 // 自动启动仍是唯一的生产入口；导出的 start/dispose 仅供宿主销毁或自动化回归使用。
-startApp();
+try{ startApp(); }catch(error){
+  console.error('DuckDuckRun 启动失败', error);
+  window.__duckDuckRunShowError?.();
+}
