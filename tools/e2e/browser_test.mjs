@@ -377,7 +377,32 @@ try{
     assert.deepEqual(replay.first.cluster,replay.second.cluster,'同一固定 seed 重开后障碍簇不一致');
     await context.close();
   }
-  console.log('PASS | 浏览器门禁：3 视口、按需加载、慢网/离线/404/解码失败、脏写入、固定 seed、生命周期、输入、尺寸与音频解锁');
+  // 南京垂直切片：固定演示可完成、轻松模式可容错，且不写入主线存档或加载菜单大图。
+  {
+    const context=await browser.newContext({viewport:{width:1000,height:600}});
+    const page=await context.newPage();
+    const requests=[];page.on('request',request=>requests.push(request.url()));
+    await seedPage(page,202);
+    await page.goto(base+'/?slice=1&demo&seed=20260903',{waitUntil:'domcontentloaded'});
+    await page.evaluate(async()=>{ window.__GAME=(await import('/src/game.js')).G; });
+    await page.waitForFunction(()=>window.__GAME.state==='play'&&window.__GAME.mode==='slice');
+    const slice=await page.evaluate(async()=>{
+      const game=await import('/src/game.js');
+      const saves=await import('/src/save.js');
+      const before=JSON.stringify(saves.save);
+      for(let i=0;i<5000&&game.G.state==='play';i++) game.update(1/60);
+      const completed={state:game.G.state,dist:Math.floor(game.G.dist),tokens:game.G.slice?.tokenCount||0,persisted:JSON.stringify(saves.save)===before};
+      game.startRun('slice',0,false,{easy:true});
+      game.G.dist=29.9; game.pl.lane=0; game.pl.x=0;
+      game.update(1/60);
+      return {completed,easy:{state:game.G.state,rescues:game.G.slice?.rescues}};
+    });
+    assert.deepEqual(slice.completed,{state:'clear',dist:720,tokens:4,persisted:true});
+    assert.deepEqual(slice.easy,{state:'play',rescues:1});
+    assert.equal(requests.some(url=>/menu-background|\/assets\/img\/bg_/.test(url)),false,'切片深链不应预载菜单或实景背景');
+    await context.close();
+  }
+  console.log('PASS | 浏览器门禁：3 视口、按需加载、慢网/离线/404/解码失败、脏写入、固定 seed、生命周期、输入、尺寸与音频解锁、南京切片');
 } finally {
   if(browser) await browser.close().catch(()=>{});
   server.kill();

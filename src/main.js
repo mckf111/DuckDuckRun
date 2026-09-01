@@ -32,6 +32,10 @@ function applyReplayQuery(){
   const query = new URLSearchParams(location.search);
   const requested = parseSeed(query.get('seed'));
   const demo = query.has('demo');
+  const slice = query.get('slice') === '1';
+  const easy = query.has('easy');
+  const quiet = query.has('quiet');
+  G.sliceRequest = slice ? { demo, easy, quiet } : null;
   const seed = requested ?? (demo ? DEFAULT_DEMO_SEED : null);
   if(seed === null) return;
   const normalized = setRandomSeed(seed);
@@ -62,6 +66,10 @@ function syncAssets(){
     clearPrefetch();
     loadMenuBackground();
     return;
+  }
+  if(G.mode==='slice'){
+    if(assetKey==='slice') return;
+    assetKey='slice';clearPrefetch();return;
   }
   const endlessIndex = Math.floor(G.dist/600)%LM_CYCLE.length;
   const id = G.mode==='endless' ? LM_CYCLE[endlessIndex] : curLv().landmark;
@@ -141,8 +149,10 @@ export function startApp(){
   resizeRuntime();
   track('view');
   preloadGameSprites();
-  loadMenuBackground();
-  if(location.hash==='#play') startRun('endless', 0);
+  if(!G.sliceRequest && location.hash!=='#slice') loadMenuBackground();
+  if(G.sliceRequest) startRun('slice',0,false,G.sliceRequest);
+  else if(location.hash==='#slice') startRun('slice',0,false,{easy:false,demo:false});
+  else if(location.hash==='#play') startRun('endless', 0);
   else if(/^#lv\d$/.test(location.hash)) startRun('adv', +location.hash.slice(3));
   frameId = requestAnimationFrame(frame);
   return true;

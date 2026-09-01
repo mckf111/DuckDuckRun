@@ -49,3 +49,17 @@ SBOM 是阶段 2 的基础性 A-08 修复。新增资产、替换文件、压缩
 [1]: LICENSE.md "游戏本体著作权声明"
 [2]: assets/img/CREDITS.md "实景照片作者与许可清单"
 [3]: docs/review/first-principles-adversarial-audit.md "A-02 与 A-08 的事实与边界"
+
+## 第 3 阶段：南京垂直切片生成资产
+
+> **边界。** 下表中的三项均为本项目生成的原创风格资产，不是南京市政府、南京文旅、景区、文博机构、商家或任何第三方的徽标、宣传物或授权素材。中华门、秦淮河/画舫、盐水鸭的事实依据分别记录于 `docs/research/nanjing-source-notes.md`；生成资产不复制其摄影作品、标识或原文。
+
+| 资产 ID | 提交路径与用途 | 提示词/来源 | 权利与授权口径 | 尺寸与压缩 | 处理与保留 |
+|---|---|---|---|---|---|
+| `nanjing-slice-target-v1` | `assets/game/nanjing-slice/nanjing-vertical-slice-target.webp`；视觉目标参考，不在运行时请求。 | 2026-09-01 由 Manus 图像生成。英文提示词：`Create a clean sharp 2D Canvas runner game screenshot ... 16:9 ... near-ground three-quarter behind-the-runner camera ... warm lantern gold ... moon-white ... muted vermilion ... weathered gray-brick multi-arched city gate ... teal river ... covered Qinhuai pleasure boat ... no logos, no readable text, no photograph ...` | 生成资产；仅表达项目视觉方向。其文化语义由 N-01、N-02、N-03 核验，不构成官方授权、合作或背书。 | 原始 PNG 1920×1080；提交版 WebP 1280×720，质量 82，91 KiB。 | `tools/process_nanjing_slice_assets.py` 用 Pillow LANCZOS 转换；原 PNG 已移出仓库工作树，仅保留本地生成记录。 |
+| `nanjing-slice-salted-duck-v1` | `assets/game/nanjing-slice/salted-duck-token.webp`；首个可拾取“盐水鸭牌”，也可复用为 HUD/奖励图标。 | 2026-09-01 由 Manus 图像生成，以上述视觉目标为风格参考。英文提示词：`Create a single reusable 2D game pickup sprite ... round salted-duck token ... ivory-white duck silhouette nested inside a warm lantern-gold medallion ... muted vermilion ribbon knot ... bold dark navy ink outline ... transparent PNG ... no text, logo, packaging, brand, watermark or Chinese characters.` | 生成资产；盐水鸭作为南京饮食文化线索的事实依据为 N-03。它不是食品商标、包装、菜品照片或官方认证标识。 | 原始透明 PNG 1920×1920；提交版透明无损 WebP 256×256，65 KiB。 | 同上；运行时经 `src/art/sprites.js` 异步载入，失败时 `src/render.js` 程序化回退。 |
+| `nanjing-slice-lantern-marker-v1` | `assets/game/nanjing-slice/qinhuai-lantern-marker.webp`；安全道与双灯奖励的非色彩单独标识。 | 2026-09-01 由 Manus 图像生成，以上述视觉目标为风格参考。英文提示词：`Create a single reusable 2D game route marker sprite ... outlined downward route chevron paired with a tiny warm lantern ... moon-white chevron inside a dark indigo circular badge ... muted vermilion tassel ... transparent PNG ... no signage, real-world emblem, logo, letters or watermark.` | 生成资产；画舫灯影的文化语义由 N-02、N-03 支撑。它是原创 UI 标记，不是景区导向标识。 | 原始透明 PNG 1920×1920；提交版透明无损 WebP 192×192，33 KiB。 | 同上；运行时经 `src/art/sprites.js` 异步载入，失败时 `src/render.js` 绘制箭头回退。 |
+
+这些资产总计 **189 KiB**（含不在运行时请求的 91 KiB 视觉目标图）；两枚运行时 WebP 合计 **98 KiB**。中华门门洞、城砖、城垛、秦淮水面、画舫、道路、灯影、引导箭头和全部 UI 均由既有/新增 Canvas 程序化几何绘制，因此没有引入批量原图、图集或第三方图片许可负担。第 3 阶段未引入 AVIF；在本项目既有静态构建链与浏览器回退逻辑中，带 alpha 的小型 WebP 是更低风险的格式选择。
+
+新增或替换上述 WebP 后，必须运行 `node tools/generate_asset_sbom.mjs`，不得手动填写哈希。

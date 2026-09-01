@@ -3,6 +3,8 @@ const SOURCES = {
   duck: new URL('../../assets/game/duck-atlas.webp?v=derp1', import.meta.url).href,
   pickup: new URL('../../assets/game/pickup-ring.webp', import.meta.url).href,
   crenelObstacles: new URL('../../assets/game/obstacles-crenel.webp?v=wall1', import.meta.url).href,
+  sliceToken: new URL('../../assets/game/nanjing-slice/salted-duck-token.webp?v=slice1', import.meta.url).href,
+  sliceMarker: new URL('../../assets/game/nanjing-slice/qinhuai-lantern-marker.webp?v=slice1', import.meta.url).href,
 };
 
 const CACHE = new Map();

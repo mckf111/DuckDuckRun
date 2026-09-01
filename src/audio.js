@@ -125,6 +125,14 @@ export const sfx={
     oscAt(300*p,128*p,0.15,'triangle',0.07,a.currentTime);
     oscAt(190*p,86*p,0.17,'sine',0.035,a.currentTime+0.015);
   },
+  // 南京切片的原创桨点：两次木质拨弦和极低量水声，不使用实景录音。
+  qinhuai(){
+    const a=ac();if(!a)return;
+    pluckAt(392,a.currentTime,0.075,'effects');
+    noiseAt(a.currentTime+0.01,0.06,0.018,'bandpass',640,'effects');
+    pluckAt(587,a.currentTime+0.16,0.065,'effects');
+    noiseAt(a.currentTime+0.17,0.05,0.014,'bandpass',760,'effects');
+  },
 };
 
 /* 104 BPM：低频、拨弦与轻打击分层；强度随跑速/连击增加，不再是单线蜂鸣循环。 */

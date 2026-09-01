@@ -1,5 +1,5 @@
 import { clamp, lerp, rnd, irnd, proj, LANEGAP, ZP, DRAWD, TAU, getRandomSeed, restartRandomSequence } from './core.js';
-import { LEVELS, ITEMS, LM_CYCLE, LM_NAME, MILESTONES, RUN_STAR_THRESHOLDS, QUACKS, CRASH_LINES } from './config.js';
+import { LEVELS, NANJING_SLICE, ITEMS, LM_CYCLE, LM_NAME, MILESTONES, RUN_STAR_THRESHOLDS, QUACKS, CRASH_LINES } from './config.js';
 import { save, persist, queuePersist } from './save.js';
 import { canPassObstacle, calculateRunStars, getBridgeUnlockStatus, getCollectionWeight, getObstacleInstruction } from './rules.js';
 import { sfx, bgm, setBgmIntensity } from './audio.js';
@@ -8,7 +8,7 @@ import { track } from './track.js';
 /* ================= 游戏状态 ================= */
 export const G = {
   state:'menu',      // menu | levels | play | crashing | over | clear | album | shop | credits
-  mode:'adv',        // adv | endless
+  mode:'adv',        // adv | endless | slice
   lvIdx:0, paused:false, t:0,
   dist:0, speed:0, runMarks:0, runStars:0, newIds:[],
   obs:[], cols:[], parts:[], gates:[],
@@ -42,10 +42,17 @@ export const G = {
   powerT:{ magnet:0, gui:0 },   // 磁铁/金桂剩余时间(秒)
   shield:false,        // 护盾:挡一次碰撞
   msIdx:0, lmCyc:-1,   // 无尽:里程碑进度 / 报站周期
+  slice:null,           // 南京垂直切片：只存本局脚本/难度，不写入存档
+  sliceRequest:null,    // 入口解析后的 ?slice / ?easy / ?demo 请求
 };
 export const pl = { lane:0, x:0, y:0, vy:0, sliding:0, jumps:0 };
 
-export function startRun(mode, lvIdx, forceTutorial=false){
+export function startRun(mode, lvIdx=0, forceTutorial=false, options={}){
+  const keepSlice = G.slice;
+  const sliceEasy = mode==='slice' ? (options.easy ?? keepSlice?.easy ?? false) : false;
+  const sliceDemo = mode==='slice' ? (options.demo ?? keepSlice?.demo ?? false) : false;
+  const sliceQuiet = mode==='slice' ? (options.quiet ?? keepSlice?.quiet ?? false) : false;
+  if(mode==='slice') lvIdx=0;
   if(mode==='adv' && (!LEVELS[lvIdx] || (LEVELS[lvIdx].hidden && !getBridgeUnlockStatus(save).unlocked))){
     G.state = 'levels';
     return false;
@@ -55,7 +62,7 @@ export function startRun(mode, lvIdx, forceTutorial=false){
   if(G.replay) G.replay = { ...G.replay, seed:getRandomSeed(), mode, lvIdx };
   G.dist = 0; G.runMarks = 0; G.runStars = 0; G.newIds = []; G.t = 0;
   G.obs = []; G.cols = []; G.parts = []; G.gates = [];
-  G.speed = mode==='adv' ? LEVELS[lvIdx].speed : 9.5;
+  G.speed = mode==='adv' ? LEVELS[lvIdx].speed : mode==='slice' ? (sliceEasy ? 9 : NANJING_SLICE.speed) : 9.5;
   G.nextSpawn = 40; G.paused = false; G.shake = 0; G.egg = null;
   G.newBest = false; G.kbSel = 0; G.kbActive = false;
   G.combo = 0; G.comboT = 0; G.killedBy = null; G.newItem = null;
@@ -68,20 +75,51 @@ export function startRun(mode, lvIdx, forceTutorial=false){
   G.rhythm={pressureStreak:0,lastAction:null,actionStreak:0,reliefNext:false};G.rhythmLog=[];
   G.featureMarks=mode==='adv'?[LEVELS[lvIdx].len*0.28,LEVELS[lvIdx].len*0.62]:[];
   G.secretQueue=[];G.runFoundNew=false;G.runFinalized=false;G.shopFeedback=null;
+  G.slice = mode==='slice' ? { easy:sliceEasy, demo:sliceDemo, quiet:sliceQuiet, rescues:sliceEasy?2:0, tokenCount:0, autoStep:0 } : null;
   G.speech=null; G.talkCd=0; G.idleTalk=rnd(7,11); G.lastPanic=false;
   const teach=mode==='adv' && lvIdx===0 && (forceTutorial || !save.tutorialCompleted);
   G.tut=null; G.tutorial=null; G.tutStage=teach?0:4;
   if(teach) G.nextSpawn=Infinity;
-  G.nextGate = mode==='adv' ? 130 : 200;
+  G.nextGate = mode==='adv' ? 130 : mode==='slice' ? Infinity : 200;
   pl.lane = 0; pl.x = 0; pl.y = 0; pl.vy = 0; pl.sliding = 0; pl.jumps = 0;
   G.state = 'play';
+  if(mode==='slice') startSliceScript();
   if(teach) beginTutorialStep(0);
-  refreshSecretGuarantees();
-  bgm(LEVELS[lvIdx].motif);
+  if(mode!=='slice') refreshSecretGuarantees();
+  bgm(mode==='slice' ? 'lantern' : LEVELS[lvIdx].motif);
   track('start', { mode, lv:lvIdx });
   return true;
 }
-export const curLv = ()=> G.mode==='adv' ? LEVELS[G.lvIdx] : LEVELS[Math.floor(G.dist/600)%LEVELS.length];
+export const curLv = ()=> G.mode==='slice' ? NANJING_SLICE : G.mode==='adv' ? LEVELS[G.lvIdx] : LEVELS[Math.floor(G.dist/600)%LEVELS.length];
+
+/* ---- 南京垂直切片：固定脚本，不进入掉落池、图鉴或经济系统 ---- */
+function startSliceScript(){
+  G.nextSpawn=Infinity;G.nextPower=Infinity;G.nextRelic=Infinity;
+  G.gates=[52,142,222,520,690].map((z,index)=>({z,passed:false,rz:z+ZP,slice:true,arch:index+1}));
+  G.cols=[
+    {lane:-1,x:-LANEGAP,z:68,y:0.9,kind:'sliceToken',id:'saltedDuck',got:false,arc:'slice-start',arcN:1},
+    {lane:-1,x:-LANEGAP,z:304,y:1.25,kind:'sliceLight',id:'qinhuaiLight',got:false,arc:'slice-risk',arcN:2},
+    {lane:-1,x:-LANEGAP,z:311,y:1.45,kind:'sliceLight',id:'qinhuaiLight',got:false,arc:'slice-risk',arcN:2},
+    {lane:0,x:0,z:548,y:0.95,kind:'sliceLight',id:'qinhuaiLight',got:false,arc:'slice-slide',arcN:1},
+  ];
+  G.obs=[
+    {lane:0,x:0,z:30,type:'full',sliceBeat:'entry'},
+    {lane:0,x:0,z:282,type:'full',sliceBeat:'choice'},
+    {lane:-1,x:-LANEGAP,z:300,type:'low',sliceBeat:'choice'},
+    {lane:0,x:0,z:480,type:'high',sliceBeat:'slide'},
+    {lane:-1,x:-LANEGAP,z:656,type:'full',sliceBeat:'finish'},
+    {lane:1,x:LANEGAP,z:656,type:'full',sliceBeat:'finish'},
+  ];
+  G.egg=null;
+}
+function updateSliceDemo(){
+  if(!G.slice?.demo) return;
+  const steps=[
+    {at:8,act:onLeft},{at:296,act:onJump},{at:450,act:onRight},{at:476,act:onSlide},
+  ];
+  const step=steps[G.slice.autoStep];
+  if(step&&G.dist>=step.at){ step.act();G.slice.autoStep++; }
+}
 
 /* ---- 操作回调 ---- */
 function noteTutorialAction(kind){
@@ -383,6 +421,7 @@ export function update(dt){
   if(consumeInputBuffer(dt)) return;
   G.t += dt;   // 世界时钟:暂停时冻结,画舫/粒子等不动
   const lv = curLv();
+  updateSliceDemo();
   if(G.mode==='endless') G.speed = Math.min(20, 9.5 + G.dist/280);
   setBgmIntensity(G.tutorial?0.18:clamp(0.28+(G.speed-9.5) / 18+Math.min(G.combo,15)/30,0.24,0.9));
   const nearLesson=G.tutorial && !G.tutorial.actionDone && G.tutorial.targetZ-G.dist<12;
@@ -434,24 +473,26 @@ export function update(dt){
 
   // 生成(老门东巷窄:簇间距 ×0.9)
   const gapMul = curLv().mod==='alleyNarrow' ? 0.9 : 1;
-  while(!G.tutorial && G.nextSpawn < G.dist + DRAWD){
+  while(G.mode!=='slice' && !G.tutorial && G.nextSpawn < G.dist + DRAWD){
     spawnCluster(G.nextSpawn);
     G.nextSpawn += (rnd(16,24) * (9.5/G.speed) + 4) * gapMul;
   }
-  for(const entry of G.secretQueue){
-    if(!entry.spawned&&entry.spawnAt<G.dist+DRAWD)spawnGuaranteedSecret(entry);
+  if(G.mode!=='slice'){
+    for(const entry of G.secretQueue){
+      if(!entry.spawned&&entry.spawnAt<G.dist+DRAWD)spawnGuaranteedSecret(entry);
+    }
+    protectGuaranteedSecrets();
   }
-  protectGuaranteedSecrets();
   // 局内道具:免费道形态的发光物件,每 150~250m 一个(货郎吆喝升级缩短间隔)
   const spawnMul = [1, 0.85, 0.7, 0.55][save.ups.spawn] || 1;
-  while(!G.tutorial && G.nextPower < G.dist + DRAWD){
+  while(G.mode!=='slice' && !G.tutorial && G.nextPower < G.dist + DRAWD){
     const kinds = ['magnet','shield','gui'];
     let z=G.nextPower,safe=safestLaneAt(z,8);
     for(let tries=0;tries<5&&safe.count>0;tries++){z+=6;safe=safestLaneAt(z,8);}
     G.powers.push({ lane:safe.lane, x:safe.lane*LANEGAP, z, kind: kinds[irnd(0,2)] });
     G.nextPower = z + rnd(150,250) * spawnMul;
   }
-  while(!G.tutorial && G.nextRelic < G.dist + DRAWD){
+  while(G.mode!=='slice' && !G.tutorial && G.nextRelic < G.dist + DRAWD){
     let z=G.nextRelic,safe=safestLaneAt(z,8);
     for(let tries=0;tries<4&&safe.count>0;tries++){z+=7;safe=safestLaneAt(z,8);}
     spawnRelicAt(z);
@@ -475,7 +516,7 @@ export function update(dt){
   pl.sliding = Math.max(0, pl.sliding - dt);
 
   // 过关判定先于碰撞:冲线同帧不冤死
-  if(G.mode==='adv' && !G.tutorial && G.dist >= lv.len){ levelClear(); return; }
+  if((G.mode==='adv' || G.mode==='slice') && !G.tutorial && G.dist >= lv.len){ levelClear(); return; }
 
   // 障碍:更新相对深度 + 碰撞
   for(const o of G.obs){
@@ -497,6 +538,10 @@ export function update(dt){
           G.shield = false; o.hit = true;
           const q = proj(o.x, 1.0, ZP); burst(q.x, q.y, '#7ba86f');
           sfx.shieldBreak();
+        } else if(G.mode==='slice' && G.slice?.easy && G.slice.rescues>0){
+          G.slice.rescues--; o.hit=true;
+          const q=proj(o.x,1.0,ZP);burst(q.x,q.y,'#F4BE57');
+          G.egg={text:'灯影接住了 · 还有 '+G.slice.rescues+' 次',ttl:2.2,dur:2.2};sfx.shieldBreak();
         } else { o.hit = true; gameOver(o.type); return; }
       }
     }
@@ -511,6 +556,18 @@ export function update(dt){
     if(!c.got && inWin && Math.abs(c.x-pl.x)<0.6 && Math.abs(c.y-(pl.y+0.8))<0.95){
       c.got = true;
       const p = proj(c.x, c.y, ZP);
+      if(c.kind==='sliceToken' || c.kind==='sliceLight'){
+        G.slice.tokenCount++;
+        G.runMarks++;
+        burst(p.x,p.y,c.kind==='sliceToken'?'#F4BE57':'#F4F0E6');
+        if(c.kind==='sliceToken'){
+          G.egg={text:'盐水鸭到手 · 桨点起',ttl:2.6,dur:2.6};sfx.qinhuai();
+        }else if(G.arcGot[c.arc]===c.arcN){
+          G.egg={text:'双灯齐收 · 走险有回报',ttl:2.3,dur:2.3};sfx.gate();
+        }else sfx.collect(G.slice.tokenCount);
+        G.arcGot[c.arc]=(G.arcGot[c.arc]||0)+1;
+        continue;
+      }
       if(c.kind==='relic'){
         burst(p.x, p.y, '#d89a3a');
         if(!save.album[c.id]) grantAlbumItem(c.id);
@@ -594,12 +651,15 @@ export function gameOver(type){
     G.newBest = m > save.best;               // 先判后写,平局不误报
     if(G.newBest){ save.best = m; persist(); sfx.record(); }
   }
-  save.distTotal += Math.floor(G.dist); finalizeRunLedger(); persist();
+  if(G.mode!=='slice'){ save.distTotal += Math.floor(G.dist); finalizeRunLedger(); persist(); }
   G.state = 'crashing';
   track('over', { mode:G.mode, dist:Math.floor(G.dist) });
 }
 export function levelClear(){
   sfx.clear();
+  if(G.mode==='slice'){
+    G.runStars=0;G.state='clear';track('slice_clear',{dist:Math.floor(G.dist),tokens:G.slice?.tokenCount||0,easy:!!G.slice?.easy});return;
+  }
   G.runStars = calculateRunStars(G.runMarks, RUN_STAR_THRESHOLDS);
   if(G.runStars > save.stars[G.lvIdx]) save.stars[G.lvIdx]=G.runStars;
   save.cleared[G.lvIdx] = true;   // 通关即解锁下一关,与星级脱钩
@@ -611,6 +671,7 @@ export function levelClear(){
   track('clear', { lv:G.lvIdx, star:G.runStars, marks:G.runMarks });
 }
 export function nextAfterClear(){
+  if(G.mode==='slice'){ startRun('slice',0,false,{easy:!!G.slice?.easy,demo:!!G.slice?.demo,quiet:!!G.slice?.quiet}); return; }
   if(G.lvIdx < LEVELS.length-1){
     const next = LEVELS[G.lvIdx+1];
     // 隐藏关(大桥)未达成解锁条件时不允许 Enter 直进

@@ -2,9 +2,9 @@
 
 ## 当前任务状态
 
-第 2 阶段“工程稳健化与核心故障修复”已在 `manus/duckduckrun-hardening` 上完成本地实现和验证。阶段起点为 `5a8631be20eb0d3d3c257636fe526d1f646c747f`；该提交相对阶段 1 记录的游戏代码基线 `b90462e1c182fc0fee5ee1fe29c9b6789690d9a9` 只新增审查/承接文档。ADR-001 的决定仍是 **保留并修复**，本阶段未重写 Canvas、状态机或引擎。[1]
+第 3 阶段“南京代表性垂直切片”已在 `manus/duckduckrun-hardening` 上完成本地实现与验证，当前 `vertical_slice_status: awaiting_user_review`。阶段起点仍为第 2 阶段承接提交 `5a8631be20eb0d3d3c257636fe526d1f646c747f`；ADR-001 的决定仍是 **保留并修复**。本阶段未重写 Canvas、状态机或引擎，未部署、未创建 PR、未改默认分支，也未将一个切片扩展为多关内容。[1]
 
-> **状态：本地和远端质量门禁为绿，仍禁止发布。** `e271ac27f90506b38fe177919930ce5472388a87` 的远端质量门禁已成功（[run 33445931085](https://github.com/mckf111/DuckDuckRun/actions/runs/33445931085)），完成锁定安装、测试、构建、制品 404 与体积预算检查。A-02（线上 Pages 旧版本）因本阶段明确不部署而保持 P1；A-04/A-09 因没有物理 Android/iPhone/微信证据而保持移动发布阻断。
+> **状态：第 3 阶段本地质量门禁为绿，仍禁止发布。** 第 2 阶段提交 `e271ac27f90506b38fe177919930ce5472388a87` 的远端质量门禁已成功（[run 33445931085](https://github.com/mckf111/DuckDuckRun/actions/runs/33445931085)）；本次尚未推送，远端复核待提交后发生。A-02（线上 Pages 旧版本）因本阶段明确不部署而保持 P1；A-04/A-09 因没有物理 Android/iPhone/微信证据而保持移动发布阻断。
 
 ## 本阶段关键决定与变更
 
@@ -16,8 +16,11 @@
 | A-04 | 保留集中 DPR 质量档和自动降档；补前后同口径模拟测量，不在无真机证据时盲目裁剪 | `docs/qa/engineering-hardening-report.md` |
 | A-05 | `src/input.js` 重构为带 `dispose()` 的统一输入控制器；`src/main.js` 单实例管理窗口监听、RAF 和方向/resize | `npm run test:browser` |
 | A-07 | `src/core.js` 新增 seedable 玩法随机流；`?demo&seed=20260901` 可复放；视觉/音频随机不干扰玩法序列 | `npm run test:logic && npm run test:browser` |
-| A-08 | `tools/generate_asset_sbom.mjs` 生成 `docs/qa/asset-sbom.json` 的 41 条文件/哈希/来源映射 | `node tools/generate_asset_sbom.mjs` |
+| A-08 | `tools/generate_asset_sbom.mjs` 生成 `docs/qa/asset-sbom.json` 的 44 条文件/哈希/来源映射，含第 3 阶段三项生成资产 | `node tools/generate_asset_sbom.mjs` |
 | A-09 | 浏览器冒烟新增启动、重开、输入、resize、AudioContext 用户手势解锁和 `disposeApp()`/`startApp()` 覆盖 | `npm run test:browser` |
+| V-01 | 新增独立 `slice` 模式，而不是新主线关卡；固定脚本形成中华门门序、盐水鸭首牌、秦淮双灯取舍、下滑横梁、夜渡到岸的 720m 闭环 | `?slice=1&demo&seed=20260903`；`npm run test:browser` |
+| V-02 | 轻松模式以 9m/s 与两次“灯影接住”容错服务慢反应玩家；标准模式仍保留横移、跳跃、下滑学习 | 菜单“轻松·灯影护航”；浏览器切片容错断言 |
+| V-03 | 生成两枚透明 WebP，地标/水面/画舫/门洞/UI 全部程序化；源 PNG 不进入仓库 | `ASSETS.md`、`docs/qa/asset-sbom.json`、`node tools/generate_asset_sbom.mjs` |
 
 ## 已实际运行的命令和结果
 
@@ -29,8 +32,21 @@
 | `npm run test:save` | 3/3 通过 |
 | `npm run test:resources` | 4/4 通过 |
 | `npm run test:browser` | 通过；三视口、按需预取、失败降级、输入、尺寸、音频与生命周期均通过 |
-| `npm run build && npm run test:dist && npm run test:size` | 通过；78 个制品入口/资源 HTTP 无 4xx/5xx；首屏 480.5 KiB、会话 5.50 MiB |
-| `npm run verify` | 通过；为提交前本地绿色总门禁 |
+| `npm run build && npm run test:dist && npm run test:size` | 通过；81 个制品入口/资源 HTTP 无 4xx/5xx；首屏 483.5 KiB、会话 5.69 MiB |
+| `npm run verify` | 通过；第 3 阶段提交前本地绿色总门禁（制品版本 `5c13a81023cf`） |
+| `node tools/e2e/measure_slice_performance.mjs` | 通过；切片对比既有首关：桌面 60.09 vs 50.30 FPS、移动模拟 42.91 vs 34.26 FPS，且资源请求少 3 个/传输少 249,000 B；只作为自动化信号 |
+| `node tools/e2e/capture_slice_evidence.mjs` | 通过；生成桌面、移动横/竖屏与短演示关键帧；`slice-demo.mp4` 是六个真实 Canvas 状态帧编码的 12 秒摘要，不是实时录屏 |
+
+## 第 3 阶段切片与证据入口
+
+| 用途 | 入口/位置 | 边界 |
+|---|---|---|
+| 玩家标准切片 | 菜单“南京夜跑切片”，或 `?slice=1&seed=20260903` | 720m，约 72 秒，玩家自己操作 |
+| 玩家轻松切片 | 菜单“轻松·灯影护航”，或 `?slice=1&easy&seed=20260903` | 约 80 秒，两次容错，仍需完成基本动作 |
+| 确定性演示 | `?slice=1&demo&seed=20260903` | 自动完成固定脚本，用于复现与证据，不代表真人试玩 |
+| 无标题审阅 | 上述演示再加 `&quiet=1` | 隐藏 HUD 标题，不隐藏真实场景/玩法线索 |
+| 设计/事实来源 | `docs/design/nanjing-vertical-slice.md`；`docs/research/nanjing-source-notes.md` | 官方事实来源与游戏化边界分离；无官方授权暗示 |
+| 证据 | `docs/qa/evidence/` | 自动化视口/短演示不等于实机或真人盲测 |
 
 ## 前后测量摘要
 
@@ -49,7 +65,7 @@
 
 ## 变更文件
 
-运行时：`src/main.js`、`src/input.js`、`src/audio.js`、`src/core.js`、`src/game.js`、`src/art/photo.js`。测试与构建：`tests/runtime.test.js`、`tools/e2e/beam.mjs`、`tools/e2e/browser_test.mjs`、`tools/e2e/check_dist.mjs`、`tools/e2e/check_size_budget.mjs`、`tools/build_static.mjs`、`tools/generate_asset_sbom.mjs`、`package.json`、`package-lock.json`、`.github/workflows/test.yml`。文档：`PLAN.md`、`STRUCTURE.md`、`MEMORY.md`、`ASSETS.md`、`docs/qa/asset-sbom.json`、`docs/qa/engineering-hardening-report.md`、本文件。
+运行时：`src/main.js`、`src/input.js`、`src/audio.js`、`src/core.js`、`src/game.js`、`src/render.js`、`src/ui.js`、`src/art/sprites.js`、`src/config.js`、`src/art/photo.js`。测试与构建：`tests/runtime.test.js`、`tools/e2e/beam.mjs`、`tools/e2e/browser_test.mjs`、`tools/e2e/capture_slice_evidence.mjs`、`tools/e2e/measure_slice_performance.mjs`、`tools/e2e/check_dist.mjs`、`tools/e2e/check_size_budget.mjs`、`tools/build_static.mjs`、`tools/generate_asset_sbom.mjs`、`tools/process_nanjing_slice_assets.py`、`package.json`、`package-lock.json`、`.github/workflows/test.yml`。文档：`PLAN.md`、`STRUCTURE.md`、`MEMORY.md`、`ASSETS.md`、`docs/design/nanjing-vertical-slice.md`、`docs/research/nanjing-source-notes.md`、`docs/qa/asset-sbom.json`、`docs/qa/evidence/visual-inspection.md`、`docs/qa/engineering-hardening-report.md`、本文件。
 
 ## 未关闭问题与下一阶段前提
 
@@ -64,7 +80,7 @@
 
 ## 回滚点与禁止项
 
-阶段起点 `5a8631be20eb0d3d3c257636fe526d1f646c747f` 是本阶段的无损代码回滚点。提交完成后，将以阶段 2 提交 SHA 作为下一阶段回滚点。不得直接改默认分支，不得创建 PR，不得部署；不得以升级依赖、替换引擎、重写架构、增加内容/账号/后端/PWA 来替代上述未关闭问题。
+阶段起点 `5a8631be20eb0d3d3c257636fe526d1f646c747f` 是本阶段的无损代码回滚点。提交完成后，以第 3 阶段提交 SHA 作为下一阶段回滚点。不得直接改默认分支，不得创建 PR，不得部署；不得在用户审查前扩展关卡/资产池，也不得以升级依赖、替换引擎、重写架构、增加内容/账号/后端/PWA 来替代上述未关闭问题。
 
 ## 参考资料
 

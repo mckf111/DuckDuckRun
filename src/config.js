@@ -1,6 +1,14 @@
 /* ================= 关卡主题(国风剪纸配色) ================= */
 // 每关:天空渐变/地面/车道线/两侧装饰/强调色/障碍母题/远景地标
 // mod:关卡修饰器(game.js spawnCluster 层分发,见迭代方案 §C3)
+export const NANJING_SLICE = {
+  name:'中华门·秦淮夜渡', sub:'三道瓮城，跟着灯影跑',
+  sky:['#11213D','#315E69'], ground:'#172638', road:'#1A2A38', lane:'#F4BE57',
+  side:'#233847', sideTop:'#6B6E70', accent:'#F4BE57', motif:'crenel',
+  hud:'#F4F0E6', textDark:false, speed:10, len:720,
+  landmark:'zhonghua', lmColor:'#303B46', side2:'秦淮灯影', mod:'sliceNight',
+};
+
 export const LEVELS = [
   { name:'明城墙', sub:'六百年城砖,从台城跑到中华门',
     sky:['#6e8aaa','#f0d8b0'], ground:'#7a5a3c', road:'#c4a07a', lane:'#f3e2b8',

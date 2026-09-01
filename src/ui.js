@@ -101,11 +101,17 @@ function glassPanel(x,y,w,h,r=14){
 export function drawHUD(){
   const lv = curLv();
   glassPanel(16,14,154,102);
+  const sliceMode=G.mode==='slice';
   text(Math.floor(G.dist)+' m', 30, 38, 24, '#3a2614', 'left', 'bold', 'clean');
-  text('本局鸭蛋', 30, 68, 12, 'rgba(90,54,24,0.62)', 'left', null, 'clean');
-  text(String(G.runMarks), 140, 68, 17, '#b86a20', 'right', 'bold', 'clean');
-  drawPickupMedallion('gold',31,94,7,0);
-  text('鸭蛋 '+save.coins, 47, 94, 13, '#b86a20', 'left', 'bold', 'clean');
+  text(sliceMode?'本局灯牌':'本局鸭蛋', 30, 68, 12, 'rgba(90,54,24,0.62)', 'left', null, 'clean');
+  text(String(sliceMode?(G.slice?.tokenCount||0):G.runMarks), 140, 68, 17, '#b86a20', 'right', 'bold', 'clean');
+  if(sliceMode){
+    disc(31,94,7,'#F4BE57','#3A2614',1);
+    text('夜渡不写主线',47,94,13,'#b86a20','left','bold','clean');
+  } else {
+    drawPickupMedallion('gold',31,94,7,0);
+    text('鸭蛋 '+save.coins, 47, 94, 13, '#b86a20', 'left', 'bold', 'clean');
+  }
   if(G.combo >= 2){
     glassPanel(18,124,112,32,10);
     text(G.combo+' 连击', 74, 140, 14, '#b86a20', 'center', 'bold', 'clean');
@@ -119,9 +125,11 @@ export function drawHUD(){
     ctx.fillStyle = '#5aa85a'; ctx.beginPath(); ctx.ellipse(stX+8, stY-1, 7, 3, 0, Math.PI, 0); ctx.fill();
     text('护盾', stX+22, stY, 14, '#a8d5a2', 'left', 'bold');
   }
-  if(G.mode==='adv'){
+  if(G.mode==='adv' || G.mode==='slice'){
     glassPanel(CX-154,14,308,54);
-    text(lv.name, CX, 32, 18, '#3a2614', 'center', 'bold', 'clean');
+    const slice = G.mode==='slice';
+    text(slice ? (G.slice?.quiet?'◉  ◉  ◉':'中华门 · 秦淮夜渡') : lv.name, CX, 32, 18, '#3a2614', 'center', 'bold', 'clean');
+    if(slice && !G.slice?.quiet) text((G.slice?.easy?'轻松 · ':'标准 · ')+'灯牌 '+(G.slice?.tokenCount||0), CX, 54, 12, 'rgba(90,54,24,0.70)', 'center', null, 'clean');
     const pw = 266, px = CX-pw/2, py = 53;
     rrect(px,py,pw,6,3,'rgba(255,255,255,0.12)');
     rrect(px,py,pw*clamp(G.dist/lv.len,0,1),6,3,lv.accent);
@@ -157,7 +165,14 @@ export function drawHUD(){
     for(let i=0;i<4;i++) disc(tx+tw-86+i*18,ty+22,4,i<=G.tutorial.step?'#d89a3a':'rgba(90,54,24,0.18)');
     text(G.tutorial.tip, CX, ty+50, 17, '#3a2614', 'center', 'bold', 'clean');
   }
-  if(!G.tutorial && (G.paused || G.t < 5)){
+  if(G.mode==='slice' && !G.paused && G.t<62 && !G.egg){
+    const sliceTip = G.dist<80 ? '← 向左滑 · 跟灯影入门'
+      : G.dist<210 ? '穿过瓮城 · 拿盐水鸭牌'
+      : G.dist<380 ? '左跳摘双灯 · 右侧稳过'
+      : G.dist<520 ? '↓ 低头穿过门梁' : '中道夜渡 · 收束在前';
+    glassPanel(CX-150,H-42,300,34,12);
+    text(sliceTip, CX, H-25, 14, '#3A2614', 'center', 'bold', 'clean');
+  } else if(!G.tutorial && (G.paused || G.t < 5)){
     ctx.globalAlpha = G.paused ? 1 : clamp(5-G.t, 0, 1);
     text(hint, CX, H-16, 13, lv.hud, 'center');
     ctx.globalAlpha = 1;
@@ -190,6 +205,8 @@ export function drawMenu(){
   ctx.beginPath(); ctx.moveTo(CX-58, ty+54); ctx.lineTo(CX+58, ty+54); ctx.stroke();
   disc(CX, ty+54, 3, '#f1c86b');
   text('一只认真逃跑的白鸭 · 十站金陵 · 四十件风物', CX, H*0.43, 15, 'rgba(228,239,245,0.82)', 'center', null, 'clean');
+  button('slice','南京夜跑切片 · 约 72 秒', CX-92, H*0.50, 270, 44, {bg:'#d88a3f'});
+  button('sliceEasy','轻松 · 灯影护航', CX+220, H*0.50, 170, 44, {ghost:true,size:14});
   button('adv','开始冒险', CX, H*0.58, 224, 48);
   button('endless','无尽奔跑', CX, H*0.68, 224, 46, {ghost:true});
   button('album','风物图鉴 '+Object.keys(save.album).length+'/'+ITEMS.length+(save.albumNew?'  ●':''), CX, H*0.78, 224, 46, {ghost:true});
@@ -332,11 +349,13 @@ export function drawOver(){
   if(deathTip) text(deathTip, CX, H*0.33, 13, 'rgba(246,237,212,0.55)');
   const line = G.mode==='endless'
     ? '跑了 '+Math.floor(G.dist)+' m · 鸭蛋 '+G.runMarks+(G.newBest?' · 新纪录!':'')
-    : LEVELS[G.lvIdx].name+' · 跑了 '+Math.floor(G.dist)+' m · 鸭蛋 '+G.runMarks+' · 距终点还差 '+Math.max(0,Math.ceil(LEVELS[G.lvIdx].len-G.dist))+' m';
+    : G.mode==='slice'
+      ? '中华门 · 秦淮夜渡 · 跑了 '+Math.floor(G.dist)+' m · 灯牌 '+(G.slice?.tokenCount||0)+' · 距收束 '+Math.max(0,Math.ceil(curLv().len-G.dist))+' m'
+      : LEVELS[G.lvIdx].name+' · 跑了 '+Math.floor(G.dist)+' m · 鸭蛋 '+G.runMarks+' · 距终点还差 '+Math.max(0,Math.ceil(LEVELS[G.lvIdx].len-G.dist))+' m';
   text(line, CX, H*0.40, 18, '#e8c170');
   if(got) text('新图鉴:'+G.newIds.map(id=>(ITEMS.find(i=>i.id===id)||{}).name||'').join('、'), CX, H*0.46, 16, '#a8d5a2');
   if(G.newIds.some(id=>ITEMS.find(i=>i.id===id)?.secret)) text('隐藏风物现身!', CX, H*0.51, 15, '#f0b64c', 'center', 'bold');
-  button('retry','起来再跑 (Enter)', CX, H*0.50, 240, 50);
+  button('retry',G.mode==='slice'?'再跑一趟 (Enter)':'起来再跑 (Enter)', CX, H*0.50, 240, 50);
   button('share','分享成绩', CX-115, H*0.61, 210, 46, {ghost:true});
   button('copy','复制链接', CX+115, H*0.61, 210, 46, {ghost:true});
   button('quit','回主菜单', CX, H*0.72, 240, 46, {ghost:true});
@@ -354,10 +373,11 @@ function star(x, y, r, on, k){
 }
 export function drawClear(){
   dim(0.5);
-  const lv = LEVELS[G.lvIdx];
-  text('过关!', CX, H*0.2, 58, '#f4f1e8', 'center', null, true);
-  text(lv.sub, CX, H*0.29, 15, '#d8c9a8');
-  text(lv.name+' · 本局拾取 '+G.runMarks+' 枚鸭蛋', CX, H*0.36, 20, '#f0b64c');
+  const lv = curLv();
+  const slice = G.mode==='slice';
+  text(slice?'夜渡到岸!':'过关!', CX, H*0.2, 58, '#f4f1e8', 'center', null, true);
+  text(slice?'三道瓮城已过，灯影还在水上。':lv.sub, CX, H*0.29, 15, '#d8c9a8');
+  text(slice?'中华门 · 秦淮夜渡 · 灯牌 '+(G.slice?.tokenCount||0):lv.name+' · 本局拾取 '+G.runMarks+' 枚鸭蛋', CX, H*0.36, 20, '#f0b64c');
   // 星星逐颗弹入
   const n = G.runStars;
   for(let i=0;i<3;i++){
@@ -365,12 +385,16 @@ export function drawClear(){
     if(k>0) star(CX+(i-1)*52, H*0.45, 20, i<n, 1.6-0.6*k);
   }
   if(G.stateT > 1.2){
-    text('本局 '+G.runStars+' 星 · 历史最佳 '+save.stars[G.lvIdx]+' 星', CX, H*0.515, 15, '#f7ead0', 'center', 'bold');
-    text('鸭蛋 '+RUN_STAR_THRESHOLDS.join(' / ')+' = 1 / 2 / 3 星', CX, H*0.555, 13, '#d8c9a8');
+    if(slice) text((G.slice?.easy?'轻松模式 · 灯影护航':'标准模式 · 路线取舍完成')+' · 不写入主线进度', CX, H*0.53, 15, '#f7ead0', 'center', 'bold');
+    else {
+      text('本局 '+G.runStars+' 星 · 历史最佳 '+save.stars[G.lvIdx]+' 星', CX, H*0.515, 15, '#f7ead0', 'center', 'bold');
+      text('鸭蛋 '+RUN_STAR_THRESHOLDS.join(' / ')+' = 1 / 2 / 3 星', CX, H*0.555, 13, '#d8c9a8');
+    }
   }
   if(G.newIds.length) text('新图鉴:'+G.newIds.map(id=>(ITEMS.find(i=>i.id===id)||{}).name||'').join('、'), CX, H*0.58, 16, '#a8d5a2');
   if(G.newIds.some(id=>ITEMS.find(i=>i.id===id)?.secret)) text('隐藏风物现身!', CX, H*0.63, 15, '#f0b64c', 'center', 'bold');
-  if(G.lvIdx < LEVELS.length-1){
+  if(slice) button('next','再跑一趟 (Enter)', CX, H*0.66, 300, 52);
+  else if(G.lvIdx < LEVELS.length-1){
     const next = LEVELS[G.lvIdx+1];
     const bridgeStatus = getBridgeUnlockStatus(save);
     if(!next.hidden || bridgeStatus.unlocked) button('next','下一关:'+next.name+' (Enter)', CX, H*0.66, 300, 52);
@@ -528,6 +552,8 @@ export function clickAt(px, py){
 }
 export function handleButton(id, data){
   if(id==='adv') G.state='levels';
+  else if(id==='slice') startRun('slice',0,false,{easy:false});
+  else if(id==='sliceEasy') startRun('slice',0,false,{easy:true});
   else if(id==='tutorial') startRun('adv',0,true);
   else if(id==='endless') startRun('endless', 0);
   else if(id==='shop'){ G.shopFeedback=null; G.state='shop'; }

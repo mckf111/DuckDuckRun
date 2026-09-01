@@ -136,6 +136,35 @@ export function drawPickupMedallion(id, x, y, r, frame){
   return true;
 }
 
+function drawSliceToken(x, y, r){
+  const image=getSprite('sliceToken');
+  if(image){
+    ctx.save();ctx.globalAlpha=0.96;ctx.drawImage(image,x-r,y-r,r*2,r*2);ctx.restore();return;
+  }
+  disc(x,y,r,'#F4BE57','#11213D',Math.max(1.5,r*0.11));
+  disc(x,y,r*0.46,'#F4F0E6','#11213D',Math.max(1,r*0.07));
+  ctx.fillStyle='#C95B45';ctx.fillRect(x-r*0.18,y+r*0.5,r*0.36,r*0.18);
+}
+
+function drawSliceMarker(x, y, r){
+  const image=getSprite('sliceMarker');
+  if(image){ctx.drawImage(image,x-r,y-r,r*2,r*2);return;}
+  disc(x,y,r,'#11213D','#F4F0E6',Math.max(1.4,r*0.09));
+  ctx.save();ctx.strokeStyle='#F4F0E6';ctx.lineWidth=Math.max(2,r*0.2);ctx.lineCap='round';ctx.lineJoin='round';
+  ctx.beginPath();ctx.moveTo(x-r*0.38,y-r*0.18);ctx.lineTo(x,y+r*0.24);ctx.lineTo(x+r*0.38,y-r*0.18);ctx.stroke();ctx.restore();
+}
+
+function drawSliceQinhuai(){
+  const bank=proj(-ROAD_HALF-0.2,0,DRAWD), near=proj(-ROAD_HALF-0.2,0,2.2);
+  ctx.save();
+  ctx.fillStyle='rgba(20,78,91,0.68)';
+  ctx.beginPath();ctx.moveTo(0,HOR+5);ctx.lineTo(bank.x,HOR+5);ctx.lineTo(near.x,near.y);ctx.lineTo(0,H);ctx.closePath();ctx.fill();
+  ctx.strokeStyle='rgba(244,190,87,0.34)';ctx.lineWidth=1.2;
+  for(let i=0;i<4;i++){const y=HOR+20+i*16+Math.sin(G.t*2+i)*3;ctx.beginPath();ctx.moveTo(16,y);ctx.lineTo(Math.max(18,near.x-20),y+3);ctx.stroke();}
+  ctx.globalAlpha=0.96;drawBoat(W*0.18+Math.sin(G.t*0.45)*18,HOR+26);ctx.globalAlpha=1;
+  ctx.restore();
+}
+
 /* ================= 渲染:场景(远/中/近三层视差) ================= */
 export function render(){
   // 菜单/选关/图鉴/鸭铺:南京眼蓝调底图(缺图回退下方旧场景)
@@ -152,13 +181,13 @@ export function render(){
   ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
   // 实景照片远景(无尽模式在 600m 边界叠化);缺图回退到代码剪影
   let drewPhoto = false;
-  if(G.mode==='endless' && active){
-    const cyc = Math.floor(G.dist/600);
-    const mixB = clamp(((G.dist % 600) - 540) / 60, 0, 1);
-    drewPhoto = drawBackdrop(LM_CYCLE[cyc % LM_CYCLE.length], lv, G.dist, 1-mixB);
-    if(mixB > 0) drewPhoto = drawBackdrop(LM_CYCLE[(cyc+1) % LM_CYCLE.length], lv, G.dist, mixB) || drewPhoto;
-  } else {
-    drewPhoto = drawBackdrop(lmId, lv, G.dist, 1);
+  if(G.mode!=='slice'){
+    if(G.mode==='endless' && active){
+      const cyc = Math.floor(G.dist/600);
+      const mixB = clamp(((G.dist % 600) - 540) / 60, 0, 1);
+      drewPhoto = drawBackdrop(LM_CYCLE[cyc % LM_CYCLE.length], lv, G.dist, 1-mixB);
+      if(mixB > 0) drewPhoto = drawBackdrop(LM_CYCLE[(cyc+1) % LM_CYCLE.length], lv, G.dist, mixB) || drewPhoto;
+    } else drewPhoto = drawBackdrop(lmId, lv, G.dist, 1);
   }
   if(!drewPhoto){
     // 月亮/太阳剪纸圆盘
@@ -170,8 +199,9 @@ export function render(){
     drawSkyline(lv, G.dist);
     drawLandmark(lmId, lv, G.dist);
   }
-  // 秦淮河:画舫横向漂过(在道路之前绘制,从路后穿过)
-  if(lv.motif==='lantern'){
+  // 秦淮河:切片将水面、画舫和灯影置入可见空间；常规夫子庙保留既有画舫。
+  if(G.mode==='slice') drawSliceQinhuai();
+  else if(lv.motif==='lantern'){
     ctx.globalAlpha = 0.85;
     drawBoat((G.t*26) % (W+360) - 180, HOR + 26);
     ctx.globalAlpha = 1;
@@ -203,6 +233,11 @@ export function render(){
   // 穿越门(远->近,在收集品与障碍之后)
   const gates = G.gates.slice().sort((a,b)=>b.rz-a.rz);
   for(const g of gates){ if(g.rz > 2 && g.rz < DRAWD) drawGate(g, lv); }
+  // 首屏安全道标记：轮廓、箭头和灯笼共同传达，不只借助颜色。
+  if(G.mode==='slice'&&G.dist<82){
+    const marker=proj(-LANEGAP,1.18,30-G.dist+ZP);
+    if(marker.s>0&&marker.y>-40&&marker.y<H+40) drawSliceMarker(marker.x,marker.y,clamp(marker.s*0.42,14,34));
+  }
   // 收集品(远->近;贴地投影 + 落地影,近处尺寸收敛不挡视野)
   // 二期:全插画化——金色柔光晕 + 深描边本体,路上 r≈15px 一眼认出
   const cols = G.cols.slice().sort((a,b)=>(b.rz??b.z-G.dist+ZP)-(a.rz??a.z-G.dist+ZP));
@@ -214,7 +249,9 @@ export function render(){
     const gp = proj(c.x, 0, rz);
     shadow(gp.x, gp.y, gp.s*0.28, 0.18);
     const r = clamp(p.s*0.34, 4, 19);
-    if(c.kind==='relic') drawRelic(c.id, p.x, p.y, r*1.15);
+    if(c.kind==='sliceToken') drawSliceToken(p.x,p.y,r*1.45);
+    else if(c.kind==='sliceLight') drawSliceMarker(p.x,p.y,r*1.15);
+    else if(c.kind==='relic') drawRelic(c.id, p.x, p.y, r*1.15);
     else drawEgg(p.x, p.y, r, Math.sin(G.t*4+c.z)*0.12);
   }
   // 局内道具(发光物件,与收集品同层;免费道上不挡路)

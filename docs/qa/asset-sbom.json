@@ -1,7 +1,7 @@
 {
   "schema": "duckduckrun-asset-sbom/v1",
   "generated_at": "2026-09-01",
-  "scope": "Third-party photos and local fonts shipped by the static runtime. Original program/art assets remain governed by LICENSE.md.",
+  "scope": "Third-party photos, local fonts, and stage-3 project-generated slice assets shipped by the static runtime. Other original program/art assets remain governed by LICENSE.md.",
   "known_gaps": [
     "Pre-stage-2 download dates, original source revision/oldid and processing history were not recorded and must not be inferred.",
     "CC BY-SA adaptation/share-alike treatment remains a release review item; this inventory is evidence, not a legal conclusion."
@@ -73,6 +73,57 @@
       "processing_record": "not recorded in pre-stage-2 repository",
       "attribution_location": "assets/img/CREDITS.md and src/legal.js",
       "reviewer": "Manus AI (stage 2 inventory)",
+      "reviewed_at": "2026-09-01"
+    },
+    {
+      "id": "nanjing-slice-target-v1",
+      "local_path": "assets/game/nanjing-slice/nanjing-vertical-slice-target.webp",
+      "category": "design_reference",
+      "purpose": "Nanjing vertical-slice visual target",
+      "modified": "generated then resized/compressed for stage-3 vertical slice",
+      "source_url": "project-generated; no external visual source",
+      "source_version": "prompt, visual reference and cultural-fact boundaries recorded in ASSETS.md and docs/research/nanjing-source-notes.md",
+      "author": "Manus AI image generation for DuckDuckRun",
+      "license": "project-generated asset; game code/art governed by LICENSE.md",
+      "downloaded_at": "not applicable",
+      "sha256": "60d47c6a9cb0ef6b2003e2e1c45b62fe324a8d062f940205b8a307eebf080d91",
+      "processing_record": "tools/process_nanjing_slice_assets.py; original PNG intentionally not committed",
+      "attribution_location": "ASSETS.md (stage 3 generated-asset record)",
+      "reviewer": "Manus AI (stage 3 inventory)",
+      "reviewed_at": "2026-09-01"
+    },
+    {
+      "id": "nanjing-slice-lantern-marker-v1",
+      "local_path": "assets/game/nanjing-slice/qinhuai-lantern-marker.webp",
+      "category": "generated_game_sprite",
+      "purpose": "Qinhuai route and reward marker",
+      "modified": "generated then resized/compressed for stage-3 vertical slice",
+      "source_url": "project-generated; no external visual source",
+      "source_version": "prompt, visual reference and cultural-fact boundaries recorded in ASSETS.md and docs/research/nanjing-source-notes.md",
+      "author": "Manus AI image generation for DuckDuckRun",
+      "license": "project-generated asset; game code/art governed by LICENSE.md",
+      "downloaded_at": "not applicable",
+      "sha256": "1bc708d76441d1790f498fd4357c712ccbd45d74d24faaf2d4f2fa636ed2f638",
+      "processing_record": "tools/process_nanjing_slice_assets.py; original PNG intentionally not committed",
+      "attribution_location": "ASSETS.md (stage 3 generated-asset record)",
+      "reviewer": "Manus AI (stage 3 inventory)",
+      "reviewed_at": "2026-09-01"
+    },
+    {
+      "id": "nanjing-slice-salted-duck-v1",
+      "local_path": "assets/game/nanjing-slice/salted-duck-token.webp",
+      "category": "generated_game_sprite",
+      "purpose": "salted-duck pickup token",
+      "modified": "generated then resized/compressed for stage-3 vertical slice",
+      "source_url": "project-generated; no external visual source",
+      "source_version": "prompt, visual reference and cultural-fact boundaries recorded in ASSETS.md and docs/research/nanjing-source-notes.md",
+      "author": "Manus AI image generation for DuckDuckRun",
+      "license": "project-generated asset; game code/art governed by LICENSE.md",
+      "downloaded_at": "not applicable",
+      "sha256": "3abad99e4049d1d5d2361e19e8d01e17936fa6583718e0a14a454991d34b234c",
+      "processing_record": "tools/process_nanjing_slice_assets.py; original PNG intentionally not committed",
+      "attribution_location": "ASSETS.md (stage 3 generated-asset record)",
+      "reviewer": "Manus AI (stage 3 inventory)",
       "reviewed_at": "2026-09-01"
     },
     {

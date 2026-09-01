@@ -61,11 +61,35 @@ for(const file of readdirSync(join(root, 'assets/fonts')).filter(file => file.en
     reviewed_at:'2026-09-01',
   });
 }
+const generatedSliceAssets = [
+  ['nanjing-slice-target-v1', 'assets/game/nanjing-slice/nanjing-vertical-slice-target.webp', 'design_reference', 'Nanjing vertical-slice visual target'],
+  ['nanjing-slice-salted-duck-v1', 'assets/game/nanjing-slice/salted-duck-token.webp', 'generated_game_sprite', 'salted-duck pickup token'],
+  ['nanjing-slice-lantern-marker-v1', 'assets/game/nanjing-slice/qinhuai-lantern-marker.webp', 'generated_game_sprite', 'Qinhuai route and reward marker'],
+];
+for(const [id, relativePath, category, purpose] of generatedSliceAssets){
+  entries.push({
+    id,
+    local_path:relativePath,
+    category,
+    purpose,
+    modified:'generated then resized/compressed for stage-3 vertical slice',
+    source_url:'project-generated; no external visual source',
+    source_version:'prompt, visual reference and cultural-fact boundaries recorded in ASSETS.md and docs/research/nanjing-source-notes.md',
+    author:'Manus AI image generation for DuckDuckRun',
+    license:'project-generated asset; game code/art governed by LICENSE.md',
+    downloaded_at:'not applicable',
+    sha256:createHash('sha256').update(readFileSync(join(root, relativePath))).digest('hex'),
+    processing_record:'tools/process_nanjing_slice_assets.py; original PNG intentionally not committed',
+    attribution_location:'ASSETS.md (stage 3 generated-asset record)',
+    reviewer:'Manus AI (stage 3 inventory)',
+    reviewed_at:'2026-09-01',
+  });
+}
 entries.sort((a,b) => a.local_path.localeCompare(b.local_path));
 const output = {
   schema:'duckduckrun-asset-sbom/v1',
   generated_at:'2026-09-01', // 阶段 2 基线日期；输入未变时生成结果必须稳定。
-  scope:'Third-party photos and local fonts shipped by the static runtime. Original program/art assets remain governed by LICENSE.md.',
+  scope:'Third-party photos, local fonts, and stage-3 project-generated slice assets shipped by the static runtime. Other original program/art assets remain governed by LICENSE.md.',
   known_gaps:[
     'Pre-stage-2 download dates, original source revision/oldid and processing history were not recorded and must not be inferred.',
     'CC BY-SA adaptation/share-alike treatment remains a release review item; this inventory is evidence, not a legal conclusion.',
