@@ -1,6 +1,6 @@
 import { ITEMS, LEVELS } from './config.js';
 
-export const SAVE_SCHEMA = 3;
+export const SAVE_SCHEMA = 4;
 export const BRIDGE_INDEX = LEVELS.length - 1;
 export const NORMAL_ITEM_IDS = ITEMS.filter(item => !item.secret).map(item => item.id);
 const ITEM_IDS = new Set(ITEMS.map(item => item.id));
@@ -86,6 +86,7 @@ export function normalizeSave(raw){
     tutorialCompleted,
     tut: tutorialCompleted,
     muted: !!source.muted,
+    motion: ['system','reduced','full'].includes(source.motion) ? source.motion : 'system',
     distTotal: Math.max(0, finiteInt(source.distTotal)),
     albumNew: !!source.albumNew,
     coins: Math.max(0, finiteInt(source.coins)),

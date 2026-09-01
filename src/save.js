@@ -8,6 +8,19 @@ const rawSave = (()=>{
 })();
 export const save = normalizeSave(rawSave);
 
+// 用户显式设置优先；未设置时跟随系统 prefers-reduced-motion。
+export function prefersReducedMotion(){
+  if(save.motion==='reduced') return true;
+  if(save.motion==='full') return false;
+  return typeof window!=='undefined' && typeof window.matchMedia==='function'
+    && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+export function cycleMotionPreference(){
+  save.motion = save.motion==='system' ? 'reduced' : save.motion==='reduced' ? 'full' : 'system';
+  persist();
+  return save.motion;
+}
+
 let dirty = false, timer = null, lastWrite = 0;
 
 /* 普通拾取最多每秒落盘一次；失败只丢本次持久化，不打断当局。 */

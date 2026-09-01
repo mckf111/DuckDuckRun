@@ -5,6 +5,7 @@ import { render } from './render.js';
 import { loadMenuBackground, loadBackground, prefetchBackground } from './art/photo.js';
 import { preloadGameSprites } from './art/sprites.js';
 import { bgmStop, disposeAudio } from './audio.js';
+import { prefersReducedMotion } from './save.js';
 import { drawHUD, drawMenu, drawLevels, drawOver, drawClear, drawAlbum, drawShop, drawCredits } from './ui.js';
 import { createInputController } from './input.js';
 import { track } from './track.js';
@@ -106,7 +107,7 @@ function frame(ts){
   syncAssets();
   G.buttons = [];
   ctx.save();
-  if(G.shake>0) ctx.translate(visualRnd(-1,1)*G.shake*8, visualRnd(-1,1)*G.shake*8);
+  if(G.shake>0 && !prefersReducedMotion()) ctx.translate(visualRnd(-1,1)*G.shake*8, visualRnd(-1,1)*G.shake*8);
   render();
   ctx.restore();
   if(G.state==='play') drawHUD();
@@ -121,7 +122,7 @@ function frame(ts){
     if(prevState==='play' && G.state!=='play') bgmStop();
     const crashTransition=G.state==='crashing'||prevState==='crashing';
     prevState = G.state;
-    G.wipe = crashTransition?0:0.32;
+    G.wipe = crashTransition||prefersReducedMotion()?0:0.32;
     G.kbSel = 0;
     G.kbActive = false;
     G.stateT = 0;

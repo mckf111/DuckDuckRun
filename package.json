@@ -13,9 +13,10 @@
     "test:save": "node --test tests/migration.test.js tests/save-io.test.js",
     "test:resources": "node --test tests/content.test.js",
     "test:browser": "node tools/e2e/browser_test.mjs",
+    "test:playability": "node tools/e2e/audit_slice_playability.mjs",
     "test:dist": "node tools/e2e/check_dist.mjs",
     "test:size": "node tools/e2e/check_size_budget.mjs",
-    "test": "npm run check && npm run test:logic && npm run test:save && npm run test:browser",
+    "test": "npm run check && npm run test:logic && npm run test:save && npm run test:playability && npm run test:browser",
     "verify": "npm run typecheck && npm test && npm run build && npm run test:dist && npm run test:size"
   }
 }

@@ -7,6 +7,70 @@ export const NANJING_SLICE = {
   side:'#233847', sideTop:'#6B6E70', accent:'#F4BE57', motif:'crenel',
   hud:'#F4F0E6', textDark:false, speed:10, len:720,
   landmark:'zhonghua', lmColor:'#303B46', side2:'秦淮灯影', mod:'sliceNight',
+  referenceSeed:20260903,
+  // 两档只调整可读性、容错和反应余量；动作语法不变。
+  modes:{
+    standard:{ id:'standard', label:'标准', speed:10, rescues:0, inputBuffer:0.10, collisionWidth:0.55, cueLead:12 },
+    easy:{ id:'easy', label:'轻松', speed:9, rescues:2, inputBuffer:0.18, collisionWidth:0.46, cueLead:18 },
+  },
+  // 城市事实只在资料笔记中断言；这里仅保存原创的玩法转译和短提示。
+  beats:[
+    { id:'onboard', from:0, to:80, cue:'← 向左滑 · 跟灯影入门', spatial:'中华门首道门洞', gameplay:'亮起的安全门洞把瓮城门序转成横移教学' },
+    { id:'confidence', from:80, to:220, cue:'穿过瓮城 · 拿盐水鸭牌', spatial:'三道瓮城门序', gameplay:'盐水鸭牌以短音和灯牌计数形成首次正反馈' },
+    { id:'choice', from:220, to:380, cue:'左跳摘双灯 · 右侧稳过', spatial:'秦淮画舫灯带', gameplay:'画舫灯影标出高回报跳跃线与安全线' },
+    { id:'pressure', from:380, to:510, cue:'门梁将近 · 低头再过一门', spatial:'城门横梁', gameplay:'门洞高度把滑铲读图转成短压力段' },
+    { id:'relief', from:510, to:600, cue:'灯影稍缓 · 收好这一盏', spatial:'临水灯影与画舫', gameplay:'安全线补一枚可见灯牌，让玩家在高潮前喘息' },
+    { id:'climax', from:600, to:721, cue:'中道夜渡 · 收束在前', spatial:'中华门剪影与水面同框', gameplay:'两侧封墙把终点门洞变成清晰的收束选择' },
+  ],
+  // 有限路线组合。referenceSeed 保留第3阶段已验证的月影左线，其余只改变中段组合，不引入不可解释随机惩罚。
+  routeSets:[
+    { id:'moon-left', label:'月影左线',
+      gates:[52,142,222,520,690],
+      cols:[
+        {lane:-1,z:68,y:0.9,kind:'sliceToken',id:'saltedDuck',arc:'slice-start',arcN:1},
+        {lane:-1,z:304,y:1.25,kind:'sliceLight',id:'qinhuaiLight',arc:'slice-risk',arcN:2},
+        {lane:-1,z:311,y:1.45,kind:'sliceLight',id:'qinhuaiLight',arc:'slice-risk',arcN:2},
+        {lane:0,z:548,y:0.95,kind:'sliceLight',id:'qinhuaiLight',arc:'slice-relief',arcN:1},
+      ],
+      obs:[
+        {lane:0,z:30,type:'full',beat:'onboard'}, {lane:0,z:282,type:'full',beat:'choice'},
+        {lane:-1,z:300,type:'low',beat:'choice'}, {lane:0,z:480,type:'high',beat:'pressure'},
+        {lane:-1,z:656,type:'full',beat:'climax'}, {lane:1,z:656,type:'full',beat:'climax'},
+      ],
+      demo:[{at:8,action:'left'},{at:296,action:'jump'},{at:450,action:'right'},{at:476,action:'slide'}],
+    },
+    { id:'boat-right', label:'画舫右线',
+      gates:[52,142,222,520,690],
+      cols:[
+        {lane:-1,z:68,y:0.9,kind:'sliceToken',id:'saltedDuck',arc:'slice-start',arcN:1},
+        {lane:1,z:304,y:1.25,kind:'sliceLight',id:'qinhuaiLight',arc:'slice-risk',arcN:2},
+        {lane:1,z:311,y:1.45,kind:'sliceLight',id:'qinhuaiLight',arc:'slice-risk',arcN:2},
+        {lane:0,z:548,y:0.95,kind:'sliceLight',id:'qinhuaiLight',arc:'slice-relief',arcN:1},
+      ],
+      obs:[
+        {lane:0,z:30,type:'full',beat:'onboard'}, {lane:0,z:282,type:'full',beat:'choice'},
+        {lane:1,z:300,type:'low',beat:'choice'}, {lane:0,z:480,type:'high',beat:'pressure'},
+        {lane:-1,z:656,type:'full',beat:'climax'}, {lane:1,z:656,type:'full',beat:'climax'},
+      ],
+      demo:[{at:8,action:'left'},{at:242,action:'right'},{at:255,action:'right'},{at:296,action:'jump'},{at:450,action:'left'},{at:476,action:'slide'}],
+    },
+    { id:'arch-weave', label:'门序折返',
+      gates:[52,142,222,520,690],
+      cols:[
+        {lane:-1,z:68,y:0.9,kind:'sliceToken',id:'saltedDuck',arc:'slice-start',arcN:1},
+        {lane:-1,z:304,y:1.25,kind:'sliceLight',id:'qinhuaiLight',arc:'slice-risk',arcN:2},
+        {lane:-1,z:311,y:1.45,kind:'sliceLight',id:'qinhuaiLight',arc:'slice-risk',arcN:2},
+        {lane:1,z:548,y:0.95,kind:'sliceLight',id:'qinhuaiLight',arc:'slice-relief',arcN:1},
+      ],
+      obs:[
+        {lane:0,z:30,type:'full',beat:'onboard'}, {lane:0,z:282,type:'full',beat:'choice'},
+        {lane:-1,z:300,type:'low',beat:'choice'}, {lane:-1,z:420,type:'full',beat:'pressure'},
+        {lane:0,z:480,type:'high',beat:'pressure'}, {lane:-1,z:656,type:'full',beat:'climax'},
+        {lane:1,z:656,type:'full',beat:'climax'},
+      ],
+      demo:[{at:8,action:'left'},{at:296,action:'jump'},{at:404,action:'right'},{at:450,action:'right'},{at:476,action:'slide'},{at:620,action:'left'}],
+    },
+  ],
 };
 
 export const LEVELS = [

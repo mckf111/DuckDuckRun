@@ -1,6 +1,6 @@
 import { clamp, lerp, rnd, irnd, proj, LANEGAP, ZP, DRAWD, TAU, getRandomSeed, restartRandomSequence } from './core.js';
 import { LEVELS, NANJING_SLICE, ITEMS, LM_CYCLE, LM_NAME, MILESTONES, RUN_STAR_THRESHOLDS, QUACKS, CRASH_LINES } from './config.js';
-import { save, persist, queuePersist } from './save.js';
+import { save, persist, queuePersist, prefersReducedMotion } from './save.js';
 import { canPassObstacle, calculateRunStars, getBridgeUnlockStatus, getCollectionWeight, getObstacleInstruction } from './rules.js';
 import { sfx, bgm, setBgmIntensity } from './audio.js';
 import { track } from './track.js';
@@ -47,11 +47,30 @@ export const G = {
 };
 export const pl = { lane:0, x:0, y:0, vy:0, sliding:0, jumps:0 };
 
+function sliceModeConfig(easy=false){ return easy ? NANJING_SLICE.modes.easy : NANJING_SLICE.modes.standard; }
+function chooseSliceRoute(){
+  const routes=NANJING_SLICE.routeSets;
+  const seed=getRandomSeed();
+  if(seed===NANJING_SLICE.referenceSeed) return 0; // 第3阶段已验证的演示路径保持不变。
+  return seed===null ? irnd(0,routes.length-1) : seed%routes.length;
+}
+export function currentSliceBeat(){
+  if(G.mode!=='slice') return null;
+  return NANJING_SLICE.beats.find(beat=>G.dist>=beat.from&&G.dist<beat.to) || NANJING_SLICE.beats[NANJING_SLICE.beats.length-1];
+}
+export function currentSliceCue(){
+  if(G.mode!=='slice') return null;
+  const beats=NANJING_SLICE.beats, lead=G.slice?.config?.cueLead||0;
+  const next=beats.find((beat,index)=>index>0&&G.dist>=beat.from-lead&&G.dist<beat.from);
+  return next || currentSliceBeat();
+}
+
 export function startRun(mode, lvIdx=0, forceTutorial=false, options={}){
   const keepSlice = G.slice;
   const sliceEasy = mode==='slice' ? (options.easy ?? keepSlice?.easy ?? false) : false;
   const sliceDemo = mode==='slice' ? (options.demo ?? keepSlice?.demo ?? false) : false;
   const sliceQuiet = mode==='slice' ? (options.quiet ?? keepSlice?.quiet ?? false) : false;
+  const sliceConfig = mode==='slice' ? sliceModeConfig(sliceEasy) : null;
   if(mode==='slice') lvIdx=0;
   if(mode==='adv' && (!LEVELS[lvIdx] || (LEVELS[lvIdx].hidden && !getBridgeUnlockStatus(save).unlocked))){
     G.state = 'levels';
@@ -62,7 +81,7 @@ export function startRun(mode, lvIdx=0, forceTutorial=false, options={}){
   if(G.replay) G.replay = { ...G.replay, seed:getRandomSeed(), mode, lvIdx };
   G.dist = 0; G.runMarks = 0; G.runStars = 0; G.newIds = []; G.t = 0;
   G.obs = []; G.cols = []; G.parts = []; G.gates = [];
-  G.speed = mode==='adv' ? LEVELS[lvIdx].speed : mode==='slice' ? (sliceEasy ? 9 : NANJING_SLICE.speed) : 9.5;
+  G.speed = mode==='adv' ? LEVELS[lvIdx].speed : mode==='slice' ? sliceConfig.speed : 9.5;
   G.nextSpawn = 40; G.paused = false; G.shake = 0; G.egg = null;
   G.newBest = false; G.kbSel = 0; G.kbActive = false;
   G.combo = 0; G.comboT = 0; G.killedBy = null; G.newItem = null;
@@ -75,7 +94,11 @@ export function startRun(mode, lvIdx=0, forceTutorial=false, options={}){
   G.rhythm={pressureStreak:0,lastAction:null,actionStreak:0,reliefNext:false};G.rhythmLog=[];
   G.featureMarks=mode==='adv'?[LEVELS[lvIdx].len*0.28,LEVELS[lvIdx].len*0.62]:[];
   G.secretQueue=[];G.runFoundNew=false;G.runFinalized=false;G.shopFeedback=null;
-  G.slice = mode==='slice' ? { easy:sliceEasy, demo:sliceDemo, quiet:sliceQuiet, rescues:sliceEasy?2:0, tokenCount:0, autoStep:0 } : null;
+  G.slice = mode==='slice' ? {
+    easy:sliceEasy, demo:sliceDemo, quiet:sliceQuiet, config:sliceConfig,
+    routeIndex:chooseSliceRoute(), routeId:'', routeName:'', rescues:sliceConfig.rescues,
+    tokenCount:0, autoStep:0, beatLog:[], activeBeat:null,
+  } : null;
   G.speech=null; G.talkCd=0; G.idleTalk=rnd(7,11); G.lastPanic=false;
   const teach=mode==='adv' && lvIdx===0 && (forceTutorial || !save.tutorialCompleted);
   G.tut=null; G.tutorial=null; G.tutStage=teach?0:4;
@@ -92,33 +115,22 @@ export function startRun(mode, lvIdx=0, forceTutorial=false, options={}){
 }
 export const curLv = ()=> G.mode==='slice' ? NANJING_SLICE : G.mode==='adv' ? LEVELS[G.lvIdx] : LEVELS[Math.floor(G.dist/600)%LEVELS.length];
 
-/* ---- 南京垂直切片：固定脚本，不进入掉落池、图鉴或经济系统 ---- */
+/* ---- 南京垂直切片：有限路线组合，不进入掉落池、图鉴或经济系统 ---- */
 function startSliceScript(){
   G.nextSpawn=Infinity;G.nextPower=Infinity;G.nextRelic=Infinity;
-  G.gates=[52,142,222,520,690].map((z,index)=>({z,passed:false,rz:z+ZP,slice:true,arch:index+1}));
-  G.cols=[
-    {lane:-1,x:-LANEGAP,z:68,y:0.9,kind:'sliceToken',id:'saltedDuck',got:false,arc:'slice-start',arcN:1},
-    {lane:-1,x:-LANEGAP,z:304,y:1.25,kind:'sliceLight',id:'qinhuaiLight',got:false,arc:'slice-risk',arcN:2},
-    {lane:-1,x:-LANEGAP,z:311,y:1.45,kind:'sliceLight',id:'qinhuaiLight',got:false,arc:'slice-risk',arcN:2},
-    {lane:0,x:0,z:548,y:0.95,kind:'sliceLight',id:'qinhuaiLight',got:false,arc:'slice-slide',arcN:1},
-  ];
-  G.obs=[
-    {lane:0,x:0,z:30,type:'full',sliceBeat:'entry'},
-    {lane:0,x:0,z:282,type:'full',sliceBeat:'choice'},
-    {lane:-1,x:-LANEGAP,z:300,type:'low',sliceBeat:'choice'},
-    {lane:0,x:0,z:480,type:'high',sliceBeat:'slide'},
-    {lane:-1,x:-LANEGAP,z:656,type:'full',sliceBeat:'finish'},
-    {lane:1,x:LANEGAP,z:656,type:'full',sliceBeat:'finish'},
-  ];
+  const route=NANJING_SLICE.routeSets[G.slice.routeIndex] || NANJING_SLICE.routeSets[0];
+  G.slice.routeId=route.id;G.slice.routeName=route.label;
+  G.gates=route.gates.map((z,index)=>({z,passed:false,rz:z+ZP,slice:true,arch:index+1}));
+  G.cols=route.cols.map(col=>({ ...col,x:col.lane*LANEGAP,got:false,sliceBeat:col.arc==='slice-risk'?'choice':col.arc==='slice-relief'?'relief':'confidence' }));
+  G.obs=route.obs.map(obstacle=>({ ...obstacle,x:obstacle.lane*LANEGAP,sliceBeat:obstacle.beat }));
   G.egg=null;
 }
 function updateSliceDemo(){
   if(!G.slice?.demo) return;
-  const steps=[
-    {at:8,act:onLeft},{at:296,act:onJump},{at:450,act:onRight},{at:476,act:onSlide},
-  ];
-  const step=steps[G.slice.autoStep];
-  if(step&&G.dist>=step.at){ step.act();G.slice.autoStep++; }
+  const route=NANJING_SLICE.routeSets[G.slice.routeIndex] || NANJING_SLICE.routeSets[0];
+  const actions={left:onLeft,right:onRight,jump:onJump,slide:onSlide};
+  const step=route.demo[G.slice.autoStep];
+  if(step&&G.dist>=step.at){ actions[step.action]?.();G.slice.autoStep++; }
 }
 
 /* ---- 操作回调 ---- */
@@ -132,11 +144,11 @@ export function onLeft(){ if(G.state==='play'&&!G.paused){ if(pl.lane>-1){ pl.la
 export function onRight(){ if(G.state==='play'&&!G.paused){ if(pl.lane<1){ pl.lane++; noteTutorialAction('lane'); sfx.lane(); } } }
 export function onJump(){
   if(G.state!=='play'||G.paused) return;
-  G.inputBuffer.jump=0.1; G.inputBuffer.slide=0;
+  G.inputBuffer.jump=G.mode==='slice' ? G.slice.config.inputBuffer : 0.1; G.inputBuffer.slide=0;
 }
 export function onSlide(){
   if(G.state!=='play'||G.paused) return;
-  G.inputBuffer.slide=0.1; G.inputBuffer.jump=0;
+  G.inputBuffer.slide=G.mode==='slice' ? G.slice.config.inputBuffer : 0.1; G.inputBuffer.jump=0;
 }
 export function onPauseKey(){
   if(G.state==='play'){ G.paused = !G.paused; sfx.click(); }
@@ -358,6 +370,8 @@ export function spawnCluster(z){
 
 /* ---- 粒子 ---- */
 export function burst(x, y, color){
+  // 减弱动态时保留声音/文字反馈，取消高频纸屑粒子。
+  if(prefersReducedMotion()) return;
   // 剪纸碎片:三角/菱形小纸片,旋转变速下落
   for(let i=0;i<12;i++) G.parts.push({
     x, y, z:ZP, vx:rnd(-2.5,2.5), vy:rnd(1,4.5), life:rnd(0.5,0.9), color, size:rnd(3,6),
@@ -365,8 +379,8 @@ export function burst(x, y, color){
   });
 }
 export function ambient(lv){
-  // 梅花瓣/灯火/星尘 环境粒子(大、淡、柔边,求"飘絮"不求"撒盐")
-  if(rnd(0,1) > 0.12) return;
+  // 梅花瓣/灯火/星尘环境粒子；减弱动态时不生成。
+  if(prefersReducedMotion() || rnd(0,1) > 0.12) return;
   const colors = { crenel:'#e8b04b', lotus:'#d98ba0', steps:'#ffffff', lantern:'#f0b64c', pine:'#c9a2ff',
     plane:'#d8b04a', street:'#f0a04a', maple:'#e0783a', pagoda:'#e8c170', bridge:'#9fc0e8' };
   const windy = lv.mod==='riverWind';   // 大桥江风:粒子横向速度加大
@@ -422,6 +436,12 @@ export function update(dt){
   G.t += dt;   // 世界时钟:暂停时冻结,画舫/粒子等不动
   const lv = curLv();
   updateSliceDemo();
+  if(G.mode==='slice'){
+    const beat=currentSliceBeat();
+    if(beat && G.slice.activeBeat!==beat.id){
+      G.slice.activeBeat=beat.id;G.slice.beatLog.push({id:beat.id,at:Math.floor(G.dist)});
+    }
+  }
   if(G.mode==='endless') G.speed = Math.min(20, 9.5 + G.dist/280);
   setBgmIntensity(G.tutorial?0.18:clamp(0.28+(G.speed-9.5) / 18+Math.min(G.combo,15)/30,0.24,0.9));
   const nearLesson=G.tutorial && !G.tutorial.actionDone && G.tutorial.targetZ-G.dist<12;
@@ -526,7 +546,8 @@ export function update(dt){
     const crossed=prevRz>ZP && o.rz<=ZP;
     // 扫掠判定:在判定窗内,或本帧整体跨过玩家平面(防高速低帧率隧穿)
     const inWin = (o.rz > ZP-0.45 && o.rz < ZP+0.45) || (prevRz > ZP && o.rz <= ZP);
-    if(inWin && Math.abs(o.x - pl.x) < 0.55){
+    const collisionWidth=G.mode==='slice' ? G.slice.config.collisionWidth : 0.55;
+    if(inWin && Math.abs(o.x - pl.x) < collisionWidth){
       const dead = !canPassObstacle(pl, o);
       if(dead){
         if(o.tutorialStep!==undefined){
@@ -542,6 +563,7 @@ export function update(dt){
           G.slice.rescues--; o.hit=true;
           const q=proj(o.x,1.0,ZP);burst(q.x,q.y,'#F4BE57');
           G.egg={text:'灯影接住了 · 还有 '+G.slice.rescues+' 次',ttl:2.2,dur:2.2};sfx.shieldBreak();
+          G.slice.beatLog.push({id:'rescue',at:Math.floor(G.dist)});
         } else { o.hit = true; gameOver(o.type); return; }
       }
     }
@@ -557,15 +579,18 @@ export function update(dt){
       c.got = true;
       const p = proj(c.x, c.y, ZP);
       if(c.kind==='sliceToken' || c.kind==='sliceLight'){
+        const arcCount=(G.arcGot[c.arc]||0)+1;
         G.slice.tokenCount++;
         G.runMarks++;
         burst(p.x,p.y,c.kind==='sliceToken'?'#F4BE57':'#F4F0E6');
         if(c.kind==='sliceToken'){
           G.egg={text:'盐水鸭到手 · 桨点起',ttl:2.6,dur:2.6};sfx.qinhuai();
-        }else if(G.arcGot[c.arc]===c.arcN){
+        }else if(arcCount===c.arcN && c.arc==='slice-risk'){
           G.egg={text:'双灯齐收 · 走险有回报',ttl:2.3,dur:2.3};sfx.gate();
+        }else if(arcCount===c.arcN && c.arc==='slice-relief'){
+          G.egg={text:'灯影缓一缓 · 收好这一盏',ttl:2.3,dur:2.3};sfx.collect(G.slice.tokenCount);
         }else sfx.collect(G.slice.tokenCount);
-        G.arcGot[c.arc]=(G.arcGot[c.arc]||0)+1;
+        G.arcGot[c.arc]=arcCount;
         continue;
       }
       if(c.kind==='relic'){
@@ -644,7 +669,7 @@ export function gameOver(type){
   G.crashLine = lines[irnd(0, lines.length-1)];
   sfx.bonk(); duckSay('crash', true, 0.78);
   scatterCrashBits();
-  G.shake = 1.35; G.crashT = G.crashLen;   // 90ms 定格 + 450ms 出洋相
+  G.shake = prefersReducedMotion() ? 0 : 1.35; G.crashT = G.crashLen;   // 90ms 定格 + 450ms 出洋相
   G.newBest = false;
   if(G.mode==='endless'){
     const m = Math.floor(G.dist);

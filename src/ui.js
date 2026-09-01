@@ -1,9 +1,9 @@
 import { ctx, W, H, CX, poly, disc, rrect, petalFlower, clamp } from './core.js';
 import { LEVELS, ITEMS, MILESTONES, SHOPS, RUN_STAR_THRESHOLDS } from './config.js';
-import { save, persist } from './save.js';
+import { save, persist, cycleMotionPreference } from './save.js';
 import { getBridgeUnlockStatus, getObstacleInstruction } from './rules.js';
 import { sfx } from './audio.js';
-import { G, curLv, startRun, nextAfterClear } from './game.js';
+import { G, curLv, startRun, nextAfterClear, currentSliceCue } from './game.js';
 import { drawItemPhoto, hasPhoto, loadItemPhotos } from './art/photo.js';
 import { drawItemIcon } from './art/items.js';
 import { drawSide } from './art/scenery.js';
@@ -88,6 +88,8 @@ export function stars(n, x, y, r){
 }
 export function dim(alpha){ ctx.fillStyle=`rgba(8,6,14,${alpha})`; ctx.fillRect(0,0,W,H); }
 
+function motionLabel(){ return save.motion==='reduced' ? '动效 · 减弱' : save.motion==='full' ? '动效 · 完整' : '动效 · 跟随系统'; }
+
 function glassPanel(x,y,w,h,r=14){
   ctx.save();
   ctx.shadowColor='rgba(70,40,16,0.28)';ctx.shadowBlur=14;ctx.shadowOffsetY=5;
@@ -166,11 +168,9 @@ export function drawHUD(){
     text(G.tutorial.tip, CX, ty+50, 17, '#3a2614', 'center', 'bold', 'clean');
   }
   if(G.mode==='slice' && !G.paused && G.t<62 && !G.egg){
-    const sliceTip = G.dist<80 ? '← 向左滑 · 跟灯影入门'
-      : G.dist<210 ? '穿过瓮城 · 拿盐水鸭牌'
-      : G.dist<380 ? '左跳摘双灯 · 右侧稳过'
-      : G.dist<520 ? '↓ 低头穿过门梁' : '中道夜渡 · 收束在前';
-    glassPanel(CX-150,H-42,300,34,12);
+    const beat=currentSliceCue();
+    const sliceTip=beat?.cue || '中道夜渡 · 收束在前';
+    glassPanel(CX-180,H-42,360,34,12);
     text(sliceTip, CX, H-25, 14, '#3A2614', 'center', 'bold', 'clean');
   } else if(!G.tutorial && (G.paused || G.t < 5)){
     ctx.globalAlpha = G.paused ? 1 : clamp(5-G.t, 0, 1);
@@ -212,8 +212,9 @@ export function drawMenu(){
   button('album','风物图鉴 '+Object.keys(save.album).length+'/'+ITEMS.length+(save.albumNew?'  ●':''), CX, H*0.78, 224, 46, {ghost:true});
   button('shop','鸭铺升级 · '+save.coins+' 蛋', CX, H*0.88, 224, 46, {ghost:true});
   button('tutorial','重玩教学', 90, H-28, 140, 36, {ghost:true,size:14});
+  button('motion',motionLabel(), CX, H-28, 164, 36, {ghost:true,size:13});
   button('credits','素材与授权', W-90, H-28, 150, 36, {ghost:true,size:14});
-  text(COPYRIGHT_LINE, CX, H-18, 11, 'rgba(211,230,240,0.48)', 'center', null, 'clean');
+  text(COPYRIGHT_LINE, CX, H-58, 11, 'rgba(211,230,240,0.48)', 'center', null, 'clean');
   // F6:微信内提示绕开内置浏览器限制(下载/分享被吞)
   if(/MicroMessenger/i.test(navigator.userAgent))
     text('微信内体验有限:点右上角 ··· → 在浏览器打开', CX, H-44, 12, 'rgba(246,241,231,0.42)');
@@ -385,7 +386,10 @@ export function drawClear(){
     if(k>0) star(CX+(i-1)*52, H*0.45, 20, i<n, 1.6-0.6*k);
   }
   if(G.stateT > 1.2){
-    if(slice) text((G.slice?.easy?'轻松模式 · 灯影护航':'标准模式 · 路线取舍完成')+' · 不写入主线进度', CX, H*0.53, 15, '#f7ead0', 'center', 'bold');
+    if(slice){
+      text((G.slice?.easy?'轻松模式 · 灯影护航':'标准模式 · 路线取舍完成')+' · 不写入主线进度', CX, H*0.53, 15, '#f7ead0', 'center', 'bold');
+      text('行旅小笺 · '+(G.slice?.routeName||'月影左线')+'：三道瓮城的门序，跑成今晚的一小段夜渡。', CX, H*0.575, 13, '#d8c9a8');
+    }
     else {
       text('本局 '+G.runStars+' 星 · 历史最佳 '+save.stars[G.lvIdx]+' 星', CX, H*0.515, 15, '#f7ead0', 'center', 'bold');
       text('鸭蛋 '+RUN_STAR_THRESHOLDS.join(' / ')+' = 1 / 2 / 3 星', CX, H*0.555, 13, '#d8c9a8');
@@ -393,7 +397,7 @@ export function drawClear(){
   }
   if(G.newIds.length) text('新图鉴:'+G.newIds.map(id=>(ITEMS.find(i=>i.id===id)||{}).name||'').join('、'), CX, H*0.58, 16, '#a8d5a2');
   if(G.newIds.some(id=>ITEMS.find(i=>i.id===id)?.secret)) text('隐藏风物现身!', CX, H*0.63, 15, '#f0b64c', 'center', 'bold');
-  if(slice) button('next','再跑一趟 (Enter)', CX, H*0.66, 300, 52);
+  if(slice) button('next','再跑一趟 (Enter)', CX, H*0.68, 300, 52);
   else if(G.lvIdx < LEVELS.length-1){
     const next = LEVELS[G.lvIdx+1];
     const bridgeStatus = getBridgeUnlockStatus(save);
@@ -583,6 +587,7 @@ export function handleButton(id, data){
   else if(id==='resume') G.paused=false;
   else if(id==='pause') G.paused=true;
   else if(id==='mute'){ save.muted=!save.muted; persist(); }
+  else if(id==='motion') cycleMotionPreference();
   else if(id==='next') nextAfterClear();
   else if(id==='share') shareScore();
   else if(id==='copy'){

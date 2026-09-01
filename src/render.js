@@ -1,6 +1,7 @@
 import { ctx, W, H, CX, HOR, TAU, proj, poly, disc, rrect, clamp, shadow, ROAD_HALF, LANEGAP, ZP, DRAWD } from './core.js';
 import { LEVELS, LM_CYCLE } from './config.js';
 import { G, pl, curLv } from './game.js';
+import { prefersReducedMotion } from './save.js';
 import { drawItemIcon } from './art/items.js';
 import { drawObstacle } from './art/obstacles.js';
 import { drawSide, drawSkyline, drawLandmark, drawBoat, drawGate, drawNear } from './art/scenery.js';
@@ -160,8 +161,9 @@ function drawSliceQinhuai(){
   ctx.fillStyle='rgba(20,78,91,0.68)';
   ctx.beginPath();ctx.moveTo(0,HOR+5);ctx.lineTo(bank.x,HOR+5);ctx.lineTo(near.x,near.y);ctx.lineTo(0,H);ctx.closePath();ctx.fill();
   ctx.strokeStyle='rgba(244,190,87,0.34)';ctx.lineWidth=1.2;
-  for(let i=0;i<4;i++){const y=HOR+20+i*16+Math.sin(G.t*2+i)*3;ctx.beginPath();ctx.moveTo(16,y);ctx.lineTo(Math.max(18,near.x-20),y+3);ctx.stroke();}
-  ctx.globalAlpha=0.96;drawBoat(W*0.18+Math.sin(G.t*0.45)*18,HOR+26);ctx.globalAlpha=1;
+  const motion=prefersReducedMotion()?0:G.t;
+  for(let i=0;i<4;i++){const y=HOR+20+i*16+Math.sin(motion*2+i)*3;ctx.beginPath();ctx.moveTo(16,y);ctx.lineTo(Math.max(18,near.x-20),y+3);ctx.stroke();}
+  ctx.globalAlpha=0.96;drawBoat(W*0.18+Math.sin(motion*0.45)*18,HOR+26);ctx.globalAlpha=1;
   ctx.restore();
 }
 
@@ -203,7 +205,7 @@ export function render(){
   if(G.mode==='slice') drawSliceQinhuai();
   else if(lv.motif==='lantern'){
     ctx.globalAlpha = 0.85;
-    drawBoat((G.t*26) % (W+360) - 180, HOR + 26);
+    drawBoat((prefersReducedMotion()?0:G.t*26) % (W+360) - 180, HOR + 26);
     ctx.globalAlpha = 1;
   }
 
@@ -245,19 +247,19 @@ export function render(){
     // 教学切到第 4 步的同一帧，新增印记尚未经过 update；先按世界坐标投影，避免 NaN 让主循环停摆。
     const rz = c.rz ?? c.z-G.dist+ZP;
     if(rz < 2 || rz > DRAWD) continue;
-    const p = proj(c.x, c.y + Math.sin(G.t*3+c.z)*0.08, rz);
+    const p = proj(c.x, c.y + Math.sin((prefersReducedMotion()?0:G.t*3)+c.z)*0.08, rz);
     const gp = proj(c.x, 0, rz);
     shadow(gp.x, gp.y, gp.s*0.28, 0.18);
     const r = clamp(p.s*0.34, 4, 19);
     if(c.kind==='sliceToken') drawSliceToken(p.x,p.y,r*1.45);
     else if(c.kind==='sliceLight') drawSliceMarker(p.x,p.y,r*1.15);
     else if(c.kind==='relic') drawRelic(c.id, p.x, p.y, r*1.15);
-    else drawEgg(p.x, p.y, r, Math.sin(G.t*4+c.z)*0.12);
+    else drawEgg(p.x, p.y, r, Math.sin((prefersReducedMotion()?0:G.t*4)+c.z)*0.12);
   }
   // 局内道具(发光物件,与收集品同层;免费道上不挡路)
   for(const p of G.powers){
     if(p.rz < 2 || p.rz > DRAWD) continue;
-    const pp = proj(p.lane*LANEGAP, 0.55 + Math.sin(G.t*3+p.z)*0.08, p.rz);
+    const pp = proj(p.lane*LANEGAP, 0.55 + Math.sin((prefersReducedMotion()?0:G.t*3)+p.z)*0.08, p.rz);
     const gp = proj(p.lane*LANEGAP, 0, p.rz);
     shadow(gp.x, gp.y, gp.s*0.3, 0.2);
     const r = clamp(pp.s*0.38, 5, 21);

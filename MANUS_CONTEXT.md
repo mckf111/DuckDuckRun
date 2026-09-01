@@ -2,9 +2,9 @@
 
 ## 当前任务状态
 
-第 3 阶段“南京代表性垂直切片”已在 `manus/duckduckrun-hardening` 上完成本地实现与验证，当前 `vertical_slice_status: awaiting_user_review`。阶段起点仍为第 2 阶段承接提交 `5a8631be20eb0d3d3c257636fe526d1f646c747f`；ADR-001 的决定仍是 **保留并修复**。本阶段未重写 Canvas、状态机或引擎，未部署、未创建 PR、未改默认分支，也未将一个切片扩展为多关内容。[1]
+第 4 阶段已在 `manus/duckduckrun-hardening` 上将南京代表性垂直切片设为唯一扩展基线，`vertical_slice_status: approved`。阶段起点仍为第 2 阶段承接提交 `5a8631be20eb0d3d3c257636fe526d1f646c747f`；ADR-001 的决定仍是 **保留并修复**。本阶段未重写 Canvas、状态机或引擎，未部署、未创建 PR、未改默认分支，也未将一个切片扩展为多关内容。[1]
 
-> **状态：第 3 阶段本地质量门禁为绿，仍禁止发布。** 第 2 阶段提交 `e271ac27f90506b38fe177919930ce5472388a87` 的远端质量门禁已成功（[run 33445931085](https://github.com/mckf111/DuckDuckRun/actions/runs/33445931085)）；本次尚未推送，远端复核待提交后发生。A-02（线上 Pages 旧版本）因本阶段明确不部署而保持 P1；A-04/A-09 因没有物理 Android/iPhone/微信证据而保持移动发布阻断。
+> **状态：第 4 阶段本地质量门禁与可玩性审计通过，仍禁止发布。** 第 2 阶段提交 `e271ac27f90506b38fe177919930ce5472388a87` 的远端质量门禁已成功（[run 33445931085](https://github.com/mckf111/DuckDuckRun/actions/runs/33445931085)）；本次尚未推送，远端复核待提交后发生。A-02（线上 Pages 旧版本）因本阶段明确不部署而保持 P1；A-04/A-09 因没有物理 Android/iPhone/微信证据而保持移动发布阻断。
 
 ## 本阶段关键决定与变更
 
@@ -21,6 +21,9 @@
 | V-01 | 新增独立 `slice` 模式，而不是新主线关卡；固定脚本形成中华门门序、盐水鸭首牌、秦淮双灯取舍、下滑横梁、夜渡到岸的 720m 闭环 | `?slice=1&demo&seed=20260903`；`npm run test:browser` |
 | V-02 | 轻松模式以 9m/s 与两次“灯影接住”容错服务慢反应玩家；标准模式仍保留横移、跳跃、下滑学习 | 菜单“轻松·灯影护航”；浏览器切片容错断言 |
 | V-03 | 生成两枚透明 WebP，地标/水面/画舫/门洞/UI 全部程序化；源 PNG 不进入仓库 | `ASSETS.md`、`docs/qa/asset-sbom.json`、`node tools/generate_asset_sbom.mjs` |
+| V-04 | 切片成为唯一扩展基线：`NANJING_SLICE` 集中管理六段节奏、三条有限路线、难度数值和 demo；不加入无解释的随机惩罚 | `npm run test:playability`；`docs/design/gameplay-and-balance.md` |
+| V-05 | 标准/轻松以速度、输入缓冲、碰撞宽度、提示提前量和两次护航形成少而清楚的层级；轻松不自动过关 | 首错差异断言；`docs/qa/evidence/slice-playability.json` |
+| A-05/V-06 | 默认尊重 `prefers-reduced-motion`，菜单可切换 system/reduced/full；减弱时保留文字/轮廓/计数，停用非必要运动 | `src/save.js`、`src/main.js`、`src/render.js`；浏览器回归 |
 
 ## 已实际运行的命令和结果
 
@@ -32,9 +35,10 @@
 | `npm run test:save` | 3/3 通过 |
 | `npm run test:resources` | 4/4 通过 |
 | `npm run test:browser` | 通过；三视口、按需预取、失败降级、输入、尺寸、音频与生命周期均通过 |
-| `npm run build && npm run test:dist && npm run test:size` | 通过；81 个制品入口/资源 HTTP 无 4xx/5xx；首屏 483.6 KiB、会话 5.69 MiB |
-| `npm run verify` | 通过；第 3 阶段提交前本地绿色总门禁（制品版本 `5c13a81023cf`） |
-| `node tools/e2e/measure_slice_performance.mjs` | 通过；切片对比既有首关：桌面 60.09 vs 50.30 FPS、移动模拟 42.91 vs 34.26 FPS，且资源请求少 3 个/传输少 249,000 B；只作为自动化信号 |
+| `npm run build && npm run test:dist && npm run test:size` | 通过；81 个制品入口/资源 HTTP 无 4xx/5xx；第4阶段首屏 485.9 KiB、全会话 5.69 MiB，均在 6/20 MiB 预算内。 |
+| `npm run verify` | 通过；第4阶段完整门禁已运行。原子制品版本 `766dfb5dafe2` 在本地工作树代码上通过 81 个入口/资源可达性检查；提交后由远端 CI 复核。 |
+| `npm run test:playability` | 通过；3 条标准与 3 条轻松固定 seed 路线均完成 720 m/4 灯牌，10 分钟连续模拟完成 7 局，20 分钟浸泡完成 15 局；仅为状态机模拟 |
+| `node tools/e2e/measure_slice_performance.mjs` | 通过；切片对比既有首关：桌面 59.60 vs 52.66 FPS、移动模拟 41.12 vs 34.87 FPS，且资源请求少 3 个/传输少 249,000 B；只作为自动化信号 |
 | `node tools/e2e/capture_slice_evidence.mjs` | 通过；生成桌面、移动横/竖屏与短演示关键帧；`slice-demo.mp4` 是六个真实 Canvas 状态帧编码的 12 秒摘要，不是实时录屏 |
 
 ## 第 3 阶段切片与证据入口
@@ -67,6 +71,16 @@
 
 运行时：`src/main.js`、`src/input.js`、`src/audio.js`、`src/core.js`、`src/game.js`、`src/render.js`、`src/ui.js`、`src/art/sprites.js`、`src/config.js`、`src/art/photo.js`。测试与构建：`tests/runtime.test.js`、`tools/e2e/beam.mjs`、`tools/e2e/browser_test.mjs`、`tools/e2e/capture_slice_evidence.mjs`、`tools/e2e/measure_slice_performance.mjs`、`tools/e2e/check_dist.mjs`、`tools/e2e/check_size_budget.mjs`、`tools/build_static.mjs`、`tools/generate_asset_sbom.mjs`、`tools/process_nanjing_slice_assets.py`、`package.json`、`package-lock.json`、`.github/workflows/test.yml`。文档：`PLAN.md`、`STRUCTURE.md`、`MEMORY.md`、`ASSETS.md`、`docs/design/nanjing-vertical-slice.md`、`docs/research/nanjing-source-notes.md`、`docs/qa/asset-sbom.json`、`docs/qa/evidence/visual-inspection.md`、`docs/qa/engineering-hardening-report.md`、本文件。
 
+## 第 4 阶段体验与证据入口
+
+| 用途 | 入口/位置 | 边界 |
+|---|---|---|
+| 路线与难度配置 | `src/config.js` 的 `NANJING_SLICE` | 仅有限路线组合；`20260903` 保持第3阶段月影左线。 |
+| 平衡审计 | `npm run test:playability`；`docs/qa/evidence/slice-playability.json` | 固定 seed 的实际状态机模拟，不是用户研究。 |
+| 玩家体验说明 | `docs/design/gameplay-and-balance.md` | 城市事实与原创玩法转译分离。 |
+| 可玩性质量报告 | `docs/qa/playability-report.md` | 区分浏览器模拟、视觉抽检、真人试玩和物理真机。 |
+| 动效偏好 | 菜单“动效·跟随系统/减弱/完整” | 用户设置优先；减弱动态不删除基础输入或反馈。 |
+
 ## 未关闭问题与下一阶段前提
 
 | 优先级 | 编号 | 当前状态 | 下一阶段前提 |
@@ -80,7 +94,7 @@
 
 ## 回滚点与禁止项
 
-阶段起点 `5a8631be20eb0d3d3c257636fe526d1f646c747f` 是本阶段的无损代码回滚点。提交完成后，以第 3 阶段提交 SHA 作为下一阶段回滚点。不得直接改默认分支，不得创建 PR，不得部署；不得在用户审查前扩展关卡/资产池，也不得以升级依赖、替换引擎、重写架构、增加内容/账号/后端/PWA 来替代上述未关闭问题。
+阶段起点 `5a8631be20eb0d3d3c257636fe526d1f646c747f` 是第 2 阶段代码回滚点；以第 3 阶段提交 SHA 作为切片单脚本回滚点，提交完成后以第 4 阶段提交 SHA 作为批准后路线/难度回滚点。不得直接改默认分支，不得创建 PR，不得部署；不得在真人试玩前扩展关卡/资产池，也不得以升级依赖、替换引擎、重写架构、增加内容/账号/后端/PWA 来替代上述未关闭问题。
 
 ## 参考资料
 
