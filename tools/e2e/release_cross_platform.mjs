@@ -1,18 +1,16 @@
 import assert from 'node:assert/strict';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { spawn } from 'node:child_process';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright-core';
+import { assertBrowserGlyphCoverage, assertReleaseGlyphManifest, attachPageErrors, browserExecutable, ensureEvidenceDir, sleep, startStaticServer, waitForReleaseFrame } from './release_support.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const dist = join(root, 'dist');
 const info = JSON.parse(readFileSync(join(dist, 'build-info.json'), 'utf8'));
-const evidenceDir = join(root, 'docs', 'qa', 'evidence');
+const evidenceDir = ensureEvidenceDir(root);
 const out = join(evidenceDir, 'release-cross-platform.json');
-const base = 'http://127.0.0.1:8135';
-const executable = process.env.PLAYWRIGHT_EXECUTABLE_PATH || (existsSync('/usr/bin/chromium') ? '/usr/bin/chromium' : undefined);
-const server = spawn('python3', ['-m', 'http.server', '8135', '--bind', '127.0.0.1'], {cwd:dist, stdio:'ignore'});
+let base;
 const profiles = [
   {
     id:'desktop_chromium', label:'桌面 Chromium（真实 Linux Chromium）', kind:'browser-binary',
@@ -42,20 +40,6 @@ const result = {
   binary:'Chromium 151 on Linux; Edge and WebKit binaries unavailable in this environment.',
   profiles:[],
 };
-async function sleep(ms){ return new Promise(resolve => setTimeout(resolve, ms)); }
-async function waitServer(){
-  for(let i=0;i<50;i++){
-    try{ if((await fetch(`${base}/build-info.json`)).ok) return; }catch(error){}
-    await sleep(100);
-  }
-  throw new Error('跨端验收静态服务未启动');
-}
-function attachWatchers(page, errors){
-  page.on('pageerror', error => errors.push(`pageerror:${error.message}`));
-  page.on('console', message => { if(message.type()==='error') errors.push(`console:${message.text()}`); });
-  page.on('requestfailed', request => errors.push(`request:${request.url()} ${request.failure()?.errorText || ''}`));
-  page.on('response', response => { if(response.status() >= 400) errors.push(`http:${response.status()} ${response.url()}`); });
-}
 async function clickLogical(page, logicalX, logicalY){
   const box = await page.locator('#cv').boundingBox();
   await page.mouse.click(box.x + logicalX * box.width / 960, box.y + logicalY * box.height / 540);
@@ -64,13 +48,16 @@ async function runProfile(browser, profile){
   const context = await browser.newContext(profile.options);
   const page = await context.newPage();
   const errors = [];
-  attachWatchers(page, errors);
+  attachPageErrors(page, errors);
   const started = Date.now();
   await page.goto(`${base}/`, {waitUntil:'domcontentloaded'});
   await page.waitForFunction(async () => {
     const game = await import('./src/game.js');
     return game.G.state === 'menu' && game.G.buttons.length >= 4;
-  }, {timeout:4000});
+  }, undefined, {timeout:4000});
+  if(profile.id === 'desktop_chromium'){
+    await assertBrowserGlyphCoverage(page, ['南京夜跑切片约秒', '轻松灯影护航', '中华门秦淮夜渡', '常规灯牌', '再跑一趟']);
+  }
   const menuMs = Date.now() - started;
   const firstAction = await page.evaluate(async () => {
     const game = await import('./src/game.js');
@@ -78,9 +65,9 @@ async function runProfile(browser, profile){
   });
   assert.ok(firstAction, `${profile.id} 菜单未注册开始按钮`);
   await clickLogical(page, firstAction.x + firstAction.w / 2, firstAction.y + firstAction.h / 2);
-  await page.waitForFunction(async () => (await import('./src/game.js')).G.state === 'levels', {timeout:1500});
+  await page.waitForFunction(async () => (await import('./src/game.js')).G.state === 'levels', undefined, {timeout:1500});
   await page.goto(`${base}/?slice=1&demo&seed=20260903`, {waitUntil:'domcontentloaded'});
-  await page.waitForFunction(async () => (await import('./src/game.js')).G.state === 'play', {timeout:4000});
+  await page.waitForFunction(async () => (await import('./src/game.js')).G.state === 'play', undefined, {timeout:4000});
   await clickLogical(page, 480, 300); // 用户手势：音频创建/恢复入口。
   const audioUnlocked = await page.evaluate(async () => (await import('./src/audio.js')).ac()?.state === 'running');
   await page.evaluate(() => window.dispatchEvent(new Event('blur')));
@@ -94,7 +81,7 @@ async function runProfile(browser, profile){
     game.gameOver('full');
     for(let frame=0; frame<8; frame++) game.update(0.1);
   });
-  await page.waitForFunction(async () => (await import('./src/game.js')).G.state === 'over', {timeout:1000});
+  await page.waitForFunction(async () => (await import('./src/game.js')).G.state === 'over', undefined, {timeout:1000});
   await sleep(80);
   const retry = await page.evaluate(async () => {
     const game = await import('./src/game.js');
@@ -102,7 +89,7 @@ async function runProfile(browser, profile){
   });
   assert.ok(retry, `${profile.id} 失败页未注册重开按钮`);
   await clickLogical(page, retry.x + retry.w / 2, retry.y + retry.h / 2);
-  await page.waitForFunction(async () => (await import('./src/game.js')).G.state === 'play', {timeout:1500});
+  await page.waitForFunction(async () => (await import('./src/game.js')).G.state === 'play', undefined, {timeout:1500});
   let portraitBlocked = null;
   let landscapeRestored = null;
   if(profile.mobile){
@@ -114,7 +101,8 @@ async function runProfile(browser, profile){
     landscapeRestored = await page.locator('#rotate').evaluate(el => getComputedStyle(el).display === 'none');
   }
   await page.reload({waitUntil:'domcontentloaded'});
-  await page.waitForFunction(async () => (await import('./src/game.js')).G.state === 'play', {timeout:4000});
+  await page.waitForFunction(async () => (await import('./src/game.js')).G.state === 'play', undefined, {timeout:4000});
+  await waitForReleaseFrame(page, {state:'play'});
   const final = await page.evaluate(async () => {
     const game = await import('./src/game.js');
     const canvas = document.querySelector('#cv');
@@ -143,10 +131,12 @@ async function runProfile(browser, profile){
 }
 function relativeToRoot(path){ return path.slice(root.length + 1).replaceAll('\\', '/'); }
 let browser;
+let server;
 try{
-  await waitServer();
-  mkdirSync(evidenceDir, {recursive:true});
-  browser = await chromium.launch({headless:true, executablePath:executable, args:['--no-sandbox']});
+  assertReleaseGlyphManifest(root, ['南京夜跑切片约秒', '轻松灯影护航', '中华门秦淮夜渡', '常规灯牌', '再跑一趟']);
+  server = await startStaticServer({cwd:dist, port:8135, label:'跨端验收'});
+  base = server.base;
+  browser = await chromium.launch({headless:true, executablePath:browserExecutable(), args:['--no-sandbox']});
   for(const profile of profiles) result.profiles.push(await runProfile(browser, profile));
   result.passed = true;
 } catch(error){
@@ -156,6 +146,6 @@ try{
 } finally {
   writeFileSync(out, JSON.stringify(result, null, 2) + '\n');
   if(browser) await browser.close().catch(() => {});
-  server.kill();
+  if(server) await server.stop();
 }
 console.log(`PASS | 跨端候选验收：${result.profiles.length} 个浏览器/UA视口配置通过；仅 Chromium 为真实浏览器二进制结论`);

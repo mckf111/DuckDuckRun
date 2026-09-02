@@ -1,6 +1,6 @@
 # DuckDuckRun 国内静态部署决策
 
-**决策日期：2026-09-01；候选制品：`dist/releases/1634d51bc5b8/`。** 本文是发布工程与成本估算，不构成关于 ICP、公安备案或第三方素材的正式法律意见；正式上线前应由域名主体/法务核验其适用义务。
+**决策日期：2026-09-01；工程合同复核：2026-09-02。** 发布对象必须是绑定批准 commit、由绿色 CI run 产出的 `duckduckrun-<commit SHA>` 制品；历史目录 `dist/releases/1634d51bc5b8/` 只是一份旧候选记录，不能单凭 build ID 当成已验证或可发布制品。本文是发布工程与成本估算，不构成关于 ICP、公安备案或第三方素材的正式法律意见；正式上线前应由域名主体/法务核验其适用义务。
 
 > **结论：若已有已备案域名和中国大陆阿里云账号，采用“阿里云 OSS（华东 2 上海或既有合规内地区域）+ 阿里云 CDN 中国内地 + HTTPS 自定义子域名”的纯静态方案。** 它不需要服务器、数据库或容器，且本候选制品已经使用版本目录、内容指纹和根入口原子切换。若没有备案，先采用 OSS 中国香港的 HTTPS 自定义域名作受限预览/备用；它不是大陆节点，也不应被宣传为“国内访问优先”。
 
@@ -42,13 +42,15 @@
 
 ## 4. 版本与缓存决策
 
-构建器将所有运行时资源放在 `releases/<12位构建ID>/`，图片与字体使用内容哈希文件名。版本目录内的资源可使用 `Cache-Control: max-age=31536000, immutable`；根 `index.html` 与 `build-info.json` 使用 `Cache-Control: no-cache, no-store, must-revalidate`。部署脚本先上传完整版本目录，再上传根入口，因此用户不会命中半上传的版本。部署后只刷新根入口和 `build-info.json`，**不可**刷新整个 `releases/` 目录或 hash 文件。
+构建器将所有运行时资源放在 `releases/<12位构建ID>/`，图片与字体使用内容哈希文件名。版本目录内的资源使用 `Cache-Control: max-age=31536000, immutable`；根 `index.html` 与 `build-info.json` 使用 `Cache-Control: no-cache, no-store, must-revalidate`。这里的逗号是标准 Cache-Control 指令分隔符；传给 ossutil 时，完整元数据采用官方 `header:value` 形式，例如 `Cache-Control:max-age=31536000, immutable`。
+
+部署脚本优先消费从已通过门禁的 CI run 下载的 `dist/` 制品，并核对根清单、版本清单、文件清单和目标 build ID；只有未指定制品时才从冷环境安装根依赖、e2e 依赖及 Chromium 后重新跑发布门禁。正常发布先上传完整版本目录，回读确认后再为该目标重新生成根 `build-info.json` 与 `index.html`；回滚则先核验 OSS 上既有版本，再为 `DEPLOY_BUILD_ID` 重新生成这两份根指针。两条路径都不会复用当前工作区里可能指向另一版本的根文件。部署后只刷新根入口和 `build-info.json`，**不可**刷新整个 `releases/` 目录或 hash 文件。
 
 阿里云刷新接口会使节点缓存失效，新请求回源获取内容；大范围刷新会增加源站压力，官方说明刷新任务约需 5–6 分钟生效。[8] 因此本项目只刷新两项可变对象，并保留旧版本目录用于即时回滚。
 
 ## 5. 需要用户提供的最少信息
 
-当前没有可用的大陆云账号、备案域名、DNS 权限或部署凭证被提供给本任务，因此不存在实际生产 URL，也没有执行生产上传或 DNS 修改。准备生产发布时，只需一次性提供以下信息或在 GitHub Secrets 中配置：已备案的 `run.example.com` 类子域名、所选阿里云区域与 OSS Bucket 名称、CDN 加速域名、最小权限 RAM 部署凭证，以及是否允许在完成实机微信冒烟后执行生产发布/DNS 切换。详细变量、权限、操作顺序、验证与回滚见 [`runbook.md`](./runbook.md) 和 [`rollback.md`](./rollback.md)。
+当前没有可用的大陆云账号、备案域名、DNS 权限或部署凭证被提供给本任务，因此不存在实际生产 URL，也没有执行生产上传或 DNS 修改。准备生产发布时，只需一次性提供以下信息或在受保护的发布环境中配置：已备案的 `run.example.com` 类子域名、所选阿里云区域与 OSS Bucket 名称、CDN 加速域名、最小权限 RAM/STS 部署凭证、绑定批准 commit 的绿色 CI 制品，以及是否允许在完成实机微信冒烟后执行生产发布/DNS 切换。先用 `DEPLOY_DRY_RUN=1` 检查命令与指针合同；它不访问云端、不读取凭证，也不代表生产验证。详细变量、权限、操作顺序、验证与回滚见 [`runbook.md`](./runbook.md) 和 [`rollback.md`](./rollback.md)。
 
 ## References
 

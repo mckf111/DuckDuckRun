@@ -2,8 +2,23 @@ name: quality-gate
 
 on:
   push:
-    branches: [manus/duckduckrun-hardening]
+    branches: [main, manus/duckduckrun-hardening, codex/manus-rc-remediation]
+    tags: ['v*']
   pull_request:
+  workflow_dispatch:
+    inputs:
+      run_soak:
+        description: Run the independent 20-minute soak gate
+        required: true
+        type: boolean
+        default: true
+      soak_duration_ms:
+        description: Soak duration in milliseconds (minimum 4000)
+        required: true
+        type: string
+        default: '1200000'
+  schedule:
+    - cron: '17 18 * * 0'
 
 permissions:
   contents: read
@@ -13,8 +28,12 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test:
+  release:
+    if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      RELEASE_EVIDENCE_DIR: ${{ runner.temp }}/duckduckrun-evidence
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -27,11 +46,55 @@ jobs:
       - run: npm ci
       - run: npm ci --prefix tools/e2e
       - run: node tools/e2e/node_modules/playwright-core/cli.js install --with-deps chromium
-      - run: npm run verify
+      - name: Core verification
+        run: npm run verify
+      - name: Asset and notice verification
+        run: npm run test:assets
+      - name: Release candidate verification
+        run: npm run test:release
       - name: Upload immutable static artifact
         uses: actions/upload-artifact@v4
         with:
           name: duckduckrun-${{ github.sha }}
           path: dist/
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 90
+      - name: Upload release evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: duckduckrun-release-evidence-${{ github.sha }}
+          path: ${{ runner.temp }}/duckduckrun-evidence/
+          if-no-files-found: warn
+          retention-days: 90
+
+  soak:
+    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.run_soak)
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      RELEASE_EVIDENCE_DIR: ${{ runner.temp }}/duckduckrun-evidence
+      SOAK_DURATION_MS: ${{ github.event_name == 'workflow_dispatch' && inputs.soak_duration_ms || '1200000' }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            tools/e2e/package-lock.json
+      - run: npm ci
+      - run: npm ci --prefix tools/e2e
+      - run: node tools/e2e/node_modules/playwright-core/cli.js install --with-deps chromium
+      - run: npm run build
+      - name: Runtime soak gate
+        run: npm run test:release:soak
+      - name: Upload soak evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: duckduckrun-soak-evidence-${{ github.run_id }}
+          path: ${{ runner.temp }}/duckduckrun-evidence/
+          if-no-files-found: error
+          retention-days: 90

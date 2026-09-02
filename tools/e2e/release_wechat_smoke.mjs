@@ -1,77 +1,116 @@
 import assert from 'node:assert/strict';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { spawn } from 'node:child_process';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright-core';
+import { assertBrowserGlyphCoverage, assertReleaseGlyphManifest, attachPageErrors, browserExecutable, ensureEvidenceDir, sleep, startStaticServer } from './release_support.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const dist = join(root, 'dist');
 const info = JSON.parse(readFileSync(join(dist, 'build-info.json'), 'utf8'));
-const evidenceDir = join(root, 'docs', 'qa', 'evidence');
+const evidenceDir = ensureEvidenceDir(root);
 const out = join(evidenceDir, 'release-wechat-ua-smoke.json');
 const shot = join(evidenceDir, 'release-wechat-ua-share.png');
-const base = 'http://127.0.0.1:8134';
-const executable = process.env.PLAYWRIGHT_EXECUTABLE_PATH || (existsSync('/usr/bin/chromium') ? '/usr/bin/chromium' : undefined);
-const server = spawn('python3', ['-m', 'http.server', '8134', '--bind', '127.0.0.1'], {cwd:dist, stdio:'ignore'});
+let base;
 const result = {
-  schema:'duckduckrun-release-wechat-ua-smoke/v1',
+  schema:'duckduckrun-release-wechat-ua-smoke/v2',
   capturedAt:new Date().toISOString(),
   environment:'Chromium with iPhone/MicroMessenger user-agent and touch viewport. This is a container-style simulation, not a real WeChat WebView or physical-phone result.',
   buildId:info.buildId,
   errors:[],
 };
-async function sleep(ms){ return new Promise(resolve => setTimeout(resolve, ms)); }
-async function waitServer(){
-  for(let i=0;i<50;i++){
-    try{ if((await fetch(`${base}/build-info.json`)).ok) return; }catch(error){}
-    await sleep(100);
-  }
-  throw new Error('微信冒烟静态服务未启动');
-}
 let browser;
+let server;
 try{
-  await waitServer();
-  browser = await chromium.launch({headless:true, executablePath:executable, args:['--no-sandbox']});
+  assertReleaseGlyphManifest(root, ['再跑一趟', '长按图片保存发送给好友', '复制链接发给朋友', '南京地标取景游戏美术化呈现']);
+  server = await startStaticServer({cwd:dist, port:8134, label:'微信冒烟'});
+  base = server.base;
+  browser = await chromium.launch({headless:true, executablePath:browserExecutable(), args:['--no-sandbox']});
   const context = await browser.newContext({
     viewport:{width:844,height:390},hasTouch:true,isMobile:true,deviceScaleFactor:2,
     userAgent:'Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.40',
   });
   const page = await context.newPage();
-  page.on('pageerror', error => result.errors.push(`pageerror:${error.message}`));
-  page.on('console', message => { if(message.type()==='error') result.errors.push(`console:${message.text()}`); });
-  page.on('requestfailed', request => result.errors.push(`request:${request.url()} ${request.failure()?.errorText || ''}`));
-  page.on('response', response => { if(response.status() >= 400) result.errors.push(`http:${response.status()} ${response.url()}`); });
+  await page.addInitScript(() => {
+    const originalToBlob = HTMLCanvasElement.prototype.toBlob;
+    HTMLCanvasElement.prototype.toBlob = function(...args){
+      window.__shareToBlobCalls = (window.__shareToBlobCalls || 0) + 1;
+      return originalToBlob.apply(this, args);
+    };
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable:true,
+      value:{writeText:async text => { window.__copiedShareText = text; }},
+    });
+  });
+  attachPageErrors(page, result.errors);
   await page.goto(`${base}/?slice=1&demo&seed=20260903`, {waitUntil:'domcontentloaded'});
-  await page.waitForFunction(async () => (await import('./src/game.js')).G.state === 'play', {timeout:4000});
+  await page.waitForFunction(async () => (await import('./src/game.js')).G.state === 'play', undefined, {timeout:4000});
+  await assertBrowserGlyphCoverage(page, ['再跑一趟', '长按图片保存发送给好友', '复制链接发给朋友', '南京地标取景游戏美术化呈现']);
   await page.keyboard.press('ArrowRight');
   const audioUnlocked = await page.evaluate(async () => (await import('./src/audio.js')).ac()?.state === 'running');
   await page.evaluate(async () => {
     const game = await import('./src/game.js');
+    window.__releaseGame = game.G;
     game.gameOver('full');
-    for(let frame=0; frame<8; frame++) game.update(0.1);
   });
-  await page.waitForFunction(async () => (await import('./src/game.js')).G.state === 'over', {timeout:1000});
-  await page.waitForTimeout(100); // 等待失败页至少完成一帧绘制并注册 Canvas 按钮。
-  const target = await page.evaluate(async () => {
-    const game = await import('./src/game.js');
-    return game.G.buttons.find(button => button.id === 'share');
-  });
+  // 让真实 requestAnimationFrame 主循环走完撞车动画；手工 update 会越过
+  // main.js 的状态同步并制造一个“过场已结束”的竞态假象。
+  await page.waitForFunction(() => window.__releaseGame.state === 'over', undefined, {timeout:2000});
+  const targetHandle = await page.waitForFunction(() => {
+    const button = window.__releaseGame.buttons.find(entry => entry.id === 'share');
+    return window.__releaseGame.state === 'over' && window.__releaseGame.wipe <= 0 && button && document.fonts.status === 'loaded' ? {...button} : false;
+  }, undefined, {timeout:2000});
+  const target = await targetHandle.jsonValue();
   assert.ok(target, '失败页未注册分享按钮');
-  const canvas = await page.locator('#cv').boundingBox();
-  await page.mouse.click(canvas.x + (target.x + target.w / 2) * canvas.width / 960, canvas.y + (target.y + target.h / 2) * canvas.height / 540);
-  await page.waitForFunction(() => getComputedStyle(document.querySelector('#shareLayer')).display === 'flex', {timeout:3000});
+  const canvas = page.locator('#cv');
+  const box = await canvas.boundingBox();
+  await canvas.evaluate(element => {
+    window.__sharePointerEvents = [];
+    for(const type of ['pointerdown','pointerup','pointercancel']) element.addEventListener(type, async event => {
+      const game = await import('./src/game.js');
+      window.__sharePointerEvents.push({type, isPrimary:event.isPrimary, pointerType:event.pointerType, wipe:game.G.wipe, pressed:game.G.pressed?.id || null});
+    });
+  });
+  await canvas.tap({position:{
+    x:(target.x + target.w/2) * box.width/960,
+    y:(target.y + target.h/2) * box.height/540,
+  }});
+  await sleep(250);
+  result.touchProbe = await page.evaluate(async () => {
+    const game = await import('./src/game.js');
+    const layer = document.querySelector('#shareLayer');
+    const image = layer?.querySelector('.card');
+    return {
+      state:game.G.state,
+      wipe:game.G.wipe,
+      pressed:game.G.pressed?.id || null,
+      layerDisplay:getComputedStyle(layer).display,
+      imageComplete:image?.complete || false,
+      imageNaturalWidth:image?.naturalWidth || 0,
+      toBlobCalls:window.__shareToBlobCalls || 0,
+      pointerEvents:window.__sharePointerEvents || [],
+    };
+  });
+  await page.waitForFunction(() => {
+    const layer = document.querySelector('#shareLayer');
+    const image = layer?.querySelector('.card');
+    return getComputedStyle(layer).display === 'flex' && image.complete && image.naturalWidth > 0;
+  }, undefined, {timeout:5000});
   await page.locator('#copyBtn').click();
-  await page.waitForFunction(() => document.querySelector('#shareToast').textContent.includes('复制'), {timeout:3000});
+  await page.waitForFunction(() => document.querySelector('#shareToast').textContent.includes('复制'), undefined, {timeout:3000});
+  await sleep(350); // 等待 toast 的 300ms 过渡结束，截图才是稳定态。
   await page.screenshot({path:shot});
   result.share = await page.evaluate(() => ({
     layerVisible:getComputedStyle(document.querySelector('#shareLayer')).display === 'flex',
     copyToast:document.querySelector('#shareToast').textContent,
-    cleanShareLink:location.origin + location.pathname,
-    versionedPath:location.pathname.includes(`/releases/${document.querySelector('meta[name="duckduckrun-build"]').content}/`),
+    copiedText:window.__copiedShareText || '',
+    loadedVersionedPath:location.pathname.includes(`/releases/${document.querySelector('meta[name="duckduckrun-build"]').content}/`),
   }));
   result.audioUnlocked = audioUnlocked;
-  result.passed = result.errors.length === 0 && result.audioUnlocked && result.share.layerVisible && result.share.copyToast.includes('复制') && result.share.versionedPath;
+  const stableRoot = base + '/';
+  result.passed = result.errors.length === 0 && result.audioUnlocked && result.share.layerVisible
+    && result.share.copyToast.includes('复制') && result.share.loadedVersionedPath
+    && result.share.copiedText.includes(stableRoot) && !result.share.copiedText.includes('/releases/');
   assert.equal(result.passed, true, `微信UA分享冒烟不通过：${JSON.stringify(result)}`);
   await context.close();
 } catch(error){
@@ -79,9 +118,8 @@ try{
   result.failure = error.stack || String(error);
   throw error;
 } finally {
-  mkdirSync(evidenceDir, {recursive:true});
   writeFileSync(out, JSON.stringify(result, null, 2) + '\n');
   if(browser) await browser.close().catch(() => {});
-  server.kill();
+  if(server) await server.stop();
 }
-console.log(`PASS | 微信UA模拟冒烟：音频解锁、失败重开页、长按保存遮罩与复制链接均通过`);
+console.log(`PASS | 微信UA模拟冒烟：真实 Canvas 触控、音频解锁、长按保存遮罩与稳定根链接均通过`);

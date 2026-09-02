@@ -1,17 +1,30 @@
 {
   "schema": "duckduckrun-asset-sbom/v1",
-  "generated_at": "2026-09-01",
+  "generated_at": "2026-09-02",
   "scope": "Third-party photos, local fonts, and stage-3 project-generated slice assets shipped by the static runtime. Other original program/art assets remain governed by LICENSE.md.",
   "release_review": {
     "status": "registered",
-    "asset_file_count": 44,
-    "completeness_rule": "Each shipped third-party/generated/font asset has a local path, SHA-256, source/provenance, author/rightsholder, license, attribution location and release obligation.",
-    "player_visible_notices": [
-      "assets/img/CREDITS.md",
-      "assets/fonts/OFL.txt",
-      "src/legal.js",
-      "LICENSE.md"
-    ],
+    "asset_file_count": 47,
+    "completeness_rule": "Each governed source/release asset must be discovered from disk and matched to exactly one registry entry; every entry includes SHA-256, source/provenance, author/rightsholder, license, attribution location and release obligation.",
+    "player_visible_notice_contract": {
+      "ui_route": "menu:credits",
+      "ui_module": "src/legal.js",
+      "release_files": {
+        "gameLicense": {
+          "source": "LICENSE.md",
+          "publicPath": "legal/LICENSE.md"
+        },
+        "photoCredits": {
+          "source": "assets/img/CREDITS.md",
+          "publicPath": "legal/PHOTO-CREDITS.md"
+        },
+        "fontLicense": {
+          "source": "assets/fonts/OFL.txt",
+          "publicPath": "legal/FONT-OFL.txt"
+        }
+      },
+      "manifest_field": "notices"
+    },
     "historical_provenance_note": "Pre-stage-2 download dates, original source revisions/oldids and transformation history were not recorded and are not reconstructed. This is a provenance limitation, not an unregistered shipped file.",
     "legal_note": "Registry review documents attribution and license handling; it is not a formal legal opinion."
   },
@@ -21,38 +34,38 @@
       "local_path": "assets/fonts/jinling-brush.woff2",
       "category": "font",
       "purpose": "local UI font",
-      "modified": "unknown (pre-existing subset history not recorded)",
+      "modified": "subset to the committed character manifest on 2026-09-02",
       "source_url": "https://github.com/googlefonts/mashanzheng",
-      "source_version": "exact upstream revision pre-dates repository provenance; family, author and SIL OFL 1.1 recorded in assets/fonts/OFL.txt",
+      "source_version": "official repository master snapshot downloaded 2026-09-02; exact commit was not recorded",
       "author": "The Ma Shan Zheng Project Authors",
       "license": "OFL-1.1",
       "release_status": "registered — upstream family, copyright holder, SIL OFL 1.1 notice, SHA-256 and player-visible attribution are present",
       "license_obligation": "Bundle the SIL OFL 1.1 copyright and license notice; do not sell font files by themselves.",
-      "downloaded_at": "not recorded in pre-stage-2 repository",
-      "sha256": "92d40641d4bb786e7dc1d893770ab24dc02ac287b3e41e1263bd5de3018841a6",
-      "processing_record": "not recorded in pre-stage-2 repository",
-      "attribution_location": "assets/fonts/OFL.txt and src/legal.js",
-      "reviewer": "Manus AI (stage 2 inventory)",
-      "reviewed_at": "2026-09-01"
+      "downloaded_at": "2026-09-02",
+      "sha256": "829082b20613e56094f3d9fbb7d11ab36aeaace482f12b1bddf410cb960ce834",
+      "processing_record": "fonttools pyftsubset MaShanZheng-Regular.ttf --text-file=assets/fonts/chars-brush.txt --flavor=woff2 --no-hinting --desubroutinize",
+      "attribution_location": "menu:credits (src/legal.js); full notice: assets/fonts/OFL.txt",
+      "reviewer": "Codex independent remediation",
+      "reviewed_at": "2026-09-02"
     },
     {
       "id": "jinling-kai",
       "local_path": "assets/fonts/jinling-kai.woff2",
       "category": "font",
       "purpose": "local UI font",
-      "modified": "unknown (pre-existing subset history not recorded)",
+      "modified": "subset to the committed character manifest on 2026-09-02",
       "source_url": "https://github.com/lxgw/LxgwWenKai",
-      "source_version": "exact upstream revision pre-dates repository provenance; family, author and SIL OFL 1.1 recorded in assets/fonts/OFL.txt",
+      "source_version": "LXGW WenKai Medium v1.522 release",
       "author": "LXGW",
       "license": "OFL-1.1",
       "release_status": "registered — upstream family, copyright holder, SIL OFL 1.1 notice, SHA-256 and player-visible attribution are present",
       "license_obligation": "Bundle the SIL OFL 1.1 copyright and license notice; do not sell font files by themselves.",
-      "downloaded_at": "not recorded in pre-stage-2 repository",
-      "sha256": "8eedb4accaba702643153e2b39a19c9540c3c4c93c88729bb1181be479ea2852",
-      "processing_record": "not recorded in pre-stage-2 repository",
-      "attribution_location": "assets/fonts/OFL.txt and src/legal.js",
-      "reviewer": "Manus AI (stage 2 inventory)",
-      "reviewed_at": "2026-09-01"
+      "downloaded_at": "2026-09-02",
+      "sha256": "0b6206b9af3cab0011a005ee272b492742497cbce49c9907f4146d6eb77c2863",
+      "processing_record": "fonttools pyftsubset LXGWWenKai-Medium.ttf --text-file=assets/fonts/chars.txt --flavor=woff2 --no-hinting --desubroutinize",
+      "attribution_location": "menu:credits (src/legal.js); full notice: assets/fonts/OFL.txt",
+      "reviewer": "Codex independent remediation",
+      "reviewed_at": "2026-09-02"
     },
     {
       "id": "bg_zhonghua",
@@ -69,7 +82,7 @@
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "9d3ca24f1f71ae963b3f24f1890328f5d6b77971b7dc1a103ece5b8d666bafda",
       "processing_record": "not recorded in pre-stage-2 repository",
-      "attribution_location": "assets/img/CREDITS.md and src/legal.js",
+      "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01"
     },
@@ -88,7 +101,7 @@
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "1bb4be8123639d6268aa1d522f0fadf39aed8b1f10122ec96379a8f42a841450",
       "processing_record": "not recorded in pre-stage-2 repository",
-      "attribution_location": "assets/img/CREDITS.md and src/legal.js",
+      "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01"
     },
@@ -164,7 +177,7 @@
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "47d3256fdda0eeb82e165a22e80ccbfdd79261c0d66ab2c891b6da758f38b4c6",
       "processing_record": "not recorded in pre-stage-2 repository",
-      "attribution_location": "assets/img/CREDITS.md and src/legal.js",
+      "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01"
     },
@@ -183,7 +196,7 @@
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "434d6dc75b0a7a513efce85c9240d3b1758b2d00ca6685057bfb703c62ce2e6d",
       "processing_record": "not recorded in pre-stage-2 repository",
-      "attribution_location": "assets/img/CREDITS.md and src/legal.js",
+      "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01"
     },
@@ -202,7 +215,7 @@
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "9624b60da3c983db784c8660bccb24f62e61dd69803b36f62146849b0029e5f7",
       "processing_record": "not recorded in pre-stage-2 repository",
-      "attribution_location": "assets/img/CREDITS.md and src/legal.js",
+      "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01"
     },
@@ -221,7 +234,7 @@
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "e69e9fc55a10a7d5a6a67d0a1780c598c025b85822cdc3df95d1af8cb74a4513",
       "processing_record": "not recorded in pre-stage-2 repository",
-      "attribution_location": "assets/img/CREDITS.md and src/legal.js",
+      "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01"
     },
@@ -240,7 +253,7 @@
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "b5122c37049db612573cbb252939b226dac20353adea3fcc3d5eaa743b750027",
       "processing_record": "not recorded in pre-stage-2 repository",
-      "attribution_location": "assets/img/CREDITS.md and src/legal.js",
+      "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01"
     },
@@ -259,7 +272,7 @@
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "9984b4bd1429c8d9d18476bf11b027c4cb835baf70bcd112097a7a4453997783",
       "processing_record": "not recorded in pre-stage-2 repository",
-      "attribution_location": "assets/img/CREDITS.md and src/legal.js",
+      "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01"
     },
@@ -278,7 +291,7 @@
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "48976741a8fe356653a0a48a1969d1e389bf18b767a7c63c9c7d67d750c36aee",
       "processing_record": "not recorded in pre-stage-2 repository",
-      "attribution_location": "assets/img/CREDITS.md and src/legal.js",
+      "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01"
     },
@@ -297,7 +310,7 @@
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "5654eab64009f4e096a4232184281eab239314382b5d8d93b7f539ecd0e4db02",
       "processing_record": "not recorded in pre-stage-2 repository",
-      "attribution_location": "assets/img/CREDITS.md and src/legal.js",
+      "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01"
     },
@@ -316,7 +329,7 @@
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "d2b11b07335f4dfb4269379ddaf0e7b908e21067f9f45e33e603c6e6254e0b85",
       "processing_record": "not recorded in pre-stage-2 repository",
-      "attribution_location": "assets/img/CREDITS.md and src/legal.js",
+      "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01"
     },
@@ -335,7 +348,7 @@
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "fe8bacfb6e90bd7a1ab885d614050dd224f49f297e2c7cd62be0a4ce6cf793eb",
       "processing_record": "not recorded in pre-stage-2 repository",
-      "attribution_location": "assets/img/CREDITS.md and src/legal.js",
+      "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01"
     },
@@ -354,7 +367,7 @@
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "55e470d4b47685c75c0de54e6e5bb4a714a9edd06a91b2203c5a7d07a21e51f3",
       "processing_record": "not recorded in pre-stage-2 repository",
-      "attribution_location": "assets/img/CREDITS.md and src/legal.js",
+      "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01"
     },
@@ -373,7 +386,7 @@
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "e5962fec704d2691e56785c94cc82ddc9f59fe5062de9a09ffab0ca85019d9ed",
       "processing_record": "not recorded in pre-stage-2 repository",
-      "attribution_location": "assets/img/CREDITS.md and src/legal.js",
+      "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01"
     },
@@ -392,7 +405,7 @@
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "738fbe0bfd06d78e92e5eaa037a69f259967bd5e50e5975d91499cbd8d41c2ed",
       "processing_record": "not recorded in pre-stage-2 repository",
-      "attribution_location": "assets/img/CREDITS.md and src/legal.js",
+      "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01"
     },
@@ -411,7 +424,45 @@
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "87253ea24c3dd7f76e112bd1ee5dbe7705f0ae30ded94d334103712026615995",
       "processing_record": "not recorded in pre-stage-2 repository",
-      "attribution_location": "assets/img/CREDITS.md and src/legal.js",
+      "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
+      "reviewer": "Manus AI (stage 2 inventory)",
+      "reviewed_at": "2026-09-01"
+    },
+    {
+      "id": "bg_sunyard",
+      "local_path": "assets/img/bg_sunyard.jpg",
+      "category": "landmark_background",
+      "purpose": "Canvas backdrop",
+      "modified": "unknown (pre-existing crop/compression history not recorded)",
+      "source_url": "https://commons.wikimedia.org/wiki/File%3AHall_of_Sun_Yat-sen_Mausoleum.jpg",
+      "source_version": "not recorded in pre-stage-2 repository",
+      "author": "Jiong Sheng from London, United Kingdom",
+      "license": "CC BY-SA 2.0",
+      "release_status": "registered — source, author, license, SHA-256 and player-visible attribution are present",
+      "license_obligation": "Attribution, license link and change notice; the local derivative/copy remains available under the corresponding CC BY-SA license.",
+      "downloaded_at": "not recorded in pre-stage-2 repository",
+      "sha256": "326c5198e94f61c598780fceff6ada7df9573b6f79d266053c1c69fdfe39c0f2",
+      "processing_record": "not recorded in pre-stage-2 repository",
+      "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
+      "reviewer": "Manus AI (stage 2 inventory)",
+      "reviewed_at": "2026-09-01"
+    },
+    {
+      "id": "bg_sunyard",
+      "local_path": "assets/img/bg_sunyard.webp",
+      "category": "landmark_background",
+      "purpose": "Canvas backdrop",
+      "modified": "unknown (pre-existing crop/compression history not recorded)",
+      "source_url": "https://commons.wikimedia.org/wiki/File%3AHall_of_Sun_Yat-sen_Mausoleum.jpg",
+      "source_version": "not recorded in pre-stage-2 repository",
+      "author": "Jiong Sheng from London, United Kingdom",
+      "license": "CC BY-SA 2.0",
+      "release_status": "registered — source, author, license, SHA-256 and player-visible attribution are present",
+      "license_obligation": "Attribution, license link and change notice; the local derivative/copy remains available under the corresponding CC BY-SA license.",
+      "downloaded_at": "not recorded in pre-stage-2 repository",
+      "sha256": "9d35bb96da6fa9f77d5e5d323b5199a79512a8184b5b8d1e22fd1dd8d0404d97",
+      "processing_record": "not recorded in pre-stage-2 repository",
+      "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01"
     },
@@ -430,7 +481,7 @@
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "8d526406c49c902ecb39fc39afe342435b332f57b61a2defdc9d843fc1dc9a14",
       "processing_record": "not recorded in pre-stage-2 repository",
-      "attribution_location": "assets/img/CREDITS.md and src/legal.js",
+      "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01"
     },
@@ -449,7 +500,7 @@
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "4258ca93d60a7c9e69ee35feb7174b06a9aad27eca447227b29d02c51f825948",
       "processing_record": "not recorded in pre-stage-2 repository",
-      "attribution_location": "assets/img/CREDITS.md and src/legal.js",
+      "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01"
     },
@@ -468,7 +519,7 @@
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "5788426bd94ae05d4175b86a907cb5b08651e47d574ebf059e6bef585195f175",
       "processing_record": "not recorded in pre-stage-2 repository",
-      "attribution_location": "assets/img/CREDITS.md and src/legal.js",
+      "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01"
     },
@@ -487,7 +538,7 @@
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "ca731746628ee2bf39e3257ac692983727be20ea6485beb69f7ad0e4f4c744ad",
       "processing_record": "not recorded in pre-stage-2 repository",
-      "attribution_location": "assets/img/CREDITS.md and src/legal.js",
+      "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01"
     },
@@ -506,7 +557,7 @@
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "7047e55e7146b3bc4644f0dd10b7f9431984aab3c3f418c0ccaf7e680a84209e",
       "processing_record": "not recorded in pre-stage-2 repository",
-      "attribution_location": "assets/img/CREDITS.md and src/legal.js",
+      "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01"
     },
@@ -525,7 +576,7 @@
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "13b156f5d8f41c591809f6f0e14bd4f0a258183890db8d8a5e967f257dce5c0d",
       "processing_record": "not recorded in pre-stage-2 repository",
-      "attribution_location": "assets/img/CREDITS.md and src/legal.js",
+      "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01"
     },
@@ -544,7 +595,7 @@
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "b0365c0fab006e07516779fe51ce0487b17faa79cc14c62e4b9d1edda0df814e",
       "processing_record": "not recorded in pre-stage-2 repository",
-      "attribution_location": "assets/img/CREDITS.md and src/legal.js",
+      "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01"
     },
@@ -563,7 +614,7 @@
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "75aceecc2947c151500822e1d50d4fd0a32e4bf39b7e5cedd318350be8d0664a",
       "processing_record": "not recorded in pre-stage-2 repository",
-      "attribution_location": "assets/img/CREDITS.md and src/legal.js",
+      "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01"
     },
@@ -582,7 +633,7 @@
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "5abf6a30e51265bcbc5637b582716e7847b3b24be66baac1bf47187494ce0359",
       "processing_record": "not recorded in pre-stage-2 repository",
-      "attribution_location": "assets/img/CREDITS.md and src/legal.js",
+      "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01"
     },
@@ -601,7 +652,7 @@
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "70b1178dbd9ec9aa31d7142619808468c7993fef089b37a2529c5480b2e3257c",
       "processing_record": "not recorded in pre-stage-2 repository",
-      "attribution_location": "assets/img/CREDITS.md and src/legal.js",
+      "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01"
     },
@@ -620,7 +671,7 @@
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "f8f46809e355d6defe61d4bbdd6c76f3e9b01d0b1c44c7fb0079243f9f0a091c",
       "processing_record": "not recorded in pre-stage-2 repository",
-      "attribution_location": "assets/img/CREDITS.md and src/legal.js",
+      "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01"
     },
@@ -639,7 +690,7 @@
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "6f82f06604fdc1d0d3bece8d11edf8b46b58b4092a2a1a2e7e08321a8dd148a9",
       "processing_record": "not recorded in pre-stage-2 repository",
-      "attribution_location": "assets/img/CREDITS.md and src/legal.js",
+      "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01"
     },
@@ -658,7 +709,7 @@
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "5dd10f1848082700f7421ddb76bdf0c356a0e87919d2ad626e37eb2c88877ddc",
       "processing_record": "not recorded in pre-stage-2 repository",
-      "attribution_location": "assets/img/CREDITS.md and src/legal.js",
+      "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01"
     },
@@ -677,7 +728,7 @@
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "8db9ee577929ea7461a96a1eab307402a27c8af4d31f0f568e0846981f929354",
       "processing_record": "not recorded in pre-stage-2 repository",
-      "attribution_location": "assets/img/CREDITS.md and src/legal.js",
+      "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01"
     },
@@ -696,7 +747,7 @@
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "3814af08a6bd9744a6a614fe5ceeec79b44c77f9d49b46cf3b62186619d21542",
       "processing_record": "not recorded in pre-stage-2 repository",
-      "attribution_location": "assets/img/CREDITS.md and src/legal.js",
+      "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01"
     },
@@ -715,7 +766,7 @@
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "128ea767e9fffcf008503b46143ec777ae88097656977afac797dce848d37842",
       "processing_record": "not recorded in pre-stage-2 repository",
-      "attribution_location": "assets/img/CREDITS.md and src/legal.js",
+      "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01"
     },
@@ -734,7 +785,7 @@
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "f6dc93fff997f4ed27377421e6b90d1b007b27c3f471305eb2ad61ce16808563",
       "processing_record": "not recorded in pre-stage-2 repository",
-      "attribution_location": "assets/img/CREDITS.md and src/legal.js",
+      "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01"
     },
@@ -753,7 +804,7 @@
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "008dcf43fd14e3d0391b09fd3b262e7e6ce1c8dab6ad39c72466784bc8e9b0fa",
       "processing_record": "not recorded in pre-stage-2 repository",
-      "attribution_location": "assets/img/CREDITS.md and src/legal.js",
+      "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01"
     },
@@ -772,7 +823,7 @@
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "a6cfa02f381a29aeb63750223e75748cd69f7d9e0ff1d7df23354d2c972f87a1",
       "processing_record": "not recorded in pre-stage-2 repository",
-      "attribution_location": "assets/img/CREDITS.md and src/legal.js",
+      "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01"
     },
@@ -791,7 +842,7 @@
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "1980d1cc68577d5517093cf101ed9b1adc2add7c8e5d6aa46c297c37b21e1abe",
       "processing_record": "not recorded in pre-stage-2 repository",
-      "attribution_location": "assets/img/CREDITS.md and src/legal.js",
+      "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01"
     },
@@ -810,7 +861,26 @@
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "2cd369937d65c4330f2741e98168e712c4b83fc168a8d85f60918386261d6c66",
       "processing_record": "not recorded in pre-stage-2 repository",
-      "attribution_location": "assets/img/CREDITS.md and src/legal.js",
+      "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
+      "reviewer": "Manus AI (stage 2 inventory)",
+      "reviewed_at": "2026-09-01"
+    },
+    {
+      "id": "it_stone",
+      "local_path": "assets/img/it_stone.jpg",
+      "category": "item_photo",
+      "purpose": "album reference photo",
+      "modified": "unknown (pre-existing crop/compression history not recorded)",
+      "source_url": "https://commons.wikimedia.org/wiki/File%3A%27Rain_flower_stones%27_%E9%9B%A8%E8%8A%B1%E7%9F%B3_%285811978384%29.jpg",
+      "source_version": "not recorded in pre-stage-2 repository",
+      "author": "Caitriana Nicholson from 北京 ~ Beijing, 中国 ~ China",
+      "license": "CC BY-SA 2.0",
+      "release_status": "registered — source, author, license, SHA-256 and player-visible attribution are present",
+      "license_obligation": "Attribution, license link and change notice; the local derivative/copy remains available under the corresponding CC BY-SA license.",
+      "downloaded_at": "not recorded in pre-stage-2 repository",
+      "sha256": "d3498ed9e5377fb03f9ce22c98ad0bd9873aa54b43be72cd49c45e6d09b8db5d",
+      "processing_record": "not recorded in pre-stage-2 repository",
+      "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01"
     },
@@ -829,7 +899,7 @@
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "77e2046f9185753772e730dc9dd33a91544bebc1f57a93a14ac8a0b1a608f51a",
       "processing_record": "not recorded in pre-stage-2 repository",
-      "attribution_location": "assets/img/CREDITS.md and src/legal.js",
+      "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01"
     },
@@ -848,7 +918,7 @@
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "3ae067e4b078b04b6e1fe2687b21d89110dacfd959d8115b139b1b7fd7284725",
       "processing_record": "not recorded in pre-stage-2 repository",
-      "attribution_location": "assets/img/CREDITS.md and src/legal.js",
+      "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01"
     }

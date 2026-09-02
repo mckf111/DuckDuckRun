@@ -12,6 +12,7 @@
     "test:logic": "node --test tests/rules.test.js tests/beam.test.js tests/rhythm.test.js tests/runtime.test.js",
     "test:save": "node --test tests/migration.test.js tests/save-io.test.js",
     "test:resources": "node --test tests/content.test.js",
+    "test:contracts": "node --test tests/share-release.test.js tests/asset-registry.test.js tests/deploy-script.test.js",
     "test:browser": "node tools/e2e/browser_test.mjs",
     "test:playability": "node tools/e2e/audit_slice_playability.mjs",
     "test:dist": "node tools/e2e/check_dist.mjs",
@@ -24,6 +25,6 @@
     "test:release:soak": "node tools/e2e/release_soak.mjs",
     "test:release": "npm run build && npm run test:dist && npm run test:size && npm run test:assets && npm run test:release:transport && npm run test:release:cross && npm run test:release:wechat && npm run test:release:memory",
     "test": "npm run check && npm run test:logic && npm run test:save && npm run test:playability && npm run test:browser",
-    "verify": "npm run typecheck && npm test && npm run build && npm run test:dist && npm run test:size"
+    "verify": "npm run typecheck && npm run test:contracts && npm test && npm run build && npm run test:dist && npm run test:size"
   }
 }

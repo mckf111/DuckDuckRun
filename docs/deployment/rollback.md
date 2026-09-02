@@ -15,9 +15,19 @@
 
 ## 2. 标准入口回滚
 
-首先确定“上一已知良好构建 ID”。保存发布记录时必须写入候选 tag、commit SHA、构建 ID、发布 UTC 时间、验证人及回滚构建 ID。当前发布候选为 `1634d51bc5b8`；它尚未实际上传，不得把它误记为线上旧版本。
+首先从生产发布记录确定“上一已知良好构建 ID”。记录必须同时包含候选 tag、commit SHA、构建 ID、发布 UTC 时间、验证人和上一个回滚 ID；本地目录、旧报告或一个孤立 build ID 不能证明该版本已经上传并验证。
 
-从已保存的历史构建制品或上一次发布的 `dist/index.html` 和 `dist/build-info.json` 恢复入口。根入口的内容只包含一个指向 `./releases/<build-id>/` 的跳转，因此其回滚前应人工核对目标 build ID 的版本目录确实已存在于 OSS。若历史文件在本地未保存，重新检出对应 release tag 构建，并以 `DEPLOY_BUILD_ID=<old-build-id>` 运行部署脚本；脚本会验证本地已有 `dist/releases/<old-build-id>/` 后上传版本目录并在最后切换入口。
+**禁止**直接上传当前工作区的 `dist/index.html` 或 `dist/build-info.json`。它们可能属于故障版本或另一分支。标准回滚只切换到 OSS 中已经存在的不可变版本：脚本先检查 `releases/<old-build-id>/index.html`，再下载该版本目录内的 `build-info.json`，核对其中的 `buildId` 与 `releasePath`，然后按目标 ID 在临时目录重新生成根 `index.html`，并用该版本清单生成根 `build-info.json`。
+
+可先执行无凭证 dry-run 检查命令构造；它不访问 OSS，所以只能证明 ID 格式与指针构造合同，不能证明远端版本存在：
+
+```bash
+DEPLOY_DRY_RUN=1 \
+DEPLOY_BUILD_ID=<上一已知良好12位构建ID> \
+  ./scripts/deploy_aliyun_oss.sh
+```
+
+实际回滚在受保护环境注入 Secrets 后执行。若同时提供该历史版本的 CI 制品目录，脚本还会逐字比较本地与 OSS 上的版本清单；即使提供了本地制品，仍必须核验远端目标存在。
 
 ```bash
 # 在受保护的发布环境注入 Secrets 后执行。
@@ -25,7 +35,7 @@ DEPLOY_BUILD_ID=<上一已知良好12位构建ID> \
   ./scripts/deploy_aliyun_oss.sh
 ```
 
-该命令只在版本目录完整存在时才继续；它会覆盖根 `index.html` 与 `build-info.json`，并在配置了 `DEPLOY_CDN_DOMAIN` 时仅刷新这两个 URL。阿里云说明 URL 刷新会使目标节点缓存失效，新请求回源获取新内容；大面积刷新会抬高源站压力，因此不得用目录刷新替代本流程。[1]
+该命令不重新上传或覆盖目标版本目录。远端版本入口或清单不存在、清单 ID 不匹配、根指针上传失败、上传后读回不一致时都会停止。成功时，OSS 根 `build-info.json` 和根 `index.html` 已经读回确认共同指向旧 build ID；配置了 `DEPLOY_CDN_DOMAIN` 时，仅刷新这两个 URL。阿里云说明 URL 刷新会使目标节点缓存失效，新请求回源获取新内容；大面积刷新会抬高源站压力，因此不得用目录刷新替代本流程。[1]
 
 ## 3. 回滚验证
 

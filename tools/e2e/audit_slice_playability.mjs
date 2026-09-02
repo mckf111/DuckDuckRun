@@ -1,7 +1,10 @@
 import { execFileSync } from 'node:child_process';
-import { mkdirSync, writeFileSync } from 'node:fs';
-import { dirname, resolve } from 'node:path';
+import { writeFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { ensureEvidenceDir } from './release_support.mjs';
+
+const root=resolve(fileURLToPath(new URL('../..',import.meta.url)));
 
 let modulesPromise;
 async function gameModules(){
@@ -28,7 +31,15 @@ function updateUntilDone(game, maxFrames=6000, dt=1/60){
 }
 
 function gitSha(){
-  try { return execFileSync('git',['rev-parse','HEAD'],{cwd:resolve(fileURLToPath(new URL('../..',import.meta.url))),encoding:'utf8'}).trim(); }
+  try {
+    const sha=execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim();
+    // 只把本审计真正执行的源码和审计器本身纳入 dirty 判定；
+    // QA JSON 或说明文档的待提交变化不改变这组玩法结果。
+    const dirty=execFileSync('git',[
+      'status','--porcelain','--untracked-files=no','--','src','tools/e2e/audit_slice_playability.mjs',
+    ],{cwd:root,encoding:'utf8'}).trim();
+    return dirty ? sha+'-dirty' : sha;
+  }
   catch { return 'uncommitted'; }
 }
 
@@ -121,9 +132,10 @@ export async function runSlicePlayabilityAudit(){
 const isDirect=process.argv[1]===fileURLToPath(import.meta.url);
 if(isDirect){
   const report=await runSlicePlayabilityAudit();
-  const output=resolve(fileURLToPath(new URL('../../docs/qa/evidence/slice-playability.json',import.meta.url)));
-  mkdirSync(dirname(output),{recursive:true});
+  const output=process.argv.includes('--write-snapshot')
+    ? resolve(root,'docs/qa/evidence/slice-playability.json')
+    : resolve(ensureEvidenceDir(root),'slice-playability.json');
   writeFileSync(output,JSON.stringify(report,null,2)+'\n');
   if(!report.passed){ console.error(JSON.stringify(report,null,2));process.exitCode=1; }
-  else console.log('PASS | 切片可玩性审计：三局路径、路线组合、10 分钟连续模拟与 20 分钟浸泡');
+  else console.log('PASS | 切片可玩性审计：三局路径、路线组合、10 分钟连续模拟与 20 分钟浸泡；证据 '+output);
 }

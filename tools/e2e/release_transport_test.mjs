@@ -1,43 +1,32 @@
 import assert from 'node:assert/strict';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { spawn } from 'node:child_process';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright-core';
+import { attachPageErrors, browserExecutable, ensureEvidenceDir, startStaticServer } from './release_support.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const dist = join(root, 'dist');
-const out = join(root, 'docs', 'qa', 'evidence', 'release-transport.json');
-const base = 'http://127.0.0.1:8133';
+const out = join(ensureEvidenceDir(root), 'release-transport.json');
+let base;
 const info = JSON.parse(readFileSync(join(dist, 'build-info.json'), 'utf8'));
-const executable = process.env.PLAYWRIGHT_EXECUTABLE_PATH || (existsSync('/usr/bin/chromium') ? '/usr/bin/chromium' : undefined);
-const server = spawn('python3', ['-m', 'http.server', '8133', '--bind', '127.0.0.1'], {cwd:dist, stdio:'ignore'});
 const result = {
   schema:'duckduckrun-release-transport/v1',
   capturedAt:new Date().toISOString(),
   environment:'Local headless Chromium with CDP 4G emulation; mobile is viewport/touch simulation, not a physical-device conclusion.',
   buildId:info.buildId,
 };
-async function sleep(ms){ return new Promise(resolve => setTimeout(resolve, ms)); }
-async function waitServer(){
-  for(let i=0;i<50;i++){
-    try{ if((await fetch(`${base}/build-info.json`)).ok) return; }catch(error){}
-    await sleep(100);
-  }
-  throw new Error('传输测试静态服务未启动');
-}
 function watchErrors(page){
   const errors=[];
-  page.on('pageerror', error => errors.push(`pageerror:${error.message}`));
-  page.on('console', message => { if(message.type()==='error') errors.push(`console:${message.text()}`); });
-  page.on('requestfailed', request => errors.push(`request:${request.url()} ${request.failure()?.errorText || ''}`));
-  page.on('response', response => { if(response.status() >= 400) errors.push(`http:${response.status()} ${response.url()}`); });
+  attachPageErrors(page, errors);
   return errors;
 }
 let browser;
+let server;
 try{
-  await waitServer();
-  browser = await chromium.launch({headless:true, executablePath:executable, args:['--no-sandbox']});
+  server = await startStaticServer({cwd:dist, port:8133, label:'传输测试'});
+  base = server.base;
+  browser = await chromium.launch({headless:true, executablePath:browserExecutable(), args:['--no-sandbox']});
   {
     const context = await browser.newContext({viewport:{width:844,height:390},hasTouch:true,isMobile:true,deviceScaleFactor:2});
     const page = await context.newPage();
@@ -52,7 +41,7 @@ try{
     await page.waitForFunction(async () => {
       const game = await import('./src/game.js');
       return game.G.state === 'menu' && game.G.buttons.length >= 4;
-    }, {timeout:8000});
+    }, undefined, {timeout:8000});
     result.simulated4G = {
       firstPlayableMs:Date.now() - started,
       errors,
@@ -77,7 +66,7 @@ try{
     await page.waitForFunction(async () => {
       const game = await import('./src/game.js');
       return game.G.state === 'menu' && game.G.buttons.length >= 4;
-    }, {timeout:4000});
+    }, undefined, {timeout:4000});
     result.asset404Fallback = {
       injectedFailures:expectedFailures.length,
       gameState:await page.evaluate(async () => (await import('./src/game.js')).G.state),
@@ -95,9 +84,8 @@ try{
   result.failure = error.stack || String(error);
   throw error;
 } finally {
-  mkdirSync(dirname(out), {recursive:true});
   writeFileSync(out, JSON.stringify(result, null, 2) + '\n');
   if(browser) await browser.close().catch(() => {});
-  server.kill();
+  if(server) await server.stop();
 }
 console.log(`PASS | 生产传输回归：模拟4G首个可玩画面 ${result.simulated4G.firstPlayableMs}ms；资源404降级通过`);
