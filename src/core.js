@@ -84,6 +84,7 @@ export const lerp = (a,b,t)=>a+(b-a)*t;
 export const rnd = (a,b)=>a+randomSource()*(b-a);
 export const irnd = (a,b)=>Math.floor(rnd(a,b+1));
 export const visualRnd = (a,b)=>a+Math.random()*(b-a);
+export const visualIrnd = (a,b)=>Math.floor(visualRnd(a,b+1));
 export const TAU = Math.PI*2;
 
 /* ================= 剪纸绘制:小件 ================= */

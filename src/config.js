@@ -8,9 +8,18 @@ export const NANJING_SLICE = {
   hud:'#F4F0E6', textDark:false, speed:10, len:720,
   landmark:'zhonghua', lmColor:'#303B46', side2:'秦淮灯影', mod:'sliceNight',
   referenceSeed:20260903,
+  ui:{
+    displayName:'中华门 · 秦淮夜渡',
+    menuStandard:'南京夜跑切片 · 约 72 秒',
+    menuEasy:'轻松 · 灯影护航',
+    ledgerLabel:'本局灯牌',
+    nonMainline:'夜渡不写主线',
+    finishTitle:'夜渡到岸!',
+    finishSub:'三道瓮城已过，灯影还在水上。',
+  },
   // 两档只调整可读性、容错和反应余量；动作语法不变。
   modes:{
-    standard:{ id:'standard', label:'标准', speed:10, rescues:0, inputBuffer:0.10, collisionWidth:0.55, cueLead:12 },
+    standard:{ id:'standard', label:'常规', speed:10, rescues:0, inputBuffer:0.10, collisionWidth:0.55, cueLead:12 },
     easy:{ id:'easy', label:'轻松', speed:9, rescues:2, inputBuffer:0.18, collisionWidth:0.46, cueLead:18 },
   },
   // 城市事实只在资料笔记中断言；这里仅保存原创的玩法转译和短提示。

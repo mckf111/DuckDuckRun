@@ -3,10 +3,12 @@ import { createHash } from 'node:crypto';
 import { existsSync } from 'node:fs';
 import { spawn } from 'node:child_process';
 import { dirname, join } from 'node:path';
+import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright-core';
 
 const root=join(dirname(fileURLToPath(import.meta.url)),'..','..');
+if(!process.env.CHROME_LOG_FILE) process.env.CHROME_LOG_FILE=join(tmpdir(),'duckduckrun-browser-test-chromium.log');
 const base='http://127.0.0.1:8123';
 const python=process.platform==='win32' && existsSync(join(root,'.venv','Scripts','python.exe'))
   ? join(root,'.venv','Scripts','python.exe') : (process.platform==='win32' ? 'python' : 'python3');
@@ -67,6 +69,15 @@ async function canvasShot(page){
   return page.locator('#cv').screenshot();
 }
 
+async function activateCanvasButton(page,id,touch=false){
+  const target=await page.evaluate(buttonId=>window.__GAME.buttons.find(button=>button.id===buttonId)||null,id);
+  assert.ok(target,'未注册 Canvas 按钮：'+id);
+  const box=await page.locator('#cv').boundingBox();
+  const x=box.x+(target.x+target.w/2)*box.width/960;
+  const y=box.y+(target.y+target.h/2)*box.height/540;
+  if(touch) await page.touchscreen.tap(x,y); else await page.mouse.click(x,y);
+}
+
 let browser;
 try{
   await waitServer();
@@ -93,8 +104,7 @@ try{
       ratios.push(await page.evaluate(async()=>{ (await import('/src/core.js')).downgradeQuality(); const c=document.querySelector('#cv'); return c.width/c.getBoundingClientRect().width; }));
       assert.deepEqual(ratios.map(value=>Math.round(value*10)/10),[1.5,1,1]);
     }
-    const x=box.x+box.width*0.5, y=box.y+box.height*0.60;
-    if(profile.options.hasTouch) await page.touchscreen.tap(x,y); else await page.mouse.click(x,y);
+    await activateCanvasButton(page,'adv',!!profile.options.hasTouch);
     await page.waitForFunction(()=>window.__GAME.state==='levels');
     await page.waitForTimeout(150);
     assert.deepEqual(errors,[],profile.name+' 出现浏览器错误');
@@ -327,6 +337,51 @@ try{
     assert.equal(await page.evaluate(()=>window.__GAME.state),'play');
     await context.close();
   }
+  // 触屏横屏菜单必须给主要入口至少 44 CSS px 的点击高度，且 Enter 默认进入视觉主入口“开始冒险”。
+  {
+    const context=await browser.newContext({viewport:{width:844,height:390},hasTouch:true,isMobile:true,deviceScaleFactor:2});
+    const page=await context.newPage();
+    await seedPage(page,303);
+    await openMenu(page);
+    const menu=await page.evaluate(async()=>{
+      const game=await import('/src/game.js');
+      const scale=document.querySelector('#cv').getBoundingClientRect().height/540;
+      const mainIds=new Set(['slice','sliceEasy','adv','endless','album','shop','tutorial','motion','credits']);
+      const buttons=game.G.buttons.filter(button=>mainIds.has(button.id)).map(button=>({id:button.id,cssH:button.h*scale,x:button.x,y:button.y,w:button.w,h:button.h}));
+      const overlaps=[];
+      for(let i=0;i<buttons.length;i++) for(let j=i+1;j<buttons.length;j++){
+        const a=buttons[i],b=buttons[j];
+        if(a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y) overlaps.push(a.id+':'+b.id);
+      }
+      return {buttons,overlaps};
+    });
+    assert.ok(menu.buttons.every(button=>button.cssH>=44), '触屏菜单目标不足 44 CSS px：'+JSON.stringify(menu.buttons));
+    assert.deepEqual(menu.overlaps,[], '触屏菜单按钮互相重叠：'+JSON.stringify(menu.overlaps));
+    await page.keyboard.press('Enter');
+    await page.waitForFunction(()=>window.__GAME.state==='levels',{timeout:1200});
+    await context.close();
+  }
+  // 竖屏遮罩必须冻结跑局；恢复横屏后只恢复由旋转触发的暂停。
+  {
+    const context=await browser.newContext({viewport:{width:844,height:390},hasTouch:true,isMobile:true,deviceScaleFactor:2});
+    const page=await context.newPage();
+    await seedPage(page,304);
+    await page.goto(base+'/?slice=1&seed=20260903',{waitUntil:'domcontentloaded'});
+    await page.evaluate(async()=>{ window.__GAME=(await import('/src/game.js')).G; });
+    await page.waitForFunction(()=>window.__GAME.state==='play');
+    await page.setViewportSize({width:390,height:844});
+    await page.waitForTimeout(180);
+    const portrait=await page.evaluate(()=>({paused:window.__GAME.paused,dist:window.__GAME.dist,visible:getComputedStyle(document.querySelector('#rotate')).display==='flex'}));
+    await page.waitForTimeout(240);
+    const frozen=await page.evaluate(()=>window.__GAME.dist);
+    assert.equal(portrait.visible,true);
+    assert.equal(portrait.paused,true);
+    assert.ok(Math.abs(frozen-portrait.dist)<0.05,'竖屏遮罩期间距离仍在增长');
+    await page.setViewportSize({width:844,height:390});
+    await page.waitForTimeout(180);
+    assert.deepEqual(await page.evaluate(()=>({paused:window.__GAME.paused,visible:getComputedStyle(document.querySelector('#rotate')).display==='none'})),{paused:false,visible:true});
+    await context.close();
+  }
   // 运行时必须能销毁和重新启动一次；主循环、输入和音频资源不能因重复启动叠加。
   {
     const context=await browser.newContext({viewport:{width:1000,height:600}});
@@ -381,16 +436,22 @@ try{
       const game=await import('/src/game.js');
       const save=await import('/src/save.js');
       save.save.tutorialCompleted=true; save.save.tut=true;
-      const snapshot=()=>{
+      const snapshot=(frames,motion='system')=>{
+        save.save.motion=motion;
         game.startRun('adv',0);
+        game.G.nextSpawn=Infinity;game.G.nextPower=Infinity;game.G.nextRelic=Infinity;game.G.nextGate=Infinity;game.G.speed=0;
+        for(let i=0;i<frames;i++) game.update(1/60);
         game.spawnCluster(40);
         return { replay:{...game.G.replay}, cluster:game.G.obs.map(({lane,z,type})=>({lane,z,type})) };
       };
-      return {first:snapshot(),second:snapshot()};
+      const result={first:snapshot(1),second:snapshot(60),reduced:snapshot(60,'reduced')};
+      save.save.motion='system';
+      return result;
     });
     assert.equal(replay.first.replay.seed,20260901);
     assert.equal(replay.first.replay.source,'demo');
     assert.deepEqual(replay.first.cluster,replay.second.cluster,'同一固定 seed 重开后障碍簇不一致');
+    assert.deepEqual(replay.first.cluster,replay.reduced.cluster,'减弱动态不应改变固定 seed 障碍簇');
     await context.close();
   }
   // 南京垂直切片：固定演示可完成、轻松模式可容错，且不写入主线存档或加载菜单大图。

@@ -1,14 +1,65 @@
 import { G } from './game.js';
-import { LEVELS, ITEMS, MILESTONES } from './config.js';
+import { LEVELS, ITEMS, MILESTONES, NANJING_SLICE } from './config.js';
 import { save } from './save.js';
 import { track } from './track.js';
 import { makeQR } from './qr.js';
 
 /* ================= 分享:拍立得成绩卡(离屏绘制 → 系统分享/微信长按保存/下载) ================= */
 const isWeixin = /MicroMessenger/i.test(navigator.userAgent);
+
+/*
+ * 构建期公开入口合同（由 asset-manifest.js 在模块加载前注入）：
+ * globalThis.__DUCKDUCKRUN_PUBLIC__ = { publicSiteUrl, publicBasePath }。
+ * 生产分享只认稳定站点根入口；版本目录只负责加载制品，不能进入二维码。
+ */
+export function resolveShareLink(publicConfig={}, currentLocation=location){
+  const site = String(publicConfig?.publicSiteUrl || '').trim().replace(/\/+$/, '');
+  const base = String(publicConfig?.publicBasePath || '').trim();
+  if(site){
+    const basePath = base ? '/' + base.replace(/^\/+|\/+$/g, '') : '';
+    try{ return new URL(site + basePath + '/').href; }catch(e){ /* 走开发态回退 */ }
+  }
+
+  // 本地开发/旧制品没有注入配置时，从当前地址剥掉不可公开传播的版本目录。
+  const url = new URL(currentLocation.href || String(currentLocation));
+  const releaseAt = url.pathname.search(/\/releases\/[^/]+(?:\/|$)/);
+  if(releaseAt >= 0) url.pathname = url.pathname.slice(0, releaseAt) + '/';
+  else if(/\/[^/]+\.[^/]+$/.test(url.pathname)) url.pathname = url.pathname.replace(/[^/]+$/, '');
+  else if(!url.pathname.endsWith('/')) url.pathname += '/';
+  url.search = '';
+  url.hash = '';
+  return url.href;
+}
+
 export function shareLink(){
-  // 分享用干净入口 URL(不带 #lv 深链,对方打开进菜单)
-  return location.origin + location.pathname;
+  return resolveShareLink(globalThis.__DUCKDUCKRUN_PUBLIC__ || {}, location);
+}
+
+export function buildShareCopy(snapshot, account, link){
+  const { dist, marks, stars, endless, slice, levelName, albumN, tokens, easy, routeName } = snapshot;
+  if(slice){
+    const mode = easy ? '轻松模式' : '标准模式';
+    return {
+      text:'我在《冲鸭！金陵！》的“' + NANJING_SLICE.name + '”跑了 ' + dist
+        + ' m，收下 ' + tokens + ' 枚灯牌。来跑一趟南京夜色：' + link,
+      title:NANJING_SLICE.name + ' · ' + dist + ' m',
+      sub:mode + ' · 灯牌 ' + tokens + ' 枚' + (routeName ? ' · ' + routeName : ''),
+      footer:'南京夜跑切片 · 独立试玩，不计主线星级',
+    };
+  }
+  const title = endless ? '无尽模式' : levelName;
+  let sub = '本局鸭蛋 ' + marks + ' 枚' + (endless ? '' : ' · '+stars+' 星') + ' · 图鉴 ' + albumN + '/' + ITEMS.length;
+  if(endless){
+    const ms = MILESTONES.filter(m => dist >= m[0]).pop();
+    if(ms) sub += ' · ' + ms[1];
+  }
+  return {
+    text:'我在《冲鸭！金陵！》跑了 ' + dist + ' m，集齐 ' + albumN + '/' + ITEMS.length
+      + ' 件金陵风物！没有一只鸭子能走出南京——除了我。 ' + link,
+    title:title + ' · ' + dist + ' m',
+    sub,
+    footer:'无尽最佳 ' + account.best + ' m · 星星 ' + account.totalStars + '/' + (LEVELS.length*3),
+  };
 }
 
 function roundRect(c, x, y, w, h, r){
@@ -97,13 +148,15 @@ export function shareScore(){
   // L4:进异步回调前捕获本局数据,避免玩家在此期间重开导致文案变「跑了 0 m」
   const snapshot = {
     dist:Math.floor(G.dist), marks:G.runMarks, stars:G.runStars,
-    endless:G.mode==='endless', levelName:LEVELS[G.lvIdx].name,
+    endless:G.mode==='endless', slice:G.mode==='slice', levelName:LEVELS[G.lvIdx].name,
     albumN:Object.keys(save.album).length,
+    tokens:G.slice?.tokenCount||0, easy:!!G.slice?.easy, routeName:G.slice?.routeName||'',
   };
-  const { dist, marks, stars, endless, levelName, albumN } = snapshot;
+  const { dist } = snapshot;
   const link = shareLink();
-  const text = '我在《冲鸭！金陵！》跑了 ' + dist + ' m,集齐 ' + albumN + '/' + ITEMS.length
-    + ' 件金陵风物!没有一只鸭子能走出南京——除了我。 ' + link;
+  const totalStars = save.stars.reduce((a,b)=>a+b,0);
+  const copy = buildShareCopy(snapshot, {best:save.best,totalStars}, link);
+  const text = copy.text;
   const gold = save.stars.reduce((a,b)=>a+b,0) >= 15;
 
   const c = document.createElement('canvas');
@@ -121,23 +174,16 @@ export function shareScore(){
   x2.strokeStyle = '#f0b64c'; x2.lineWidth = 1.5;
   x2.beginPath(); x2.moveTo(150, 130); x2.lineTo(450, 130); x2.stroke();
   drawDuck(x2, 300, 320, 130, gold);
-  const title = endless ? '无尽模式' : levelName;
   x2.fillStyle = '#f7ead0'; x2.font = '26px "JinlingKai","KaiTi","Microsoft YaHei",serif';
-  x2.fillText(title + ' · ' + dist + ' m', 300, 448);
+  x2.fillText(copy.title, 300, 448);
   x2.fillStyle = '#c9b88f'; x2.font = '18px "JinlingKai","KaiTi","Microsoft YaHei",serif';
-  let sub = '本局鸭蛋 ' + marks + ' 枚' + (endless ? '' : ' · '+stars+' 星') + ' · 图鉴 ' + albumN + '/' + ITEMS.length;
-  if(endless){
-    const ms = MILESTONES.filter(m => dist >= m[0]).pop();
-    if(ms) sub += ' · ' + ms[1];
-  }
-  x2.fillText(sub, 300, 482);
+  x2.fillText(copy.sub, 300, 482);
   // 底部文案
   x2.fillStyle = '#6b5a3a'; x2.font = '16px "JinlingKai","KaiTi","Microsoft YaHei",serif';
   x2.fillText('—— 奔跑展开的金陵长卷 ——', 300, 590);
   x2.fillText('南京地标取景 · 游戏美术化呈现', 300, 622);
   x2.fillStyle = '#a89a78'; x2.font = '14px "JinlingKai","KaiTi","Microsoft YaHei",serif';
-  const totalStars = save.stars.reduce((a,b)=>a+b,0);
-  x2.fillText('无尽最佳 ' + save.best + ' m · 星星 ' + totalStars + '/' + (LEVELS.length*3), 300, 680);
+  x2.fillText(copy.footer, 300, 680);
   // 右下角二维码 + 回游链接(传播第一跳的入口)
   drawQR(x2, 516, 655, 92);
   x2.font = '11px "Microsoft YaHei","PingFang SC",sans-serif';

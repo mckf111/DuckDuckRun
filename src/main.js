@@ -4,7 +4,7 @@ import { LEVELS, LM_CYCLE } from './config.js';
 import { render } from './render.js';
 import { loadMenuBackground, loadBackground, prefetchBackground } from './art/photo.js';
 import { preloadGameSprites } from './art/sprites.js';
-import { bgmStop, disposeAudio } from './audio.js';
+import { bgmStop, disposeAudio, suspendAudio } from './audio.js';
 import { prefersReducedMotion } from './save.js';
 import { drawHUD, drawMenu, drawLevels, drawOver, drawClear, drawAlbum, drawShop, drawCredits } from './ui.js';
 import { createInputController } from './input.js';
@@ -23,6 +23,7 @@ let perfFrames = 0;
 let perfPrev = 0;
 let assetKey = '';
 let canvasRecovering = false;
+let pausedByRotate = false;
 
 function setCanvasRecovery(visible){
   const el = document.getElementById('canvasRecovery');
@@ -71,6 +72,14 @@ function checkRotate(){
   if(!el) return;
   const portrait = ('ontouchstart' in window) && innerHeight > innerWidth;
   el.style.display = portrait ? 'flex' : 'none';
+  if(portrait && G.state==='play' && !G.paused){
+    G.paused = true;
+    pausedByRotate = true;
+    suspendAudio();
+  }else if(!portrait && pausedByRotate){
+    if(G.state==='play') G.paused = false;
+    pausedByRotate = false;
+  }else if(G.state!=='play') pausedByRotate = false;
 }
 
 function resizeRuntime(){
@@ -182,6 +191,7 @@ export function startApp(){
   else if(location.hash==='#slice') startRun('slice',0,false,{easy:false,demo:false});
   else if(location.hash==='#play') startRun('endless', 0);
   else if(/^#lv\d$/.test(location.hash)) startRun('adv', +location.hash.slice(3));
+  checkRotate();
   frameId = requestAnimationFrame(frame);
   return true;
 }
@@ -208,6 +218,7 @@ export function disposeApp(){
   perfPrev = 0;
   assetKey = '';
   canvasRecovering = false;
+  pausedByRotate = false;
   setCanvasRecovery(false);
   prevState = G.state;
   return true;

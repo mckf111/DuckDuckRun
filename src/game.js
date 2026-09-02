@@ -1,4 +1,4 @@
-import { clamp, lerp, rnd, irnd, proj, LANEGAP, ZP, DRAWD, TAU, getRandomSeed, restartRandomSequence } from './core.js';
+import { clamp, lerp, rnd, irnd, visualRnd, visualIrnd, proj, LANEGAP, ZP, DRAWD, TAU, getRandomSeed, restartRandomSequence } from './core.js';
 import { LEVELS, NANJING_SLICE, ITEMS, LM_CYCLE, LM_NAME, MILESTONES, RUN_STAR_THRESHOLDS, QUACKS, CRASH_LINES } from './config.js';
 import { save, persist, queuePersist, prefersReducedMotion } from './save.js';
 import { canPassObstacle, calculateRunStars, getBridgeUnlockStatus, getCollectionWeight, getObstacleInstruction } from './rules.js';
@@ -99,7 +99,7 @@ export function startRun(mode, lvIdx=0, forceTutorial=false, options={}){
     routeIndex:chooseSliceRoute(), routeId:'', routeName:'', rescues:sliceConfig.rescues,
     tokenCount:0, autoStep:0, beatLog:[], activeBeat:null,
   } : null;
-  G.speech=null; G.talkCd=0; G.idleTalk=rnd(7,11); G.lastPanic=false;
+  G.speech=null; G.talkCd=0; G.idleTalk=visualRnd(7,11); G.lastPanic=false;
   const teach=mode==='adv' && lvIdx===0 && (forceTutorial || !save.tutorialCompleted);
   G.tut=null; G.tutorial=null; G.tutStage=teach?0:4;
   if(teach) G.nextSpawn=Infinity;
@@ -213,7 +213,7 @@ function consumeInputBuffer(dt){
     else if(pl.jumps===1){pl.vy=5.6;pl.jumps=2;used=true;noteTutorialAction('double');}
     if(used){
       pl.sliding=0;G.inputBuffer.jump=0;sfx.jump();
-      if(rnd(0,1)<0.3) duckSay(null, true, 0.85);
+      if(visualRnd(0,1)<0.3) duckSay(null, true, 0.85);
       // 第四步只考“按出了二段跳”，不再附带窄时机的高空拾取考试。
       if(G.tutorial?.step===3 && pl.jumps===2){ completeTutorialStep(3); return true; }
     }
@@ -244,8 +244,8 @@ function duckSay(kind, forceSound, pitch){
   if(!kind || G.talkCd>0) return;
   const list=QUACKS[kind];
   if(!list||!list.length) return;
-  G.speech={text:list[irnd(0,list.length-1)],ttl:1.6,dur:1.6};
-  G.talkCd = kind==='idle' ? rnd(7,12) : kind==='panic' ? 2.4 : 1.1;
+  G.speech={text:list[visualIrnd(0,list.length-1)],ttl:1.6,dur:1.6};
+  G.talkCd = kind==='idle' ? visualRnd(7,12) : kind==='panic' ? 2.4 : 1.1;
 }
 
 function pickRelicId(){
@@ -374,19 +374,19 @@ export function burst(x, y, color){
   if(prefersReducedMotion()) return;
   // 剪纸碎片:三角/菱形小纸片,旋转变速下落
   for(let i=0;i<12;i++) G.parts.push({
-    x, y, z:ZP, vx:rnd(-2.5,2.5), vy:rnd(1,4.5), life:rnd(0.5,0.9), color, size:rnd(3,6),
-    shard:true, dia:rnd(0,1)<0.5, rot:rnd(0,TAU), vr:rnd(-8,8),
+    x, y, z:ZP, vx:visualRnd(-2.5,2.5), vy:visualRnd(1,4.5), life:visualRnd(0.5,0.9), color, size:visualRnd(3,6),
+    shard:true, dia:visualRnd(0,1)<0.5, rot:visualRnd(0,TAU), vr:visualRnd(-8,8),
   });
 }
 export function ambient(lv){
   // 梅花瓣/灯火/星尘环境粒子；减弱动态时不生成。
-  if(prefersReducedMotion() || rnd(0,1) > 0.12) return;
+  if(prefersReducedMotion() || visualRnd(0,1) > 0.12) return;
   const colors = { crenel:'#e8b04b', lotus:'#d98ba0', steps:'#ffffff', lantern:'#f0b64c', pine:'#c9a2ff',
     plane:'#d8b04a', street:'#f0a04a', maple:'#e0783a', pagoda:'#e8c170', bridge:'#9fc0e8' };
   const windy = lv.mod==='riverWind';   // 大桥江风:粒子横向速度加大
   G.parts.push({
-    x:rnd(-6,6), y:rnd(2,5), z:rnd(4,30), vx:windy?rnd(-1.4,0.4):rnd(-0.5,0.1), vy:rnd(-0.8,-0.3),
-    life:rnd(2.5,4.5), color:colors[lv.motif]||'#ffffff', size:rnd(3,6.5), ambient:true,
+    x:visualRnd(-6,6), y:visualRnd(2,5), z:visualRnd(4,30), vx:windy?visualRnd(-1.4,0.4):visualRnd(-0.5,0.1), vy:visualRnd(-0.8,-0.3),
+    life:visualRnd(2.5,4.5), color:colors[lv.motif]||'#ffffff', size:visualRnd(3,6.5), ambient:true,
   });
 }
 
@@ -472,7 +472,7 @@ export function update(dt){
   if(G.speech){ G.speech.ttl -= dt; if(G.speech.ttl<=0) G.speech=null; }
   G.talkCd = Math.max(0, G.talkCd-dt);
   G.idleTalk -= dt;
-  if(!G.tutorial && G.idleTalk<=0){ duckSay(rnd(0,1)<0.55?'idle':null, rnd(0,1)<0.45); G.idleTalk=rnd(8,12); }
+  if(!G.tutorial && G.idleTalk<=0){ duckSay(visualRnd(0,1)<0.55?'idle':null, visualRnd(0,1)<0.45); G.idleTalk=visualRnd(8,12); }
   let panicNow=false;
   for(const o of G.obs){ if(!o.hit && o.rz>ZP && o.rz<ZP+10){ panicNow=true; break; } }
   if(panicNow && !G.lastPanic) duckSay('panic', true, 1.18);
@@ -652,13 +652,13 @@ function scatterCrashBits(){
   const n = Math.min(8, 2 + G.runMarks);
   for(let i=0;i<n;i++){
     G.parts.push({
-      x:pl.x+rnd(-0.15,0.15), y:0.7+rnd(0,0.4), z:ZP,
-      vx:rnd(-2.8,2.8), vy:rnd(3.2,6.2), vr:rnd(-10,10), rot:rnd(0,TAU),
-      life:rnd(0.7,1.15), egg:true, size:rnd(7,11),
+      x:pl.x+visualRnd(-0.15,0.15), y:0.7+visualRnd(0,0.4), z:ZP,
+      vx:visualRnd(-2.8,2.8), vy:visualRnd(3.2,6.2), vr:visualRnd(-10,10), rot:visualRnd(0,TAU),
+      life:visualRnd(0.7,1.15), egg:true, size:visualRnd(7,11),
     });
   }
   G.parts.push({
-    x:pl.x+0.12, y:1.3, z:ZP, vx:rnd(0.6,1.8), vy:rnd(2.4,3.6), vr:rnd(-6,6), rot:0.4,
+    x:pl.x+0.12, y:1.3, z:ZP, vx:visualRnd(0.6,1.8), vy:visualRnd(2.4,3.6), vr:visualRnd(-6,6), rot:0.4,
     life:1.1, flower:true, size:10,
   });
 }
@@ -666,7 +666,7 @@ function scatterCrashBits(){
 export function gameOver(type){
   G.killedBy = type || 'full';
   const lines = CRASH_LINES[G.killedBy] || CRASH_LINES.full;
-  G.crashLine = lines[irnd(0, lines.length-1)];
+  G.crashLine = lines[visualIrnd(0, lines.length-1)];
   sfx.bonk(); duckSay('crash', true, 0.78);
   scatterCrashBits();
   G.shake = prefersReducedMotion() ? 0 : 1.35; G.crashT = G.crashLen;   // 90ms 定格 + 450ms 出洋相
