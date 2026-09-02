@@ -32,8 +32,6 @@ jobs:
     if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
     timeout-minutes: 25
-    env:
-      RELEASE_EVIDENCE_DIR: ${{ runner.temp }}/duckduckrun-evidence
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -51,6 +49,8 @@ jobs:
       - name: Asset and notice verification
         run: npm run test:assets
       - name: Release candidate verification
+        env:
+          RELEASE_EVIDENCE_DIR: ${{ runner.temp }}/duckduckrun-evidence
         run: npm run test:release
       - name: Upload immutable static artifact
         uses: actions/upload-artifact@v4
@@ -72,9 +72,6 @@ jobs:
     if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.run_soak)
     runs-on: ubuntu-latest
     timeout-minutes: 35
-    env:
-      RELEASE_EVIDENCE_DIR: ${{ runner.temp }}/duckduckrun-evidence
-      SOAK_DURATION_MS: ${{ github.event_name == 'workflow_dispatch' && inputs.soak_duration_ms || '1200000' }}
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -89,6 +86,9 @@ jobs:
       - run: node tools/e2e/node_modules/playwright-core/cli.js install --with-deps chromium
       - run: npm run build
       - name: Runtime soak gate
+        env:
+          RELEASE_EVIDENCE_DIR: ${{ runner.temp }}/duckduckrun-evidence
+          SOAK_DURATION_MS: ${{ github.event_name == 'workflow_dispatch' && inputs.soak_duration_ms || '1200000' }}
         run: npm run test:release:soak
       - name: Upload soak evidence
         if: always()
