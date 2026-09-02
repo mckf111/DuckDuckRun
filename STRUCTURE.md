@@ -1,8 +1,8 @@
 # DuckDuckRun 仓库结构与责任边界
 
-> 本文记录审查后、阶段 2 加固完成时的结构边界。目标是让后续修复在已有模块责任内完成，而不是为了“整齐”重排可运行模块。
+> 本文记录 2026-09-02 remediation 后的现役结构边界。目标是让后续修复在已有模块责任内完成，而不是为了“整齐”重排可运行模块。
 
-| 路径 | 责任 | 阶段 2 判断 |
+| 路径 | 责任 | 现役判断 |
 |---|---|---|
 | `index.html` | 静态宿主、Canvas、字体、旋转/分享 DOM 容器、ESM 入口和构建 ID 占位符 | 保持轻量；构建时注入版本标识，缩放/语义替代仍需后续可访问性工作 [1] |
 | `src/main.js` | 应用初始化、唯一帧循环、resize/方向、深链启动与 `disposeApp()` | 生命周期唯一入口；重复启动拒绝，销毁时取消循环/预取并释放输入和音频 [2] |
@@ -17,11 +17,11 @@
 | `src/save.js` | 本地存档、迁移和节流写入 | 已有存档测试；后续变更须保持迁移兼容 |
 | `src/share.js`、`src/qr.js` | 分享、复制链接、二维码 | 仍需在微信/iOS 真机验收 |
 | `src/legal.js`、`assets/img/CREDITS.md` | 游戏内许可、照片署名与素材说明 | 保持玩家可见署名；`docs/qa/asset-sbom.json` 补本地哈希映射，不替代许可审查 |
-| `tests/` | 规则、节奏、存档、内容与固定随机流单元回归 | 新增 `runtime.test.js` 锁定固定 seed 重放契约 |
+| `tests/` | 规则、节奏、存档、内容、分享、素材与部署合同回归 | `runtime.test.js` 锁定固定 seed/视觉随机隔离；`share-release`、`asset-registry`、`deploy-script` 锁定传播、许可和 dry-run 边界 |
 | `tools/e2e/` | 语法、Playwright 浏览器回归、切片平衡审计、制品 404 与体积预算检查 | `audit_slice_playability.mjs` 以固定 seed 覆盖路线、公平性、10 分钟连续和20分钟浸泡；浏览器工具仍使用锁定依赖。[3] |
-| `tools/build_static.mjs` | 零依赖静态构建、版本化发布目录与构建清单 | 唯一制品源；输出 `dist/releases/<build-id>/`，根入口只跳转至该版本 |
-| `tools/generate_asset_sbom.mjs` | 由现有署名、文件映射与 SHA-256 生成机器可读素材台账 | 不推测历史下载/处理信息；已知缺口保留给许可复核 |
-| `.github/workflows/test.yml` | CI 质量门禁与不可变制品工件 | 仅运行安装、检查、测试、构建与预算；本阶段不部署 Pages |
+| `tools/build_static.mjs` | 无运行时依赖的静态构建、版本化发布目录与构建清单 | 规范化文本换行，注入公开根配置，附三份 legal notice；同一 build ID 字节确定，输出 `dist/releases/<build-id>/` |
+| `tools/generate_asset_sbom.mjs` | 从受管磁盘集合反查并生成机器可读素材台账 | 当前 47/47 唯一登记；不推测历史下载/处理信息，已知缺口保留给许可复核 |
+| `.github/workflows/test.yml` | CI 质量门禁与不可变制品工件 | PR、`main`、remediation 分支和 tag 运行完整 release，工件/证据保留 90 天；20 分钟 soak 手动或周计划独立运行；不部署生产环境 |
 | `docs/review/` | 审查报告、评分与证据索引 | 默认被 `.gitignore` 忽略，提交时必须显式加入 |
 | `docs/architecture/` | 架构决策记录 | ADR-001 固定“保留并修复” |
 | `docs/qa/` | 设备/浏览器矩阵、工程加固、可玩性报告与机器可读证据 | `playability-report.md`、`evidence/slice-playability.json` 必须区分固定 seed 模拟、自动化视口、视觉抽检与真人/真机结果；默认被 `.gitignore` 忽略，提交时必须显式加入。 |
@@ -39,15 +39,16 @@ index.html
 package.json + package-lock.json
   └─ tests/* + tools/e2e/* + tools/build_static.mjs
       └─ .github/workflows/test.yml
-          └─ npm run verify
-              └─ dist/releases/<build-id>/ + build-info.json（不可变 CI 工件）
+          ├─ npm run verify + npm run test:release
+          │   └─ dist/releases/<build-id>/ + build-info.json（不可变 CI 工件）
+          └─ npm run test:release:soak（独立 20 分钟门禁）
 ```
 
 该项目没有打包器或运行时框架；`package.json` 锁定 `npm@10.9.2`，根 `package-lock.json` 仅锁定零依赖项目本身，浏览器测试依赖在 `tools/e2e/package-lock.json` 锁定 [4]。`npm run build` 是零依赖静态复制/版本化过程，不改变 Canvas/ESM 运行架构。`npm run test:playability` 是同一门禁中的确定性状态机审计，不引入运行时依赖。后续工具只能服务于已定义的质量需求，不能改变该默认架构。
 
 ## 文档承接规则
 
-审查文档中的问题编号（A-01 至 A-11）是后续变更的唯一风险主键。阶段 2 的运行时、测试、工作流和 SBOM 修改均对应 A-01 至 A-09；第4阶段切片可玩性、A-05 动效偏好与自动化证据均须在提交说明中列出，并同步更新 `MEMORY.md`。截图/原始日志不随本阶段提交；测量口径、命令和结论由 `docs/qa/engineering-hardening-report.md` 与 `docs/qa/playability-report.md` 管理。
+审查文档中的问题编号（A-01 至 A-11）继续作为历史风险主键；现役状态以 `MANUS_CONTEXT.md` 和当前 `docs/qa/release-candidate-report.md` 为准。同步现役项目文档即可；项目或 Codex 记忆只有在用户明确授权时才能更新，不能作为普通提交的强制步骤。机器证据只在显式生成时写入 `docs/qa/evidence/`，日常测试默认写系统临时目录。
 
 ## 参考资料
 

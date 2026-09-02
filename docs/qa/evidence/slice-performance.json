@@ -1,41 +1,41 @@
 {
-  "capturedAt": "2026-09-01T01:37:39.454Z",
+  "capturedAt": "2026-09-02T05:01:08.573Z",
   "environment": "Local headless Chromium; no network throttling; mobile is touch/DPR simulation, not a physical device.",
   "profiles": {
     "desktop": {
       "existingLevel": {
-        "playableMs": 507,
-        "fps": 56.33,
-        "transferBytes": 1544056,
-        "resources": 33,
+        "playableMs": 271,
+        "fps": 60.41,
+        "transferBytes": 1480883,
+        "resources": 32,
         "mode": "adv",
-        "dist": 23.6
+        "dist": 23.1
       },
       "slice": {
-        "playableMs": 360,
-        "fps": 58.92,
-        "transferBytes": 1295056,
-        "resources": 30,
+        "playableMs": 224,
+        "fps": 60.26,
+        "transferBytes": 1231883,
+        "resources": 29,
         "mode": "slice",
-        "dist": 33
+        "dist": 31.8
       }
     },
     "mobile_simulated": {
       "existingLevel": {
-        "playableMs": 460,
-        "fps": 49.74,
-        "transferBytes": 1544056,
-        "resources": 33,
+        "playableMs": 264,
+        "fps": 60.22,
+        "transferBytes": 1480883,
+        "resources": 32,
         "mode": "adv",
-        "dist": 23.6
+        "dist": 23.1
       },
       "slice": {
-        "playableMs": 390,
-        "fps": 60.56,
-        "transferBytes": 1295056,
-        "resources": 30,
+        "playableMs": 208,
+        "fps": 60.25,
+        "transferBytes": 1231883,
+        "resources": 29,
         "mode": "slice",
-        "dist": 32.8
+        "dist": 31.8
       }
     }
   }

@@ -1,67 +1,61 @@
-# DuckDuckRun 第 5 阶段发布候选报告
+# DuckDuckRun 本地 remediation 发布候选报告
 
-**候选构建：`1634d51bc5b8`；验收日期：2026-09-01；状态：技术发布候选（RC），未生产发布。** 第 4 阶段基线已复核为绿色。本阶段没有扩展关卡、账号、后端、数据库、PWA、分析 SDK 或引擎；仅补齐发布可靠性：运行时错误边界、版本化内容指纹、根入口原子切换、移动端 DPR 上限、画布恢复、深链接刷新、发布验收工具与部署材料。
+**实现提交：`768d707`（前置 `0651ac3`、`bb7d4fe`）；构建 ID：`f36b36debf1a`；验收日期：2026-09-02；状态：本地技术候选，未推送、未合并、未部署。**
 
-> **放行判断：自动化发布硬门槛通过，未发现 P0/P1、未处理 console/page error 或非预期 HTTP 4xx/5xx。唯一人工验收门槛是一次真实手机微信 WebView 冒烟（≤5分钟）。当前没有云账号/备案域名/部署凭证，因此不存在实际生产 URL，也没有执行上传、DNS 或 CDN 变更。**
+旧标签 `v0.5.0-rc.1` 与 PR #1 仍停在 Manus 候选 `78e04a7`，不含本轮修复；远端 `main` 当前为公众号素材提交 `27e8fa1`。线上 GitHub Pages 仍是旧版，不能作为本候选的试玩、二维码或公众号入口。
 
-## 1. 发布硬门槛结果
+## 1. 放行判断
 
-| 硬门槛 | 结果 | 证据 | 结论 |
-|---|---|---|---|
-| 第 4 阶段基线 | `npm run verify` 在候选改动前后通过；切片平衡审计通过。 | `MANUS_CONTEXT.md`；`docs/qa/playability-report.md` | 绿色 |
-| 构建、制品、深链接与缓存 | 83 个入口/资源可达；根跳转、`?slice=1` 刷新、内容指纹与版本目录通过。 | `npm run test:dist`；`docs/qa/evidence/release-transport.json` [1] | 绿色 |
-| 包体 | 首屏 1,078.9 KiB / 6 MiB；完整首次会话 5.69 MiB / 20 MiB。 | `npm run test:size` | 绿色 |
-| 模拟 4G 首个可玩画面 | 1,977 ms，低于 8,000 ms硬上限。测试进入 `releases/1634d51bc5b8/`。 | [1] | 绿色（模拟） |
-| 中端移动性能预算 | 触控/DPR 2 Chromium 模拟切片为 60.56 FPS；既有首关 49.74 FPS。候选移动 DPR 渲染比限制为 1.5。 | `docs/qa/evidence/slice-performance.json` [2] | 绿色（自动化信号，非真机） |
-| 20 分钟浸泡 | 实际浏览器运行 1,200 秒，含连续重开、模拟后台/恢复、横竖屏、深链接刷新；0 错误，JS 堆变化 +1.35%。 | `docs/qa/evidence/release-soak.json` [3] | 绿色（模拟） |
-| 10 次失败—重开内存 | 10 次真实运行时失败→Enter 重开；0 错误，JS 堆变化 -16.79%，低于 15% 门槛。 | `docs/qa/evidence/release-restart-memory.json` [4] | 绿色 |
-| 资源失败演练 | 注入 1 个关键菜单背景 404 后仍到达菜单，错误边界未显示，无非预期错误。 | [1] | 绿色 |
-| 资源、字体与境外关键依赖 | 运行时请求全部同源；字体和图片随构建发布并内容指纹化，无 Google Fonts、海外图床或分析 SDK。 | `release-cross-platform.json` [5]；`asset-sbom.json` [6] | 绿色 |
-| 资产授权登记 | 44/44 条均含本地路径、SHA-256、来源/生成来源、作者/权利人、许可、许可义务与玩家可见归属入口。历史下载日期/原始 revision 不可追溯，但没有未登记的已发布素材。 | `npm run test:assets`；[6] | 绿色（非正式法律意见） |
-| CI | push 工作流与 PR 工作流均成功；二者均执行 Node 22、依赖安装、Chromium 安装、`npm run verify` 与不可变制品上传。 | [push run 33462223416](https://github.com/mckf111/DuckDuckRun/actions/runs/33462223416)；[PR run 33462225469](https://github.com/mckf111/DuckDuckRun/actions/runs/33462225469) | 绿色 |
+本地工程门禁未发现 P0/P1，已达到“可提交远端 CI 的技术候选”水平；尚未达到“可以公开发布”的水平。原因不是再缺一轮桌面自动化，而是新提交还没有远端 CI、真实手机/微信和真人易学性证据，也没有稳定生产 URL 与有效二维码。
 
-## 2. 跨端、访问性与生命周期验收
+| 门禁 | 本轮结果 | 证据边界 |
+|---|---|---|
+| 完整门禁 | `npm.cmd run verify` 通过；语法、合同、逻辑、存档、可玩性和浏览器回归全绿 | 本地 Node/Chromium |
+| 可复现制品 | 84 个制品文件、57 个指纹资产、86 个入口/资源可达；Windows/Linux build ID 同为 `f36b36debf1a` | 未在新 GitHub Actions 上复跑 |
+| 体积 | 首屏 1166.0 KiB / 6 MiB；完整会话 5.78 MiB / 20 MiB | 静态预算 |
+| 模拟 4G | 入库证据 1,895 ms，最终复跑 1,965 ms；关键资源 404 降级通过 | CDP 模拟，不是真实国内移动网络 |
+| 素材与告知 | 47/47 受管文件唯一登记；三份 legal notice 与运行时授权入口通过 | 工程台账，不是正式法律意见 |
+| 跨端模拟 | 5 个 Chromium/UA/视口配置通过；横屏 CSS 视口和 Canvas 铺满尺寸进入硬断言 | 只有 Chromium 是实际浏览器二进制；iOS 不是 WebKit |
+| 微信分享模拟 | 真实 Canvas 触控命中“分享成绩”，`toBlob` 成卡 1 次，600 px 图片完成解码，复制文案只含稳定根地址 | MicroMessenger UA 模拟，不是真微信 WebView |
+| 十次重开 | 两次最终样本均 0 console/page/network error；JS 堆变化 -2.01% 与 +3.57% | GC 稳定中位数，本地无头 Chromium |
+| 20 分钟 soak | 1,200.378 秒、16 次重开、0 错误；堆 +191,380 B / +5.63%，最长长任务 111 ms、阻塞比 0.00009；八项音频/生命周期全通过 | 844×390 触控模拟；不是实体设备 GPU、温升或电量结论 |
+| 性能抽样 | 桌面和触控模拟的既有首关/南京切片均约 60 FPS；切片请求 29 个、传输约 1.23 MB | 本地无网络限速，不能外推真机 |
 
-| 环境 | 结论 | 自动化覆盖 | 结论边界 |
-|---|---|---|---|
-| 桌面 Chromium 151，1440×900 | 通过 | 首菜单 576 ms、首次点击、音频解锁、失败重开、后台暂停/恢复、切片刷新、中文字体、键盘焦点、错误边界、同源资源。 | **真实 Linux Chromium 浏览器二进制**，非 Windows Chrome/Edge。 |
-| 桌面 Chrome | 通过 | Chrome UA + 1440×900 Chromium 内核模拟，上述路径全部通过。 | UA 模拟，不可替代 Windows/macOS Chrome 真机。 |
-| 桌面 Edge | 通过 | Edge UA + 1440×900 Chromium 内核模拟，上述路径全部通过。 | UA 模拟；环境无 Edge 二进制。 |
-| Android Chrome | 通过 | Android Chrome UA、触控、844×390、DPR 2；音频、前后台、失败重开、竖屏旋转引导与恢复、刷新通过。 | 视口/触控/UA模拟，不可替代 Android 真机、性能/温升/网络结论。 |
-| iOS Safari | 通过 | iPhone Safari UA、触控、844×390、DPR 2；同上。 | **不是 WebKit/Safari 引擎**，只是 Chromium 容器内的 UA/视口模拟。 |
-| 微信内置浏览器 | 通过（容器模拟） | iPhone + MicroMessenger UA、音频用户手势、失败页分享遮罩、复制链接回退、版本化分享路径。 | 不是实际微信 WebView；不能作为实机放行。 |
+## 2. 本轮修复的关键问题
 
-候选版本对前后台恢复、`webglcontextlost`/画布上下文丢失、resize/orientation change、错误边界、音频用户手势解锁和中文字体回退均有运行时保护；本阶段覆盖的是 Canvas 恢复分支与不可用时重启/重绘降级，而不是宣称所有 GPU 驱动故障均被实体设备复现。Canvas 已具备 `tabindex="0"` 与 `aria-describedby="gameInstructions"`；键盘焦点和基础指令可用，但复杂 Canvas 游戏的全量无障碍替代不在本候选放行范围内。
+- 将视觉粒子、对白和撞车文案随机从玩法随机流拆开，固定 seed 不再随帧数、动效偏好或音频状态漂移。
+- 修复移动横屏菜单按钮不足 44 CSS px、菜单重叠、HUD 小字/进度条重叠、竖屏遮罩下游戏继续跑和音频继续占用。
+- 分享卡正确区分南京切片与主线成绩；二维码和复制链接只指向稳定站点根入口，不传播 `/releases/<build-id>/`。
+- 构建输入规范化为 LF，同一 build ID 产物字节稳定；公开根配置、法务文件、深链、缓存和回滚指针进入制品检查。
+- CI 补齐 PR、`main`、remediation 分支、tag、90 天制品/证据与独立 soak；部署脚本具备 dry-run、STS/环境变量密钥、读回核验和不重传版本目录的回滚测试。
+- 修复旧测试的两类假绿：微信测试不再直接调用处理函数；发布截图必须连续三帧确认字体加载、状态稳定且 `wipe <= 0`，并校验恢复横屏后的真实视口与 Canvas 尺寸。
 
-两张候选截图分别核验了 1440×900 桌面与触控移动横屏的中文、HUD、控制区、安全区留白与画面完整性；未见字体方框、内容裁切、白屏或占位资源。[7]
+## 3. 当前视觉证据
 
-## 3. 唯一人工验收门槛
+本轮重新生成并人工查看了以下候选截图：
 
-必须在最终 HTTPS 候选地址上，用一台真实手机和微信内置浏览器执行一次不超过 5 分钟的烟测；**这是唯一明确的人工 QA 门槛，自动化不冒充真机。** 依次完成：打开、首次操作、确认音频解锁、微信切后台再回来、横竖屏、故意失败后重开、分享或刷新。记录手机型号、OS、微信版本、网络、URL/build ID、结果和失败截图。任一步失败即不发布，回滚/修复后重新验证。
+- `evidence/release-desktop_chromium.png`：1440×900，Canvas 1440×810；HUD、路线、鸭子、暂停/静音完整，无过场遮罩和字体方框。
+- `evidence/release-android_chrome_ua.png`：844×390、DPR 2 触控模拟，Canvas 693.3×390；横屏完整，无旧截图的右半幅黑屏/裁切。
+- `evidence/release-wechat-ua-share.png`：真实 Canvas 触控后的微信遮罩、成绩卡、二维码、复制按钮与 toast 完整可见。
 
-云账号、备案域名、CDN 域名和受保护 Secrets 的缺失是**部署输入尚未提供**，不是额外的人工产品验收；它们满足后，才进入一次性的生产发布/DNS 确认。
+详细观察见 [`evidence/release-visual-inspection.md`](evidence/release-visual-inspection.md)。这些截图不能替代实体 Android、iPhone 或微信 WebView。
 
-## 4. 风险与回滚
+## 4. 发布前仍需完成
 
-剩余风险主要来自实体 iOS WebKit、真实 Android GPU/网络、微信实际授权/分享菜单策略，以及正式 CDN 缓存切换；这些不能由本地无头浏览器替代。解决方式不是再加功能，而是先执行唯一真机微信烟测，再在低风险时段将候选上传到不可变版本目录，最后切换根入口。若出现 P0/P1、HTTP 404、证书错误、错误 build ID 或真机失败，立即按 [`../deployment/rollback.md`](../deployment/rollback.md) 回退根入口；不要删除故障版本、清空整个 CDN 或仓促修改 DNS。
+1. 将当前本地分支推送为新的候选线，运行新工作流的完整 release 与独立 20 分钟 soak；先开启 `main` 分支保护，禁止绕过 PR/门禁直接写入。
+2. 在稳定 HTTPS 候选地址上执行真实微信 WebView 5 分钟烟测，并补一台中端 Android、一台 iPhone 各 10 分钟记录；覆盖打开、首次操作、音频、前后台、横竖屏、失败重开、分享/刷新。
+3. 完成南京成年人、亲子或青少年、非南京玩家各 8–10 人测试；规则复述率至少 85%，60 秒内主动重试率至少 60%。没有这组证据，不宣称“十秒会玩、老少咸宜”。
+4. 用最终稳定 URL 重新生成并扫码核验二维码，再用本候选重截公众号素材。公众号提交 `27e8fa1` 基于旧基线，不能直接发布。
+5. 另行获得合并与生产部署授权；任一真机失败、P0/P1、错误 build ID、404、证书或缓存问题均停止发布并按回滚手册处理。
 
 ## 5. 可复现命令
 
-```bash
-npm ci
-npm run verify
-npm run test:release
-npm run test:release:soak
+```powershell
+npm.cmd ci
+npm.cmd ci --prefix tools/e2e
+npm.cmd run verify
+npm.cmd run test:release
+npm.cmd run test:release:soak
 ```
 
-`npm run test:release` 已涵盖构建、制品、包体、资产授权登记、模拟 4G、跨端模拟、微信 UA 模拟与 10 次重开；20 分钟浸泡单列执行，防止普通 CI 队列被 20 分钟任务拖慢。
-
-## References
-
-[1]: evidence/release-transport.json "模拟 4G、版本路径与受控 404 降级证据"
-[2]: evidence/slice-performance.json "桌面与触控移动模拟性能采样"
-[3]: evidence/release-soak.json "20 分钟真实运行时浸泡证据"
-[4]: evidence/release-restart-memory.json "10 次重开 JS 堆检查"
-[5]: evidence/release-cross-platform.json "跨端浏览器/UA 视口验收证据"
-[6]: asset-sbom.json "44 条资产授权登记与哈希"
-[7]: evidence/release-visual-inspection.md "桌面与移动横屏视觉抽检"
+日常命令默认把机器证据写入系统临时目录。只有准备入库的候选证据才显式设置 `RELEASE_EVIDENCE_DIR=docs/qa/evidence`；不得让普通测试悄悄改写跟踪文件。

@@ -1,5 +1,7 @@
 # DuckDuckRun 第 4 阶段可玩性报告
 
+> **历史证据。** 本文只对应标题所示阶段及当时提交，不是 2026-09-02 remediation 候选的发布放行依据；当前状态见 MANUS_CONTEXT.md 与 docs/qa/release-candidate-report.md。
+
 > **结论：本地质量门禁与受控模拟通过；真人试玩和物理真机验证仍未完成。** 本报告只陈述实际执行过的固定 seed 模拟、本地 Chromium 自动化与 Canvas 静态帧抽检。它不把模拟视口写成 Android、iPhone、Safari 或微信 WebView 实测，也不伪造用户研究。
 
 ## 1. 测试范围与环境

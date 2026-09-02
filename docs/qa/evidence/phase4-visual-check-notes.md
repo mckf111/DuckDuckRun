@@ -1,5 +1,7 @@
 # 第 4 阶段视觉抽检即时记录
 
+> **历史证据。** 本文只对应标题所示阶段及当时提交，不是 2026-09-02 remediation 候选的发布放行依据；当前状态见 MANUS_CONTEXT.md 与 docs/qa/release-candidate-report.md。
+
 - `slice-desktop-risk.webp`：274 m 风险收益段中，底部短提示“左跳摘双灯 · 右侧稳过”未遮挡道路、中央封墙或左侧低障碍；中华门门洞、秦淮水面与画舫同时可见。
 - `slice-mobile-landscape.webp`：同一 274 m 段在横屏触控视口中，标题/进度、44 CSS px 级别的静音与暂停控件、底部路线提示和三车道障碍保持可读，未见重叠、占位图或错误界面。
 

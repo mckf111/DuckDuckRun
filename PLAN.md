@@ -1,6 +1,8 @@
 # DuckDuckRun 分阶段硬化计划
 
-> **当前状态：第 4 阶段已将南京代表性垂直切片设为唯一扩展基线。** `vertical_slice_status: approved`。在不扩主线关卡或系统的前提下，切片现有有限路线组合、两档难度、减弱动态设置及固定 seed 可玩性审计；实现与模拟通过，不等同真人试玩或物理真机验收。A-02（未部署/线上版本漂移）、A-04/A-09（真机性能与容器证据）仍是发布阻断；本阶段没有部署、创建 PR 或修改默认分支。详见 [`docs/design/gameplay-and-balance.md`](docs/design/gameplay-and-balance.md) 与 [`docs/qa/playability-report.md`](docs/qa/playability-report.md)。
+> **历史计划。** 本文记录 Manus 第 1–4 阶段的进入/退出合同，不再作为当前项目状态。第 5 阶段旧 RC `78e04a7` / `v0.5.0-rc.1` 及其材料已由 2026-09-02 本地 remediation 收口线接替；当前状态只看 [`MANUS_CONTEXT.md`](MANUS_CONTEXT.md)。
+
+> **当时状态：第 4 阶段已将南京代表性垂直切片设为唯一扩展基线。** `vertical_slice_status: approved`。在不扩主线关卡或系统的前提下，切片现有有限路线组合、两档难度、减弱动态设置及固定 seed 可玩性审计；实现与模拟通过，不等同真人试玩或物理真机验收。A-02（未部署/线上版本漂移）、A-04/A-09（真机性能与容器证据）仍是发布阻断；本阶段没有部署、创建 PR 或修改默认分支。详见 [`docs/design/gameplay-and-balance.md`](docs/design/gameplay-and-balance.md) 与 [`docs/qa/playability-report.md`](docs/qa/playability-report.md)。
 
 | 阶段 | 目标 | 进入条件 | 退出条件 | 状态 |
 |---|---|---|---|---|
@@ -39,7 +41,7 @@
 | 5 | 性能和可访问性最小修复 | 真机数据驱动；无障碍/字号/输入改动可回归 |
 | 6 | 可复放随机局与素材 SBOM | 已完成固定 seed 演示入口和本地 SHA 映射；历史来源修订/下载日期/处理链与 CC BY-SA 复核仍待补证 |
 
-## 明确禁止项
+## 当时阶段的明确禁止项
 
 在 A-01/A-02 未关闭前，**禁止部署、禁止创建 PR、禁止向默认分支直接提交**。第 3 阶段同时禁止把这一个切片扩写为多关、多地图、大批原图、商业化、账户系统、后端、广告、PWA 离线系统、重型框架迁移、物理引擎替换或大规模美术重绘；禁止为了“让构建通过”而升级依赖。现有原生 Canvas/ESM 架构是默认保留对象，而不是待淘汰对象 [1]。
 

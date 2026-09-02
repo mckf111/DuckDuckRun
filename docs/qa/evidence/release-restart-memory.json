@@ -1,14 +1,17 @@
 {
   "schema": "duckduckrun-release-restart-memory/v1",
-  "capturedAt": "2026-09-01T01:58:24.020Z",
+  "capturedAt": "2026-09-02T05:00:03.268Z",
   "environment": "Local headless Chromium touch simulation (844×390, DPR 2); CDP JavaScript heap only, not device or GPU memory.",
   "cycles": 10,
   "errors": [],
+  "audioUnlocked": true,
   "heapBefore": {
-    "usedSize": 3041696,
-    "totalSize": 3727360,
-    "embedderHeapUsedSize": 1155664,
-    "backingStorageSize": 437274
+    "samples": [
+      3662972,
+      3474060,
+      3295908
+    ],
+    "median": 3474060
   },
   "restart1": {
     "state": "play",
@@ -61,11 +64,15 @@
     "paused": false
   },
   "heapAfter": {
-    "usedSize": 2531024,
-    "totalSize": 3465216,
-    "embedderHeapUsedSize": 1583208,
-    "backingStorageSize": 437525
+    "samples": [
+      3396884,
+      3468864,
+      3404280
+    ],
+    "median": 3404280
   },
-  "heapDeltaPct": -16.79,
+  "heapDeltaBytes": -69780,
+  "heapDeltaPct": -2.01,
+  "heapGrowthLimitBytes": 1572864,
   "passed": true
 }

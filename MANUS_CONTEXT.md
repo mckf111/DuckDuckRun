@@ -1,10 +1,20 @@
 # DuckDuckRun Agent 上下文
 
-## 当前任务状态
+## 当前收口状态（2026-09-02）
+
+当前本地收口分支为 `codex/manus-rc-remediation`，起点是旧 Manus RC `78e04a7`。实现提交为 `0651ac3`、`bb7d4fe`、`768d707`；旧标签 `v0.5.0-rc.1` 与 PR #1 仍只包含旧候选，不含本轮修复。远端 `main` 当前为公众号素材提交 `27e8fa1`，且没有分支保护。本轮未推送、未合并、未上传、未改 DNS/CDN，也没有生成可公开传播的 URL 或二维码。
+
+当前本地构建 ID 为 `f36b36debf1a`，含 84 个制品文件、57 个内容指纹资产，`check_dist` 验证 86 个入口/资源。`npm.cmd run verify`、`npm.cmd run test:release` 与真实 20 分钟浏览器 soak 均通过；正式 soak 运行 1,200.378 秒、16 次重开、0 错误，JS 堆增长 191,380 B（+5.63%，低于 1 MiB 门槛），最长长任务 111 ms，音频/前后台/横竖屏/重载八项生命周期检查全通过。Windows 与 Linux 规范化构建 ID 一致；这些仍是本地 E2/E3 证据，新提交尚未进入 GitHub Actions。
+
+本轮修复覆盖：确定性跨平台构建、完整 CI/证据保留、可演练的发布与回滚、稳定分享根链接、真实 Canvas 触控分享测试、47/47 素材反查与三份法务告知、字体缺字、移动菜单触控尺寸、竖屏暂停、玩法/视觉随机流隔离，以及截图必须等过场完全结束的防假绿断言。当前桌面与 844×390 触控模拟截图已重新检查，无旧候选中的 HUD/字体/裁切问题。
+
+尚未关闭的发布门槛：真实微信 WebView 5 分钟烟测，中端 Android 与 iPhone 各 10 分钟体验记录，南京成年人、亲子或青少年、非南京玩家三组各 8–10 人测试，稳定生产 URL/二维码，远端新 CI，`main` 分支保护，以及最终合并/部署授权。历史照片的 oldid、下载/处理记录与 CC BY-SA 正式许可判断仍是溯源缺口。仓库 `MEMORY.md` 与下方阶段文档只作历史材料，不是当前事实源。
+
+## 旧 Manus 第 5 阶段历史快照（`78e04a7`，不作为当前放行证据）
 
 第 5 阶段在 `manus/duckduckrun-hardening` 完成**技术发布候选**准备。第 4 阶段南京垂直切片仍为唯一扩展基线，ADR-001 仍为 **保留并修复**；本阶段没有增加关卡、账号、后端、数据库、PWA、分析 SDK 或引擎重写，仅修复发布阻断和必要 P2。[1]
 
-> **状态：候选构建 ID 为 `1634d51bc5b8`，RC tag 为 `v0.5.0-rc.1`，PR 为 [#1](https://github.com/mckf111/DuckDuckRun/pull/1)，尚未生产发布、尚未修改 DNS。** `npm run verify`、`npm run test:release` 与 20 分钟 `npm run test:release:soak` 均通过；模拟 4G 首个可玩画面为 1,977 ms（≤8 s），10 次失败—重开 JS 堆变化 -16.79%（≤15%），20 分钟运行时浸泡堆变化 +1.35%，均无非预期 console/page/network error。最终候选代码提交的远端 push CI [33462223416](https://github.com/mckf111/DuckDuckRun/actions/runs/33462223416) 与 PR CI [33462225469](https://github.com/mckf111/DuckDuckRun/actions/runs/33462225469) 均绿色。唯一明确的人工 QA 门槛是一次真实手机**微信 WebView**五分钟烟测；Chrome/Edge/Android/iOS/微信的其他候选结论均已明确区分真实 Chromium 与 UA/视口模拟，绝不冒充真机。部署仍因未提供大陆云账号、备案域名、DNS/CDN 配置与受保护 Secrets 而停止；这些是部署输入，不是另一个人工 QA 门槛。
+> **旧候选当时自述：构建 ID 为 `1634d51bc5b8`，RC tag 为 `v0.5.0-rc.1`，PR 为 [#1](https://github.com/mckf111/DuckDuckRun/pull/1)，尚未生产发布、尚未修改 DNS。** `npm run verify`、`npm run test:release` 与 20 分钟 `npm run test:release:soak` 均通过；模拟 4G 首个可玩画面为 1,977 ms（≤8 s），10 次失败—重开 JS 堆变化 -16.79%（≤15%），20 分钟运行时浸泡堆变化 +1.35%，均无非预期 console/page/network error。最终候选代码提交的远端 push CI [33462223416](https://github.com/mckf111/DuckDuckRun/actions/runs/33462223416) 与 PR CI [33462225469](https://github.com/mckf111/DuckDuckRun/actions/runs/33462225469) 均绿色。当时把唯一明确的人工 QA 门槛定义为一次真实手机**微信 WebView**五分钟烟测；这项旧口径已被本文件顶部的当前门槛取代。部署仍因未提供大陆云账号、备案域名、DNS/CDN 配置与受保护 Secrets 而停止；这些是部署输入，不是另一个人工 QA 门槛。
 
 第 5 阶段新增 `docs/qa/release-candidate-report.md`、`docs/deployment/domestic-hosting-decision.md`、`docs/deployment/runbook.md`、`docs/deployment/rollback.md`，并增加内容哈希静态制品、`scripts/deploy_aliyun_oss.sh`、发布传输/跨端/微信模拟/重开内存/浸泡与资产登记检查。主部署决策是：若已有备案域名和大陆阿里云账号，使用 OSS + 中国内地 CDN + HTTPS 子域名；无备案时仅以香港 OSS 作预览/备用，GitHub Pages、境外免费托管与 manus.space 不作为国内访问优先主站。生产上传或 DNS 修改前，只向用户询问一次明确确认。
 

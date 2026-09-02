@@ -1,24 +1,33 @@
 {
   "schema": "duckduckrun-release-cross-platform/v1",
-  "capturedAt": "2026-09-01T01:58:00.772Z",
-  "buildId": "1634d51bc5b8",
+  "capturedAt": "2026-09-02T05:08:04.277Z",
+  "buildId": "f36b36debf1a",
   "binary": "Chromium 151 on Linux; Edge and WebKit binaries unavailable in this environment.",
   "profiles": [
     {
       "id": "desktop_chromium",
       "label": "桌面 Chromium（真实 Linux Chromium）",
       "coverage": "browser-binary",
-      "menuMs": 589,
+      "menuMs": 225,
       "audioUnlocked": true,
       "pausedOnBackground": true,
       "resumed": true,
       "portraitBlocked": null,
       "landscapeRestored": null,
       "final": {
-        "buildId": "1634d51bc5b8",
+        "buildId": "f36b36debf1a",
         "state": "play",
         "mode": "slice",
+        "wipe": -0.0125,
         "dprRatio": 1,
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "canvasCss": {
+          "width": 1440,
+          "height": 810
+        },
         "fontsReady": true,
         "accessibleCanvas": true,
         "errorBoundaryVisible": false,
@@ -31,17 +40,26 @@
       "id": "desktop_chrome_ua",
       "label": "桌面 Chrome（Chromium 内核 + Chrome UA 模拟）",
       "coverage": "ua-simulation",
-      "menuMs": 389,
+      "menuMs": 212,
       "audioUnlocked": true,
       "pausedOnBackground": true,
       "resumed": true,
       "portraitBlocked": null,
       "landscapeRestored": null,
       "final": {
-        "buildId": "1634d51bc5b8",
+        "buildId": "f36b36debf1a",
         "state": "play",
         "mode": "slice",
+        "wipe": -0.0122,
         "dprRatio": 1,
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "canvasCss": {
+          "width": 1440,
+          "height": 810
+        },
         "fontsReady": true,
         "accessibleCanvas": true,
         "errorBoundaryVisible": false,
@@ -54,17 +72,26 @@
       "id": "desktop_edge_ua",
       "label": "桌面 Edge（Chromium 内核 + Edge UA 模拟）",
       "coverage": "ua-simulation",
-      "menuMs": 380,
+      "menuMs": 178,
       "audioUnlocked": true,
       "pausedOnBackground": true,
       "resumed": true,
       "portraitBlocked": null,
       "landscapeRestored": null,
       "final": {
-        "buildId": "1634d51bc5b8",
+        "buildId": "f36b36debf1a",
         "state": "play",
         "mode": "slice",
+        "wipe": -0.0116,
         "dprRatio": 1,
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "canvasCss": {
+          "width": 1440,
+          "height": 810
+        },
         "fontsReady": true,
         "accessibleCanvas": true,
         "errorBoundaryVisible": false,
@@ -77,17 +104,26 @@
       "id": "android_chrome_ua",
       "label": "Android Chrome（触控/DPR/Chrome UA 模拟）",
       "coverage": "ua-viewport-simulation",
-      "menuMs": 304,
+      "menuMs": 160,
       "audioUnlocked": true,
       "pausedOnBackground": true,
       "resumed": true,
       "portraitBlocked": true,
       "landscapeRestored": true,
       "final": {
-        "buildId": "1634d51bc5b8",
+        "buildId": "f36b36debf1a",
         "state": "play",
         "mode": "slice",
+        "wipe": -0.0125,
         "dprRatio": 1.5,
+        "viewport": {
+          "width": 844,
+          "height": 390
+        },
+        "canvasCss": {
+          "width": 693.3,
+          "height": 390
+        },
         "fontsReady": true,
         "accessibleCanvas": true,
         "errorBoundaryVisible": false,
@@ -100,17 +136,26 @@
       "id": "ios_safari_ua",
       "label": "iOS Safari（触控/DPR/Safari UA 模拟，非 WebKit）",
       "coverage": "ua-viewport-simulation",
-      "menuMs": 254,
+      "menuMs": 157,
       "audioUnlocked": true,
       "pausedOnBackground": true,
       "resumed": true,
       "portraitBlocked": true,
       "landscapeRestored": true,
       "final": {
-        "buildId": "1634d51bc5b8",
+        "buildId": "f36b36debf1a",
         "state": "play",
         "mode": "slice",
+        "wipe": -0.0107,
         "dprRatio": 1.5,
+        "viewport": {
+          "width": 844,
+          "height": 390
+        },
+        "canvasCss": {
+          "width": 693.3,
+          "height": 390
+        },
         "fontsReady": true,
         "accessibleCanvas": true,
         "errorBoundaryVisible": false,

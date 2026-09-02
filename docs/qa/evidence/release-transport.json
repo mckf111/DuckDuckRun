@@ -1,13 +1,13 @@
 {
   "schema": "duckduckrun-release-transport/v1",
-  "capturedAt": "2026-09-01T01:57:56.663Z",
+  "capturedAt": "2026-09-02T04:59:37.805Z",
   "environment": "Local headless Chromium with CDP 4G emulation; mobile is viewport/touch simulation, not a physical-device conclusion.",
-  "buildId": "1634d51bc5b8",
+  "buildId": "f36b36debf1a",
   "simulated4G": {
-    "firstPlayableMs": 1977,
+    "firstPlayableMs": 1895,
     "errors": [],
-    "releasePath": "/releases/1634d51bc5b8/",
-    "buildId": "1634d51bc5b8"
+    "releasePath": "/releases/f36b36debf1a/",
+    "buildId": "f36b36debf1a"
   },
   "asset404Fallback": {
     "injectedFailures": 1,

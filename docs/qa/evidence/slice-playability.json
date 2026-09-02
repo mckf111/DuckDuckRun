@@ -1,8 +1,8 @@
 {
   "schema": 1,
-  "generatedAt": "2026-09-01T01:07:47.728Z",
+  "generatedAt": "2026-09-02T05:08:02.850Z",
   "source": "deterministic simulation; no human participant or physical-device claim",
-  "commit": "3e46040dc2db5e38579bcddb5cb6ff0ba9d60431",
+  "commit": "768d7070876c3d313c8e1c933fb32e575425c3cc",
   "referenceSeed": 20260903,
   "checks": {
     "threeNewcomerPaths": true,
@@ -146,7 +146,7 @@
     "completedRuns": 15,
     "finalState": "play",
     "maxObjects": 16,
-    "maxParticles": 56,
+    "maxParticles": 61,
     "updateFrames": 36001
   }
 }
