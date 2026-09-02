@@ -89,14 +89,22 @@ export function attachPageErrors(page, errors){
 }
 
 export async function waitForReleaseFrame(page, {state, minimumStateTime=0.35, timeout=5000}={}){
-  await page.evaluate(() => document.fonts.ready);
-  if(state){
-    await page.waitForFunction(async ({expectedState, minimum}) => {
-      const game = await import('./src/game.js');
-      return game.G.state === expectedState && game.G.stateT >= minimum && document.fonts.status === 'loaded';
-    }, {expectedState:state, minimum:minimumStateTime}, {timeout});
-  }
-  await page.evaluate(() => new Promise(resolveFrame => requestAnimationFrame(() => requestAnimationFrame(resolveFrame))));
+  await page.evaluate(async ({expectedState, minimum, timeoutMs}) => {
+    const game = expectedState ? await import('./src/game.js') : null;
+    await document.fonts.ready;
+    const deadline = performance.now() + timeoutMs;
+    let stableFrames = 0;
+    while(performance.now() < deadline){
+      await new Promise(resolveFrame => requestAnimationFrame(resolveFrame));
+      const stable = document.fonts.status === 'loaded' && (!expectedState || (
+        game.G.state === expectedState && game.G.stateT >= minimum && game.G.wipe <= 0
+      ));
+      stableFrames = stable ? stableFrames + 1 : 0;
+      // 连续三帧满足条件，避免在 main.js 尚未观察到状态切换的窗口中假通过。
+      if(stableFrames >= 3) return;
+    }
+    throw new Error(`发布画面未稳定：state=${game?.G.state}, stateT=${game?.G.stateT}, wipe=${game?.G.wipe}`);
+  }, {expectedState:state || '', minimum:minimumStateTime, timeoutMs:timeout});
 }
 
 export function assertReleaseGlyphManifest(root, samples){

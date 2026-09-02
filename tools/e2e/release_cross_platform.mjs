@@ -110,7 +110,13 @@ async function runProfile(browser, profile){
       buildId:document.querySelector('meta[name="duckduckrun-build"]')?.content,
       state:game.G.state,
       mode:game.G.mode,
+      wipe:Number(game.G.wipe.toFixed(4)),
       dprRatio:Number((canvas.width / canvas.getBoundingClientRect().width).toFixed(1)),
+      viewport:{width:innerWidth,height:innerHeight},
+      canvasCss:{
+        width:Number(canvas.getBoundingClientRect().width.toFixed(1)),
+        height:Number(canvas.getBoundingClientRect().height.toFixed(1)),
+      },
       fontsReady:document.fonts.status === 'loaded',
       accessibleCanvas:canvas.tabIndex === 0 && canvas.getAttribute('aria-describedby') === 'gameInstructions',
       errorBoundaryVisible:!document.querySelector('#appError').hidden,
@@ -118,7 +124,20 @@ async function runProfile(browser, profile){
     };
   });
   const expectedRatio = profile.mobile ? 1.5 : 1;
-  assert.deepEqual(final, {buildId:info.buildId,state:'play',mode:'slice',dprRatio:expectedRatio,fontsReady:true,accessibleCanvas:true,errorBoundaryVisible:false,noExternalRuntime:true});
+  assert.equal(final.buildId, info.buildId);
+  assert.equal(final.state, 'play');
+  assert.equal(final.mode, 'slice');
+  assert.ok(final.wipe <= 0, `${profile.id} 截图时仍在过场遮罩：${final.wipe}`);
+  assert.equal(final.dprRatio, expectedRatio);
+  assert.deepEqual(final.viewport, profile.options.viewport, `${profile.id} 恢复后的 CSS 视口漂移`);
+  const expectedCssWidth = Math.min(final.viewport.width, final.viewport.height * 16 / 9);
+  const expectedCssHeight = expectedCssWidth * 9 / 16;
+  assert.ok(Math.abs(final.canvasCss.width-expectedCssWidth)<=1 && Math.abs(final.canvasCss.height-expectedCssHeight)<=1,
+    `${profile.id} Canvas 未重新铺满可用横屏区域：${JSON.stringify(final)}`);
+  assert.equal(final.fontsReady, true);
+  assert.equal(final.accessibleCanvas, true);
+  assert.equal(final.errorBoundaryVisible, false);
+  assert.equal(final.noExternalRuntime, true);
   assert.ok(menuMs <= 4000, `${profile.id} 菜单首个可操作画面过慢：${menuMs}ms`);
   assert.equal(audioUnlocked, true, `${profile.id} 用户手势后音频未解锁`);
   assert.equal(pausedOnBackground, true, `${profile.id} 后台路径未暂停`);
