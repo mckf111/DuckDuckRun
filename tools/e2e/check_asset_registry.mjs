@@ -12,19 +12,22 @@ function filesUnder(root, relativeDirectory, accept){
   const directory = join(root, relativeDirectory);
   return readdirSync(directory, {withFileTypes:true}).flatMap(entry => {
     const relativePath = `${relativeDirectory}/${entry.name}`.replaceAll('\\', '/');
+    if(relativePath==='assets/img/src')return [];
     return entry.isDirectory() ? filesUnder(root, relativePath, accept) : accept(entry.name) ? [relativePath] : [];
   });
 }
 
 /*
  * 受许可/来源登记约束的真实磁盘集合。它独立于 SBOM 内容，避免登记表漏项后仍自报 100%。
- * 原创通用图集由 LICENSE.md 约束；第三方照片、字体、第三阶段生成图及其精选衍生物在此反查。
+ * 图集、图标、照片、字体和音频源全部反查；候选原图不发布。登记不代表权利批准。
  */
 export function collectGovernedAssetPaths(root=defaultRoot){
   const paths = [
     ...filesUnder(root, 'assets/img', name => imagePattern.test(name)),
     ...filesUnder(root, 'assets/fonts', name => /\.woff2$/i.test(name)),
-    ...filesUnder(root, 'assets/game/nanjing-slice', name => imagePattern.test(name)),
+    ...filesUnder(root, 'assets/game', name => imagePattern.test(name)),
+    ...filesUnder(root, 'assets/icons', name => /\.(png|svg|ico|webp)$/i.test(name)),
+    'src/audio.js',
   ];
   for(const relativePath of ['assets/game/bg-zhonghua.webp', 'assets/game/menu-background.webp']){
     if(existsSync(join(root, relativePath))) paths.push(relativePath);
@@ -74,5 +77,5 @@ export function checkAssetRegistry(root=defaultRoot, registryPath=join(root, 'do
 const isMain = process.argv[1] && resolve(process.argv[1]) === resolve(fileURLToPath(import.meta.url));
 if(isMain){
   const {registry, governed} = checkAssetRegistry();
-  console.log(`PASS | 发布授权登记：磁盘反查 ${governed.length}/${registry.assets.length} 条均唯一登记，且来源、作者、许可、义务、归属入口与哈希完整`);
+  console.log(`PASS | 素材工程登记：磁盘反查 ${governed.length}/${registry.assets.length} 条唯一登记且哈希一致；待审 ${registry.assets.filter(a=>a.review_status!=='approved').length} 项，并非公开发布授权`);
 }

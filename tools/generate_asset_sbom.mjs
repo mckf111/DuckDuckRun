@@ -97,7 +97,7 @@ export function buildAssetSbom(root=defaultRoot){
       local_path:relativePath,
       category:'font',
       purpose:'local UI font',
-      modified:'subset to the committed character manifest on 2026-09-02',
+      modified:file==='jinling-kai.woff2'?'subset to the committed character manifest on 2026-09-06; source SHA-256 preserved in private evidence':'subset to the committed character manifest on 2026-09-02',
       source_url:source.url,
       source_version:source.version,
       author:source.author,
@@ -141,10 +141,27 @@ export function buildAssetSbom(root=defaultRoot){
   }
 
   entries.sort((a,b) => a.local_path.localeCompare(b.local_path));
+  const walk=(dir)=>readdirSync(join(root,dir),{withFileTypes:true}).flatMap(e=>e.isDirectory()?walk(`${dir}/${e.name}`):/\.(png|webp|jpg|jpeg|svg|ico|mp3|wav|ogg)$/i.test(e.name)?[`${dir}/${e.name}`]:[]);
+  for(const path of [...walk('assets/game'),...walk('assets/icons'),'src/audio.js']){
+    if(entries.some(e=>e.local_path===path))continue;
+    const book=path.includes('/book-'),audio=path==='src/audio.js';
+    entries.push({id:path,local_path:path,sha256:sha256(root,path),category:audio?'synthesized_audio_source':book?'generated_image':'legacy_art',
+      source_url:book?'OpenAI image generation in Codex; project prompt without image references':audio?'project source src/audio.js':'legacy project asset; source evidence incomplete',
+      author:book?'AI-assisted project creation; human authorship scope to be reviewed':audio?'project contributors':'unverified legacy attribution',
+      license:book?'Platform terms apply; no guarantee of exclusive copyright':audio?'LICENSE.md subject to contributor review':'unverified; internal preview only',
+      modified:book?'2026-09-06 PNG encoded to WebP; no pixel retouch':audio?'2026-09-06 three buses, voice cooldown and four music phrases':'historical transformations not reconstructed',
+      release_status:'registered; NOT approved for public release',license_obligation:'Retain provenance and close rights review before publication',
+      attribution_location:'ASSETS.md; player credits; LICENSE.md'});
+  }
+  for(const e of entries){
+    e.review_status='pending';
+    e.decision=e.category==='legacy_art'?'replace or obtain original provenance before public release':e.category==='font'?'retain after fixed upstream and subset evidence review':e.category==='photo'?'review original license and modifications; replace unresolved material':'internal preview; review provenance and rights before public release';
+  }
+  entries.sort((a,b)=>a.local_path.localeCompare(b.local_path));
   return {
     schema:'duckduckrun-asset-sbom/v1',
-    generated_at:'2026-09-02',
-    scope:'Third-party photos, local fonts, and stage-3 project-generated slice assets shipped by the static runtime. Other original program/art assets remain governed by LICENSE.md.',
+    generated_at:'2026-09-06',
+    scope:'All runtime images, icons, fonts and synthesized audio source. Inventory is distinct from approval for publication.',
     release_review:{
       status:'registered',
       asset_file_count:entries.length,

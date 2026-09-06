@@ -48,7 +48,7 @@ assert.deepEqual(info.notices, {
 let release = join(dist, info.releasePath);
 const firstBuildId = info.buildId;
 const firstDigest = treeDigest(release);
-const rebuild = spawnSync(process.execPath, [join(root, 'tools', 'build_static.mjs')], {
+const rebuild = spawnSync(process.execPath, [join(root, 'tools', 'build_static.mjs'), '--preview'], {
   cwd:root,
   env:process.env,
   encoding:'utf8',

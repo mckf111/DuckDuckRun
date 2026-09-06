@@ -60,6 +60,7 @@ validate_manifest() {
   local manifest="$1"
   local expected="$2"
   [[ -f "$manifest" ]] || fail "缺少构建清单：$manifest"
+  node -e 'const m=require(process.argv[1]); if(m.distribution==="internal-preview" || m.pendingAssetReviews>0)process.exit(1)' "$manifest" || fail "内部试玩制品或素材待审制品不能发布。"
   local actual path
   actual="$(read_manifest_field "$manifest" buildId)" || fail "无法读取 $manifest 的 buildId。"
   path="$(read_manifest_field "$manifest" releasePath)" || fail "无法读取 $manifest 的 releasePath。"

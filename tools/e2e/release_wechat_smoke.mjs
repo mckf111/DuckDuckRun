@@ -56,25 +56,9 @@ try{
   // 让真实 requestAnimationFrame 主循环走完撞车动画；手工 update 会越过
   // main.js 的状态同步并制造一个“过场已结束”的竞态假象。
   await page.waitForFunction(() => window.__releaseGame.state === 'over', undefined, {timeout:2000});
-  const targetHandle = await page.waitForFunction(() => {
-    const button = window.__releaseGame.buttons.find(entry => entry.id === 'share');
-    return window.__releaseGame.state === 'over' && window.__releaseGame.wipe <= 0 && button && document.fonts.status === 'loaded' ? {...button} : false;
-  }, undefined, {timeout:2000});
-  const target = await targetHandle.jsonValue();
-  assert.ok(target, '失败页未注册分享按钮');
-  const canvas = page.locator('#cv');
-  const box = await canvas.boundingBox();
-  await canvas.evaluate(element => {
-    window.__sharePointerEvents = [];
-    for(const type of ['pointerdown','pointerup','pointercancel']) element.addEventListener(type, async event => {
-      const game = await import('./src/game.js');
-      window.__sharePointerEvents.push({type, isPrimary:event.isPrimary, pointerType:event.pointerType, wipe:game.G.wipe, pressed:game.G.pressed?.id || null});
-    });
-  });
-  await canvas.tap({position:{
-    x:(target.x + target.w/2) * box.width/960,
-    y:(target.y + target.h/2) * box.height/540,
-  }});
+  const target=page.locator('[data-action="share"]');
+  await target.waitFor();
+  await target.tap();
   await sleep(250);
   result.touchProbe = await page.evaluate(async () => {
     const game = await import('./src/game.js');
@@ -122,4 +106,4 @@ try{
   if(browser) await browser.close().catch(() => {});
   if(server) await server.stop();
 }
-console.log(`PASS | 微信UA模拟冒烟：真实 Canvas 触控、音频解锁、长按保存遮罩与稳定根链接均通过`);
+console.log(`PASS | 微信UA模拟冒烟：原生分享按钮触控、音频解锁、长按保存遮罩与稳定根链接均通过`);

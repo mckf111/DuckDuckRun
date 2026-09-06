@@ -40,7 +40,7 @@ try{
     await page.goto(`${base}/`, {waitUntil:'domcontentloaded'});
     await page.waitForFunction(async () => {
       const game = await import('./src/game.js');
-      return game.G.state === 'menu' && game.G.buttons.length >= 4;
+      return game.G.state === 'menu' && !!document.querySelector('[data-action="start"]');
     }, undefined, {timeout:8000});
     result.simulated4G = {
       firstPlayableMs:Date.now() - started,
@@ -57,7 +57,7 @@ try{
     const context = await browser.newContext({viewport:{width:844,height:390},hasTouch:true,isMobile:true,deviceScaleFactor:2});
     const page = await context.newPage();
     const expectedFailures=[];
-    await context.route('**/assets/game/menu-background.*.webp', route => {
+    await context.route('**/assets/game/book-wall.*.webp', route => {
       expectedFailures.push(route.request().url());
       return route.fulfill({status:404, body:''});
     });
@@ -65,7 +65,7 @@ try{
     await page.goto(`${base}/`, {waitUntil:'domcontentloaded'});
     await page.waitForFunction(async () => {
       const game = await import('./src/game.js');
-      return game.G.state === 'menu' && game.G.buttons.length >= 4;
+      return game.G.state === 'menu' && !!document.querySelector('[data-action="start"]');
     }, undefined, {timeout:4000});
     result.asset404Fallback = {
       injectedFailures:expectedFailures.length,

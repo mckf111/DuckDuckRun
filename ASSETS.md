@@ -80,3 +80,14 @@ SBOM 是阶段 2 的基础性 A-08 修复。新增资产、替换文件、压缩
 ## 2026-09-02 remediation 现状
 
 本轮重新生成两套字体子集及其哈希，修复两条含逗号作者署名的解析错误，并补齐此前漏登记的 `bg_sunyard.jpg`、`bg_sunyard.webp`、`it_stone.jpg`。发布包现在固定随附 `legal/LICENSE.md`、`legal/PHOTO-CREDITS.md`、`legal/FONT-OFL.txt`，运行时授权页与 `build-info.notices` 同步校验。47/47 工程登记已经关闭“已发布文件未入台账”的问题；历史照片 oldid、下载日期、处理记录及 CC BY-SA 正式法律判断仍未闭合，不能把 SBOM 当法律意见。
+
+## 2026-09-06 手机标杆：当前工程登记与公开审查分离
+
+- 台账扩为 55 项，独立反查所有发布图片、字体、图标和合成音频源（src/audio.js）。历史的 47/47 是旧范围。
+- 新增 book-wall.webp（941×1672）与 book-duck.webp（1536×1024 RGBA，2×2 关键姿态），由 OpenAI 图像生成辅助创作；无输入图片。只做 WebP 编码和运行时帧选取/构图，不宣称人类手绘或排他版权。
+- 原始输出、完整提示词、源字体与当前哈希保存在 docs/mobile-upgrade/private-evidence/，不随网页打包。游戏内版权页与 LICENSE.md 已使用用户确认的姓名曹文虎。
+- 正文字体基于 LXGW WenKai Medium v1.522 缓存源重新生成子集，覆盖本轮文案；标题源的旧 master 精确提交仍未补证。
+- assets/img/src 是未选候选原图，明确排除出 dist 与运行资源台账；原文件继续本地保留。
+- 台账所有项目 review_status 维持 pending：通用旧图集/图标取得原稿和授权或替换；照片逐项复核许可证据/改编义务，未闭合则替换；字体保留 OFL 并复核固定源；生成素材和合成音频补齐贡献与适用条款判断。没有伪造任何人工批准。
+- npm run build 只产生 internal-preview 制品；npm run build:production 与阿里云发布脚本拒绝待审/内部制品。本轮不是公开运营批准。
+- OpenAI 条款入口：https://openai.com/policies/terms-of-use/ （2026-09-06 读取，个人版生效 2026-01-01；实际账号协议类别仍须确认）。条款不保证输出唯一或具备当然排他版权。

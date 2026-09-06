@@ -13,7 +13,7 @@ const out = join(evidenceDir, 'release-cross-platform.json');
 let base;
 const profiles = [
   {
-    id:'desktop_chromium', label:'桌面 Chromium（真实 Linux Chromium）', kind:'browser-binary',
+    id:'desktop_chromium', label:'桌面 Chromium（本机 Chromium）', kind:'browser-binary',
     options:{viewport:{width:1440,height:900}}, mobile:false,
   },
   {
@@ -37,7 +37,7 @@ const result = {
   schema:'duckduckrun-release-cross-platform/v1',
   capturedAt:new Date().toISOString(),
   buildId:info.buildId,
-  binary:'Chromium 151 on Linux; Edge and WebKit binaries unavailable in this environment.',
+  binary:'Local Chromium binary; other profiles are UA simulation, not Edge/WebKit verification.',
   profiles:[],
 };
 async function clickLogical(page, logicalX, logicalY){
@@ -53,19 +53,14 @@ async function runProfile(browser, profile){
   await page.goto(`${base}/`, {waitUntil:'domcontentloaded'});
   await page.waitForFunction(async () => {
     const game = await import('./src/game.js');
-    return game.G.state === 'menu' && game.G.buttons.length >= 4;
+    return game.G.state === 'menu' && !!document.querySelector('[data-action="start"]');
   }, undefined, {timeout:4000});
   if(profile.id === 'desktop_chromium'){
     await assertBrowserGlyphCoverage(page, ['南京夜跑切片约秒', '轻松灯影护航', '中华门秦淮夜渡', '常规灯牌', '再跑一趟']);
   }
   const menuMs = Date.now() - started;
-  const firstAction = await page.evaluate(async () => {
-    const game = await import('./src/game.js');
-    return game.G.buttons.find(button => button.id === 'adv');
-  });
-  assert.ok(firstAction, `${profile.id} 菜单未注册开始按钮`);
-  await clickLogical(page, firstAction.x + firstAction.w / 2, firstAction.y + firstAction.h / 2);
-  await page.waitForFunction(async () => (await import('./src/game.js')).G.state === 'levels', undefined, {timeout:1500});
+  await page.locator('[data-action="levels"]').click();
+  await page.waitForFunction(async () => (await import('./src/game.js')).G.state === 'levels');
   await page.goto(`${base}/?slice=1&demo&seed=20260903`, {waitUntil:'domcontentloaded'});
   await page.waitForFunction(async () => (await import('./src/game.js')).G.state === 'play', undefined, {timeout:4000});
   await clickLogical(page, 480, 300); // 用户手势：音频创建/恢复入口。
@@ -83,22 +78,17 @@ async function runProfile(browser, profile){
   });
   await page.waitForFunction(async () => (await import('./src/game.js')).G.state === 'over', undefined, {timeout:1000});
   await sleep(80);
-  const retry = await page.evaluate(async () => {
-    const game = await import('./src/game.js');
-    return game.G.buttons.find(button => button.id === 'retry');
-  });
-  assert.ok(retry, `${profile.id} 失败页未注册重开按钮`);
-  await clickLogical(page, retry.x + retry.w / 2, retry.y + retry.h / 2);
-  await page.waitForFunction(async () => (await import('./src/game.js')).G.state === 'play', undefined, {timeout:1500});
+  await page.locator('[data-action="retry"]').click();
+  await page.waitForFunction(async () => (await import('./src/game.js')).G.state === 'play');
   let portraitBlocked = null;
   let landscapeRestored = null;
   if(profile.mobile){
     await page.setViewportSize({width:390,height:844});
     await sleep(200);
-    portraitBlocked = await page.locator('#rotate').evaluate(el => getComputedStyle(el).display === 'flex');
+    portraitBlocked = await page.evaluate(async()=>!(await import('./src/core.js')).viewport.portrait);
     await page.setViewportSize({width:844,height:390});
     await sleep(200);
-    landscapeRestored = await page.locator('#rotate').evaluate(el => getComputedStyle(el).display === 'none');
+    landscapeRestored = await page.evaluate(async()=>!(await import('./src/core.js')).viewport.portrait);
   }
   await page.reload({waitUntil:'domcontentloaded'});
   await page.waitForFunction(async () => (await import('./src/game.js')).G.state === 'play', undefined, {timeout:4000});
@@ -130,8 +120,8 @@ async function runProfile(browser, profile){
   assert.ok(final.wipe <= 0, `${profile.id} 截图时仍在过场遮罩：${final.wipe}`);
   assert.equal(final.dprRatio, expectedRatio);
   assert.deepEqual(final.viewport, profile.options.viewport, `${profile.id} 恢复后的 CSS 视口漂移`);
-  const expectedCssWidth = Math.min(final.viewport.width, final.viewport.height * 16 / 9);
-  const expectedCssHeight = expectedCssWidth * 9 / 16;
+  const expectedCssWidth = final.viewport.width;
+  const expectedCssHeight = final.viewport.height;
   assert.ok(Math.abs(final.canvasCss.width-expectedCssWidth)<=1 && Math.abs(final.canvasCss.height-expectedCssHeight)<=1,
     `${profile.id} Canvas 未重新铺满可用横屏区域：${JSON.stringify(final)}`);
   assert.equal(final.fontsReady, true);

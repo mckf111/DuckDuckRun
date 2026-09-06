@@ -39,8 +39,9 @@ test('完整门禁从临时 SBOM 验证字段、哈希、声明合同和一一�
   try{
     writeFileSync(registryPath, JSON.stringify(sbom));
     const result = checkAssetRegistry(root, registryPath);
-    assert.equal(result.registry.assets.length, 47);
-    assert.equal(result.governed.length, 47);
+    assert.equal(result.registry.assets.length, result.governed.length);
+    for(const path of ['assets/game/book-duck.webp','assets/game/book-wall.webp','assets/icons/duck-512.png','src/audio.js'])assert.ok(result.governed.includes(path),path);
+    assert.ok(result.registry.assets.every(asset=>asset.review_status==='pending'));
   }finally{
     rmSync(directory, {recursive:true, force:true});
   }

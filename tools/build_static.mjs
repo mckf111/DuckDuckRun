@@ -1,10 +1,15 @@
 import { createHash } from 'node:crypto';
 import { mkdirSync, readFileSync, readdirSync, renameSync, rmSync, statSync, writeFileSync } from 'node:fs';
-import { dirname, extname, join, parse, relative } from 'node:path';
+import { dirname, extname, join, parse, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { buildAssetSbom } from './generate_asset_sbom.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const dist = join(root, 'dist');
+const preview=process.argv.includes('--preview');
+const assetReview=buildAssetSbom(root);
+const pendingAssets=assetReview.assets.filter(a=>a.review_status!=='approved');
+if(!preview&&pendingAssets.length)throw new Error(`正式构建已阻止：${pendingAssets.length} 项素材尚未审核通过。内部试玩请用 npm run build（--preview）。`);
 const textExtensions = new Set(['.css', '.html', '.js', '.json', '.md', '.mjs', '.py', '.sh', '.txt', '.yaml', '.yml']);
 
 function canonicalBytes(path){
@@ -17,6 +22,7 @@ function listSourceInputs(directory, prefix=''){
   return readdirSync(directory, {withFileTypes:true}).flatMap(entry => {
     const absolute = join(directory, entry.name);
     const relativePath = prefix ? `${prefix}/${entry.name}` : entry.name;
+    if(relativePath==='assets/img/src')return [];
     return entry.isDirectory() ? listSourceInputs(absolute, relativePath) : [relativePath];
   }).sort();
 }
@@ -49,6 +55,7 @@ function runtimeInputBuildId(){
   const hash = createHash('sha256');
   hash.update('duckduckrun-static-release/v3\0');
   hash.update(JSON.stringify(publicConfig)).update('\0');
+  hash.update(JSON.stringify({distribution:preview?'internal-preview':'production',assetReview})).update('\0');
   for(const relativePath of inputs){
     hash.update(relativePath).update('\0').update(canonicalBytes(join(root, relativePath))).update('\0');
   }
@@ -65,6 +72,7 @@ function copyCanonicalDirectory(source, destination){
   mkdirSync(destination, {recursive:true});
   for(const entry of readdirSync(source, {withFileTypes:true})){
     const sourcePath = join(source, entry.name);
+    if(relative(root,sourcePath).replaceAll('\\','/')==='assets/img/src')continue;
     const destinationPath = join(destination, entry.name);
     if(entry.isDirectory()) copyCanonicalDirectory(sourcePath, destinationPath);
     else if(entry.isFile()) writeFileSync(destinationPath, canonicalBytes(sourcePath));
@@ -72,6 +80,7 @@ function copyCanonicalDirectory(source, destination){
   }
 }
 
+if(resolve(dist)!==resolve(root)+sep+'dist')throw new Error('拒绝清理工作区之外的构建路径');
 rmSync(dist, {recursive:true, force:true});
 const release = join(dist, 'releases', buildId);
 mkdirSync(release, {recursive:true});
@@ -150,6 +159,8 @@ writeFileSync(join(release, 'asset-manifest.js'), [
 const files = listFiles(release);
 const manifest = {
   schema:2,
+  distribution:preview?'internal-preview':'production',
+  pendingAssetReviews:pendingAssets.length,
   buildId,
   releasePath,
   publicBasePath,

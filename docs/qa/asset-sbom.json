@@ -1,10 +1,10 @@
 {
   "schema": "duckduckrun-asset-sbom/v1",
-  "generated_at": "2026-09-02",
-  "scope": "Third-party photos, local fonts, and stage-3 project-generated slice assets shipped by the static runtime. Other original program/art assets remain governed by LICENSE.md.",
+  "generated_at": "2026-09-06",
+  "scope": "All runtime images, icons, fonts and synthesized audio source. Inventory is distinct from approval for publication.",
   "release_review": {
     "status": "registered",
-    "asset_file_count": 47,
+    "asset_file_count": 55,
     "completeness_rule": "Each governed source/release asset must be discovered from disk and matched to exactly one registry entry; every entry includes SHA-256, source/provenance, author/rightsholder, license, attribution location and release obligation.",
     "player_visible_notice_contract": {
       "ui_route": "menu:credits",
@@ -46,14 +46,16 @@
       "processing_record": "fonttools pyftsubset MaShanZheng-Regular.ttf --text-file=assets/fonts/chars-brush.txt --flavor=woff2 --no-hinting --desubroutinize",
       "attribution_location": "menu:credits (src/legal.js); full notice: assets/fonts/OFL.txt",
       "reviewer": "Codex independent remediation",
-      "reviewed_at": "2026-09-02"
+      "reviewed_at": "2026-09-02",
+      "review_status": "pending",
+      "decision": "retain after fixed upstream and subset evidence review"
     },
     {
       "id": "jinling-kai",
       "local_path": "assets/fonts/jinling-kai.woff2",
       "category": "font",
       "purpose": "local UI font",
-      "modified": "subset to the committed character manifest on 2026-09-02",
+      "modified": "subset to the committed character manifest on 2026-09-06; source SHA-256 preserved in private evidence",
       "source_url": "https://github.com/lxgw/LxgwWenKai",
       "source_version": "LXGW WenKai Medium v1.522 release",
       "author": "LXGW",
@@ -61,11 +63,13 @@
       "release_status": "registered — upstream family, copyright holder, SIL OFL 1.1 notice, SHA-256 and player-visible attribution are present",
       "license_obligation": "Bundle the SIL OFL 1.1 copyright and license notice; do not sell font files by themselves.",
       "downloaded_at": "2026-09-02",
-      "sha256": "0b6206b9af3cab0011a005ee272b492742497cbce49c9907f4146d6eb77c2863",
+      "sha256": "ca98b58693186468ad54745f48a4efa014cd0ee8e9e140815dc71916dc89c0b9",
       "processing_record": "fonttools pyftsubset LXGWWenKai-Medium.ttf --text-file=assets/fonts/chars.txt --flavor=woff2 --no-hinting --desubroutinize",
       "attribution_location": "menu:credits (src/legal.js); full notice: assets/fonts/OFL.txt",
       "reviewer": "Codex independent remediation",
-      "reviewed_at": "2026-09-02"
+      "reviewed_at": "2026-09-02",
+      "review_status": "pending",
+      "decision": "retain after fixed upstream and subset evidence review"
     },
     {
       "id": "bg_zhonghua",
@@ -84,7 +88,54 @@
       "processing_record": "not recorded in pre-stage-2 repository",
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
-      "reviewed_at": "2026-09-01"
+      "reviewed_at": "2026-09-01",
+      "review_status": "pending",
+      "decision": "internal preview; review provenance and rights before public release"
+    },
+    {
+      "id": "assets/game/book-duck.webp",
+      "local_path": "assets/game/book-duck.webp",
+      "sha256": "3510f55cdfa310e7d990ba740020d05465794786a4fd3b861c3cfe2858dce2ac",
+      "category": "generated_image",
+      "source_url": "OpenAI image generation in Codex; project prompt without image references",
+      "author": "AI-assisted project creation; human authorship scope to be reviewed",
+      "license": "Platform terms apply; no guarantee of exclusive copyright",
+      "modified": "2026-09-06 PNG encoded to WebP; no pixel retouch",
+      "release_status": "registered; NOT approved for public release",
+      "license_obligation": "Retain provenance and close rights review before publication",
+      "attribution_location": "ASSETS.md; player credits; LICENSE.md",
+      "review_status": "pending",
+      "decision": "internal preview; review provenance and rights before public release"
+    },
+    {
+      "id": "assets/game/book-wall.webp",
+      "local_path": "assets/game/book-wall.webp",
+      "sha256": "56cdca6ec57b5a17dd3a25c3e032ce127ce393440483b0846e124643ac93ee00",
+      "category": "generated_image",
+      "source_url": "OpenAI image generation in Codex; project prompt without image references",
+      "author": "AI-assisted project creation; human authorship scope to be reviewed",
+      "license": "Platform terms apply; no guarantee of exclusive copyright",
+      "modified": "2026-09-06 PNG encoded to WebP; no pixel retouch",
+      "release_status": "registered; NOT approved for public release",
+      "license_obligation": "Retain provenance and close rights review before publication",
+      "attribution_location": "ASSETS.md; player credits; LICENSE.md",
+      "review_status": "pending",
+      "decision": "internal preview; review provenance and rights before public release"
+    },
+    {
+      "id": "assets/game/duck-atlas.webp",
+      "local_path": "assets/game/duck-atlas.webp",
+      "sha256": "612ce949a279eb7ae38d9d9467e715c760df6292d09e0d28544c84e142c9a0c2",
+      "category": "legacy_art",
+      "source_url": "legacy project asset; source evidence incomplete",
+      "author": "unverified legacy attribution",
+      "license": "unverified; internal preview only",
+      "modified": "historical transformations not reconstructed",
+      "release_status": "registered; NOT approved for public release",
+      "license_obligation": "Retain provenance and close rights review before publication",
+      "attribution_location": "ASSETS.md; player credits; LICENSE.md",
+      "review_status": "pending",
+      "decision": "replace or obtain original provenance before public release"
     },
     {
       "id": "bg_menu",
@@ -103,7 +154,9 @@
       "processing_record": "not recorded in pre-stage-2 repository",
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
-      "reviewed_at": "2026-09-01"
+      "reviewed_at": "2026-09-01",
+      "review_status": "pending",
+      "decision": "internal preview; review provenance and rights before public release"
     },
     {
       "id": "nanjing-slice-target-v1",
@@ -122,7 +175,9 @@
       "processing_record": "tools/process_nanjing_slice_assets.py; original PNG intentionally not committed",
       "attribution_location": "ASSETS.md (stage 3 generated-asset record)",
       "reviewer": "Manus AI (stage 3 inventory)",
-      "reviewed_at": "2026-09-01"
+      "reviewed_at": "2026-09-01",
+      "review_status": "pending",
+      "decision": "internal preview; review provenance and rights before public release"
     },
     {
       "id": "nanjing-slice-lantern-marker-v1",
@@ -141,7 +196,9 @@
       "processing_record": "tools/process_nanjing_slice_assets.py; original PNG intentionally not committed",
       "attribution_location": "ASSETS.md (stage 3 generated-asset record)",
       "reviewer": "Manus AI (stage 3 inventory)",
-      "reviewed_at": "2026-09-01"
+      "reviewed_at": "2026-09-01",
+      "review_status": "pending",
+      "decision": "internal preview; review provenance and rights before public release"
     },
     {
       "id": "nanjing-slice-salted-duck-v1",
@@ -160,7 +217,69 @@
       "processing_record": "tools/process_nanjing_slice_assets.py; original PNG intentionally not committed",
       "attribution_location": "ASSETS.md (stage 3 generated-asset record)",
       "reviewer": "Manus AI (stage 3 inventory)",
-      "reviewed_at": "2026-09-01"
+      "reviewed_at": "2026-09-01",
+      "review_status": "pending",
+      "decision": "internal preview; review provenance and rights before public release"
+    },
+    {
+      "id": "assets/game/obstacles-crenel.webp",
+      "local_path": "assets/game/obstacles-crenel.webp",
+      "sha256": "f88ace939543e0e97ca1b71bc7b38dde26ff68c5c37e6cea34fcac3d2ff3febf",
+      "category": "legacy_art",
+      "source_url": "legacy project asset; source evidence incomplete",
+      "author": "unverified legacy attribution",
+      "license": "unverified; internal preview only",
+      "modified": "historical transformations not reconstructed",
+      "release_status": "registered; NOT approved for public release",
+      "license_obligation": "Retain provenance and close rights review before publication",
+      "attribution_location": "ASSETS.md; player credits; LICENSE.md",
+      "review_status": "pending",
+      "decision": "replace or obtain original provenance before public release"
+    },
+    {
+      "id": "assets/game/pickup-ring.webp",
+      "local_path": "assets/game/pickup-ring.webp",
+      "sha256": "7a67f5014543b402f8aedb7352ecf195d012b05bf7ef5577d860b325db9a3e23",
+      "category": "legacy_art",
+      "source_url": "legacy project asset; source evidence incomplete",
+      "author": "unverified legacy attribution",
+      "license": "unverified; internal preview only",
+      "modified": "historical transformations not reconstructed",
+      "release_status": "registered; NOT approved for public release",
+      "license_obligation": "Retain provenance and close rights review before publication",
+      "attribution_location": "ASSETS.md; player credits; LICENSE.md",
+      "review_status": "pending",
+      "decision": "replace or obtain original provenance before public release"
+    },
+    {
+      "id": "assets/icons/duck-192.png",
+      "local_path": "assets/icons/duck-192.png",
+      "sha256": "c654d8051cc857c8e460bef48e8e80fba6e94e0ed22d8fb226622cc3597b70ee",
+      "category": "legacy_art",
+      "source_url": "legacy project asset; source evidence incomplete",
+      "author": "unverified legacy attribution",
+      "license": "unverified; internal preview only",
+      "modified": "historical transformations not reconstructed",
+      "release_status": "registered; NOT approved for public release",
+      "license_obligation": "Retain provenance and close rights review before publication",
+      "attribution_location": "ASSETS.md; player credits; LICENSE.md",
+      "review_status": "pending",
+      "decision": "replace or obtain original provenance before public release"
+    },
+    {
+      "id": "assets/icons/duck-512.png",
+      "local_path": "assets/icons/duck-512.png",
+      "sha256": "1ec0282e83ab26e896094d7b4b80074ff12b7b19c007f67ff96359419c63edb0",
+      "category": "legacy_art",
+      "source_url": "legacy project asset; source evidence incomplete",
+      "author": "unverified legacy attribution",
+      "license": "unverified; internal preview only",
+      "modified": "historical transformations not reconstructed",
+      "release_status": "registered; NOT approved for public release",
+      "license_obligation": "Retain provenance and close rights review before publication",
+      "attribution_location": "ASSETS.md; player credits; LICENSE.md",
+      "review_status": "pending",
+      "decision": "replace or obtain original provenance before public release"
     },
     {
       "id": "bg_baoen",
@@ -179,7 +298,9 @@
       "processing_record": "not recorded in pre-stage-2 repository",
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
-      "reviewed_at": "2026-09-01"
+      "reviewed_at": "2026-09-01",
+      "review_status": "pending",
+      "decision": "internal preview; review provenance and rights before public release"
     },
     {
       "id": "bg_baoen",
@@ -198,7 +319,9 @@
       "processing_record": "not recorded in pre-stage-2 repository",
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
-      "reviewed_at": "2026-09-01"
+      "reviewed_at": "2026-09-01",
+      "review_status": "pending",
+      "decision": "internal preview; review provenance and rights before public release"
     },
     {
       "id": "bg_bridge",
@@ -217,7 +340,9 @@
       "processing_record": "not recorded in pre-stage-2 repository",
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
-      "reviewed_at": "2026-09-01"
+      "reviewed_at": "2026-09-01",
+      "review_status": "pending",
+      "decision": "internal preview; review provenance and rights before public release"
     },
     {
       "id": "bg_bridge",
@@ -236,7 +361,9 @@
       "processing_record": "not recorded in pre-stage-2 repository",
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
-      "reviewed_at": "2026-09-01"
+      "reviewed_at": "2026-09-01",
+      "review_status": "pending",
+      "decision": "internal preview; review provenance and rights before public release"
     },
     {
       "id": "bg_jiming",
@@ -255,7 +382,9 @@
       "processing_record": "not recorded in pre-stage-2 repository",
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
-      "reviewed_at": "2026-09-01"
+      "reviewed_at": "2026-09-01",
+      "review_status": "pending",
+      "decision": "internal preview; review provenance and rights before public release"
     },
     {
       "id": "bg_jiming",
@@ -274,7 +403,9 @@
       "processing_record": "not recorded in pre-stage-2 repository",
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
-      "reviewed_at": "2026-09-01"
+      "reviewed_at": "2026-09-01",
+      "review_status": "pending",
+      "decision": "internal preview; review provenance and rights before public release"
     },
     {
       "id": "bg_mendong",
@@ -293,7 +424,9 @@
       "processing_record": "not recorded in pre-stage-2 repository",
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
-      "reviewed_at": "2026-09-01"
+      "reviewed_at": "2026-09-01",
+      "review_status": "pending",
+      "decision": "internal preview; review provenance and rights before public release"
     },
     {
       "id": "bg_mendong",
@@ -312,7 +445,9 @@
       "processing_record": "not recorded in pre-stage-2 repository",
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
-      "reviewed_at": "2026-09-01"
+      "reviewed_at": "2026-09-01",
+      "review_status": "pending",
+      "decision": "internal preview; review provenance and rights before public release"
     },
     {
       "id": "bg_menu",
@@ -331,7 +466,9 @@
       "processing_record": "not recorded in pre-stage-2 repository",
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
-      "reviewed_at": "2026-09-01"
+      "reviewed_at": "2026-09-01",
+      "review_status": "pending",
+      "decision": "internal preview; review provenance and rights before public release"
     },
     {
       "id": "bg_menu",
@@ -350,7 +487,9 @@
       "processing_record": "not recorded in pre-stage-2 repository",
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
-      "reviewed_at": "2026-09-01"
+      "reviewed_at": "2026-09-01",
+      "review_status": "pending",
+      "decision": "internal preview; review provenance and rights before public release"
     },
     {
       "id": "bg_observatory",
@@ -369,7 +508,9 @@
       "processing_record": "not recorded in pre-stage-2 repository",
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
-      "reviewed_at": "2026-09-01"
+      "reviewed_at": "2026-09-01",
+      "review_status": "pending",
+      "decision": "internal preview; review provenance and rights before public release"
     },
     {
       "id": "bg_observatory",
@@ -388,7 +529,9 @@
       "processing_record": "not recorded in pre-stage-2 repository",
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
-      "reviewed_at": "2026-09-01"
+      "reviewed_at": "2026-09-01",
+      "review_status": "pending",
+      "decision": "internal preview; review provenance and rights before public release"
     },
     {
       "id": "bg_qixia",
@@ -407,7 +550,9 @@
       "processing_record": "not recorded in pre-stage-2 repository",
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
-      "reviewed_at": "2026-09-01"
+      "reviewed_at": "2026-09-01",
+      "review_status": "pending",
+      "decision": "internal preview; review provenance and rights before public release"
     },
     {
       "id": "bg_qixia",
@@ -426,7 +571,9 @@
       "processing_record": "not recorded in pre-stage-2 repository",
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
-      "reviewed_at": "2026-09-01"
+      "reviewed_at": "2026-09-01",
+      "review_status": "pending",
+      "decision": "internal preview; review provenance and rights before public release"
     },
     {
       "id": "bg_sunyard",
@@ -445,7 +592,9 @@
       "processing_record": "not recorded in pre-stage-2 repository",
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
-      "reviewed_at": "2026-09-01"
+      "reviewed_at": "2026-09-01",
+      "review_status": "pending",
+      "decision": "internal preview; review provenance and rights before public release"
     },
     {
       "id": "bg_sunyard",
@@ -464,7 +613,9 @@
       "processing_record": "not recorded in pre-stage-2 repository",
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
-      "reviewed_at": "2026-09-01"
+      "reviewed_at": "2026-09-01",
+      "review_status": "pending",
+      "decision": "internal preview; review provenance and rights before public release"
     },
     {
       "id": "bg_yihe",
@@ -483,7 +634,9 @@
       "processing_record": "not recorded in pre-stage-2 repository",
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
-      "reviewed_at": "2026-09-01"
+      "reviewed_at": "2026-09-01",
+      "review_status": "pending",
+      "decision": "internal preview; review provenance and rights before public release"
     },
     {
       "id": "bg_yihe",
@@ -502,7 +655,9 @@
       "processing_record": "not recorded in pre-stage-2 repository",
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
-      "reviewed_at": "2026-09-01"
+      "reviewed_at": "2026-09-01",
+      "review_status": "pending",
+      "decision": "internal preview; review provenance and rights before public release"
     },
     {
       "id": "bg_zhaobi",
@@ -521,7 +676,9 @@
       "processing_record": "not recorded in pre-stage-2 repository",
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
-      "reviewed_at": "2026-09-01"
+      "reviewed_at": "2026-09-01",
+      "review_status": "pending",
+      "decision": "internal preview; review provenance and rights before public release"
     },
     {
       "id": "bg_zhaobi",
@@ -540,7 +697,9 @@
       "processing_record": "not recorded in pre-stage-2 repository",
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
-      "reviewed_at": "2026-09-01"
+      "reviewed_at": "2026-09-01",
+      "review_status": "pending",
+      "decision": "internal preview; review provenance and rights before public release"
     },
     {
       "id": "bg_zhonghua",
@@ -559,7 +718,9 @@
       "processing_record": "not recorded in pre-stage-2 repository",
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
-      "reviewed_at": "2026-09-01"
+      "reviewed_at": "2026-09-01",
+      "review_status": "pending",
+      "decision": "internal preview; review provenance and rights before public release"
     },
     {
       "id": "bg_zhonghua",
@@ -578,7 +739,9 @@
       "processing_record": "not recorded in pre-stage-2 repository",
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
-      "reviewed_at": "2026-09-01"
+      "reviewed_at": "2026-09-01",
+      "review_status": "pending",
+      "decision": "internal preview; review provenance and rights before public release"
     },
     {
       "id": "it_bean",
@@ -597,7 +760,9 @@
       "processing_record": "not recorded in pre-stage-2 repository",
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
-      "reviewed_at": "2026-09-01"
+      "reviewed_at": "2026-09-01",
+      "review_status": "pending",
+      "decision": "internal preview; review provenance and rights before public release"
     },
     {
       "id": "it_book",
@@ -616,7 +781,9 @@
       "processing_record": "not recorded in pre-stage-2 repository",
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
-      "reviewed_at": "2026-09-01"
+      "reviewed_at": "2026-09-01",
+      "review_status": "pending",
+      "decision": "internal preview; review provenance and rights before public release"
     },
     {
       "id": "it_cake",
@@ -635,7 +802,9 @@
       "processing_record": "not recorded in pre-stage-2 repository",
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
-      "reviewed_at": "2026-09-01"
+      "reviewed_at": "2026-09-01",
+      "review_status": "pending",
+      "decision": "internal preview; review provenance and rights before public release"
     },
     {
       "id": "it_cloud",
@@ -654,7 +823,9 @@
       "processing_record": "not recorded in pre-stage-2 repository",
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
-      "reviewed_at": "2026-09-01"
+      "reviewed_at": "2026-09-01",
+      "review_status": "pending",
+      "decision": "internal preview; review provenance and rights before public release"
     },
     {
       "id": "it_duck",
@@ -673,7 +844,9 @@
       "processing_record": "not recorded in pre-stage-2 repository",
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
-      "reviewed_at": "2026-09-01"
+      "reviewed_at": "2026-09-01",
+      "review_status": "pending",
+      "decision": "internal preview; review provenance and rights before public release"
     },
     {
       "id": "it_egg",
@@ -692,7 +865,9 @@
       "processing_record": "not recorded in pre-stage-2 repository",
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
-      "reviewed_at": "2026-09-01"
+      "reviewed_at": "2026-09-01",
+      "review_status": "pending",
+      "decision": "internal preview; review provenance and rights before public release"
     },
     {
       "id": "it_elephant",
@@ -711,7 +886,9 @@
       "processing_record": "not recorded in pre-stage-2 repository",
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
-      "reviewed_at": "2026-09-01"
+      "reviewed_at": "2026-09-01",
+      "review_status": "pending",
+      "decision": "internal preview; review provenance and rights before public release"
     },
     {
       "id": "it_fans",
@@ -730,7 +907,9 @@
       "processing_record": "not recorded in pre-stage-2 repository",
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
-      "reviewed_at": "2026-09-01"
+      "reviewed_at": "2026-09-01",
+      "review_status": "pending",
+      "decision": "internal preview; review provenance and rights before public release"
     },
     {
       "id": "it_gold",
@@ -749,7 +928,9 @@
       "processing_record": "not recorded in pre-stage-2 repository",
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
-      "reviewed_at": "2026-09-01"
+      "reviewed_at": "2026-09-01",
+      "review_status": "pending",
+      "decision": "internal preview; review provenance and rights before public release"
     },
     {
       "id": "it_lamp",
@@ -768,7 +949,9 @@
       "processing_record": "not recorded in pre-stage-2 repository",
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
-      "reviewed_at": "2026-09-01"
+      "reviewed_at": "2026-09-01",
+      "review_status": "pending",
+      "decision": "internal preview; review provenance and rights before public release"
     },
     {
       "id": "it_leaf",
@@ -787,7 +970,9 @@
       "processing_record": "not recorded in pre-stage-2 repository",
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
-      "reviewed_at": "2026-09-01"
+      "reviewed_at": "2026-09-01",
+      "review_status": "pending",
+      "decision": "internal preview; review provenance and rights before public release"
     },
     {
       "id": "it_plum",
@@ -806,7 +991,9 @@
       "processing_record": "not recorded in pre-stage-2 repository",
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
-      "reviewed_at": "2026-09-01"
+      "reviewed_at": "2026-09-01",
+      "review_status": "pending",
+      "decision": "internal preview; review provenance and rights before public release"
     },
     {
       "id": "it_pot",
@@ -825,7 +1012,9 @@
       "processing_record": "not recorded in pre-stage-2 repository",
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
-      "reviewed_at": "2026-09-01"
+      "reviewed_at": "2026-09-01",
+      "review_status": "pending",
+      "decision": "internal preview; review provenance and rights before public release"
     },
     {
       "id": "it_root",
@@ -844,7 +1033,9 @@
       "processing_record": "not recorded in pre-stage-2 repository",
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
-      "reviewed_at": "2026-09-01"
+      "reviewed_at": "2026-09-01",
+      "review_status": "pending",
+      "decision": "internal preview; review provenance and rights before public release"
     },
     {
       "id": "it_sakura",
@@ -863,7 +1054,9 @@
       "processing_record": "not recorded in pre-stage-2 repository",
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
-      "reviewed_at": "2026-09-01"
+      "reviewed_at": "2026-09-01",
+      "review_status": "pending",
+      "decision": "internal preview; review provenance and rights before public release"
     },
     {
       "id": "it_stone",
@@ -882,7 +1075,9 @@
       "processing_record": "not recorded in pre-stage-2 repository",
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
-      "reviewed_at": "2026-09-01"
+      "reviewed_at": "2026-09-01",
+      "review_status": "pending",
+      "decision": "internal preview; review provenance and rights before public release"
     },
     {
       "id": "it_taro",
@@ -901,7 +1096,9 @@
       "processing_record": "not recorded in pre-stage-2 repository",
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
-      "reviewed_at": "2026-09-01"
+      "reviewed_at": "2026-09-01",
+      "review_status": "pending",
+      "decision": "internal preview; review provenance and rights before public release"
     },
     {
       "id": "it_tea",
@@ -920,7 +1117,24 @@
       "processing_record": "not recorded in pre-stage-2 repository",
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
-      "reviewed_at": "2026-09-01"
+      "reviewed_at": "2026-09-01",
+      "review_status": "pending",
+      "decision": "internal preview; review provenance and rights before public release"
+    },
+    {
+      "id": "src/audio.js",
+      "local_path": "src/audio.js",
+      "sha256": "517e4e917d17b1c9ba4d2c2710d35e603fe895a7f56ea902069446e449f6a4fd",
+      "category": "synthesized_audio_source",
+      "source_url": "project source src/audio.js",
+      "author": "project contributors",
+      "license": "LICENSE.md subject to contributor review",
+      "modified": "2026-09-06 three buses, voice cooldown and four music phrases",
+      "release_status": "registered; NOT approved for public release",
+      "license_obligation": "Retain provenance and close rights review before publication",
+      "attribution_location": "ASSETS.md; player credits; LICENSE.md",
+      "review_status": "pending",
+      "decision": "internal preview; review provenance and rights before public release"
     }
   ]
 }

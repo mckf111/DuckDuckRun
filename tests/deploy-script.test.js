@@ -37,6 +37,17 @@ function availableBash(){
 
 const bash = availableBash();
 
+test('内部试玩包在构造上传命令前被拒绝', {skip:!bash},()=>{
+  const artifact=makeArtifact();
+  try{
+    for(const path of [join(artifact,'build-info.json'),join(artifact,'releases',buildId,'build-info.json')]){
+      const manifest=JSON.parse(readFileSync(path,'utf8'));manifest.distribution='internal-preview';manifest.pendingAssetReviews=55;writeFileSync(path,JSON.stringify(manifest));
+    }
+    const run=spawnSync(bash,[scriptPath],{cwd:root,encoding:'utf8',env:{...process.env,DEPLOY_DRY_RUN:'1',DEPLOY_ARTIFACT_DIR:artifact,DEPLOY_OSS_ENDPOINT:'oss-cn-shanghai.aliyuncs.com',DEPLOY_OSS_BUCKET:'duckduckrun-test'}});
+    assert.notEqual(run.status,0);assert.match(run.stderr,/内部试玩制品/);assert.doesNotMatch(run.stdout,/ossutil cp/);
+  }finally{rmSync(artifact,{recursive:true,force:true});}
+});
+
 test('部署合同使用官方 OSS 元数据格式且不把密钥放进参数', () => {
   assert.match(source, /Cache-Control:max-age=31536000, immutable/);
   assert.match(source, /Cache-Control:no-cache, no-store, must-revalidate/);
