@@ -1,6 +1,6 @@
 import { ITEMS, LEVELS } from './config.js';
 
-export const SAVE_SCHEMA = 4;
+export const SAVE_SCHEMA = 5;
 export const BRIDGE_INDEX = LEVELS.length - 1;
 export const NORMAL_ITEM_IDS = ITEMS.filter(item => !item.secret).map(item => item.id);
 const ITEM_IDS = new Set(ITEMS.map(item => item.id));
@@ -77,7 +77,6 @@ export function normalizeSave(raw){
   const secretPending = Array.isArray(source.secretPending)
     ? [...new Set(source.secretPending.filter(id => GUARANTEED_SECRET_IDS.has(id)))] : [];
   return {
-    ...source,
     schema: SAVE_SCHEMA,
     best: Math.max(0, finiteInt(source.best)),
     stars,
@@ -86,6 +85,18 @@ export function normalizeSave(raw){
     tutorialCompleted,
     tut: tutorialCompleted,
     muted: !!source.muted,
+    difficulty: source.difficulty==='easy'?'easy':'standard',
+    selectedSkin: source.selectedSkin==='gold'?'gold':'white',
+    trackedItem: NORMAL_ITEM_IDS.includes(source.trackedItem)?source.trackedItem:null,
+    journeyStarted: !!source.journeyStarted || cleared.some(Boolean),
+    lastLevel: clampInt(source.lastLevel,0,LEVELS.length-1),
+    skillTutorial: !!source.skillTutorial,
+    volumes: Object.fromEntries(['music','effects','voice'].map(key=>[key,
+      typeof source.volumes?.[key]==='number'&&Number.isFinite(source.volumes[key])?Math.max(0,Math.min(1,source.volumes[key])):key==='music'?0.65:0.8])),
+    medals: Object.fromEntries(['standard','easy'].map(mode=>[mode,LEVELS.map((_,i)=>{
+      const m=source.medals?.[mode]?.[i];
+      return {clear:!!m?.clear,collect:!!m?.collect,skill:!!m?.skill};
+    })])),
     motion: ['system','reduced','full'].includes(source.motion) ? source.motion : 'system',
     distTotal: Math.max(0, finiteInt(source.distTotal)),
     albumNew: !!source.albumNew,
@@ -98,6 +109,19 @@ export function normalizeSave(raw){
       spawn: clampInt(upgrades.spawn, 0, 3),
     },
   };
+}
+
+export function calculateMedals(marks,target,skillIds){
+  const medals={clear:true,collect:marks>=target,skill:new Set(skillIds).size>=2};
+  return {medals,stars:Object.values(medals).filter(Boolean).length};
+}
+export function parseSaveImport(text){
+  if(typeof text!=='string'||text.length>65536)throw new Error('存档文件过大');
+  const parsed=JSON.parse(text);
+  const raw=parsed?.format==='jinling-save'?parsed.data:parsed;
+  if(!raw||typeof raw!=='object'||Array.isArray(raw)||!Array.isArray(raw.stars)||!Array.isArray(raw.cleared))throw new Error('这不是金陵跑酷存档');
+  if(raw.schema>SAVE_SCHEMA)throw new Error('存档来自更新版本，请先更新游戏');
+  return normalizeSave(raw);
 }
 
 export function getBridgeUnlockStatus(candidate){

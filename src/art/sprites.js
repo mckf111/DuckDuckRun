@@ -2,11 +2,13 @@ import { assetUrl } from '../asset-url.js';
 
 /* 预渲染游戏素材：异步加载失败时，各绘制模块继续走原 Canvas 兜底。 */
 const SOURCES = {
-  duck: assetUrl('assets/game/duck-atlas.webp'),
-  pickup: assetUrl('assets/game/pickup-ring.webp'),
-  crenelObstacles: assetUrl('assets/game/obstacles-crenel.webp'),
-  sliceToken: assetUrl('assets/game/nanjing-slice/salted-duck-token.webp'),
-  sliceMarker: assetUrl('assets/game/nanjing-slice/qinhuai-lantern-marker.webp'),
+  bookBackdrop: 'assets/game/book-wall.webp',
+  bookDuck: 'assets/game/book-duck.webp',
+  duck: 'assets/game/duck-atlas.webp',
+  pickup: 'assets/game/pickup-ring.webp',
+  crenelObstacles: 'assets/game/obstacles-crenel.webp',
+  sliceToken: 'assets/game/nanjing-slice/salted-duck-token.webp',
+  sliceMarker: 'assets/game/nanjing-slice/qinhuai-lantern-marker.webp',
 };
 
 const CACHE = new Map();
@@ -22,12 +24,13 @@ export function getSprite(name){
   image.decoding = 'async';
   image.onload = () => { entry.ready = image.naturalWidth > 0; };
   image.onerror = () => { entry.failed = true; };
-  image.src = SOURCES[name];
+  image.src = assetUrl(SOURCES[name]);
   return null;
 }
 
 export function preloadGameSprites(){
-  Object.keys(SOURCES).forEach(getSprite);
+  getSprite('bookBackdrop');
+  getSprite('bookDuck');
 }
 
 export function drawSpriteFrame(context, image, cols, rows, frame, dx, dy, dw, dh){

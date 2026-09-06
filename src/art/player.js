@@ -1,3 +1,4 @@
+import { drawBookDuck } from './book.js';
 import { ctx, TAU, ZP, LANEGAP, proj, poly, disc, shadow, clamp } from '../core.js';
 import { save } from '../save.js';
 import { drawSpriteFrame, getSprite } from './sprites.js';
@@ -221,7 +222,7 @@ function drawSpritePlayer(pl, t, opts, p, gold){
 // opts: { panic: 障碍逼近, crashed: 撞车定格 }
 export function drawPlayer(pl, t, opts){
   opts = opts || {};
-  const gold = save.stars.reduce((a,b)=>a+b,0) >= 15;   // 15 星:金鸭皮肤
+  const gold = save.selectedSkin==='gold' && save.stars.reduce((a,b)=>a+b,0) >= 15;   // 15 星:金鸭皮肤
   BODY = gold ? '#f5d76e' : '#f5f0e6';
   BELLY = gold ? '#d8a83a' : '#e3d9c8';
   const p = proj(pl.x, pl.y, ZP);
@@ -232,6 +233,11 @@ export function drawPlayer(pl, t, opts){
   const gp = proj(pl.x, 0, ZP);
   const shK = Math.max(0.3, 1 - pl.y*0.55);
   shadow(gp.x, gp.y + 0.02*s, s*0.9*shK, 0.32*shK);
+  if(opts.book){
+    ctx.save();
+    if(opts.crashed){ctx.translate(p.x,p.y);ctx.rotate(-Math.min(1,opts.crashAge*3)*.8);ctx.translate(-p.x,-p.y);}
+    drawBookDuck(ctx,p.x,p.y,p.s*1.4,{t,air:pl.y>.05,slide:!!pl.sliding,gold,panic:opts.panic});ctx.restore();return;
+  }
   if(drawSpritePlayer(pl, t, opts, p, gold)) return;
   ctx.save();
   ctx.translate(x, y);

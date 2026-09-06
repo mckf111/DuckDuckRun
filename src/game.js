@@ -1,13 +1,14 @@
 import { clamp, lerp, rnd, irnd, visualRnd, visualIrnd, proj, LANEGAP, ZP, DRAWD, TAU, getRandomSeed, restartRandomSequence } from './core.js';
-import { LEVELS, NANJING_SLICE, ITEMS, LM_CYCLE, LM_NAME, MILESTONES, RUN_STAR_THRESHOLDS, QUACKS, CRASH_LINES } from './config.js';
+import { LEVELS, NANJING_SLICE, ITEMS, LM_CYCLE, LM_NAME, MILESTONES, RUN_STAR_THRESHOLDS, MOBILE, QUACKS, CRASH_LINES } from './config.js';
 import { save, persist, queuePersist, prefersReducedMotion } from './save.js';
-import { canPassObstacle, calculateRunStars, getBridgeUnlockStatus, getCollectionWeight, getObstacleInstruction } from './rules.js';
+import { canPassObstacle, calculateRunStars, calculateMedals, getBridgeUnlockStatus, getCollectionWeight, getObstacleInstruction } from './rules.js';
 import { sfx, bgm, setBgmIntensity } from './audio.js';
 import { track } from './track.js';
 
 /* ================= 游戏状态 ================= */
 export const G = {
   state:'menu',      // menu | levels | play | crashing | over | clear | album | shop | credits
+  difficulty:'standard', rescues:0, resumeIn:0, benchmark:false, skills:[], skillSteps:{}, skillFailed:{}, actionLog:[],
   mode:'adv',        // adv | endless | slice
   lvIdx:0, paused:false, t:0,
   dist:0, speed:0, runMarks:0, runStars:0, newIds:[],
@@ -62,7 +63,12 @@ export function currentSliceCue(){
   if(G.mode!=='slice') return null;
   const beats=NANJING_SLICE.beats, lead=G.slice?.config?.cueLead||0;
   const next=beats.find((beat,index)=>index>0&&G.dist>=beat.from-lead&&G.dist<beat.from);
-  return next || currentSliceBeat();
+  const beat=next || currentSliceBeat();
+  if(beat.id==='choice'){
+    const lane=G.cols.find(c=>c.arc==='slice-risk')?.lane ?? NANJING_SLICE.routeSets[G.slice.routeIndex].cols.find(c=>c.arc==='slice-risk').lane;
+    return {...beat,cue:lane===1?'右跳摘双灯 · 左侧稳过':'左跳摘双灯 · 右侧稳过'};
+  }
+  return beat;
 }
 
 export function startRun(mode, lvIdx=0, forceTutorial=false, options={}){
@@ -78,10 +84,15 @@ export function startRun(mode, lvIdx=0, forceTutorial=false, options={}){
   }
   if(getRandomSeed() !== null) restartRandomSequence();
   G.mode = mode; G.lvIdx = lvIdx;
+  G.benchmark=mode==='adv'&&lvIdx===0;
+  G.difficulty=mode==='adv'?(options.difficulty||save.difficulty):'standard';
+  G.rescues=G.difficulty==='easy'?MOBILE.rescues:0;G.resumeIn=0;
+  G.skills=[];G.skillSteps={};G.skillFailed={};G.actionLog=[];
+  if(mode==='adv'){save.lastLevel=lvIdx;save.journeyStarted=true;queuePersist();}
   if(G.replay) G.replay = { ...G.replay, seed:getRandomSeed(), mode, lvIdx };
   G.dist = 0; G.runMarks = 0; G.runStars = 0; G.newIds = []; G.t = 0;
   G.obs = []; G.cols = []; G.parts = []; G.gates = [];
-  G.speed = mode==='adv' ? LEVELS[lvIdx].speed : mode==='slice' ? sliceConfig.speed : 9.5;
+  G.speed = mode==='adv' ? (G.benchmark?MOBILE.benchmark.speed:LEVELS[lvIdx].speed)*(G.difficulty==='easy'?MOBILE.easySpeed:1) : mode==='slice' ? sliceConfig.speed : 9.5;
   G.nextSpawn = 40; G.paused = false; G.shake = 0; G.egg = null;
   G.newBest = false; G.kbSel = 0; G.kbActive = false;
   G.combo = 0; G.comboT = 0; G.killedBy = null; G.newItem = null;
@@ -107,13 +118,14 @@ export function startRun(mode, lvIdx=0, forceTutorial=false, options={}){
   pl.lane = 0; pl.x = 0; pl.y = 0; pl.vy = 0; pl.sliding = 0; pl.jumps = 0;
   G.state = 'play';
   if(mode==='slice') startSliceScript();
+  if(G.benchmark&&!teach)startBenchmark();
   if(teach) beginTutorialStep(0);
   if(mode!=='slice') refreshSecretGuarantees();
   bgm(mode==='slice' ? 'lantern' : LEVELS[lvIdx].motif);
   track('start', { mode, lv:lvIdx });
   return true;
 }
-export const curLv = ()=> G.mode==='slice' ? NANJING_SLICE : G.mode==='adv' ? LEVELS[G.lvIdx] : LEVELS[Math.floor(G.dist/600)%LEVELS.length];
+export const curLv = ()=> G.mode==='slice' ? NANJING_SLICE : G.mode==='adv' ? (G.benchmark?{...LEVELS[0],len:MOBILE.benchmark.len,speed:MOBILE.benchmark.speed}:LEVELS[G.lvIdx]) : LEVELS[Math.floor(G.dist/600)%LEVELS.length];
 
 /* ---- 南京垂直切片：有限路线组合，不进入掉落池、图鉴或经济系统 ---- */
 function startSliceScript(){
@@ -135,29 +147,30 @@ function updateSliceDemo(){
 
 /* ---- 操作回调 ---- */
 function noteTutorialAction(kind){
+  G.actionLog.push({kind,dist:G.dist,lane:pl.lane});if(G.actionLog.length>24)G.actionLog.shift();
   if(!G.tutorial) return;
   if((G.tutorial.step===0 && kind==='lane') || (G.tutorial.step===1 && kind==='jump')
     || (G.tutorial.step===2 && kind==='slide') || (G.tutorial.step===3 && kind==='double'))
     G.tutorial.actionDone=true;
 }
-export function onLeft(){ if(G.state==='play'&&!G.paused){ if(pl.lane>-1){ pl.lane--; noteTutorialAction('lane'); sfx.lane(); } } }
-export function onRight(){ if(G.state==='play'&&!G.paused){ if(pl.lane<1){ pl.lane++; noteTutorialAction('lane'); sfx.lane(); } } }
+export function onLeft(){ if(G.state==='play'&&!G.paused&&!G.resumeIn){ if(pl.lane>-1){ pl.lane--; noteTutorialAction('lane'); sfx.lane(); } } }
+export function onRight(){ if(G.state==='play'&&!G.paused&&!G.resumeIn){ if(pl.lane<1){ pl.lane++; noteTutorialAction('lane'); sfx.lane(); } } }
 export function onJump(){
-  if(G.state!=='play'||G.paused) return;
-  G.inputBuffer.jump=G.mode==='slice' ? G.slice.config.inputBuffer : 0.1; G.inputBuffer.slide=0;
+  if(G.state!=='play'||G.paused||G.resumeIn) return;
+  G.inputBuffer.jump=G.mode==='slice' ? G.slice.config.inputBuffer : MOBILE.inputBuffer[G.difficulty]; G.inputBuffer.slide=0;
 }
 export function onSlide(){
-  if(G.state!=='play'||G.paused) return;
-  G.inputBuffer.slide=G.mode==='slice' ? G.slice.config.inputBuffer : 0.1; G.inputBuffer.jump=0;
+  if(G.state!=='play'||G.paused||G.resumeIn) return;
+  G.inputBuffer.slide=G.mode==='slice' ? G.slice.config.inputBuffer : MOBILE.inputBuffer[G.difficulty]; G.inputBuffer.jump=0;
 }
 export function onPauseKey(){
-  if(G.state==='play'){ G.paused = !G.paused; sfx.click(); }
+  if(G.state==='play'){ G.paused?resumeRun():pauseRun();sfx.click(); }
   else if(G.state==='album'){
     if(G.albumZoom) G.albumZoom = null;        // 放大查看时 Esc 先关放大层
     else G.state = G.albumFrom;
     sfx.click();
   }
-  else if(G.state==='levels' || G.state==='over' || G.state==='clear' || G.state==='shop' || G.state==='credits'){ G.state='menu'; sfx.click(); }
+  else if(G.state==='levels' || G.state==='over' || G.state==='clear' || G.state==='shop' || G.state==='credits' || G.state==='settings'){ G.state='menu'; sfx.click(); }
 }
 export function onEnter(){
   if(G.state==='over'){ startRun(G.mode, G.lvIdx); }
@@ -176,7 +189,7 @@ function beginTutorialStep(step,retry=false){
   const tip=step===3 ? (touch?'起跳后再上滑一次，翅膀张开就成功':'起跳后再按一次 ↑，翅膀张开就成功')
     : getObstacleInstruction(type,touch);
   G.tutorial={step,targetZ:z,targetLane:lane,actionDone:false,retries:retry?(previous?.retries||0)+1:0,tip};
-  G.tut=[{z:z-12,text:'第 '+(step+1)+'/4 步 · '+tip}];
+  G.tut=[{z:z-12,text:'第 '+(step+1)+'/'+(G.benchmark?3:4)+' 步 · '+tip}];
   if(step<3){
     G.obs.push({lane,x:lane*LANEGAP,z,type,tutorialStep:step});
   }else{
@@ -193,18 +206,22 @@ function retryTutorial(){
   sfx.shieldBreak();
   beginTutorialStep(step,true);
 }
+export function retryCurrentTutorial(){if(G.tutorial)beginTutorialStep(G.tutorial.step,true);}
+export function pauseRun(){if(G.state==='play'){G.paused=true;G.resumeIn=0;G.inputBuffer={jump:0,slide:0};}}
+export function resumeRun(skip=false){if(G.state==='play'){G.paused=false;G.resumeIn=skip?0:2;}}
+
 function completeTutorialStep(step){
   if(!G.tutorial || G.tutorial.step!==step) return;
-  if(step<3){
+  if(step<(G.benchmark?2:3)){
     G.egg={text:'做对了！下一步',ttl:1.5,dur:1.5};
     beginTutorialStep(step+1,false);
     return;
   }
   save.tutorialCompleted=true; save.tut=true; persist();
   track('tutorial_complete', { retries:G.tutorial.retries });
-  // 教学是独立练习段；完成后从 0 m 正式起跑，不把练习距离算进第一关。
-  startRun('adv',0,false);
-  G.egg={text:'四步全会了，正式开跑！',ttl:2.4,dur:2.4};
+  // 标杆教学属于前 100 米安全段；旧版四步练习保留独立起跑。
+  if(G.benchmark){G.dist=MOBILE.benchmark.tutorialEnd;G.tutorial=null;G.tut=null;G.tutStage=4;startBenchmark();G.egg={text:'会跑了！带上鸭蛋，一起出城',ttl:2.4,dur:2.4};}
+  else {startRun('adv',0,false);G.egg={text:'四步全会了，正式开跑！',ttl:2.4,dur:2.4};}
 }
 function consumeInputBuffer(dt){
   if(G.inputBuffer.jump>0){
@@ -260,7 +277,7 @@ function pickRelicId(){
   return pool.length ? pool[irnd(0,pool.length-1)] : null;
 }
 function spawnArc(z, freeLane){
-  const mod = G.mode==='adv' ? LEVELS[G.lvIdx].mod : (LEVELS[Math.floor(G.dist/600)%LEVELS.length].mod||'');
+  const mod = G.mode==='adv' ? (G.benchmark?{...LEVELS[0],len:MOBILE.benchmark.len,speed:MOBILE.benchmark.speed}:LEVELS[G.lvIdx]).mod : (LEVELS[Math.floor(G.dist/600)%LEVELS.length].mod||'');
   const n = irnd(4,6) + (mod==='longArc' ? 1 : 0);
   const drift = mod==='arcDrift';
   const overLow = G.obs.some(o=>o.z===z && o.type==='low' && Math.abs(o.lane-freeLane)===1);
@@ -432,6 +449,7 @@ export function update(dt){
     return;
   }
   if(G.state!=='play' || G.paused) return;
+  if(G.resumeIn>0){G.resumeIn=Math.max(0,G.resumeIn-dt);return;}
   if(consumeInputBuffer(dt)) return;
   G.t += dt;   // 世界时钟:暂停时冻结,画舫/粒子等不动
   const lv = curLv();
@@ -464,7 +482,7 @@ export function update(dt){
   // 磁铁生效:邻道收集品横向吸向玩家道
   if(G.powerT.magnet > 0){
     for(const c of G.cols){
-      if(c.kind==='relic' || c.got || Math.abs(c.x - pl.x) <= 0.1) continue;
+      if(c.kind!=='egg' || c.got || Math.abs(c.x - pl.x) <= 0.1) continue;
       c.x += (pl.x - c.x) * Math.min(1, dt*4);
     }
   }
@@ -474,7 +492,7 @@ export function update(dt){
   G.idleTalk -= dt;
   if(!G.tutorial && G.idleTalk<=0){ duckSay(visualRnd(0,1)<0.55?'idle':null, visualRnd(0,1)<0.45); G.idleTalk=visualRnd(8,12); }
   let panicNow=false;
-  for(const o of G.obs){ if(!o.hit && o.rz>ZP && o.rz<ZP+10){ panicNow=true; break; } }
+  for(const o of G.obs){ if(!o.hit && Math.abs(o.x-pl.x)<0.6 && o.rz>ZP && o.rz<ZP+G.speed*0.7){ panicNow=true; break; } }
   if(panicNow && !G.lastPanic) duckSay('panic', true, 1.18);
   G.lastPanic=panicNow;
   if(G.mode==='endless'){
@@ -546,7 +564,7 @@ export function update(dt){
     const crossed=prevRz>ZP && o.rz<=ZP;
     // 扫掠判定:在判定窗内,或本帧整体跨过玩家平面(防高速低帧率隧穿)
     const inWin = (o.rz > ZP-0.45 && o.rz < ZP+0.45) || (prevRz > ZP && o.rz <= ZP);
-    const collisionWidth=G.mode==='slice' ? G.slice.config.collisionWidth : 0.55;
+    const collisionWidth=G.mode==='slice' ? G.slice.config.collisionWidth : G.difficulty==='easy'?0.46:0.55;
     if(inWin && Math.abs(o.x - pl.x) < collisionWidth){
       const dead = !canPassObstacle(pl, o);
       if(dead){
@@ -556,9 +574,12 @@ export function update(dt){
           retryTutorial();
           return;
         }else if(G.shield){                               // 护盾挡一次:荷叶飞散,不死
-          G.shield = false; o.hit = true;
+          G.shield = false; o.hit = true;if(o.skillId)G.skillFailed[o.skillId]=true;
           const q = proj(o.x, 1.0, ZP); burst(q.x, q.y, '#7ba86f');
           sfx.shieldBreak();
+        } else if(G.mode==='adv'&&G.rescues>0){
+          G.rescues--;o.hit=true;if(o.skillId)G.skillFailed[o.skillId]=true;
+          G.egg={text:'接住你了 · 还可保护 '+G.rescues+' 次',ttl:2,dur:2};sfx.shieldBreak();
         } else if(G.mode==='slice' && G.slice?.easy && G.slice.rescues>0){
           G.slice.rescues--; o.hit=true;
           const q=proj(o.x,1.0,ZP);burst(q.x,q.y,'#F4BE57');
@@ -593,6 +614,16 @@ export function update(dt){
         G.arcGot[c.arc]=arcCount;
         continue;
       }
+      if(c.kind==='skillStep'){
+        const index=G.skillSteps[c.skillId]||0;
+        const actual=c.action==='jump'?pl.y>0.72:c.action==='slide'?pl.sliding>0&&pl.y<0.3:G.actionLog.some(a=>a.kind==='lane'&&a.lane===c.lane&&a.dist>c.z-22);
+        if(!G.skillFailed[c.skillId]&&index===c.step&&actual){
+          G.skillSteps[c.skillId]=index+1;
+          if(index+1===c.steps){G.skills.push(c.skillId);G.egg={text:MOBILE.benchmark.skills.find(s=>s.id===c.skillId).name+' · 印章到手！',ttl:2.2,dur:2.2};sfx.newItem();}
+          else sfx.gate();
+        } else G.skillFailed[c.skillId]=true;
+        continue;
+      }
       if(c.kind==='relic'){
         burst(p.x, p.y, '#d89a3a');
         if(!save.album[c.id]) grantAlbumItem(c.id);
@@ -604,7 +635,7 @@ export function update(dt){
       }
       const coinMul = G.powerT.gui > 0 ? 2 : 1;            // 金桂只翻倍鸭蛋
       G.runMarks += 1;
-      G.runStars = calculateRunStars(G.runMarks, RUN_STAR_THRESHOLDS);
+      G.runStars = G.benchmark?calculateMedals(G.runMarks,MOBILE.benchmark.collectTarget,G.skills).stars:calculateRunStars(G.runMarks, RUN_STAR_THRESHOLDS);
       save.coins += coinMul;
       queuePersist();
       G.arcGot[c.arc] = (G.arcGot[c.arc]||0) + 1;
@@ -615,7 +646,7 @@ export function update(dt){
         G.egg = G.egg && G.egg.ttl > 1.5 ? G.egg : { text:'一串全收!', ttl:2, dur:2 };
         const q = proj(c.x, c.y+0.6, ZP); burst(q.x, q.y, '#f4e2b0');
       }
-      if(G.mode==='adv'){
+      if(G.mode==='adv'&&!G.benchmark){
         for(let i=0;i<3;i++) if(G.runMarks === RUN_STAR_THRESHOLDS[i]){
           G.egg = { text:'★'.repeat(i+1)+' 达成!', ttl:2.2, dur:2.2 }; sfx.gate();
         }
@@ -686,7 +717,12 @@ export function levelClear(){
     G.runStars=0;G.state='clear';track('slice_clear',{dist:Math.floor(G.dist),tokens:G.slice?.tokenCount||0,easy:!!G.slice?.easy});return;
   }
   G.runStars = calculateRunStars(G.runMarks, RUN_STAR_THRESHOLDS);
+  if(G.benchmark){
+    const result=calculateMedals(G.runMarks,MOBILE.benchmark.collectTarget,G.skills);G.runStars=result.stars;
+    const best=save.medals[G.difficulty][G.lvIdx];for(const key of Object.keys(best))best[key]=best[key]||result.medals[key];
+  }
   if(G.runStars > save.stars[G.lvIdx]) save.stars[G.lvIdx]=G.runStars;
+  save.lastLevel=Math.min(9,G.lvIdx+1);
   save.cleared[G.lvIdx] = true;   // 通关即解锁下一关,与星级脱钩
   if(G.lvIdx === LEVELS.length-1) grantAlbumItem('jiangtun');
   save.distTotal += Math.floor(G.dist);   // 累计里程
@@ -761,4 +797,33 @@ function protectGuaranteedSecrets(){
     const lane=Math.round(mark.x/LANEGAP);
     G.obs=G.obs.filter(obstacle=>!(obstacle.lane===lane&&Math.abs(obstacle.z-mark.z)<9));
   }
+}
+
+
+/* 标杆固定片段；真实玩家验收后才将新编排推广到其余九关。 */
+export function benchmarkBeat(){
+  const level=MOBILE.benchmark,beat=level.beats.find(b=>G.dist>=b.from&&G.dist<b.to)||level.beats.at(-1);
+  if(!beat.skill)return beat;
+  const skill=level.skills.find(s=>s.id===beat.skill),words=level.cueWords;
+  const route=skill.steps.map(s=>words.lanes[s.lane+1]+(words.actions[s.action]||'')).join('—');
+  return {...beat,cue:route+words.reward+skill.name+words.seal+'；'+words.lanes[level.safeLane+1]+words.safe};
+}
+function startBenchmark(){
+  const level=MOBILE.benchmark;
+  const rewards=level.rewards,bonus=level.skillRewards,flight=level.flight,safeX=level.safeLane*LANEGAP;
+  G.nextSpawn=Infinity;G.nextGate=Infinity;G.nextPower=Infinity;G.nextRelic=Infinity;
+  G.obs=level.obstacles.map(o=>({...o,x:o.lane*LANEGAP}));
+  G.cols=[];
+  // 左侧舒缓线的收益可达标；印章需要主动走技巧线。
+  for(let z=rewards.from;z<rewards.to;z+=rewards.every)for(let i=0;i<rewards.count;i++)G.cols.push({x:safeX,z:z+i*rewards.gap,y:rewards.height,id:'egg',kind:'egg',arc:z,arcN:rewards.count,got:false});
+  for(const skill of level.skills)skill.steps.forEach((s,i)=>{
+    G.cols.push({...s,x:s.lane*LANEGAP,y:s.action==='jump'?bonus.jumpHeight:bonus.groundHeight,id:'gold',kind:'skillStep',skillId:skill.id,step:i,steps:skill.steps.length,got:false});
+    for(let k=1;k<=bonus.count;k++)G.cols.push({x:s.lane*LANEGAP,z:s.z+k*bonus.gap,y:bonus.height,id:'egg',kind:'egg',arc:s.z,arcN:bonus.count,got:false});
+  });
+  for(let i=0;i<flight.count;i++)G.cols.push({x:flight.lane*LANEGAP,z:flight.z+i*flight.gap,y:flight.height,id:'egg',kind:'egg',arc:'flight',arcN:flight.count,got:false});
+  const tracked=ITEMS.find(i=>i.id===save.trackedItem);
+  const relic=tracked&&!tracked.secret&&(tracked.home??0)===0?tracked.id:level.relic.defaultId;
+  G.cols.push({x:safeX,z:level.relic.z,y:level.relic.height,id:relic,kind:'relic',got:false});
+  G.gates=level.gates.map(z=>({z,passed:false,rz:z-G.dist+ZP}));
+  G.powers=[{lane:level.safeLane,x:safeX,z:level.power.z,kind:level.power.kind}];
 }

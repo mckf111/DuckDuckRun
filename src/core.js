@@ -1,7 +1,24 @@
 /* ================= 基础 ================= */
 export const cv = document.getElementById('cv');
-export const ctx = cv.getContext('2d');
-export const W = 960, H = 540, CX = W / 2, HOR = H * 0.40;   // 逻辑分辨率与地平线
+export let ctx = cv.getContext('2d');
+export function withDrawingContext(context,draw){
+  const previous=ctx;ctx=context;try{return draw();}finally{ctx=previous;}
+}
+export let W = 960, H = 540, CX = W / 2, HOR = H * 0.40;
+export const viewport = { width:960, height:540, portrait:false, scale:1, camera:300, playerY:446 };
+export function setViewportSize(width, height){
+  const portrait = height > width;
+  const scale = Math.min(width, height) / 540;
+  W = width / scale; H = height / scale; CX = W / 2;
+  HOR = H * (portrait ? 0.29 : 0.34);
+  // 横竖屏只改变镜头：玩家世界高度、车道和碰撞规则保持不变。
+  const playerY = H * (portrait ? 0.77 : 0.80);
+  Object.assign(viewport,{width,height,portrait,scale,playerY,camera:Math.min(300,W*0.43),vertical:(playerY-HOR)*3/2.3});
+}
+export function screenToWorld(clientX,clientY){
+  const r=cv.getBoundingClientRect();
+  return {x:(clientX-r.left)*W/r.width,y:(clientY-r.top)*H/r.height};
+}
 export const CAMF = 300, CAMH = 2.3, ZP = 3, DRAWD = 72;      // 透视参数:焦距/相机高/绘制距离
 export const LANEGAP = 1.25, ROAD_HALF = 2.0;
 
@@ -30,8 +47,8 @@ export function fit(){
   const style = wrap ? getComputedStyle(wrap) : null;
   const safeWidth = Math.max(1, innerWidth - (parseFloat(style?.paddingLeft)||0) - (parseFloat(style?.paddingRight)||0));
   const safeHeight = Math.max(1, innerHeight - (parseFloat(style?.paddingTop)||0) - (parseFloat(style?.paddingBottom)||0));
-  const s = Math.min(safeWidth / W, safeHeight / H);
-  const cssW = W * s, cssH = H * s;
+  setViewportSize(safeWidth,safeHeight);
+  const cssW = safeWidth, cssH = safeHeight;
   cv.style.width = cssW + 'px'; cv.style.height = cssH + 'px';
   // 背板 = CSS 显示尺寸 × cappedDPR，逻辑坐标仍为 960×540。
   cv.width = Math.max(1, Math.round(cssW * dpr));
@@ -76,8 +93,8 @@ export function clearRandomSeed(){
 
 // 透视投影:世界(车道x, 高度y, 相对深度z) -> 屏幕
 export function proj(x, y, z){
-  const s = CAMF / z;
-  return { x: CX + x * s, y: HOR + (CAMH - y) * s, s };
+  const s = viewport.camera / z;
+  return { x: CX + x * s, y: HOR + (CAMH - y) * (viewport.vertical || CAMF) / z, s };
 }
 export const clamp = (v,a,b)=>v<a?a:v>b?b:v;
 export const lerp = (a,b,t)=>a+(b-a)*t;

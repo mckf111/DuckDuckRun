@@ -1,12 +1,12 @@
-import { ctx, W, H, fit, visualRnd, setRandomSeed, downgradeQuality } from './core.js';
-import { G, startRun, update, curLv } from './game.js';
+import { ctx, W, H, fit, visualRnd, setRandomSeed, downgradeQuality, viewport } from './core.js';
+import { G, startRun, update, curLv, pauseRun } from './game.js';
 import { LEVELS, LM_CYCLE } from './config.js';
 import { render } from './render.js';
 import { loadMenuBackground, loadBackground, prefetchBackground } from './art/photo.js';
 import { preloadGameSprites } from './art/sprites.js';
 import { bgmStop, disposeAudio, suspendAudio } from './audio.js';
 import { prefersReducedMotion } from './save.js';
-import { drawHUD, drawMenu, drawLevels, drawOver, drawClear, drawAlbum, drawShop, drawCredits } from './ui.js';
+import { renderDomUI, mountDomUI, disposeDomUI } from './dom-ui.js';
 import { createInputController } from './input.js';
 import { track } from './track.js';
 
@@ -67,24 +67,10 @@ function applyReplayQuery(){
   G.replay = { seed:normalized, source:demo ? 'demo' : 'query' };
 }
 
-function checkRotate(){
-  const el = document.getElementById('rotate');
-  if(!el) return;
-  const portrait = ('ontouchstart' in window) && innerHeight > innerWidth;
-  el.style.display = portrait ? 'flex' : 'none';
-  if(portrait && G.state==='play' && !G.paused){
-    G.paused = true;
-    pausedByRotate = true;
-    suspendAudio();
-  }else if(!portrait && pausedByRotate){
-    if(G.state==='play') G.paused = false;
-    pausedByRotate = false;
-  }else if(G.state!=='play') pausedByRotate = false;
-}
-
 function resizeRuntime(){
+  const wasPortrait=viewport.portrait;
   fit();
-  checkRotate();
+  if(started&&wasPortrait!==viewport.portrait&&G.state==='play'){pauseRun();suspendAudio();}
 }
 
 function clearPrefetch(){
@@ -97,10 +83,9 @@ function syncAssets(){
     if(assetKey === 'menu') return;
     assetKey = 'menu';
     clearPrefetch();
-    loadMenuBackground();
     return;
   }
-  if(G.mode==='slice'){
+  if(G.benchmark || G.mode==='slice'){
     if(assetKey==='slice') return;
     assetKey='slice';clearPrefetch();return;
   }
@@ -143,19 +128,12 @@ function frame(ts){
   if(G.shake>0 && !prefersReducedMotion()) ctx.translate(visualRnd(-1,1)*G.shake*8, visualRnd(-1,1)*G.shake*8);
   render();
   ctx.restore();
-  if(G.state==='play') drawHUD();
-  else if(G.state==='menu') drawMenu();
-  else if(G.state==='levels') drawLevels();
-  else if(G.state==='over') drawOver();
-  else if(G.state==='clear') drawClear();
-  else if(G.state==='album') drawAlbum();
-  else if(G.state==='shop') drawShop();
-  else if(G.state==='credits') drawCredits();
+  renderDomUI();
   if(G.state !== prevState){
     if(prevState==='play' && G.state!=='play') bgmStop();
     const crashTransition=G.state==='crashing'||prevState==='crashing';
     prevState = G.state;
-    G.wipe = crashTransition||prefersReducedMotion()?0:0.32;
+    G.wipe = 0;
     G.kbSel = 0;
     G.kbActive = false;
     G.stateT = 0;
@@ -177,6 +155,7 @@ export function startApp(){
   started = true;
   disposed = false;
   applyReplayQuery();
+  mountDomUI();
   inputController = createInputController();
   addEventListener('resize', resizeRuntime);
   addEventListener('orientationchange', resizeRuntime);
@@ -186,12 +165,12 @@ export function startApp(){
   resizeRuntime();
   track('view');
   preloadGameSprites();
-  if(!G.sliceRequest && location.hash!=='#slice') loadMenuBackground();
+
   if(G.sliceRequest) startRun('slice',0,false,G.sliceRequest);
   else if(location.hash==='#slice') startRun('slice',0,false,{easy:false,demo:false});
   else if(location.hash==='#play') startRun('endless', 0);
   else if(/^#lv\d$/.test(location.hash)) startRun('adv', +location.hash.slice(3));
-  checkRotate();
+
   frameId = requestAnimationFrame(frame);
   return true;
 }
@@ -209,6 +188,7 @@ export function disposeApp(){
   canvas?.removeEventListener('contextrestored', onCanvasContextRestored);
   inputController?.dispose();
   inputController = null;
+  disposeDomUI();
   clearPrefetch();
   bgmStop();
   disposeAudio();

@@ -1,16 +1,16 @@
 import { save } from './save.js';
 
 /* ================= 音频：轻量分层 WebAudio ================= */
-let AC = null, BUS = null, noiseBuffer = null;
+let AC = null, BUS = null, noiseBuffer = null, lastQuack=-Infinity;
 
 function buildBus(a){
   const master=a.createGain(), compressor=a.createDynamicsCompressor();
-  const music=a.createGain(), effects=a.createGain();
+  const music=a.createGain(), effects=a.createGain(), voice=a.createGain();
   master.gain.value=0.72; music.gain.value=0.34; effects.gain.value=0.78;
   compressor.threshold.value=-18;compressor.knee.value=18;compressor.ratio.value=4;
   compressor.attack.value=0.006;compressor.release.value=0.2;
-  music.connect(master);effects.connect(master);master.connect(compressor);compressor.connect(a.destination);
-  BUS={master,music,effects,compressor};
+  music.connect(master);effects.connect(master);voice.connect(master);master.connect(compressor);compressor.connect(a.destination);
+  BUS={master,music,effects,voice,compressor};syncVolumes();
 }
 
 // AudioContext 只在真实指针/键盘手势中创建或恢复；游戏状态机和主循环不能绕过该门槛。
@@ -32,16 +32,21 @@ export function suspendAudio(){
 
 export function disposeAudio(){
   bgmStop();
-  const nodes = BUS ? [BUS.music, BUS.effects, BUS.master, BUS.compressor] : [];
+  const nodes = BUS ? [BUS.music, BUS.effects, BUS.voice, BUS.master, BUS.compressor] : [];
   for(const node of nodes){ try{ node.disconnect(); }catch(e){} }
   const context = AC;
   AC = null;
   BUS = null;
-  noiseBuffer = null;
+  noiseBuffer = null;lastQuack=-Infinity;
   if(context && context.state!=='closed') context.close().catch(()=>{});
 }
 
-function targetBus(kind){return kind==='music'?BUS?.music:BUS?.effects;}
+export function syncVolumes(){
+  if(!BUS)return;
+  BUS.master.gain.value=save.muted?0:0.72;
+  for(const [kind,base]of [['music',0.34],['effects',0.78],['voice',0.7]])BUS[kind].gain.value=base*(save.volumes?.[kind]??0.8);
+}
+function targetBus(kind){return BUS?.[kind]||BUS?.effects;}
 
 function oscAt(f0,f1,dur,type,vol,when,kind='effects',cutoff=0){
   if(save.muted) return;
@@ -119,11 +124,11 @@ export const sfx={
   shieldBreak(){const a=ac();if(!a)return;noiseAt(a.currentTime,0.26,0.09,'highpass',2400);oscAt(420,160,0.24,'triangle',0.055,a.currentTime);},
   gui(){const a=ac();if(!a)return;[659,880,1319].forEach((f,i)=>pluckAt(f,a.currentTime+i*0.06,0.07,'effects'));},
   quack(pitch=1){
-    const a=ac();if(!a)return;
+    const a=ac();if(!a||a.currentTime-lastQuack<1.6)return;lastQuack=a.currentTime;
     const p=Math.max(0.7,Math.min(1.35,pitch));
-    noiseAt(a.currentTime,0.08,0.065,'bandpass',880*p);
-    oscAt(300*p,128*p,0.15,'triangle',0.07,a.currentTime);
-    oscAt(190*p,86*p,0.17,'sine',0.035,a.currentTime+0.015);
+    noiseAt(a.currentTime,0.08,0.065,'bandpass',880*p,'voice');
+    oscAt(300*p,128*p,0.15,'triangle',0.07,a.currentTime,'voice');
+    oscAt(190*p,86*p,0.17,'sine',0.035,a.currentTime+0.015,'voice');
   },
   // 南京切片的原创桨点：两次木质拨弦和极低量水声，不使用实景录音。
   qinhuai(){
@@ -137,7 +142,12 @@ export const sfx={
 
 /* 104 BPM：低频、拨弦与轻打击分层；强度随跑速/连击增加，不再是单线蜂鸣循环。 */
 const PENTA=[1,9/8,5/4,3/2,5/3];
-const MELODY=[0,null,2,null,3,null,2,1,0,null,4,3,2,null,1,null];
+const MELODIES=[
+ [0,null,2,null,3,null,2,1,0,null,4,3,2,null,1,null],
+ [2,null,3,4,null,3,null,2,1,null,0,null,2,null,null,null],
+ [3,null,4,null,2,3,null,1,2,null,3,null,4,3,2,null],
+ [4,3,null,2,1,null,2,null,0,null,null,null,1,null,0,null],
+];
 const ROOTS={crenel:110,lotus:98,steps:123.5,lantern:87.5,pine:104,plane:116.5,street:131,maple:147,pagoda:165,bridge:174.5};
 const BGM={timer:null,root:110,step:0,next:0,intensity:0.28};
 
@@ -149,7 +159,8 @@ function scheduleMusicStep(when,step){
   if((beat===4||beat===12)&&intensity>0.2)snareAt(when,0.018+intensity*0.022);
   if(beat%2===1&&intensity>0.12)hatAt(when,0.008+intensity*0.013);
   if([0,6,8,14].includes(beat))oscAt(root,root,0.34,'triangle',0.027+intensity*0.018,when,'music',420);
-  const degree=MELODY[beat];
+  const phrase=Math.floor(step/16)%8;
+  const degree=MELODIES[Math.floor(phrase/2)][beat];
   if(degree!==null)pluckAt(root*2*PENTA[degree],when,0.026+intensity*0.025,'music');
   if(beat===0||beat===8){
     oscAt(root*2,root*2,0.82,'sine',0.011,when,'music');

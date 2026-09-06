@@ -61,12 +61,13 @@
   #canvasRecovery[hidden],#appError[hidden]{display:none}
   @media (prefers-reduced-motion:reduce){#rotate .phone{animation:none}#shareToast{transition:none}}
 </style>
+<link rel="stylesheet" href="./src/mobile.css">
 </head>
 <body>
 <h1 class="sr-only">冲鸭！金陵！南京城市跑酷</h1>
-<p id="gameInstructions" class="sr-only">本游戏建议横屏。点击或轻触画布后，使用方向键或 W、A、S、D 控制白鸭：左右换道、上跳、下滑；P 或 Escape 暂停，M 静音，Enter 重开或确认。手机可横向滑动或上下滑动。画面中的菜单和按钮支持键盘方向键与 Enter。</p>
+<p id="gameInstructions" class="sr-only">竖屏即可游玩。左右滑换道，上滑跳跃，下滑滑铲。键盘支持方向键、WASD 和空格；P 或 Escape 暂停。菜单使用 Tab 和 Enter。</p>
 <div id="wrap"><canvas id="cv" width="960" height="540" tabindex="0" aria-label="冲鸭！金陵！互动游戏画布" aria-describedby="gameInstructions"></canvas></div>
-<div id="rotate" role="status" aria-live="polite"><div class="phone"></div><div class="t1">横过来,跑起来更爽</div><div class="t2">游戏是横向的,把手机转一下</div></div>
+<main id="app-ui"></main>
 <div id="shareLayer">
   <img class="card" alt="冲鸭！金陵！成绩卡">
   <div class="tip">长按图片保存 / 发送给好友</div>

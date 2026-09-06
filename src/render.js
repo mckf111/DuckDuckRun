@@ -1,3 +1,4 @@
+import { drawBookBackdrop, drawBookDuck } from './art/book.js';
 import { ctx, W, H, CX, HOR, TAU, proj, poly, disc, rrect, clamp, shadow, ROAD_HALF, LANEGAP, ZP, DRAWD } from './core.js';
 import { LEVELS, LM_CYCLE } from './config.js';
 import { G, pl, curLv } from './game.js';
@@ -170,7 +171,7 @@ function drawSliceQinhuai(){
 /* ================= 渲染:场景(远/中/近三层视差) ================= */
 export function render(){
   // 菜单/选关/图鉴/鸭铺:南京眼蓝调底图(缺图回退下方旧场景)
-  if((G.state==='menu'||G.state==='levels'||G.state==='album'||G.state==='shop'||G.state==='credits') && drawMenuBg()){ vignette(); return; }
+  if(!['play','crashing','over','clear'].includes(G.state)){drawBookBackdrop();return;}
   const active=G.state==='play'||G.state==='crashing'||G.state==='over'||G.state==='clear';
   const lv = active ? curLv() : LEVELS[3]; // 菜单用秦淮夜景
   // 无尽模式地标轮换(含长江大桥);冒险模式用本关地标
@@ -183,7 +184,8 @@ export function render(){
   ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
   // 实景照片远景(无尽模式在 600m 边界叠化);缺图回退到代码剪影
   let drewPhoto = false;
-  if(G.mode!=='slice'){
+  if(G.benchmark){drawBookBackdrop();drewPhoto=true;}
+  else if(G.mode!=='slice'){
     if(G.mode==='endless' && active){
       const cyc = Math.floor(G.dist/600);
       const mixB = clamp(((G.dist % 600) - 540) / 60, 0, 1);
@@ -251,16 +253,19 @@ export function render(){
     const gp = proj(c.x, 0, rz);
     shadow(gp.x, gp.y, gp.s*0.28, 0.18);
     const r = clamp(p.s*0.34, 4, 19);
-    if(c.kind==='sliceToken') drawSliceToken(p.x,p.y,r*1.45);
+    if(c.kind==='skillStep'){
+      ctx.save();ctx.translate(p.x,p.y);ctx.rotate(Math.PI/4);ctx.fillStyle='#d6a34f';ctx.strokeStyle='#fff1c6';ctx.lineWidth=2;ctx.fillRect(-r,-r,r*2,r*2);ctx.strokeRect(-r,-r,r*2,r*2);ctx.restore();
+    }else if(c.kind==='sliceToken') drawSliceToken(p.x,p.y,r*1.45);
     else if(c.kind==='sliceLight') drawSliceMarker(p.x,p.y,r*1.15);
     else if(c.kind==='relic') drawRelic(c.id, p.x, p.y, r*1.15);
     else drawEgg(p.x, p.y, r, Math.sin((prefersReducedMotion()?0:G.t*4)+c.z)*0.12);
   }
   // 局内道具(发光物件,与收集品同层;免费道上不挡路)
   for(const p of G.powers){
-    if(p.rz < 2 || p.rz > DRAWD) continue;
-    const pp = proj(p.lane*LANEGAP, 0.55 + Math.sin((prefersReducedMotion()?0:G.t*3)+p.z)*0.08, p.rz);
-    const gp = proj(p.lane*LANEGAP, 0, p.rz);
+    const rz=p.z-G.dist+ZP;
+    if(rz < 2 || rz > DRAWD) continue;
+    const pp = proj(p.lane*LANEGAP, 0.55 + Math.sin((prefersReducedMotion()?0:G.t*3)+p.z)*0.08, rz);
+    const gp = proj(p.lane*LANEGAP, 0, rz);
     shadow(gp.x, gp.y, gp.s*0.3, 0.2);
     const r = clamp(pp.s*0.38, 5, 21);
     ctx.save();
@@ -279,11 +284,11 @@ export function render(){
   if(G.state==='play' || G.state==='crashing' || G.state==='over'){
     let panic = false;
     for(const o of G.obs){
-      if(!o.hit && o.rz > ZP && o.rz < ZP+12){ panic = true; break; }
+      if(!o.hit && Math.abs(o.x-pl.x)<0.6 && o.rz > ZP && o.rz < ZP+G.speed*.7){ panic = true; break; }
     }
     const crashAge = G.state==='crashing' ? (G.crashLen-G.crashT) : G.crashLen;
     drawPlayer(pl, G.t, {
-      panic,
+      panic,book:G.benchmark,
       crashed: G.state==='crashing'||G.state==='over',
       crashAge,
       crashKind: G.killedBy,

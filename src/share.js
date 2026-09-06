@@ -1,3 +1,5 @@
+import { drawBookDuck } from './art/book.js';
+import { getSprite } from './art/sprites.js';
 import { G } from './game.js';
 import { LEVELS, ITEMS, MILESTONES, NANJING_SLICE } from './config.js';
 import { save } from './save.js';
@@ -157,7 +159,7 @@ export function shareScore(){
   const totalStars = save.stars.reduce((a,b)=>a+b,0);
   const copy = buildShareCopy(snapshot, {best:save.best,totalStars}, link);
   const text = copy.text;
-  const gold = save.stars.reduce((a,b)=>a+b,0) >= 15;
+  const gold = save.selectedSkin==='gold'&&save.stars.reduce((a,b)=>a+b,0) >= 15;
 
   const c = document.createElement('canvas');
   c.width = 600; c.height = 760;
@@ -173,17 +175,19 @@ export function shareScore(){
   x2.fillText('冲鸭！金陵！', 300, 105);
   x2.strokeStyle = '#f0b64c'; x2.lineWidth = 1.5;
   x2.beginPath(); x2.moveTo(150, 130); x2.lineTo(450, 130); x2.stroke();
-  drawDuck(x2, 300, 320, 130, gold);
+  const backdrop=getSprite('bookBackdrop');
+  if(backdrop){x2.save();x2.beginPath();x2.rect(60,148,480,270);x2.clip();x2.globalAlpha=.82;x2.drawImage(backdrop,60,120,480,480*backdrop.naturalHeight/backdrop.naturalWidth);x2.restore();}
+  drawBookDuck(x2,300,390,195,{t:1,gold});
   x2.fillStyle = '#f7ead0'; x2.font = '26px "JinlingKai","KaiTi","Microsoft YaHei",serif';
   x2.fillText(copy.title, 300, 448);
   x2.fillStyle = '#c9b88f'; x2.font = '18px "JinlingKai","KaiTi","Microsoft YaHei",serif';
-  x2.fillText(copy.sub, 300, 482);
+  const details=copy.sub.split(' · ');x2.fillText(details.slice(0,2).join(' · '),300,482);if(details.length>2)x2.fillText(details.slice(2).join(' · '),300,510);
   // 底部文案
   x2.fillStyle = '#6b5a3a'; x2.font = '16px "JinlingKai","KaiTi","Microsoft YaHei",serif';
   x2.fillText('—— 奔跑展开的金陵长卷 ——', 300, 590);
   x2.fillText('南京地标取景 · 游戏美术化呈现', 300, 622);
   x2.fillStyle = '#a89a78'; x2.font = '14px "JinlingKai","KaiTi","Microsoft YaHei",serif';
-  x2.fillText(copy.footer, 300, 680);
+  x2.textAlign='left';x2.fillText(copy.footer,72,670);x2.textAlign='center';
   // 右下角二维码 + 回游链接(传播第一跳的入口)
   drawQR(x2, 516, 655, 92);
   x2.font = '11px "Microsoft YaHei","PingFang SC",sans-serif';
