@@ -1,5 +1,6 @@
 /* ================= 关卡主题(国风剪纸配色) ================= */
 export const MOBILE = {
+  bookPlayerScale:{touch:1.4,desktop:1.05},
   swipeThreshold:18, inputBuffer:{standard:0.12,easy:0.18}, easySpeed:0.9, rescues:2,
   collectTargets:[40,45,45,50,50,55,55,60,60,65],
   benchmark:{

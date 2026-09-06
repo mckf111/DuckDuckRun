@@ -1,6 +1,7 @@
 import { drawBookDuck } from './book.js';
 import { ctx, TAU, ZP, LANEGAP, proj, poly, disc, shadow, clamp } from '../core.js';
 import { save } from '../save.js';
+import { MOBILE } from '../config.js';
 import { drawSpriteFrame, getSprite } from './sprites.js';
 
 /* ================= 剪纸绘制:玩家(逃跑的盐水鸭) ================= */
@@ -226,17 +227,20 @@ export function drawPlayer(pl, t, opts){
   BODY = gold ? '#f5d76e' : '#f5f0e6';
   BELLY = gold ? '#d8a83a' : '#e3d9c8';
   const p = proj(pl.x, pl.y, ZP);
+  const desktopBook=opts.book && typeof matchMedia==='function' && matchMedia('(hover: hover) and (pointer: fine)').matches;
+  const bookScale=desktopBook?MOBILE.bookPlayerScale.desktop:MOBILE.bookPlayerScale.touch;
+  const shadowScale=desktopBook?bookScale/MOBILE.bookPlayerScale.touch:1;
   const s = p.s * 0.62;                 // 角色整体缩放
   const x = p.x, y = p.y;
   const run = Math.sin(t*14), run2 = Math.sin(t*28);
   // 接地影:随起跳高度收缩变淡
   const gp = proj(pl.x, 0, ZP);
   const shK = Math.max(0.3, 1 - pl.y*0.55);
-  shadow(gp.x, gp.y + 0.02*s, s*0.9*shK, 0.32*shK);
+  shadow(gp.x, gp.y + 0.02*s, s*0.9*shK*shadowScale, 0.32*shK);
   if(opts.book){
     ctx.save();
     if(opts.crashed){ctx.translate(p.x,p.y);ctx.rotate(-Math.min(1,opts.crashAge*3)*.8);ctx.translate(-p.x,-p.y);}
-    drawBookDuck(ctx,p.x,p.y,p.s*1.4,{t,air:pl.y>.05,slide:!!pl.sliding,gold,panic:opts.panic});ctx.restore();return;
+    drawBookDuck(ctx,p.x,p.y,p.s*bookScale,{t,air:pl.y>.05,slide:!!pl.sliding,gold,panic:opts.panic});ctx.restore();return;
   }
   if(drawSpritePlayer(pl, t, opts, p, gold)) return;
   ctx.save();
