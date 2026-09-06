@@ -36,7 +36,8 @@ export const CREDIT_SECTIONS = [
   {
     title: '实景照片',
     lines: [
-      '远景与部分风物照片来自 Wikimedia Commons / Openverse，按各自 CC 或公有领域授权使用。',
+      '仓库保留的历史实景照片来自 Wikimedia Commons / Openverse，按各自 CC 或公有领域授权单独管理。',
+      '当前十站绘本场景与角色采用 AI 辅助图像和程序化绘制，不是实景摄影，也不代表景区授权。',
       '正式发布版完整照片署名与来源见 legal/PHOTO-CREDITS.md。',
       '第三方照片独立遵守各自许可；改编与组合的许可义务须按实际使用方式核验。',
       '金箔、云锦、雨花茶等替代图在条目中标为工艺示意或相关实景，不是该物本尊。',

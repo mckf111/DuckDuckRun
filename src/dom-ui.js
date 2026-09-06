@@ -1,6 +1,6 @@
 import { G, startRun, curLv, nextAfterClear, pauseRun, resumeRun, retryCurrentTutorial, benchmarkBeat } from './game.js';
 import { save, persist, flushSave, replaceSave, saveError } from './save.js';
-import { LEVELS, ITEMS, SHOPS, MOBILE, MOBILE_UI } from './config.js';
+import { LEVELS, ITEMS, SHOPS, MOBILE, MOBILE_UI, JOURNEY_COPY } from './config.js';
 import { getBridgeUnlockStatus, getObstacleInstruction, parseSaveImport } from './rules.js';
 import { unlockAudio, syncVolumes, sfx, suspendAudio } from './audio.js';
 import { shareScore } from './share.js';
@@ -58,8 +58,8 @@ function creditsPage(){
 function outcome(){
   const clear=G.state==='clear',lv=curLv(),bridge=getBridgeUnlockStatus(save);
   const next=G.lvIdx<9&&(!LEVELS[G.lvIdx+1].hidden||bridge.unlocked);
-  const goals=G.benchmark?[[MOBILE_UI.text092,clear],[MOBILE_UI.text093+MOBILE.benchmark.collectTarget+MOBILE_UI.text094,G.runMarks>=MOBILE.benchmark.collectTarget],[MOBILE_UI.text095,G.skills.length>=2]]:[];
-  return page(clear?MOBILE_UI.text096:G.crashLine||MOBILE_UI.text097,`<div class="result-summary"><p>${esc(lv.name)} · ${Math.floor(G.dist)} ${MOBILE_UI.text098}</p><strong>${G.mode==='slice'?G.slice.tokenCount:G.runMarks}<span>${G.mode==='slice'?MOBILE_UI.text099:MOBILE_UI.text094}</span></strong>${clear?`<p class="result-stars">${starText(G.runStars)}</p>`:`<p>${esc(getObstacleInstruction(G.killedBy,true))}</p><p class="muted">${MOBILE_UI.text100}</p>`}</div>${goals.length?`<ul class="goal-list">${goals.map(([label,met])=>`<li class="${clear&&met?'met':''}">${clear&&met?MOBILE_UI.text101:MOBILE_UI.text102} · ${esc(label)}</li>`).join('')}</ul>`:''}${G.newIds.length?`<section class="rewards"><h2>${MOBILE_UI.text103}</h2>${G.newIds.map(id=>{const it=ITEMS.find(x=>x.id===id);return `<div>${picture(id,42)}<span>${esc(it.name)}${it.secret?MOBILE_UI.text104:''}</span></div>`;}).join('')}</section>`:''}<div class="result-actions">${btn('retry',clear?MOBILE_UI.text105:MOBILE_UI.text106,'primary large')}${clear&&G.mode==='adv'&&next?btn('next',MOBILE_UI.text021+LEVELS[G.lvIdx+1].name,'secondary'):''}${btn('share',MOBILE_UI.text107,'secondary')}${btn('quit',MOBILE_UI.text108,'text-button')}</div>`,MOBILE_UI.text109);
+  const goals=G.scripted?[[G.benchmark?MOBILE_UI.text092:JOURNEY_COPY.clearGoal,clear],[MOBILE_UI.text093+G.plan.collectTarget+MOBILE_UI.text094,G.runMarks>=G.plan.collectTarget],[MOBILE_UI.text095,G.skills.length>=2]]:[];
+  return page(clear?(G.plan?.clearTitle||MOBILE_UI.text096):G.crashLine||MOBILE_UI.text097,`<div class="result-summary"><p>${esc(lv.name)} · ${Math.floor(G.dist)} ${MOBILE_UI.text098}</p><strong>${G.mode==='slice'?G.slice.tokenCount:G.runMarks}<span>${G.mode==='slice'?MOBILE_UI.text099:MOBILE_UI.text094}</span></strong>${clear?`<p class="result-stars">${starText(G.runStars)}</p>`:`<p>${esc(getObstacleInstruction(G.killedBy,true))}</p><p class="muted">${MOBILE_UI.text100}</p>`}</div>${goals.length?`<ul class="goal-list">${goals.map(([label,met])=>`<li class="${clear&&met?'met':''}">${clear&&met?MOBILE_UI.text101:MOBILE_UI.text102} · ${esc(label)}</li>`).join('')}</ul>`:''}${G.newIds.length?`<section class="rewards"><h2>${MOBILE_UI.text103}</h2>${G.newIds.map(id=>{const it=ITEMS.find(x=>x.id===id);return `<div>${picture(id,42)}<span>${esc(it.name)}${it.secret?MOBILE_UI.text104:''}</span></div>`;}).join('')}</section>`:''}<div class="result-actions">${btn('retry',clear?MOBILE_UI.text105:MOBILE_UI.text106,'primary large')}${clear&&G.mode==='adv'&&next?btn('next',MOBILE_UI.text021+LEVELS[G.lvIdx+1].name,'secondary'):''}${btn('share',MOBILE_UI.text107,'secondary')}${btn('quit',MOBILE_UI.text108,'text-button')}</div>`,MOBILE_UI.text109);
 }
 function playUI(){
   return `<div class="hud"><div class="hud-top"><div class="run-location"><span class="eyebrow" id="run-mode"></span><strong id="run-place"></strong><progress id="run-progress" max="1" value="0" aria-label="${MOBILE_UI.text110}"></progress></div>${btn('pause',MOBILE_UI.text111,'hud-button')}</div><div class="run-stats"><span id="run-eggs"></span><span id="run-skills"></span><span id="run-power"></span></div><div id="run-notice" class="run-notice" role="status"></div><div class="run-cue" id="run-cue"></div></div>${G.paused?`<section class="pause-dialog" role="dialog" aria-modal="true" aria-labelledby="pause-title"><p class="eyebrow">${MOBILE_UI.text112}</p><h1 id="pause-title">${MOBILE_UI.text113}</h1><div class="stack">${btn('resume',MOBILE_UI.text114,'primary')}${G.tutorial?btn('practice',MOBILE_UI.text115,'secondary'):''}${btn('retry',MOBILE_UI.text116,'secondary')}${btn('quit',MOBILE_UI.text108,'text-button')}</div></section>`:''}<div id="resume-count" class="resume-count" hidden><span></span>${btn('skipResume',MOBILE_UI.text117,'secondary')}</div>`;
@@ -90,10 +90,10 @@ export function renderDomUI(){
   if(playing){
     const lv=curLv();set('run-place',lv.name);set('run-mode',G.mode==='endless'?MOBILE_UI.text118:G.difficulty==='easy'?MOBILE_UI.text119+G.rescues+MOBILE_UI.text120:MOBILE_UI.text121+(G.lvIdx+1)+MOBILE_UI.text122);
     const progress=root.querySelector('#run-progress');progress.value=G.mode==='endless'?(G.dist%600)/600:G.dist/lv.len;
-    set('run-eggs',G.runMarks+MOBILE_UI.text123);set('run-skills',G.benchmark?MOBILE_UI.text124+G.skills.length+'/2':Math.floor(G.dist)+MOBILE_UI.text125);
+    set('run-eggs',G.runMarks+(G.scripted?'/'+G.plan.collectTarget:'')+MOBILE_UI.text123);set('run-skills',G.scripted?(G.plan.lightGates?JOURNEY_COPY.gate+' '+G.gatesPassed+'/6 · ':'')+MOBILE_UI.text124+G.skills.length+'/2':Math.floor(G.dist)+MOBILE_UI.text125);
     set('run-power',G.shield?MOBILE_UI.text126:G.powerT.magnet>0?MOBILE_UI.text127+Math.ceil(G.powerT.magnet)+MOBILE_UI.text128:G.powerT.gui>0?MOBILE_UI.text129+Math.ceil(G.powerT.gui)+MOBILE_UI.text128:'');
     set('run-notice',saveError||G.egg?.text||'');
-    const cue=G.tutorial?`${MOBILE_UI.text130}${G.tutorial.step+1}/3 · ${G.tutorial.tip}`:G.benchmark?benchmarkBeat().cue:G.t<5?MOBILE_UI.text131:'';
+    const cue=G.tutorial?`${MOBILE_UI.text130}${G.tutorial.step+1}/3 · ${G.tutorial.tip}`:G.scripted?benchmarkBeat().cue:G.t<5?MOBILE_UI.text131:'';
     set('run-cue',cue);
     const countdown=root.querySelector('#resume-count');countdown.hidden=G.resumeIn<=0;countdown.querySelector('span').textContent=String(Math.ceil(G.resumeIn));
   }

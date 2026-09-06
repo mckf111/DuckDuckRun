@@ -1,7 +1,7 @@
 import { drawBookBackdrop, drawBookDuck } from './art/book.js';
 import { ctx, W, H, CX, HOR, TAU, proj, poly, disc, rrect, clamp, shadow, ROAD_HALF, LANEGAP, ZP, DRAWD } from './core.js';
 import { LEVELS, LM_CYCLE } from './config.js';
-import { G, pl, curLv } from './game.js';
+import { G, pl, curLv, bookScene } from './game.js';
 import { prefersReducedMotion } from './save.js';
 import { drawItemIcon } from './art/items.js';
 import { drawObstacle } from './art/obstacles.js';
@@ -184,7 +184,7 @@ export function render(){
   ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
   // 实景照片远景(无尽模式在 600m 边界叠化);缺图回退到代码剪影
   let drewPhoto = false;
-  if(G.benchmark){drawBookBackdrop();drewPhoto=true;}
+  if(G.scripted||G.mode==='endless'){drawBookBackdrop(bookScene());drewPhoto=true;}
   else if(G.mode!=='slice'){
     if(G.mode==='endless' && active){
       const cyc = Math.floor(G.dist/600);
@@ -214,20 +214,21 @@ export function render(){
   // 地面道路:按景点写实纹理(砖/石板/花岗岩/沥青)
   drawRoad(lv, G.dist);
   // 两侧走廊装饰(远->近;远处加距离雾淡入背景)
-  const sstep = 5, sz0 = Math.floor((G.dist - ZP)/sstep)*sstep + sstep;
+  const quietScenery=(G.scripted||G.mode==='endless')&&!G.benchmark;
+  const sstep = quietScenery?10:5, sz0 = Math.floor((G.dist - ZP)/sstep)*sstep + sstep;
   for(let z = sz0; z < G.dist - ZP + DRAWD; z += sstep){
     const rz = z - G.dist + ZP; if(rz < 2.4) continue;
     for(const m of [-1,1]){
       const px = m * (ROAD_HALF + 1.3);
       const p = proj(px, 0, rz);
-      ctx.globalAlpha = 1 - clamp((rz-8)/48, 0, 0.55);
-      drawSide(lv.motif, p.x, p.y, p.s, lv, m<0);
+      ctx.globalAlpha = (1 - clamp((rz-8)/48, 0, 0.55))*(quietScenery?.7:1);
+      drawSide(lv.motif, p.x, p.y, p.s*(quietScenery?.65:1), lv, m<0);
       ctx.globalAlpha = 1;
     }
   }
   // 近层(快):栏杆柱/柳枝/灯笼串/松枝,只画最近一段,从两侧高速掠过
   const nstep = 9, nz0 = Math.floor((G.dist - ZP)/nstep)*nstep + nstep;
-  for(let z = nz0; z < G.dist - ZP + 14; z += nstep){
+  for(let z = nz0; !quietScenery&&z < G.dist - ZP + 14; z += nstep){
     const rz = z - G.dist + ZP; if(rz < 2.4 || rz > 14) continue;
     for(const m of [-1,1]){
       const p = proj(m * (ROAD_HALF + 2.6), 0, rz);
@@ -288,7 +289,7 @@ export function render(){
     }
     const crashAge = G.state==='crashing' ? (G.crashLen-G.crashT) : G.crashLen;
     drawPlayer(pl, G.t, {
-      panic,book:G.benchmark,
+      panic,book:G.scripted||G.mode==='endless',
       crashed: G.state==='crashing'||G.state==='over',
       crashAge,
       crashKind: G.killedBy,

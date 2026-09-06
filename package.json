@@ -10,7 +10,7 @@
     "typecheck": "node tools/e2e/check_syntax.mjs",
     "lint": "node tools/e2e/check_syntax.mjs",
     "test:syntax": "node tools/e2e/check_syntax.mjs",
-    "test:logic": "node --test tests/rules.test.js tests/beam.test.js tests/rhythm.test.js tests/runtime.test.js tests/mobile.test.js",
+    "test:logic": "node --test tests/rules.test.js tests/beam.test.js tests/rhythm.test.js tests/runtime.test.js tests/mobile.test.js tests/journey.test.js",
     "test:save": "node --test tests/migration.test.js tests/save-io.test.js",
     "test:resources": "node --test tests/content.test.js",
     "test:contracts": "node --test tests/share-release.test.js tests/asset-registry.test.js tests/deploy-script.test.js",

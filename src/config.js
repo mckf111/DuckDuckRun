@@ -421,3 +421,38 @@ export const MOBILE_UI = {
   "text139": "请核对后再导入",
   "text140": "存档格式不正确"
 };
+
+/* 十站主线：首站保留已试玩标杆，后九站独立技巧和六段节奏。 */
+const journeySkill=(id,name,knots)=>({id,name,steps:knots.map(([z,lane,action])=>({z,lane,action}))});
+export const JOURNEY_LEVELS = [
+ {len:630,speed:10.5,background:'bookJourney1',panel:0,ground:'#d7d4b5',road:'#cfc5a3',lane:'#f5edcf',intro:'湖风来了，沿着堤岸收鸭蛋',practice:'湖堤横石要上滑，长线鸭蛋别漏下',relief:'湖面开阔起来，沿堤歇一口气',finish:'把一阵湖风带回金陵',clearTitle:'湖光收好，继续向前',skills:[journeySkill('lake-line','一线湖光',[[220,1,'lane'],[243,0,'lane'],[266,1,'lane']]),journeySkill('lake-hop','荷风连跃',[[350,1,'jump'],[376,1,'jump'],[402,1,'jump']])]},
+ {len:660,speed:11,background:'bookJourney1',panel:1,ground:'#d0d6cd',road:'#cbd0c3',lane:'#faf4d7',intro:'松影夹道，踏上登阶的节拍',practice:'看见低阶再起跳，落稳再跳下一次',relief:'台阶变缓，抬头看一眼蓝瓦',finish:'最后一段，稳稳跑上平台',clearTitle:'登阶到顶，松风在身后',skills:[journeySkill('stairs-three','三阶成拍',[[220,1,'jump'],[243,1,'jump'],[266,1,'jump']]),journeySkill('stairs-return','落地折返',[[347,1,'jump'],[370,0,'lane'],[394,0,'jump']])]},
+ {len:690,speed:11.5,background:'bookJourney1',panel:2,ground:'#8b9185',road:'#848a80',lane:'#e4c48b',intro:'秦淮灯亮了，听着桨声往前跑',practice:'低石上滑越过，横灯下滑钻过',relief:'灯影疏了，收好河边这一串',finish:'桨声渐远，把花灯带回去',clearTitle:'灯影穿过，秦淮入画',skills:[journeySkill('lantern-dance','灯下三拍',[[220,1,'jump'],[242,1,'slide'],[264,1,'jump']]),journeySkill('boat-dance','桨声回环',[[350,0,'slide'],[373,0,'jump'],[397,0,'slide']])]},
+ {len:720,speed:12,background:'bookJourney2',panel:0,ground:'#86958b',road:'#89958a',lane:'#e1dabb',intro:'钻进松林，山顶的光在前面',practice:'先试一次跳跃，再给翅膀一点空间',relief:'林间风小了，沿山路收好余下的鸭蛋',finish:'越过最后的树影，望见金陵',clearTitle:'山顶到了，灯火在脚下',skills:[journeySkill('pine-rise','借风展翅',[[235,1,'double'],[270,1,'double']]),journeySkill('pine-glide','林间腾挪',[[350,1,'jump'],[376,0,'lane'],[401,0,'double']])]},
+ {len:738,speed:12.3,background:'bookJourney2',panel:1,ground:'#cec7aa',road:'#c5b997',lane:'#f8efd0',intro:'梧桐落叶，长街慢慢铺开',practice:'落枝上滑，低枝下滑，先看清再动',relief:'阳光穿过树叶，留一点从容',finish:'街角转过去，下一站在等你',clearTitle:'穿过梧桐，收下一街秋色',skills:[journeySkill('plane-branches','枝间节奏',[[220,1,'slide'],[243,1,'jump'],[266,0,'lane']]),journeySkill('plane-light','树影折返',[[349,0,'jump'],[373,1,'lane'],[398,1,'slide']])]},
+ {len:756,speed:12.6,background:'bookJourney2',panel:2,ground:'#c5b198',road:'#b6a38d',lane:'#f5dfb9',intro:'巷口很多，先看好要走的方向',practice:'整墙要换道，小巷也有稳稳的一条路',relief:'巷子宽了，慢慢收好街角风物',finish:'拐过灯下的门，出巷啦',clearTitle:'巷口选对，烟火带回',skills:[journeySkill('alley-choice','巷口四转',[[218,1,'lane'],[237,0,'lane'],[256,1,'lane'],[277,0,'lane']]),journeySkill('alley-roof','檐下穿行',[[349,1,'slide'],[373,0,'lane'],[398,0,'jump']])]},
+ {len:780,speed:12.8,background:'bookJourney3',panel:0,ground:'#c4ad85',road:'#bda17d',lane:'#f9ddb0',intro:'枫叶铺开，跟着弯弯的鸭蛋线走',practice:'沿着收集线提前换道，别等到跟前',relief:'夕照落在树梢，留意脚边的风物',finish:'把这一山红叶记住',clearTitle:'枫林穿过，满山秋色入册',arcRewards:true,skills:[journeySkill('maple-arc','红枫弧线',[[220,1,'lane'],[240,0,'lane'],[260,1,'lane'],[280,0,'lane']]),journeySkill('maple-cross','跨道追叶',[[350,1,'jump'],[374,0,'lane'],[399,0,'jump']])]},
+ {len:806,speed:13,background:'bookJourney3',panel:1,ground:'#9ba7a0',road:'#a2aaa0',lane:'#fae2a6',intro:'一段一盏灯，把塔影慢慢点亮',practice:'跟住跳与滑的节拍，灯火会一路亮起',relief:'灯火连成线，最后一段稳稳走',finish:'最后一盏灯，等你亲手点亮',clearTitle:'六盏灯齐亮，金陵夜色入怀',lightGates:true,skills:[journeySkill('pagoda-light','琉璃三拍',[[220,1,'jump'],[243,1,'slide'],[266,1,'jump']]),journeySkill('pagoda-steps','逐灯向上',[[350,0,'double'],[376,1,'lane'],[401,1,'slide']])]},
+ {len:858,speed:13,background:'bookJourney3',panel:2,ground:'#afb8a5',road:'#80928e',lane:'#eee3ba',intro:'江风来了，把一路学会的动作带上桥',practice:'前面是检修路障，跳滑换道都用得上',relief:'江面开阔起来，最后一段把脚步放稳',finish:'过江啦，十站金陵都在这一趟',clearTitle:'过江成功！十站金陵，一路相逢',skills:[journeySkill('bridge-cross','过江四式',[[217,1,'jump'],[239,0,'lane'],[259,0,'slide'],[285,0,'double']]),journeySkill('bridge-finish','金陵归程',[[348,1,'double'],[372,0,'lane'],[395,0,'jump'],[416,0,'slide']])]},
+];
+export const JOURNEY_COPY={clearGoal:'抵达终点',gate:'灯火',seal:' · 印章到手！',firstClear:'第一站跑通了，金陵还很长',safe:'道稳过',double:'二段跳'};
+export function buildJourneyPlan(index,variant=0){
+ if(index===0)return MOBILE.benchmark;
+ const source=JOURNEY_LEVELS[index-1],factor=source.len/600,mirror=variant%2?-1:1,z=value=>Math.round(value*factor);
+ const skills=source.skills.map(s=>({...s,steps:s.steps.map(step=>({...step,z:z(step.z),lane:step.lane*mirror}))}));
+ const practice=[{z:z(112),lane:0,type:'low'},{z:z(158),lane:mirror,type:'high'}];
+ const obstacles=[...practice,...skills.flatMap(s=>s.steps.map(step=>({z:step.z,lane:step.action==='lane'?(step.lane===mirror?0:mirror):step.lane,type:step.action==='lane'?'full':step.action==='slide'?'high':'low',skillId:s.id})))];
+ return {...MOBILE.benchmark,...source,collectTarget:MOBILE.collectTargets[index],safeLane:-mirror,variant,
+  skills,obstacles,cueWords:{...MOBILE.benchmark.cueWords,actions:{jump:'跳',slide:'滑',double:JOURNEY_COPY.double}},
+  rewards:{from:28,to:source.len-36,every:32,count:5,gap:1.8,height:.55},
+  flight:{z:z(474),gap:2,count:3,height:3.1,lane:0},relicSpots:[z(166),z(452),z(542)],
+  gates:[100,190,300,425,540,586].map(z),
+  beats:[
+   {from:0,to:z(110),name:'引入',cue:source.intro},
+   {from:z(110),to:z(190),name:'练习',cue:source.practice},
+   {from:z(190),to:z(300),name:'变化',skill:skills[0].id},
+   {from:z(300),to:z(430),name:'压力',skill:skills[1].id},
+   {from:z(430),to:z(540),name:'舒缓',cue:source.relief},
+   {from:z(540),to:source.len+1,name:'收束',cue:source.finish}],
+ };
+}

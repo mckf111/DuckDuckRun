@@ -1,6 +1,6 @@
 import { drawBookDuck } from './art/book.js';
 import { getSprite } from './art/sprites.js';
-import { G } from './game.js';
+import { G, bookScene } from './game.js';
 import { LEVELS, ITEMS, MILESTONES, NANJING_SLICE } from './config.js';
 import { save } from './save.js';
 import { track } from './track.js';
@@ -175,8 +175,12 @@ export function shareScore(){
   x2.fillText('冲鸭！金陵！', 300, 105);
   x2.strokeStyle = '#f0b64c'; x2.lineWidth = 1.5;
   x2.beginPath(); x2.moveTo(150, 130); x2.lineTo(450, 130); x2.stroke();
-  const backdrop=getSprite('bookBackdrop');
-  if(backdrop){x2.save();x2.beginPath();x2.rect(60,148,480,270);x2.clip();x2.globalAlpha=.82;x2.drawImage(backdrop,60,120,480,480*backdrop.naturalHeight/backdrop.naturalWidth);x2.restore();}
+  const scene=bookScene(),backdrop=getSprite(scene?.background||'bookBackdrop');
+  if(backdrop){
+    const sw=backdrop.naturalWidth/(scene?.background?3:1),sx=(scene?.panel||0)*sw;
+    x2.save();x2.beginPath();x2.rect(60,148,480,270);x2.clip();x2.globalAlpha=.82;
+    x2.drawImage(backdrop,sx,backdrop.naturalHeight*.27,sw,sw*270/480,60,148,480,270);x2.restore();
+  }
   drawBookDuck(x2,300,390,195,{t:1,gold});
   x2.fillStyle = '#f7ead0'; x2.font = '26px "JinlingKai","KaiTi","Microsoft YaHei",serif';
   x2.fillText(copy.title, 300, 448);

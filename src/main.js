@@ -1,9 +1,9 @@
 import { ctx, W, H, fit, visualRnd, setRandomSeed, downgradeQuality, viewport } from './core.js';
-import { G, startRun, update, curLv, pauseRun } from './game.js';
+import { G, startRun, update, curLv, pauseRun, bookScene } from './game.js';
 import { LEVELS, LM_CYCLE } from './config.js';
 import { render } from './render.js';
 import { loadMenuBackground, loadBackground, prefetchBackground } from './art/photo.js';
-import { preloadGameSprites } from './art/sprites.js';
+import { preloadGameSprites, getSprite } from './art/sprites.js';
 import { bgmStop, disposeAudio, suspendAudio } from './audio.js';
 import { prefersReducedMotion } from './save.js';
 import { renderDomUI, mountDomUI, disposeDomUI } from './dom-ui.js';
@@ -85,7 +85,11 @@ function syncAssets(){
     clearPrefetch();
     return;
   }
-  if(G.benchmark || G.mode==='slice'){
+  if(G.scripted||G.mode==='endless'){
+    const key='journey:'+G.mode+':'+(G.scripted?G.lvIdx:Math.floor(G.dist/600)%LEVELS.length);if(assetKey===key)return;
+    assetKey=key;clearPrefetch();getSprite(bookScene()?.background||'bookBackdrop');return;
+  }
+  if(G.mode==='slice'){
     if(assetKey==='slice') return;
     assetKey='slice';clearPrefetch();return;
   }

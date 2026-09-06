@@ -1,5 +1,5 @@
 import { clamp, lerp, rnd, irnd, visualRnd, visualIrnd, proj, LANEGAP, ZP, DRAWD, TAU, getRandomSeed, restartRandomSequence } from './core.js';
-import { LEVELS, NANJING_SLICE, ITEMS, LM_CYCLE, LM_NAME, MILESTONES, RUN_STAR_THRESHOLDS, MOBILE, QUACKS, CRASH_LINES } from './config.js';
+import { LEVELS, NANJING_SLICE, ITEMS, LM_CYCLE, LM_NAME, MILESTONES, RUN_STAR_THRESHOLDS, MOBILE, QUACKS, CRASH_LINES, buildJourneyPlan, JOURNEY_COPY, JOURNEY_LEVELS } from './config.js';
 import { save, persist, queuePersist, prefersReducedMotion } from './save.js';
 import { canPassObstacle, calculateRunStars, calculateMedals, getBridgeUnlockStatus, getCollectionWeight, getObstacleInstruction } from './rules.js';
 import { sfx, bgm, setBgmIntensity } from './audio.js';
@@ -9,6 +9,7 @@ import { track } from './track.js';
 export const G = {
   state:'menu',      // menu | levels | play | crashing | over | clear | album | shop | credits
   difficulty:'standard', rescues:0, resumeIn:0, benchmark:false, skills:[], skillSteps:{}, skillFailed:{}, actionLog:[],
+  scripted:false,plan:null,gatesPassed:0,
   mode:'adv',        // adv | endless | slice
   lvIdx:0, paused:false, t:0,
   dist:0, speed:0, runMarks:0, runStars:0, newIds:[],
@@ -85,6 +86,7 @@ export function startRun(mode, lvIdx=0, forceTutorial=false, options={}){
   if(getRandomSeed() !== null) restartRandomSequence();
   G.mode = mode; G.lvIdx = lvIdx;
   G.benchmark=mode==='adv'&&lvIdx===0;
+  G.scripted=mode==='adv';G.plan=G.scripted?buildJourneyPlan(lvIdx,lvIdx?irnd(0,1):0):null;G.gatesPassed=0;
   G.difficulty=mode==='adv'?(options.difficulty||save.difficulty):'standard';
   G.rescues=G.difficulty==='easy'?MOBILE.rescues:0;G.resumeIn=0;
   G.skills=[];G.skillSteps={};G.skillFailed={};G.actionLog=[];
@@ -92,7 +94,7 @@ export function startRun(mode, lvIdx=0, forceTutorial=false, options={}){
   if(G.replay) G.replay = { ...G.replay, seed:getRandomSeed(), mode, lvIdx };
   G.dist = 0; G.runMarks = 0; G.runStars = 0; G.newIds = []; G.t = 0;
   G.obs = []; G.cols = []; G.parts = []; G.gates = [];
-  G.speed = mode==='adv' ? (G.benchmark?MOBILE.benchmark.speed:LEVELS[lvIdx].speed)*(G.difficulty==='easy'?MOBILE.easySpeed:1) : mode==='slice' ? sliceConfig.speed : 9.5;
+  G.speed = mode==='adv' ? G.plan.speed*(G.difficulty==='easy'?MOBILE.easySpeed:1) : mode==='slice' ? sliceConfig.speed : 9.5;
   G.nextSpawn = 40; G.paused = false; G.shake = 0; G.egg = null;
   G.newBest = false; G.kbSel = 0; G.kbActive = false;
   G.combo = 0; G.comboT = 0; G.killedBy = null; G.newItem = null;
@@ -118,14 +120,23 @@ export function startRun(mode, lvIdx=0, forceTutorial=false, options={}){
   pl.lane = 0; pl.x = 0; pl.y = 0; pl.vy = 0; pl.sliding = 0; pl.jumps = 0;
   G.state = 'play';
   if(mode==='slice') startSliceScript();
-  if(G.benchmark&&!teach)startBenchmark();
+  if(G.scripted&&!teach)startBenchmark();
   if(teach) beginTutorialStep(0);
   if(mode!=='slice') refreshSecretGuarantees();
   bgm(mode==='slice' ? 'lantern' : LEVELS[lvIdx].motif);
   track('start', { mode, lv:lvIdx });
   return true;
 }
-export const curLv = ()=> G.mode==='slice' ? NANJING_SLICE : G.mode==='adv' ? (G.benchmark?{...LEVELS[0],len:MOBILE.benchmark.len,speed:MOBILE.benchmark.speed}:LEVELS[G.lvIdx]) : LEVELS[Math.floor(G.dist/600)%LEVELS.length];
+let cachedPlan=null,cachedIndex=-1,cachedLevel=null;
+const endlessLooks=LEVELS.map((level,i)=>({...level,...JOURNEY_LEVELS[i-1]}));
+export const bookScene=()=>G.scripted?G.plan:G.mode==='endless'?JOURNEY_LEVELS[Math.floor(G.dist/600)%LEVELS.length-1]||null:null;
+export function curLv(){
+  if(G.mode==='slice')return NANJING_SLICE;
+  if(G.mode!=='adv')return endlessLooks[Math.floor(G.dist/600)%LEVELS.length];
+  // 关卡数据一局内固定，避免每个物理帧重复展开整份路线配置。
+  if(cachedPlan!==G.plan||cachedIndex!==G.lvIdx){cachedPlan=G.plan;cachedIndex=G.lvIdx;cachedLevel={...LEVELS[G.lvIdx],...G.plan};}
+  return cachedLevel;
+}
 
 /* ---- 南京垂直切片：有限路线组合，不进入掉落池、图鉴或经济系统 ---- */
 function startSliceScript(){
@@ -544,7 +555,7 @@ export function update(dt){
   }
   for(const g of G.gates){
     g.rz = g.z - G.dist + ZP;
-    if(!g.passed && g.rz <= ZP){ g.passed = true; gateShower(lv); }
+    if(!g.passed && g.rz <= ZP){ g.passed = true;G.gatesPassed++; gateShower(lv); }
   }
   G.gates = G.gates.filter(g=>g.rz > 1.2);
   // 玩家物理
@@ -616,10 +627,10 @@ export function update(dt){
       }
       if(c.kind==='skillStep'){
         const index=G.skillSteps[c.skillId]||0;
-        const actual=c.action==='jump'?pl.y>0.72:c.action==='slide'?pl.sliding>0&&pl.y<0.3:G.actionLog.some(a=>a.kind==='lane'&&a.lane===c.lane&&a.dist>c.z-22);
+        const actual=c.action==='double'?pl.jumps>=2&&pl.y>1.35:c.action==='jump'?pl.y>0.72:c.action==='slide'?pl.sliding>0&&pl.y<0.3:G.actionLog.some(a=>a.kind==='lane'&&a.lane===c.lane&&a.dist>c.z-22);
         if(!G.skillFailed[c.skillId]&&index===c.step&&actual){
           G.skillSteps[c.skillId]=index+1;
-          if(index+1===c.steps){G.skills.push(c.skillId);G.egg={text:MOBILE.benchmark.skills.find(s=>s.id===c.skillId).name+' · 印章到手！',ttl:2.2,dur:2.2};sfx.newItem();}
+          if(index+1===c.steps){G.skills.push(c.skillId);G.egg={text:G.plan.skills.find(s=>s.id===c.skillId).name+JOURNEY_COPY.seal,ttl:2.2,dur:2.2};sfx.newItem();}
           else sfx.gate();
         } else G.skillFailed[c.skillId]=true;
         continue;
@@ -635,7 +646,7 @@ export function update(dt){
       }
       const coinMul = G.powerT.gui > 0 ? 2 : 1;            // 金桂只翻倍鸭蛋
       G.runMarks += 1;
-      G.runStars = G.benchmark?calculateMedals(G.runMarks,MOBILE.benchmark.collectTarget,G.skills).stars:calculateRunStars(G.runMarks, RUN_STAR_THRESHOLDS);
+      G.runStars = G.scripted?calculateMedals(G.runMarks,G.plan.collectTarget,G.skills).stars:calculateRunStars(G.runMarks, RUN_STAR_THRESHOLDS);
       save.coins += coinMul;
       queuePersist();
       G.arcGot[c.arc] = (G.arcGot[c.arc]||0) + 1;
@@ -646,7 +657,7 @@ export function update(dt){
         G.egg = G.egg && G.egg.ttl > 1.5 ? G.egg : { text:'一串全收!', ttl:2, dur:2 };
         const q = proj(c.x, c.y+0.6, ZP); burst(q.x, q.y, '#f4e2b0');
       }
-      if(G.mode==='adv'&&!G.benchmark){
+      if(G.mode==='adv'&&!G.scripted){
         for(let i=0;i<3;i++) if(G.runMarks === RUN_STAR_THRESHOLDS[i]){
           G.egg = { text:'★'.repeat(i+1)+' 达成!', ttl:2.2, dur:2.2 }; sfx.gate();
         }
@@ -717,8 +728,8 @@ export function levelClear(){
     G.runStars=0;G.state='clear';track('slice_clear',{dist:Math.floor(G.dist),tokens:G.slice?.tokenCount||0,easy:!!G.slice?.easy});return;
   }
   G.runStars = calculateRunStars(G.runMarks, RUN_STAR_THRESHOLDS);
-  if(G.benchmark){
-    const result=calculateMedals(G.runMarks,MOBILE.benchmark.collectTarget,G.skills);G.runStars=result.stars;
+  if(G.scripted){
+    const result=calculateMedals(G.runMarks,G.plan.collectTarget,G.skills);G.runStars=result.stars;
     const best=save.medals[G.difficulty][G.lvIdx];for(const key of Object.keys(best))best[key]=best[key]||result.medals[key];
   }
   if(G.runStars > save.stars[G.lvIdx]) save.stars[G.lvIdx]=G.runStars;
@@ -748,6 +759,7 @@ export function grantAlbumItem(id){
   const item = ITEMS.find(entry => entry.id === id);
   if(!item || save.album[id]) return false;
   save.album[id] = true;
+  if(save.trackedItem===id)save.trackedItem=null;
   G.runFoundNew=true;
   save.secretPending=save.secretPending.filter(secretId=>secretId!==id);
   G.newIds.push(id);
@@ -802,14 +814,14 @@ function protectGuaranteedSecrets(){
 
 /* 标杆固定片段；真实玩家验收后才将新编排推广到其余九关。 */
 export function benchmarkBeat(){
-  const level=MOBILE.benchmark,beat=level.beats.find(b=>G.dist>=b.from&&G.dist<b.to)||level.beats.at(-1);
+  const level=G.plan||MOBILE.benchmark,beat=level.beats.find(b=>G.dist>=b.from&&G.dist<b.to)||level.beats.at(-1);
   if(!beat.skill)return beat;
   const skill=level.skills.find(s=>s.id===beat.skill),words=level.cueWords;
   const route=skill.steps.map(s=>words.lanes[s.lane+1]+(words.actions[s.action]||'')).join('—');
   return {...beat,cue:route+words.reward+skill.name+words.seal+'；'+words.lanes[level.safeLane+1]+words.safe};
 }
 function startBenchmark(){
-  const level=MOBILE.benchmark;
+  const level=G.plan||MOBILE.benchmark;
   const rewards=level.rewards,bonus=level.skillRewards,flight=level.flight,safeX=level.safeLane*LANEGAP;
   G.nextSpawn=Infinity;G.nextGate=Infinity;G.nextPower=Infinity;G.nextRelic=Infinity;
   G.obs=level.obstacles.map(o=>({...o,x:o.lane*LANEGAP}));
@@ -817,13 +829,26 @@ function startBenchmark(){
   // 左侧舒缓线的收益可达标；印章需要主动走技巧线。
   for(let z=rewards.from;z<rewards.to;z+=rewards.every)for(let i=0;i<rewards.count;i++)G.cols.push({x:safeX,z:z+i*rewards.gap,y:rewards.height,id:'egg',kind:'egg',arc:z,arcN:rewards.count,got:false});
   for(const skill of level.skills)skill.steps.forEach((s,i)=>{
-    G.cols.push({...s,x:s.lane*LANEGAP,y:s.action==='jump'?bonus.jumpHeight:bonus.groundHeight,id:'gold',kind:'skillStep',skillId:skill.id,step:i,steps:skill.steps.length,got:false});
+    G.cols.push({...s,x:s.lane*LANEGAP,y:s.action==='double'?2.6:s.action==='jump'?bonus.jumpHeight:bonus.groundHeight,id:'gold',kind:'skillStep',skillId:skill.id,step:i,steps:skill.steps.length,got:false});
     for(let k=1;k<=bonus.count;k++)G.cols.push({x:s.lane*LANEGAP,z:s.z+k*bonus.gap,y:bonus.height,id:'egg',kind:'egg',arc:s.z,arcN:bonus.count,got:false});
   });
   for(let i=0;i<flight.count;i++)G.cols.push({x:flight.lane*LANEGAP,z:flight.z+i*flight.gap,y:flight.height,id:'egg',kind:'egg',arc:'flight',arcN:flight.count,got:false});
   const tracked=ITEMS.find(i=>i.id===save.trackedItem);
-  const relic=tracked&&!tracked.secret&&(tracked.home??0)===0?tracked.id:level.relic.defaultId;
-  G.cols.push({x:safeX,z:level.relic.z,y:level.relic.height,id:relic,kind:'relic',got:false});
+  const reserved=new Set(),pool=ITEMS.filter(i=>!i.secret&&(i.home??0)===G.lvIdx);
+  for(const z of level.relicSpots||[level.relic.z]){
+    const relic=tracked&&!tracked.secret&&(tracked.home??0)===G.lvIdx&&!reserved.has(tracked.id)?tracked.id:pool.find(i=>!save.album[i.id]&&!reserved.has(i.id))?.id||pool.find(i=>!reserved.has(i.id))?.id||pool[0]?.id||level.relic.defaultId;
+    reserved.add(relic);G.cols.push({x:safeX,z,y:level.relic.height,id:relic,kind:'relic',got:false});
+  }
   G.gates=level.gates.map(z=>({z,passed:false,rz:z-G.dist+ZP}));
   G.powers=[{lane:level.safeLane,x:safeX,z:level.power.z,kind:level.power.kind}];
+  if(!G.benchmark){
+    G.powers=[];const interval=220*([1,.85,.7,.55][save.ups.spawn]||1),kinds=['magnet','shield','gui'];
+    for(let z=150,k=0;z<level.len-40;z+=interval,k++)G.powers.push({lane:level.safeLane,x:safeX,z,kind:kinds[k%kinds.length]});
+  }
+  if(level.arcRewards){
+    for(const skill of level.skills)for(let i=1;i<skill.steps.length;i++){
+      const a=skill.steps[i-1],b=skill.steps[i];
+      for(let k=1;k<5;k++){const t=k/5;G.cols.push({x:(a.lane+(b.lane-a.lane)*(1-Math.cos(t*Math.PI))/2)*LANEGAP,z:a.z+(b.z-a.z)*t,y:.6,id:'egg',kind:'egg',arc:skill.id+'-maple-'+i,arcN:4,got:false});}
+    }
+  }
 }

@@ -146,7 +146,7 @@ export function buildAssetSbom(root=defaultRoot){
     if(entries.some(e=>e.local_path===path))continue;
     const book=path.includes('/book-'),audio=path==='src/audio.js';
     entries.push({id:path,local_path:path,sha256:sha256(root,path),category:audio?'synthesized_audio_source':book?'generated_image':'legacy_art',
-      source_url:book?'OpenAI image generation in Codex; project prompt without image references':audio?'project source src/audio.js':'legacy project asset; source evidence incomplete',
+      source_url:book?(path.includes('book-journey-')?'OpenAI image generation in Codex; book-wall.webp used as project style reference, recorded in private evidence':'OpenAI image generation in Codex; project prompt without image references'):audio?'project source src/audio.js':'legacy project asset; source evidence incomplete',
       author:book?'AI-assisted project creation; human authorship scope to be reviewed':audio?'project contributors':'unverified legacy attribution',
       license:book?'Platform terms apply; no guarantee of exclusive copyright':audio?'LICENSE.md subject to contributor review':'unverified; internal preview only',
       modified:book?'2026-09-06 PNG encoded to WebP; no pixel retouch':audio?'2026-09-06 three buses, voice cooldown and four music phrases':'historical transformations not reconstructed',

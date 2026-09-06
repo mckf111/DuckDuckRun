@@ -36,17 +36,18 @@ export function drawBookDuck(c,x,y,size,{t=0,air=false,slide=false,gold=false,pa
   c.restore();
 }
 
-export function drawBookBackdrop(){
-  const image=getSprite('bookBackdrop');
+export function drawBookBackdrop(level){
+  const image=getSprite(level?.background||'bookBackdrop'),ground=level?.ground||'#ddd9bc';
   ctx.fillStyle='#e7e7d4';ctx.fillRect(0,0,W,H);
   if(image){
+    const sw=image.naturalWidth/(level?.background?3:1),sx=(level?.panel||0)*sw;
     if(!viewport.portrait){
-      const cropH=image.naturalWidth/(W/(H*.64));
-      ctx.drawImage(image,0,image.naturalHeight*.27,image.naturalWidth,cropH,0,0,W,H*.64);
+      const cropH=sw/(W/(H*.64));
+      ctx.drawImage(image,sx,image.naturalHeight*.27,sw,cropH,0,0,W,H*.64);
     }else{
-      const height=H*.64,width=height*image.naturalWidth/image.naturalHeight;
+      const height=H*.64,width=height*sw/image.naturalHeight;
       const scale=Math.max(W/width,1);
-      ctx.drawImage(image,(W-width*scale)/2,0,width*scale,height*scale);
+      ctx.drawImage(image,sx,0,sw,image.naturalHeight,(W-width*scale)/2,0,width*scale,height*scale);
     }
   }else{
     ctx.fillStyle='#ccdcd2';ctx.fillRect(0,0,W,HOR+60);
@@ -57,5 +58,5 @@ export function drawBookBackdrop(){
     ctx.fillStyle='#315b60';for(let i=0;i<9;i++)ctx.fillRect(x+i*gateW/9,y-9,gateW/13,16);
     ctx.fillStyle='#d5ad66';ctx.fillRect(CX-50,y-42,100,33);ctx.fillStyle='#344e50';ctx.beginPath();ctx.moveTo(CX-70,y-39);ctx.lineTo(CX,y-64);ctx.lineTo(CX+70,y-39);ctx.closePath();ctx.fill();
   }
-  const grad=ctx.createLinearGradient(0,H*.40,0,H*.75);grad.addColorStop(0,'rgba(221,217,188,0)');grad.addColorStop(1,'#ddd9bc');ctx.fillStyle=grad;ctx.fillRect(0,H*.4,W,H*.6);
+  const grad=ctx.createLinearGradient(0,H*.40,0,H*(viewport.portrait?.75:.64));grad.addColorStop(0,ground+'00');grad.addColorStop(1,ground);ctx.fillStyle=grad;ctx.fillRect(0,H*.4,W,H*.6);
 }

@@ -4,6 +4,9 @@ import { assetUrl } from '../asset-url.js';
 const SOURCES = {
   bookBackdrop: 'assets/game/book-wall.webp',
   bookDuck: 'assets/game/book-duck.webp',
+  bookJourney1:'assets/game/book-journey-1.webp',
+  bookJourney2:'assets/game/book-journey-2.webp',
+  bookJourney3:'assets/game/book-journey-3.webp',
   duck: 'assets/game/duck-atlas.webp',
   pickup: 'assets/game/pickup-ring.webp',
   crenelObstacles: 'assets/game/obstacles-crenel.webp',
