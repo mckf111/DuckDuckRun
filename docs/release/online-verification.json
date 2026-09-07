@@ -1,0 +1,854 @@
+{
+  "checkedAt": "2026-09-07T06:31:16.761Z",
+  "site": "https://jinlingrun.caowenhu.com/",
+  "buildId": "18741739d7da",
+  "resources": [
+    {
+      "path": "releases/18741739d7da/asset-manifest.js",
+      "status": 200,
+      "bytes": 5598,
+      "type": "application/javascript",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/album/baige.ea7a05acb79f.jpg",
+      "status": 200,
+      "bytes": 224109,
+      "type": "image/jpeg",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/album/bao.d51dd1746dfd.jpg",
+      "status": 200,
+      "bytes": 121419,
+      "type": "image/jpeg",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/album/baochuan.59f428a8850b.jpg",
+      "status": 200,
+      "bytes": 158422,
+      "type": "image/jpeg",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/album/baoenta.6aef1b79b5a8.jpg",
+      "status": 200,
+      "bytes": 188287,
+      "type": "image/jpeg",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/album/bean.ac7c276857b1.jpg",
+      "status": 200,
+      "bytes": 110058,
+      "type": "image/jpeg",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/album/chengzhuan.dfa75fc7b97e.jpg",
+      "status": 200,
+      "bytes": 212828,
+      "type": "image/jpeg",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/album/cloud.3745b82d2e80.jpg",
+      "status": 200,
+      "bytes": 383154,
+      "type": "image/jpeg",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/album/book.c31a2a0fe628.jpg",
+      "status": 200,
+      "bytes": 451233,
+      "type": "image/jpeg",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/album/duck.5e8e55cabe72.jpg",
+      "status": 200,
+      "bytes": 97355,
+      "type": "image/jpeg",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/album/egg.6a9dc8636136.jpg",
+      "status": 200,
+      "bytes": 80755,
+      "type": "image/jpeg",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/album/fans.6d654714296d.jpg",
+      "status": 200,
+      "bytes": 192247,
+      "type": "image/jpeg",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/album/elephant.325454a64bfe.jpg",
+      "status": 200,
+      "bytes": 334661,
+      "type": "image/jpeg",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/album/guihua.2af8c98cc26b.jpg",
+      "status": 200,
+      "bytes": 368269,
+      "type": "image/jpeg",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/album/jiangtun.bb46c332103e.jpg",
+      "status": 200,
+      "bytes": 108746,
+      "type": "image/jpeg",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/album/hufengdie.748377c88f2f.jpg",
+      "status": 200,
+      "bytes": 126177,
+      "type": "image/jpeg",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/album/kejing.2174e995aace.jpg",
+      "status": 200,
+      "bytes": 185656,
+      "type": "image/jpeg",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/album/lamp.07a77f5737a2.jpg",
+      "status": 200,
+      "bytes": 175117,
+      "type": "image/jpeg",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/album/leaf.8b9f1ed5d186.jpg",
+      "status": 200,
+      "bytes": 7207,
+      "type": "image/jpeg",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/album/nanyanjing.8148e3dfa630.jpg",
+      "status": 200,
+      "bytes": 45598,
+      "type": "image/jpeg",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/album/luhao.d74d32dd6355.jpg",
+      "status": 200,
+      "bytes": 248625,
+      "type": "image/jpeg",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/album/pibie.89d1e24d669a.jpg",
+      "status": 200,
+      "bytes": 271296,
+      "type": "image/jpeg",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/album/root.bb0a14b01c0b.jpg",
+      "status": 200,
+      "bytes": 146455,
+      "type": "image/jpeg",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/album/plum.097491fe2701.jpg",
+      "status": 200,
+      "bytes": 281457,
+      "type": "image/jpeg",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/album/pot.af9b3ba0710b.jpg",
+      "status": 200,
+      "bytes": 249755,
+      "type": "image/jpeg",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/album/stone.6c5184ee4814.jpg",
+      "status": 200,
+      "bytes": 133361,
+      "type": "image/jpeg",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/album/taro.352686b677e2.jpg",
+      "status": 200,
+      "bytes": 132850,
+      "type": "image/jpeg",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/album/sakura.e86545759f45.jpg",
+      "status": 200,
+      "bytes": 336291,
+      "type": "image/jpeg",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/album/wufan.89663d5db060.jpg",
+      "status": 200,
+      "bytes": 327239,
+      "type": "image/jpeg",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/album/yinghuo.e53d61a0c33a.jpg",
+      "status": 200,
+      "bytes": 6910,
+      "type": "image/jpeg",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/album/zifeng.1b3bd2e7fe0e.jpg",
+      "status": 200,
+      "bytes": 131714,
+      "type": "image/jpeg",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/fonts/OFL.cfc64093b8c5.txt",
+      "status": 200,
+      "bytes": 4547,
+      "type": "text/plain;charset=utf-8",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/fonts/chars-brush.2d84ccd06367.txt",
+      "status": 200,
+      "bytes": 509,
+      "type": "text/plain;charset=utf-8",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/fonts/jinling-brush.829082b20613.woff2",
+      "status": 200,
+      "bytes": 70908,
+      "type": "font/woff2",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/fonts/chars.0c0365fa9e1d.txt",
+      "status": 200,
+      "bytes": 4516,
+      "type": "text/plain;charset=utf-8",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/game/bg-zhonghua.9d3ca24f1f71.webp",
+      "status": 200,
+      "bytes": 110514,
+      "type": "image/webp",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/game/book-duck.3510f55cdfa3.webp",
+      "status": 200,
+      "bytes": 209606,
+      "type": "image/webp",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/game/book-journey-1.47563e411d66.webp",
+      "status": 200,
+      "bytes": 313394,
+      "type": "image/webp",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/fonts/jinling-kai.ea6298f05d75.woff2",
+      "status": 200,
+      "bytes": 343720,
+      "type": "font/woff2",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/game/book-wall.56cdca6ec57b.webp",
+      "status": 200,
+      "bytes": 244630,
+      "type": "image/webp",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/game/book-journey-3.8a6ff3e7f575.webp",
+      "status": 200,
+      "bytes": 338296,
+      "type": "image/webp",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/game/book-journey-2.dcf5fb7f80a6.webp",
+      "status": 200,
+      "bytes": 345928,
+      "type": "image/webp",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/game/nanjing-slice/qinhuai-lantern-marker.1bc708d76441.webp",
+      "status": 200,
+      "bytes": 33464,
+      "type": "image/webp",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/game/nanjing-slice/nanjing-vertical-slice-target.60d47c6a9cb0.webp",
+      "status": 200,
+      "bytes": 92774,
+      "type": "image/webp",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/game/duck-atlas.612ce949a279.webp",
+      "status": 200,
+      "bytes": 315246,
+      "type": "image/webp",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/game/menu-background.1bb4be812363.webp",
+      "status": 200,
+      "bytes": 75580,
+      "type": "image/webp",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/game/obstacles-crenel.f88ace939543.webp",
+      "status": 200,
+      "bytes": 84798,
+      "type": "image/webp",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/game/nanjing-slice/salted-duck-token.3abad99e4049.webp",
+      "status": 200,
+      "bytes": 65854,
+      "type": "image/webp",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/game/pickup-ring.7a67f5014543.webp",
+      "status": 200,
+      "bytes": 107858,
+      "type": "image/webp",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/icons/duck-192.c654d8051cc8.png",
+      "status": 200,
+      "bytes": 29411,
+      "type": "image/png",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/icons/duck-512.1ec0282e83ab.png",
+      "status": 200,
+      "bytes": 101025,
+      "type": "image/png",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/img/bg_baoen.434d6dc75b0a.webp",
+      "status": 200,
+      "bytes": 52948,
+      "type": "image/webp",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/img/bg_baoen.47d3256fdda0.jpg",
+      "status": 200,
+      "bytes": 84595,
+      "type": "image/jpeg",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/img/bg_bridge.9624b60da3c9.jpg",
+      "status": 200,
+      "bytes": 218404,
+      "type": "image/jpeg",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/img/bg_jiming.9984b4bd1429.webp",
+      "status": 200,
+      "bytes": 62006,
+      "type": "image/webp",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/img/bg_jiming.b5122c37049d.jpg",
+      "status": 200,
+      "bytes": 116524,
+      "type": "image/jpeg",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/img/bg_bridge.e69e9fc55a10.webp",
+      "status": 200,
+      "bytes": 141496,
+      "type": "image/webp",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/img/bg_mendong.48976741a8fe.jpg",
+      "status": 200,
+      "bytes": 292256,
+      "type": "image/jpeg",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/img/bg_menu.d2b11b07335f.jpg",
+      "status": 200,
+      "bytes": 88422,
+      "type": "image/jpeg",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/img/bg_menu.fe8bacfb6e90.webp",
+      "status": 200,
+      "bytes": 41118,
+      "type": "image/webp",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/img/bg_mendong.5654eab64009.webp",
+      "status": 200,
+      "bytes": 232634,
+      "type": "image/webp",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/img/bg_observatory.e5962fec704d.webp",
+      "status": 200,
+      "bytes": 56334,
+      "type": "image/webp",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/img/bg_observatory.55e470d4b476.jpg",
+      "status": 200,
+      "bytes": 104962,
+      "type": "image/jpeg",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/img/bg_qixia.738fbe0bfd06.jpg",
+      "status": 200,
+      "bytes": 178398,
+      "type": "image/jpeg",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/img/bg_qixia.87253ea24c3d.webp",
+      "status": 200,
+      "bytes": 105434,
+      "type": "image/webp",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/img/bg_sunyard.326c5198e94f.jpg",
+      "status": 200,
+      "bytes": 126189,
+      "type": "image/jpeg",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/img/bg_sunyard.9d35bb96da6f.webp",
+      "status": 200,
+      "bytes": 64600,
+      "type": "image/webp",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/img/bg_yihe.4258ca93d60a.webp",
+      "status": 200,
+      "bytes": 171732,
+      "type": "image/webp",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/img/bg_yihe.8d526406c49c.jpg",
+      "status": 200,
+      "bytes": 229590,
+      "type": "image/jpeg",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/img/bg_zhaobi.ca731746628e.webp",
+      "status": 200,
+      "bytes": 106558,
+      "type": "image/webp",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/img/bg_zhaobi.5788426bd94a.jpg",
+      "status": 200,
+      "bytes": 180313,
+      "type": "image/jpeg",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/img/bg_zhonghua.13b156f5d8f4.webp",
+      "status": 200,
+      "bytes": 246548,
+      "type": "image/webp",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/legal/FONT-OFL.txt",
+      "status": 200,
+      "bytes": 4547,
+      "type": "text/plain;charset=utf-8",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/index.html",
+      "status": 200,
+      "bytes": 7707,
+      "type": "text/html",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/legal/LICENSE.md",
+      "status": 200,
+      "bytes": 3178,
+      "type": "text/markdown;charset=utf-8",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/src/art/book.js",
+      "status": 200,
+      "bytes": 4147,
+      "type": "application/javascript",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/legal/PHOTO-CREDITS.md",
+      "status": 200,
+      "bytes": 25070,
+      "type": "text/markdown;charset=utf-8",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/assets/img/bg_zhonghua.7047e55e7146.jpg",
+      "status": 200,
+      "bytes": 298093,
+      "type": "image/jpeg",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/src/album-photos.js",
+      "status": 200,
+      "bytes": 20248,
+      "type": "application/javascript",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/src/art/items.js",
+      "status": 200,
+      "bytes": 37157,
+      "type": "application/javascript",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/src/art/photo.js",
+      "status": 200,
+      "bytes": 8260,
+      "type": "application/javascript",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/src/art/player.js",
+      "status": 200,
+      "bytes": 12154,
+      "type": "application/javascript",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/src/art/road.js",
+      "status": 200,
+      "bytes": 6352,
+      "type": "application/javascript",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/src/art/scenery.js",
+      "status": 200,
+      "bytes": 25613,
+      "type": "application/javascript",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/src/art/obstacles.js",
+      "status": 200,
+      "bytes": 22089,
+      "type": "application/javascript",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/src/art/skin.js",
+      "status": 200,
+      "bytes": 776,
+      "type": "application/javascript",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/src/asset-url.js",
+      "status": 200,
+      "bytes": 328,
+      "type": "application/javascript",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/src/art/sprites.js",
+      "status": 200,
+      "bytes": 1941,
+      "type": "application/javascript",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/src/audio.js",
+      "status": 200,
+      "bytes": 9500,
+      "type": "application/javascript",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/src/config.js",
+      "status": 200,
+      "bytes": 36719,
+      "type": "application/javascript",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/src/core.js",
+      "status": 200,
+      "bytes": 6112,
+      "type": "application/javascript",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/src/dom-ui.js",
+      "status": 200,
+      "bytes": 25802,
+      "type": "application/javascript",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/src/game.js",
+      "status": 200,
+      "bytes": 42659,
+      "type": "application/javascript",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/src/input.js",
+      "status": 200,
+      "bytes": 2719,
+      "type": "application/javascript",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/src/main.js",
+      "status": 200,
+      "bytes": 6910,
+      "type": "application/javascript",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/src/legal.js",
+      "status": 200,
+      "bytes": 4064,
+      "type": "application/javascript",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/src/mobile.css",
+      "status": 200,
+      "bytes": 13217,
+      "type": "text/css",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/src/qr.js",
+      "status": 200,
+      "bytes": 7680,
+      "type": "application/javascript",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/src/save.js",
+      "status": 200,
+      "bytes": 2022,
+      "type": "application/javascript",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/src/render.js",
+      "status": 200,
+      "bytes": 16754,
+      "type": "application/javascript",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/src/rules.js",
+      "status": 200,
+      "bytes": 7468,
+      "type": "application/javascript",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/src/share.js",
+      "status": 200,
+      "bytes": 11202,
+      "type": "application/javascript",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/src/track.js",
+      "status": 200,
+      "bytes": 796,
+      "type": "application/javascript",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/build-info.json",
+      "status": 200,
+      "bytes": 10002,
+      "type": "application/json",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    },
+    {
+      "path": "releases/18741739d7da/src/ui.js",
+      "status": 200,
+      "bytes": 31659,
+      "type": "application/javascript",
+      "cache": "public, max-age=31536000, immutable",
+      "byteMatch": true
+    }
+  ],
+  "errors": [],
+  "missingStatus": 404,
+  "http": {
+    "status": 302,
+    "location": "https://jinlingrun.caowenhu.com/"
+  },
+  "passed": true
+}

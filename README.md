@@ -12,7 +12,7 @@
   <a href="#创作与授权">创作与授权</a>
 </p>
 
-> **准备上线** · 正式入口：[jinlingrun.caowenhu.com](https://jinlingrun.caowenhu.com/)。完成线上验证后开放；历史 GitHub Pages 预览不代表当前版本。
+> **开始游玩** · [jinlingrun.caowenhu.com](https://jinlingrun.caowenhu.com/) · 免费网页游戏，无需安装。
 
 ## 一趟有点狼狈的金陵之旅
 

@@ -2,6 +2,19 @@
 
 日期：2026-09-07。固定入口：`https://jinlingrun.caowenhu.com/`。仓库保持 **Private**。
 
+**已上线。** 2026-09-07 14:31（UTC+8）完成固定域名的线上技术验收。真实 iPhone/Android 微信及公众号预览仍等待用户反馈，不把浏览器检查等同于实机验收。
+
+## 上线验收
+
+- CNAME：`jinlingrun` → `jinlingrun.caowenhu.com.pages.dnsoe4.com`，TTL 600；公共 DNS 与控制台读回一致。原有记录保留。
+- 免费 HTTPS 证书已部署，CN 为 `jinlingrun.caowenhu.com`，颁发者 TrustAsia DV TLS RSA CA 2025，有效至 2026-12-06 07:59:59（UTC+8）；平台配置到期前 15 天自动更新。正常 TLS 校验通过，没有忽略证书错误。
+- 强制 HTTPS 已开启：HTTP 根入口返回 302 到同域 HTTPS。HTTPS 根入口与构建清单均返回 200、`no-cache, no-store, must-revalidate`。
+- 105 个版本文件全部返回 200、字节与 CI 制品一致，版本资源带不可变缓存；JS/CSS 类型正确，故意请求不存在的脚本返回 404。
+- 正式域名已在 Chrome 中实际进入游戏，操作、暂停、恢复与版权入口可用；控制台错误数 0。Created with Grok 及照片/字体声明在线可见。
+- 二维码仍指向固定根网址，不使用临时域名或版本目录。上线后 README 已改为“开始游玩”；公众号文章由作者自行预览和发布。
+
+## 发布过程记录（按发生时状态保留）
+
 ## 当前状态
 
 - README、头图与当前游戏实截已完成；桌面 900px、手机 360px、深浅色和图片检查通过。
@@ -14,11 +27,11 @@
 - 持续测试原脚本在旋转阶段仍等待已取消的 `#rotate`；已改为验证旋转暂停、竖屏适配、恢复后距离推进和横屏恢复，8 秒流程自检通过。该短程检查不替代 20 分钟浸泡。
 - 托管改为已有 EdgeOne Pages 免费站点的独立 `jinlingrun` 项目，全球可用区（含中国大陆）。账号已登录；现有 `if-history` 项目、免费额度和区域已核对。
 - OSS 未购买、未开通；阿里云只负责 DNS。
-- 阿里云 DNS 已核对 `caowenhu.com`，当前没有 `jinlingrun` 记录。已有 9 条解析保持原状。
+- 发布前阿里云 DNS 已核对 `caowenhu.com`，当时没有 `jinlingrun` 记录；原有 9 条解析保留，本次只增加 TXT 与 CNAME。
 - 用户已明确授权向 EdgeOne 上传正式网页包并公开访问，首次自动审批拦截已解除。正式包已上传成功：项目 `makers-ph8ezjstboo1`（jinlingrun），部署 `dp2edl0rn7rm`，平台显示成功，时间 2026-09-07 13:32:13（UTC+8）。平台只解压与复制静态文件，没有重跑本仓库源码构建。
 - 临时项目域名 `jinlingrun-l2jzjarz.edgeone.cool` 的匿名 HTTPS 构建清单返回 200，版本为 `18741739d7da`、production、待审 0；清单与下载的 CI 文件逐字节一致，根清单响应带 `no-cache, no-store, must-revalidate`。临时域名不作为公众号入口。
 - 已添加自定义域名 `jinlingrun.caowenhu.com` 并验证归属权；新增 TXT 主机 `edgeonereclaim.jinlingrun`，TTL 600，公共 DNS 已核对生效。此时原有解析均保留。
-- 13:42 刷新前最后可读状态：固定域名在 EdgeOne 显示“部署中”，CNAME 尚未返回、HTTPS 尚未配置。随后腾讯云控制台在两个浏览器中持续只显示页头；已尝试刷新、服务总览入口和另一已登录浏览器，仍无法读取配置。浏览器标签列表通信正常，无 JavaScript 对话框阻塞。当前需恢复控制台访问以继续 CNAME 与证书配置；不能据此宣称固定域名已上线。
+- 13:42 后曾因网络导致腾讯云控制台加载失败；用户恢复网络后继续配置，14:18 新增 CNAME，随后免费证书部署成功。该阻塞已解除。
 - 真实 iPhone/Android 微信与公众号预览验收尚未执行。已有自动化和历史实机反馈不替代这次正式网址验收。
 
 ## 已选配置与前提
