@@ -13,7 +13,7 @@
     "test:logic": "node --test tests/rules.test.js tests/beam.test.js tests/rhythm.test.js tests/runtime.test.js tests/mobile.test.js tests/journey.test.js tests/skin-stars.test.js tests/experience.test.js tests/tutorial-skills.test.js tests/skill-scoring.test.js",
     "test:save": "node --test tests/migration.test.js tests/save-io.test.js",
     "test:resources": "node --test tests/content.test.js tests/album-photos.test.js tests/credits.test.js",
-    "test:contracts": "node --test tests/share-release.test.js tests/asset-registry.test.js tests/deploy-script.test.js",
+    "test:contracts": "node --test tests/share-release.test.js tests/asset-registry.test.js tests/deploy-script.test.js && python -m unittest discover -s tests -p test_package_edgeone.py",
     "test:browser": "node tools/e2e/browser_test.mjs && node tools/e2e/skin_stars_check.mjs && node tools/e2e/album_photos_check.mjs && node tools/e2e/experience_check.mjs && node tools/e2e/tutorial_skills_check.mjs && node tools/e2e/skill_scoring_check.mjs && node tools/e2e/credits_check.mjs",
     "test:playability": "node tools/e2e/audit_slice_playability.mjs",
     "test:dist": "node tools/e2e/check_dist.mjs && node tools/e2e/album_photos_check.mjs --dist && node tools/e2e/credits_check.mjs --dist",
