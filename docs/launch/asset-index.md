@@ -1,31 +1,39 @@
-# DuckDuckRun 微信发布素材索引
+# 微信发布素材索引
 
-## 素材总览
+2026-09-07 更新。封面是现有游戏美术合成，其他游戏画面均为当前版本本地浏览器实截。全部截图不冒充实体手机验收；展示存档不代表真人通关。
 
-以下可发布素材均位于 `docs/launch/assets/`，画面来源是当前仓库 `main` 分支本地可运行版本的真实浏览器截图。封面和核心玩法图只做裁切、拼图、压缩与事实性文字标注，没有用概念图替代实机图。仓库内素材总量约 **682 KiB**，低于本阶段要求的 5 MB 控制线。
+| 文件 | 尺寸 | 用途 | 来源与边界 |
+| --- | --- | --- | --- |
+| [cover-900x383.jpg](assets/cover-900x383.jpg) | 900×383 | 合成封面 | 现有桂花鸭与城门素材 + SVG 标题排版，非游戏截图 |
+| [core-gameplay-1200x800.jpg](assets/core-gameplay-1200x800.jpg) | 1200×800 | 流程展示 | 菜单、竖屏跑局、自然失败三张浏览器截图拼图 |
+| [screenshot-menu.jpg](assets/screenshot-menu.jpg) | 390×844 | 首次首页 | 无进度的新浏览器存档 |
+| [screenshot-levels.jpg](assets/screenshot-levels.jpg) | 1100×900 | 十站选关 | 展示存档，局部站点列表 |
+| [screenshot-tutorial.jpg](assets/screenshot-tutorial.jpg) | 390×844 | 操作引导 | 首次开始后的真实引导画面 |
+| [screenshot-formal-run.jpg](assets/screenshot-formal-run.jpg) | 390×844 | 正式跑局 | 展示存档，左侧路线实际跑至 140 米，已收集 5 枚鸭蛋 |
+| [screenshot-mobile-run.jpg](assets/screenshot-mobile-run.jpg) | 390×844 | 竖屏跑局 | 与正式跑局相同的当前截图 |
+| [screenshot-over.jpg](assets/screenshot-over.jpg) | 390×844 | 自然失败结算 | 标准模式不操作，在约 143 米处撞到矮障碍 |
+| [screenshot-album.jpg](assets/screenshot-album.jpg) | 1100×900 | 风物谱 | 展示存档 28/40，不揭示未解锁隐藏条目 |
+| [jinlingrun-qr.png](assets/jinlingrun-qr.png) | 528×528 | 正式网址二维码 | 独立 ZXing-C++ 解码确认 URL；可访问性另验 |
 
-| 文件 | 尺寸 | 类型 | 用途 | 画面来源与处理 | 备注 |
-|---|---:|---|---|---|---|
-| `cover-900x383.jpg` | 900×383 | JPG | 公众号封面 | `local-formal-run.png` 的真实正式跑局画面，裁切并叠加标题 | 公众号推荐头图构图；未增加不存在的场景 |
-| `core-gameplay-1200x800.jpg` | 1200×800 | JPG | 核心玩法图 | `local-tutorial.png`、`local-tutorial-step3.png`、`local-formal-run.png` 三张实机图拼图 | 标注换道、滑铲、跳跃/二段跳和正式跑局 |
-| `screenshot-menu.jpg` | 1366×682 | JPG | 实机图 | `local-menu.png` 压缩 | 当前版本菜单；不是旧线上页面 |
-| `screenshot-levels.jpg` | 1366×682 | JPG | 实机图 | `local-levels.png` 压缩 | 路线选择和初始解锁状态 |
-| `screenshot-tutorial.jpg` | 1366×682 | JPG | 实机图 | `local-tutorial.png` 压缩 | 第 1/4 步教学、明城墙门洞和 HUD |
-| `screenshot-formal-run.jpg` | 1366×682 | JPG | 实机图 | `local-formal-run.png` 压缩 | 教学完成后的正式第一关画面 |
-| `screenshot-over.jpg` | 1366×682 | JPG | 实机图 | `local-over.png` 压缩 | 真实失败结算、死因、距离和重开入口 |
-| `screenshot-mobile-run.jpg` | 844×390 | JPG | 移动横屏实机图 | `local-mobile-run.png` 压缩 | 自动化浏览器横屏视口，不是实体手机微信验证 |
-| `qr-placeholder.jpg` | 720×720 | JPG | 二维码区域占位 | 确定性文字排版生成 | 明确写“二维码暂不生成”“请勿扫码”，不是二维码 |
+上述现役素材合计 0.70 MiB。`qr-placeholder.jpg` 仅留历史，不使用；正式二维码为 `jinlingrun-qr.png`，SVG 为其可编辑来源。
 
-## 原图与会话附件
+## 后台装配
 
-高分辨率 PNG 原图没有放进仓库，以控制仓库体积；它们保存在本次会话附件目录 `/home/ubuntu/DuckDuckRun-originals/`，包括菜单、选关、教学、正式跑局、失败结算和 844×390 移动横屏截图。原图均由当前本地浏览器真实运行截图复制而来，可在需要二次裁切时使用。仓库内 JPEG 仅用于公众号编辑器和预览，不改变画面事实。
+1. 封面上传 `cover-900x383.jpg`。
+2. 正文按文章里的图位上传当前截图；无需把所有备用图都插进去。
+3. “阅读原文”填写 `https://jinlingrun.caowenhu.com/`。
+4. 正文末尾插入 `jinlingrun-qr.png`，配“点击文末阅读原文，或长按二维码，直接开玩”。
+5. 发布前用真实微信预览验证两种入口，确认进的是当前版本。
 
-## 图片与文章对应关系
+## 核验
 
-`wechat-article.md` 已嵌入封面、核心玩法图、正式跑局、失败结算和移动横屏图，并为每一张图提供了说明。若公众号编辑器不保留 Markdown 图片引用，需要按照文章顺序手动上传同名 JPG；上传后应在手机预览中重新检查裁切和文字安全区。
-
-封面标题是“我做了一只在南京城门里反复撞墙的白鸭”，对应文章推荐标题。核心玩法图的三块画面分别来自真实教学第 1/4、真实教学第 3/4 和正式跑局，标注采用界面中的“整堵墙只能换道（←→）”“高横梁要贴地滑铲（↓）”和真实可用的 ↑/二段跳动作。失败页截图中的 62 m 和 4 枚鸭蛋属于本次试玩偶然结果，不能在正文或配图说明中写成标准成绩。
-
-## 二维码状态
-
-当前没有稳定生产 HTTPS 地址。旧版 GitHub Pages [`https://mckf111.github.io/DuckDuckRun/`](https://mckf111.github.io/DuckDuckRun/) 虽可访问，但标题仍为“金陵快跑 · 南京实景跑酷”，与当前文章和截图使用的“冲鸭！金陵！”版本不一致。因此本次**不生成二维码、不验证二维码、不把旧地址作为试玩入口**。`qr-placeholder.jpg` 仅用于保留发布版式位置，正式 URL 和实体手机微信烟测完成后必须替换。
+- `cover-900x383.jpg` SHA-256：`9ad1c2ae8a41676e9367a642a3c2c0c292ec5cd7a3f213c685e06f2093ef76d8`
+- `core-gameplay-1200x800.jpg` SHA-256：`fafd7a5f382ca554994cc5de97e9be8e67e39c461451390f55978cf62d255e6e`
+- `screenshot-menu.jpg` SHA-256：`a16be3a11e43f68a09b5d2f4268866b73cfe6d86eb4d834584fe71de949e2cf3`
+- `screenshot-levels.jpg` SHA-256：`ce474aa5c7944a78aea10ce72ad5561b4509b4876d42ec512aa6bced2480de60`
+- `screenshot-tutorial.jpg` SHA-256：`f054d361648c861f0495cc4b45416356d850dbf0289b6c8063a4718520ce63c5`
+- `screenshot-formal-run.jpg` SHA-256：`353bef8ff5abf0568813bf23cb5f6132d7dda7bc92807c8bc7463a7b35c940c9`
+- `screenshot-mobile-run.jpg` SHA-256：`353bef8ff5abf0568813bf23cb5f6132d7dda7bc92807c8bc7463a7b35c940c9`
+- `screenshot-over.jpg` SHA-256：`7cd6a340eb3d30d18df42fedba48444543257c83009960baaeb74f2babe2b42b`
+- `screenshot-album.jpg` SHA-256：`28e8fb0b2845286e1df5fbee12e94dbd6662a42a42e30f61254cb9f5c7eda3c5`
+- `jinlingrun-qr.png` SHA-256：`3f744165e40de4769b0bdf29dd1e6e0121022ceb23ccb423b48cfd4f7e367738`

@@ -20,7 +20,7 @@ try{
   await page.goto(server.base+'/assets/readme/source/hero-preview.html');
   await page.evaluate(()=>document.fonts.ready);
   await page.waitForTimeout(500);
-  await page.screenshot({path:join(output,'hero.png')});
+  await page.screenshot({path:join(output,'hero.png'),omitBackground:true});
   const showcase=normalizeSave({stars:Array(9).fill(2),cleared:Array(9).fill(true),album:Object.fromEntries(ITEMS.filter(x=>!x.secret).slice(0,28).map(x=>[x.id,true])),tutorialCompleted:true,journeyStarted:true,lastLevel:0,difficulty:'easy',motion:'reduced',volumes:{music:0,effects:0,voice:0}});
   await page.addInitScript(save=>localStorage.setItem('jinling_run_v1',JSON.stringify(save)),showcase);
   await page.setViewportSize({width:390,height:844});
