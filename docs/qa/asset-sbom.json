@@ -1,6 +1,29 @@
 {
   "schema": "duckduckrun-asset-sbom/v1",
   "generated_at": "2026-09-07",
+  "project_creation_credit": {
+    "creation": "Created with Kimi K3, Qwen3.8-Max and Grok 4.6.",
+    "finalization": "由 GPT-6 Astra 完成最终整合、修正与收尾。",
+    "models": [
+      {
+        "name": "Kimi K3",
+        "url": "https://www.kimi.com/news/kimi-k3"
+      },
+      {
+        "name": "Qwen3.8-Max",
+        "url": "https://www.qwencloud.com/models/qwen3.8-max"
+      },
+      {
+        "name": "Grok 4.6",
+        "url": "https://x.ai/news/grok-4-6"
+      },
+      {
+        "name": "GPT-6 Astra",
+        "url": "https://developers.openai.com/api/docs/models/gpt-6-astra"
+      }
+    ],
+    "provenance": "Project collaboration confirmed by the author on 2026-09-07; model websites verify names, not individual asset origins. Per-file historical evidence remains separate."
+  },
   "scope": "All runtime images, icons, fonts and synthesized audio source. Inventory is distinct from approval for publication.",
   "release_review": {
     "status": "registered",

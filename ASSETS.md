@@ -4,7 +4,21 @@
 
 全部 40 件风物均有检索与取舍记录，采用 30 张照片（23 准确实拍、3 现场纪实、1 复原展示、3 相关示意），10 件暂缺。当前图鉴的完整来源与处理记录在 `assets/album/REVIEW.json`，逐项结论见 [ALBUM-REVIEW.md](ALBUM-REVIEW.md)。`assets/album/CREDITS.md`、运行时目录和报告由同一台账生成。旧 `assets/img/it_*` 停用且不进入当前制品，背景后备保留。
 
-磁盘反查台账共 88 项，其中 70 项随当前运行制品提供，18 项为停用历史图鉴文件。新增照片记录原始文件时间戳/SHA-1、下载输入 URL/SHA-256、本地输出 SHA-256、逐图说明与处理过程；原始 API/图片证据留在 `docs/album-review`。来源与画面核验不等于公开发布批准，所有现役素材的公开发布状态仍待审核。
+磁盘反查台账共 88 项，其中 70 项随当前运行制品提供，18 项为停用历史图鉴文件。新增照片记录原始文件时间戳/SHA-1、下载输入 URL/SHA-256、本地输出 SHA-256、逐图说明与处理过程；原始 API/图片证据留在 `docs/album-review`。来源与画面核验不等于公开发布批准，当前 `assets/release-review.json` 的 70 项随包素材均有与现有 SHA-256 匹配的 approved 工程审核记录；该记录不代替独立的部署授权，也不是法律意见。
+
+## 2026-09-07 创作署名与版权页校验
+
+作者本轮确认项目采用多模型接力：**Created with Kimi K3, Qwen3.8-Max and Grok 4.6.** 由 **GPT-6 Astra** 完成最终整合、修正与收尾。这一协作署名用于游戏内版权页、README 与 LICENSE，不将每张图片都归于 Grok 或 OpenAI，也不覆盖照片与字体的第三方署名。
+
+官方名称核对（2026-09-07）：[Kimi K3](https://www.kimi.com/news/kimi-k3)、[Qwen3.8-Max](https://www.qwencloud.com/models/qwen3.8-max)、[Grok 4.6](https://x.ai/news/grok-4-6)、[GPT-6 Astra](https://developers.openai.com/api/docs/models/gpt-6-astra)。项目使用过程来自作者确认；官网用于核对命名，不用于证明某张具体图片由该模型生成。保留下面的历史工具与原始输入记录，不倒填未知的逐图模型版本。另按 [Grok 官方署名指引](https://x.ai/legal/brand-guidelines) 对其辅助生成部分保留“Created with Grok”，这不是把整个项目归于 Grok。
+
+版权页现按当前制品核对：30 张图鉴照片与 10 个暂缺项、11 个背景来源所对应的 24 个照片文件、两款字体、12 个生成图片/图标、1 个视觉参考文件及 `src/audio.js` 合成音频源码，共 70 项随包受管文件。18 张旧图鉴照片不随包提供。背景来源以最终 `assets/img/CREDITS.md` 为准，候选池 `assets/img/CREDITS.json` 不能代替最终选图记录。
+
+- 主线、首页与无尽的当前主视觉是绘本图像及程序化绘制，旧实景背景单列为随包历史素材。
+- 图鉴照片的原作者、来源、具体许可和处理过程保持逐项对应；缺照片的条目只列暂缺状态，不冒充实拍。
+- 本地字体元数据确认：`jinling-brush.woff2` 为 Ma Shan Zheng；`jinling-kai.woff2` 为 LXGW WenKai Medium。常规 DOM 界面也使用设备系统字体，不能笼统说所有正文都用霞鹜文楷。
+- 当前音频由 WebAudio 合成，没有加载第三方歌曲或录音文件。
+- 模型官方资料、照片原始来源/许可、完整照片声明和字体许可原文均可从“素材与版权”页面直接打开。
 
 ## 以下为此前阶段记录
 
