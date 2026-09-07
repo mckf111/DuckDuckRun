@@ -8,6 +8,48 @@ export const PHOTO_COPY = {
   record:'完整照片署名', legacy:'背景与历史素材记录',
 };
 export const SKINS = { goldStars:15 };
+export const EXPERIENCE = {
+  magnet:{range:18,minTime:.25,maxTime:.45}, crash:{duration:1.1,freeze:.09,fall:.36},
+  skill:{finishMargin:.5,laneTolerance:.6,doubleHeight:1.35},
+  speeds:[10,10.8,11.6,12.4,13.2,13.8,14.4,15,15.6,16.2],
+  speedTransition:1.5, goalIntro:4,
+  challenges:['基础操作与教学保护','沿湖换道，越过横石','落稳再跳，三阶成拍','灯下跳滑交替','换道接跳，高处展翅','跳滑换道三步组合','看清巷口，连续选道','跨道追叶，衔接跳跃','跳滑连拍，逐灯向上','三段综合挑战，稳稳过江'],
+};
+export const EXPERIENCE_COPY = {
+  modes:{standard:'正常',easy:'轻松'}, difficulty:'十站主线 · 选择难度',
+  descriptions:{standard:'正常速度，无额外救援',easy:'速度降低 10%，每局两次救援，操作容错更宽'},
+  start:'立马开跑', target:'本关拿星目标', gain:'+1 星',
+  levelTarget:'鸭蛋目标 {eggs} 枚 · 技巧 2 枚',
+  goals:'通关得 1 星；收集 {eggs} 枚鸭蛋加 1 星；完成 2 枚技巧印章加 1 星。',
+  skillHelp:'技巧印章是什么？', skillExplain:'每关都有两项专属挑战。完成一整组后，技巧计数增加一项（例如 1/2）；菱形不会增加鸭蛋数。两项都完成且通关，再加一星。',
+  skillTitle:'「{level}」的两项专属挑战', skillAction:'动作顺序', skillRoute:'本局路线',
+  skillMarker:'◆ 金色菱形是挑战标记，不是鸭蛋。按数字顺序到达标记所在车道，并在标记处完成相应动作。',
+  skillPreview:'动作顺序固定；左右车道可能镜像，开跑后的暂停页另列本局车道。',
+  skillLaneHelp:'换道可以提前完成，到位后保持即可；已经在正确车道时，不必再左右移动。通过这一标记后再按下一步提示行动。',
+  skillFailure:'漏掉一步或撞上挑战障碍，本次这一项就失败；重跑本关可再挑战。两项都完成，通关后再加一星。',
+  skillOptional:'挑战印章是额外目标；也可以先完成普通通关。',
+  skillProgress:'挑战「{name}」 · 已完成 {done}/{total} 步', skillNext:'下一步：{lane}道 · {action}', skillHold:'到位后保持',
+  skillEarned:'✓ 已获得「{name}」印章', skillMissed:'「{name}」本次未完成，重跑本关可再挑战',
+  actions:{lane:'换道',jump:'跳跃',slide:'滑铲',double:'二段跳'}, lanes:['左','中','右'],
+  starHelp:'通关得 1 星；鸭蛋或技巧任一达标得 2 星；两项都达标得 3 星。',
+  starRule:'两种难度都可拿三星。只计各关历史最佳，跨局、跨难度不能拼接当局条件；累计印章不等于本次三星。',
+  eggs:'鸭蛋', skills:'技巧', remaining:'还差 {n} {unit}', eggsUnit:'枚', skillUnit:'枚印章',
+  achieved:'已达标', notCleared:'局内已达标；未通关，本次不计星', clear:'抵达终点',
+  bridge:'长江大桥 · 解锁进度', allRequired:'以下三项全部满足即可解锁',
+  bridgeOpen:'已解锁，可以过江啦', cleared:'前九关通关', stars:'前九关最佳成绩合计', ordinary:'普通风物',
+  ordinaryNote:'普通风物共 34 种，隐藏风物不计入。星数只计每关最好成绩，重复刷关不会重复累加。',
+  needLevels:'还差 {n} 关', needStars:'还差 {n} 星', needItems:'还差 {n} 种',
+  goStars:'去补星', goItems:'去收集风物', missing:'未收集的普通风物', allItems:'查看全部风物',
+  viewItem:'查看图鉴', returnResult:'返回结算', rewardDone:'普通风物已全部收齐',
+  follow:'跟随鸭蛋，提前换道', optional:'挑战技巧线可得印章；留意当前车道障碍',
+};
+export const TUTORIAL_COPY = {
+  title:'新手练习', beforeLevel:'练习后开跑 · 明城墙',
+  note:'这里只练习换道、跳跃和滑铲，不计入关卡成绩。',
+  retryTitle:'没躲过，再练一次', retryNote:'练习已暂停，不会继续空跑。可以重试这个动作，也可以直接开始第一站。',
+  retry:'再试这个动作', skip:'跳过练习，直接开跑',
+  step:'练习 {step}/{total}', ready:'练习完成！第一站正式开跑',
+};
 export const PROGRESS_COPY = {
   total:'通关总星数', best:'历史最佳', current:'本次评价', levelBest:'本关最佳',
   rule:'每关最多 3 星，只计各关最好成绩。解锁不消耗星星。',
@@ -448,7 +490,7 @@ export const MOBILE_UI = {
   "text140": "存档格式不正确"
 };
 
-/* 十站主线：首站保留已试玩标杆，后九站独立技巧和六段节奏。 */
+/* 十站主线：首站保留教学标杆，后九站各自的挑战与节奏。 */
 const journeySkill=(id,name,knots)=>({id,name,steps:knots.map(([z,lane,action])=>({z,lane,action}))});
 export const JOURNEY_LEVELS = [
  {len:630,speed:10.5,background:'bookJourney1',panel:0,ground:'#d7d4b5',road:'#cfc5a3',lane:'#f5edcf',intro:'湖风来了，沿着堤岸收鸭蛋',practice:'湖堤横石要上滑，长线鸭蛋别漏下',relief:'湖面开阔起来，沿堤歇一口气',finish:'把一阵湖风带回金陵',clearTitle:'湖光收好，继续向前',skills:[journeySkill('lake-line','一线湖光',[[220,1,'lane'],[243,0,'lane'],[266,1,'lane']]),journeySkill('lake-hop','荷风连跃',[[350,1,'jump'],[376,1,'jump'],[402,1,'jump']])]},
@@ -462,23 +504,47 @@ export const JOURNEY_LEVELS = [
  {len:858,speed:13,background:'bookJourney3',panel:2,ground:'#afb8a5',road:'#80928e',lane:'#eee3ba',intro:'江风来了，把一路学会的动作带上桥',practice:'前面是检修路障，跳滑换道都用得上',relief:'江面开阔起来，最后一段把脚步放稳',finish:'过江啦，十站金陵都在这一趟',clearTitle:'过江成功！十站金陵，一路相逢',skills:[journeySkill('bridge-cross','过江四式',[[217,1,'jump'],[239,0,'lane'],[259,0,'slide'],[285,0,'double']]),journeySkill('bridge-finish','金陵归程',[[348,1,'double'],[372,0,'lane'],[395,0,'jump'],[416,0,'slide']])]},
 ];
 export const JOURNEY_COPY={clearGoal:'抵达终点',gate:'灯火',seal:' · 印章到手！',firstClear:'第一站跑通了，金陵还很长',safe:'道稳过',double:'二段跳'};
+// 主线路线按秒编排后换算距离；动作时间不会被关卡长度抵消。
 export function buildJourneyPlan(index,variant=0){
  if(index===0)return MOBILE.benchmark;
- const source=JOURNEY_LEVELS[index-1],factor=source.len/600,mirror=variant%2?-1:1,z=value=>Math.round(value*factor);
- const skills=source.skills.map(s=>({...s,steps:s.steps.map(step=>({...step,z:z(step.z),lane:step.lane*mirror}))}));
- const practice=[{z:z(112),lane:0,type:'low'},{z:z(158),lane:mirror,type:'high'}];
- const obstacles=[...practice,...skills.flatMap(s=>s.steps.map(step=>({z:step.z,lane:step.action==='lane'?(step.lane===mirror?0:mirror):step.lane,type:step.action==='lane'?'full':step.action==='slide'?'high':'low',skillId:s.id})))];
- return {...MOBILE.benchmark,...source,collectTarget:MOBILE.collectTargets[index],safeLane:-mirror,variant,
-  skills,obstacles,cueWords:{...MOBILE.benchmark.cueWords,actions:{jump:'跳',slide:'滑',double:JOURNEY_COPY.double}},
-  rewards:{from:28,to:source.len-36,every:32,count:5,gap:1.8,height:.55},
-  flight:{z:z(474),gap:2,count:3,height:3.1,lane:0},relicSpots:[z(166),z(452),z(542)],
-  gates:[100,190,300,425,540,586].map(z),
-  beats:[
-   {from:0,to:z(110),name:'引入',cue:source.intro},
-   {from:z(110),to:z(190),name:'练习',cue:source.practice},
-   {from:z(190),to:z(300),name:'变化',skill:skills[0].id},
-   {from:z(300),to:z(430),name:'压力',skill:skills[1].id},
-   {from:z(430),to:z(540),name:'舒缓',cue:source.relief},
-   {from:z(540),to:source.len+1,name:'收束',cue:source.finish}],
+ const source=JOURNEY_LEVELS[index-1],speed=EXPERIENCE.speeds[index],mirror=variant%2?-1:1;
+ const z=t=>Math.round(t*speed),safeLane=-mirror;
+ const actionSets=[[],['lane','jump','lane'],['jump','jump','jump'],['jump','slide','jump'],['lane','jump','lane'],['slide','jump','lane'],['lane','lane','slide'],['lane','jump','lane'],['jump','slide','jump'],['jump','lane','slide','jump']];
+ const actions=actionSets[index],basicSteps=[];
+ const add=(t,lane,action,block=true)=>basicSteps.push({z:z(t),lane:lane*mirror,action,block});
+ // 开阔练习与收束段必须主动选道；后段提高组合长度。
+ const times=index>=6?[9.5,11.8,14.1,16.4]:[10,13,16];
+ times.forEach((t,i)=>add(t,[-1,0,1,0][i],actions[i%actions.length]));
+ add(18,-1,'lane',false);
+ const skills=source.skills.map((s,k)=>({...s,steps:s.steps.map((step,i)=>({...step,z:z((k?36:20)+i*2.5),lane:step.lane*mirror}))}));
+ for(const start of [20,36]){
+   const n=index<3?2:3;
+   for(let i=0;i<n;i++)add(start+i*2.5,-1,index===1?'lane':index===2?'jump':i%2?'slide':'jump',false);
+ }
+ const finalTimes=index>=6?[50.8,52.7,54.6,56.5]:[51,54,57];
+ finalTimes.forEach((t,i)=>add(t,[0,1,-1,0][i],actions[i%actions.length]));
+ if(index>=6)add(58,-1,'lane',false);
+ const obstacles=[];
+ for(const step of basicSteps){
+   if(step.block)for(const lane of [-1,0,1])if(lane!==step.lane)obstacles.push({z:step.z,lane,type:'full'});
+   if(step.action!=='lane')obstacles.push({z:step.z,lane:step.lane,type:step.action==='slide'?'high':'low'});
+ }
+ for(const skill of skills)for(const step of skill.steps)obstacles.push({z:step.z,lane:step.action==='lane'?(step.lane===mirror?0:mirror):step.lane,type:step.action==='lane'?'full':step.action==='slide'?'high':'low',skillId:skill.id});
+ const beat=(a,b,name,cue,mult=1,skill)=>({from:z(a),to:z(b),name,cue,speedMul:mult,skill});
+ return {...MOBILE.benchmark,...source,len:z(60),speed,safeLane,variant,skills,obstacles,basicSteps,
+  challenge:EXPERIENCE.challenges[index],collectTarget:MOBILE.collectTargets[index],
+  cueWords:{...MOBILE.benchmark.cueWords,actions:{jump:'跳',slide:'滑',double:JOURNEY_COPY.double}},
+  rewards:{from:z(2),to:z(59),every:z(2),count:5,gap:1.8,height:.55},
+  flight:{z:z(47),gap:2,count:3,height:3.1,lane:0},relicSpots:[z(7),z(31),z(48)],
+  gates:[8,18,29,34,45,58].map(z),
+  beats:[beat(0,8,'引入',source.intro,.95),beat(8,18,'练习',source.practice),
+   beat(18,29,'变化',source.practice,1.05,skills[0].id),beat(29,34,'舒缓',source.relief,.95),
+   beat(34,45,'压力',source.practice,1.05,skills[1].id),beat(45,50,'舒缓',source.relief,.95),
+   beat(50,58,index===9?'过江冲刺':'组合',source.finish,index===9?1.05:1),beat(58,61,'收束',source.finish)],
  };
+}
+export function journeyLaneAt(plan,distance){
+ let lane=plan.safeLane;
+ for(const step of plan.basicSteps||[])if(distance>=step.z-plan.speed*.95)lane=step.lane;else break;
+ return lane;
 }

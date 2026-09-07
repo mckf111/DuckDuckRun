@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { PLAYER_VISIBLE_NOTICE_CONTRACT } from '../src/legal.js';
+import { PLAYER_VISIBLE_NOTICE_CONTRACT, AI_MODELS, AI_CREATION_LINE, AI_FINISH_LINE } from '../src/legal.js';
 import { includeReleaseAsset } from './release_assets.mjs';
 
 const defaultRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -229,6 +229,7 @@ export function buildAssetSbom(root=defaultRoot){
   return {
     schema:'duckduckrun-asset-sbom/v1',
     generated_at:'2026-09-07',
+    project_creation_credit:{creation:AI_CREATION_LINE,finalization:AI_FINISH_LINE,models:AI_MODELS,provenance:'Project collaboration confirmed by the author on 2026-09-07; model websites verify names, not individual asset origins. Per-file historical evidence remains separate.'},
     scope:'All runtime images, icons, fonts and synthesized audio source. Inventory is distinct from approval for publication.',
     release_review:{
       status:'registered',

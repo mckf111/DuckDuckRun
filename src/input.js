@@ -12,6 +12,7 @@ export function createInputController(){
   const background=()=>{cancel();pauseRun();flushSave();suspendAudio();};
   on(window,'keydown',e=>{
     if(e.isComposing||e.keyCode===229||e.repeat)return;
+    if(e.key==='Escape'&&document.querySelector?.('dialog[open]'))return;
     const element=e.target;
     if(element?.closest?.('input,textarea,select,[contenteditable="true"]'))return;
     unlockAudio();
