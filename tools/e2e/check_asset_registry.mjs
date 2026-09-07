@@ -78,5 +78,5 @@ export function checkAssetRegistry(root=defaultRoot, registryPath=join(root, 'do
 const isMain = process.argv[1] && resolve(process.argv[1]) === resolve(fileURLToPath(import.meta.url));
 if(isMain){
   const {registry, governed} = checkAssetRegistry();
-  console.log(`PASS | 素材工程登记：磁盘反查 ${governed.length}/${registry.assets.length} 条唯一登记且哈希一致；待审 ${registry.assets.filter(a=>a.review_status!=='approved').length} 项，并非公开发布授权`);
+  console.log(`PASS | 素材工程登记：磁盘反查 ${governed.length}/${registry.assets.length} 条唯一登记且哈希一致；随包发布待审 ${registry.assets.filter(a=>a.release_included&&a.review_status!=='approved').length} 项；工程复核不替代法律意见`);
 }

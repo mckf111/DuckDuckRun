@@ -60,7 +60,7 @@ validate_manifest() {
   local manifest="$1"
   local expected="$2"
   [[ -f "$manifest" ]] || fail "缺少构建清单：$manifest"
-  node -e 'const m=require(process.argv[1]); if(m.distribution==="internal-preview" || m.pendingAssetReviews>0)process.exit(1)' "$manifest" || fail "内部试玩制品或素材待审制品不能发布。"
+  node -e 'const m=require(process.argv[1]); if(m.distribution!=="production" || m.pendingAssetReviews!==0)process.exit(1)' "$manifest" || fail "内部试玩制品、素材待审制品或缺少正式审核信息的制品不能发布。"
   local actual path
   actual="$(read_manifest_field "$manifest" buildId)" || fail "无法读取 $manifest 的 buildId。"
   path="$(read_manifest_field "$manifest" releasePath)" || fail "无法读取 $manifest 的 releasePath。"
@@ -146,7 +146,7 @@ NODE
 make_dry_run_manifest() {
   local build_id="$1"
   cat >"$POINTER_DIR/dry-run-release-build-info.json" <<EOF
-{"schema":2,"buildId":"$build_id","releasePath":"releases/$build_id/","dryRunPlaceholder":true}
+{"schema":2,"buildId":"$build_id","releasePath":"releases/$build_id/","distribution":"production","pendingAssetReviews":0,"dryRunPlaceholder":true}
 EOF
   printf '%s' "$POINTER_DIR/dry-run-release-build-info.json"
 }
@@ -248,10 +248,10 @@ else
     command -v npm >/dev/null 2>&1 || fail "未找到 npm，无法从源码构建。"
     npm ci
     npm ci --prefix tools/e2e
-    node tools/e2e/node_modules/playwright-core/cli.js install --with-deps chromium
+    node tools/e2e/node_modules/playwright-core/cli.js install --with-deps chromium webkit
     npm run verify
-    npm run test:release
-    if [[ "${RUN_RELEASE_SOAK:-0}" == "1" ]]; then npm run test:release:soak; fi
+    npm run test:release:production
+    SOAK_DURATION_MS=1200000 npm run test:release:soak
     ARTIFACT_DIR="$ROOT/dist"
     BUILD_ID="$(validate_artifact "$ARTIFACT_DIR")"
   fi

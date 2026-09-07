@@ -24,7 +24,9 @@
     "test:release:wechat": "node tools/e2e/release_wechat_smoke.mjs",
     "test:release:memory": "node tools/e2e/release_restart_memory.mjs",
     "test:release:soak": "node tools/e2e/release_soak.mjs",
-    "test:release": "npm run build && npm run test:dist && npm run test:size && npm run test:assets && npm run test:release:transport && npm run test:release:cross && npm run test:release:wechat && npm run test:release:memory",
+    "test:release:artifact": "npm run test:dist && npm run test:size && npm run test:assets && npm run test:release:transport && npm run test:release:cross && npm run test:release:wechat && npm run test:release:memory",
+    "test:release": "npm run build && npm run test:release:artifact",
+    "test:release:production": "npm run build:production && npm run test:release:artifact",
     "test": "npm run check && npm run test:logic && npm run test:save && npm run test:playability && npm run test:browser",
     "verify": "npm run typecheck && npm run test:contracts && npm test && npm run build && npm run test:dist && npm run test:size"
   }

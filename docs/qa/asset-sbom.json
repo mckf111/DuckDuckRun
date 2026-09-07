@@ -44,14 +44,26 @@
       "downloaded_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/dc/Music_Stage_of_Sun_Yat-sen_Mauloleum.jpg/960px-Music_Stage_of_Sun_Yat-sen_Mauloleum.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
       "downloaded_sha256": "6fb56a4aec2fb88a564695a7841cfada6d402508d33c0f66a3d2f8ef345f1263",
       "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
-      "release_status": "source and image checked; public-release approval pending",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Attribution, license link and change notice; local derivative remains under the same CC BY-SA license.",
       "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
       "reviewer": "Codex source and image check; not a human publication approval",
       "reviewed_at": "2026-09-07",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "ea7a05acb79f33bf45d132335d9b36a556cbffb51233211535fd452363c4f8ab",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/album/REVIEW.json"
+        ],
+        "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "source record retained; complete publication review of license and actual use"
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     {
       "id": "album_bao",
@@ -68,14 +80,26 @@
       "downloaded_url": "https://upload.wikimedia.org/wikipedia/commons/1/12/Xiaolongbaozi_%28Nanjing%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
       "downloaded_sha256": "38a076e56132c2dcdd6596f26f6d3be97bfd68a87715a1f7f1e7b10dcef3bc3f",
       "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
-      "release_status": "source and image checked; public-release approval pending",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Attribution, license link and change notice; local derivative remains under the same CC BY-SA license.",
       "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
       "reviewer": "Codex source and image check; not a human publication approval",
       "reviewed_at": "2026-09-07",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "d51dd1746dfd7e384956daa1cae0c0117b927d9392dc50e6b82b64b7163416fb",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/album/REVIEW.json"
+        ],
+        "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "source record retained; complete publication review of license and actual use"
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     {
       "id": "album_baochuan",
@@ -92,14 +116,26 @@
       "downloaded_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/79/Nanjing_Treasure_Boat_-_P1070978.JPG/960px-Nanjing_Treasure_Boat_-_P1070978.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
       "downloaded_sha256": "4d5bf6f36a272163176d88b0ace65d69537a42754fe15acb9b00c918d76fc5a4",
       "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
-      "release_status": "source and image checked; public-release approval pending",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Attribution, license link and change notice; local derivative remains under the same CC BY-SA license.",
       "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
       "reviewer": "Codex source and image check; not a human publication approval",
       "reviewed_at": "2026-09-07",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "59f428a8850b2594e3e3067ef212f3722970a484bfba40d83c175a812749f459",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/album/REVIEW.json"
+        ],
+        "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "source record retained; complete publication review of license and actual use"
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     {
       "id": "album_baoenta",
@@ -116,14 +152,26 @@
       "downloaded_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/48/2024Apr_-_Glass_Pagoda_of_Nanjing_-_img_01.jpg/960px-2024Apr_-_Glass_Pagoda_of_Nanjing_-_img_01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
       "downloaded_sha256": "f17df674433eaf1672559382210d2275e40569912f9084c838411ba524c8fe1a",
       "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
-      "release_status": "source and image checked; public-release approval pending",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Follow the listed license; retain author, source and processing notice.",
       "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
       "reviewer": "Codex source and image check; not a human publication approval",
       "reviewed_at": "2026-09-07",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "6aef1b79b5a8612c69c9b25c3fe950d1ec4483c90faf391599f3812231febf78",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/album/REVIEW.json"
+        ],
+        "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "source record retained; complete publication review of license and actual use"
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     {
       "id": "album_bean",
@@ -140,14 +188,26 @@
       "downloaded_url": "https://upload.wikimedia.org/wikipedia/commons/2/27/%E8%B5%A4%E8%B1%86%E9%85%92%E9%85%BF%E5%85%83%E5%AE%B5.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
       "downloaded_sha256": "8b182e1bdcde91538f65a1c72925f28366ffe400eeafdaa941068b43c2846270",
       "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
-      "release_status": "source and image checked; public-release approval pending",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Attribution, license link and change notice; local derivative remains under the same CC BY-SA license.",
       "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
       "reviewer": "Codex source and image check; not a human publication approval",
       "reviewed_at": "2026-09-07",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "ac7c276857b15f6d62f90a84d8e5f67cfcde3149e4d3382287756a8e64e5e02b",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/album/REVIEW.json"
+        ],
+        "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "source record retained; complete publication review of license and actual use"
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     {
       "id": "album_book",
@@ -164,14 +224,26 @@
       "downloaded_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c3/Facade_of_Libraire_Avant-Garde%28Wutai_Mountain_branch%29.jpg/1280px-Facade_of_Libraire_Avant-Garde%28Wutai_Mountain_branch%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
       "downloaded_sha256": "65bc1da99ba92a6e7cdc37919a62b6c143df1b60a0a629c0f1e7cea62287765e",
       "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
-      "release_status": "source and image checked; public-release approval pending",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Attribution, license link and change notice; local derivative remains under the same CC BY-SA license.",
       "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
       "reviewer": "Codex source and image check; not a human publication approval",
       "reviewed_at": "2026-09-07",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "c31a2a0fe628bac05782f58e0661b3995b043712262ce9cec33c8429d5868849",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/album/REVIEW.json"
+        ],
+        "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "source record retained; complete publication review of license and actual use"
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     {
       "id": "album_chengzhuan",
@@ -188,14 +260,26 @@
       "downloaded_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/55/Nanjing_City_Wall_Brick_with_Maker%27s_Mark_%2810150966183%29.jpg/960px-Nanjing_City_Wall_Brick_with_Maker%27s_Mark_%2810150966183%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
       "downloaded_sha256": "fd8e45b9b2ad60bf5e8e006e67c1eea8227ccf51a8697700f6a370206abff935",
       "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
-      "release_status": "source and image checked; public-release approval pending",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Follow the listed license; retain author, source and processing notice.",
       "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
       "reviewer": "Codex source and image check; not a human publication approval",
       "reviewed_at": "2026-09-07",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "dfa75fc7b97e1ee673d18085b8df6575be311f8db3edef6660845ebaeb802dd9",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/album/REVIEW.json"
+        ],
+        "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "source record retained; complete publication review of license and actual use"
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     {
       "id": "album_cloud",
@@ -212,14 +296,26 @@
       "downloaded_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/52/Drachenrobe-Qianlong.JPG/960px-Drachenrobe-Qianlong.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
       "downloaded_sha256": "7cc3f47815684e4599da2de4deae8c003b68aff120e0f35a55e2c7fdc56e44f3",
       "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
-      "release_status": "source and image checked; public-release approval pending",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Attribution, license link and change notice; local derivative remains under the same CC BY-SA license.",
       "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
       "reviewer": "Codex source and image check; not a human publication approval",
       "reviewed_at": "2026-09-07",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "3745b82d2e80af7147c25a2955a6012685379a7b1ddd69329bcd9f1ebea2f3fb",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/album/REVIEW.json"
+        ],
+        "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "source record retained; complete publication review of license and actual use"
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     {
       "id": "album_duck",
@@ -236,14 +332,26 @@
       "downloaded_url": "https://upload.wikimedia.org/wikipedia/commons/0/0d/Nanjing_Salted_Duck.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
       "downloaded_sha256": "ce2ed41e261bb34285418849464b5e671e8a9977e8e8beb2db891ab4eb3e76c3",
       "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
-      "release_status": "source and image checked; public-release approval pending",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Attribution, license link and change notice; local derivative remains under the same CC BY-SA license.",
       "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
       "reviewer": "Codex source and image check; not a human publication approval",
       "reviewed_at": "2026-09-07",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "5e8e55cabe728f4171ee5153c69bf685c83b8d6d6e7a0972550beba8d3a46c6e",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/album/REVIEW.json"
+        ],
+        "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "source record retained; complete publication review of license and actual use"
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     {
       "id": "album_egg",
@@ -260,14 +368,26 @@
       "downloaded_url": "https://upload.wikimedia.org/wikipedia/commons/a/a7/W%C3%A0ng_j%C4%ABd%C3%A0n.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
       "downloaded_sha256": "976f8a46ec93f98c629a34a7d14ab01e72fee84ec6a6a7604fe9fdd0db8c813e",
       "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
-      "release_status": "source and image checked; public-release approval pending",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Attribution, license link and change notice; local derivative remains under the same CC BY-SA license.",
       "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
       "reviewer": "Codex source and image check; not a human publication approval",
       "reviewed_at": "2026-09-07",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "6a9dc863613630bbaea097d6d96b1e2c7d7bb91832d6b83211b935b37ff8ed00",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/album/REVIEW.json"
+        ],
+        "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "source record retained; complete publication review of license and actual use"
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     {
       "id": "album_elephant",
@@ -284,14 +404,26 @@
       "downloaded_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b4/Stone_Elephant_Road_%28Ming_Xiaoling%29_1.jpg/960px-Stone_Elephant_Road_%28Ming_Xiaoling%29_1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
       "downloaded_sha256": "c42cefd87cf5c0fca57f841407cdc86039cd901478f6a2d27dae7f4700b272e9",
       "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
-      "release_status": "source and image checked; public-release approval pending",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Attribution, license link and change notice; local derivative remains under the same CC BY-SA license.",
       "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
       "reviewer": "Codex source and image check; not a human publication approval",
       "reviewed_at": "2026-09-07",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "325454a64bfefb4c335228d096769d882c2eb43fc13cc1c3c22bab041a06392e",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/album/REVIEW.json"
+        ],
+        "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "source record retained; complete publication review of license and actual use"
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     {
       "id": "album_fans",
@@ -308,14 +440,26 @@
       "downloaded_url": "https://upload.wikimedia.org/wikipedia/commons/d/d3/Duck_blood_and_vermicelli_soup_%2820150819124849%29.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
       "downloaded_sha256": "3d81962d46122bef9b41393b79a73ec7f2e0befafa500bc2bea0715c7de95153",
       "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
-      "release_status": "source and image checked; public-release approval pending",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Attribution, license link and change notice; local derivative remains under the same CC BY-SA license.",
       "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
       "reviewer": "Codex source and image check; not a human publication approval",
       "reviewed_at": "2026-09-07",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "6d654714296d2f94a134f11671256dfda221cd18d25b1551d79ad72a5f8b7f0a",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/album/REVIEW.json"
+        ],
+        "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "source record retained; complete publication review of license and actual use"
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     {
       "id": "album_guihua",
@@ -332,14 +476,26 @@
       "downloaded_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0b/Osmanthus_fragrans_flowers.jpg/960px-Osmanthus_fragrans_flowers.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
       "downloaded_sha256": "1ae3553db966328c7391f91aefc3d573c1b1171b482ecee46d58dfce097bc5eb",
       "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
-      "release_status": "source and image checked; public-release approval pending",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Attribution, license link and change notice; local derivative remains under the same CC BY-SA license.",
       "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
       "reviewer": "Codex source and image check; not a human publication approval",
       "reviewed_at": "2026-09-07",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "2af8c98cc26b74d065361cfd1d6705da01c9fe8cb41f768ed3dbf061a1cc69bd",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/album/REVIEW.json"
+        ],
+        "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "source record retained; complete publication review of license and actual use"
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     {
       "id": "album_hufengdie",
@@ -356,14 +512,26 @@
       "downloaded_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/80/Leuhd204.jpg/960px-Leuhd204.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
       "downloaded_sha256": "489b386e47e8b2cd60e4ef87b00c31871716226b60b7c5bd998caca3deee7a66",
       "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
-      "release_status": "source and image checked; public-release approval pending",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Follow the listed license; retain author, source and processing notice.",
       "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
       "reviewer": "Codex source and image check; not a human publication approval",
       "reviewed_at": "2026-09-07",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "748377c88f2f1dbc4ba5cbe9330d6725d3bb2558603e19dfde861aed56165c23",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/album/REVIEW.json"
+        ],
+        "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "source record retained; complete publication review of license and actual use"
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     {
       "id": "album_jiangtun",
@@ -380,14 +548,26 @@
       "downloaded_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5f/Yangtze_finless_porpoise%2C_12_February_2008a.jpg/960px-Yangtze_finless_porpoise%2C_12_February_2008a.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
       "downloaded_sha256": "fe6d96ca9997d19c35ca5f733362053b2404f584d6d47b405bbde91821cdb550",
       "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
-      "release_status": "source and image checked; public-release approval pending",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Follow the listed license; retain author, source and processing notice.",
       "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
       "reviewer": "Codex source and image check; not a human publication approval",
       "reviewed_at": "2026-09-07",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "bb46c332103e03a8cf6204a04d9efcf29b0d235610eb6b404c8df9c9e9302bb7",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/album/REVIEW.json"
+        ],
+        "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "source record retained; complete publication review of license and actual use"
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     {
       "id": "album_kejing",
@@ -404,14 +584,26 @@
       "downloaded_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/88/Kejingchu_in_Nanjing_2012-02.JPG/960px-Kejingchu_in_Nanjing_2012-02.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
       "downloaded_sha256": "cc8c3fe912edc3391b80ba82c2019aa957accc8a60a5f0992c2da8e8d45d899b",
       "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
-      "release_status": "source and image checked; public-release approval pending",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Attribution, license link and change notice; local derivative remains under the same CC BY-SA license.",
       "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
       "reviewer": "Codex source and image check; not a human publication approval",
       "reviewed_at": "2026-09-07",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "2174e995aace6c9aee5b36335f99d37dba94de16240fa599af907e6e93ac828d",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/album/REVIEW.json"
+        ],
+        "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "source record retained; complete publication review of license and actual use"
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     {
       "id": "album_lamp",
@@ -428,14 +620,26 @@
       "downloaded_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b8/Night_of_Qinhuai_lantern_fair_2019_-_decorations.jpg/960px-Night_of_Qinhuai_lantern_fair_2019_-_decorations.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
       "downloaded_sha256": "81e01e074bfbdf49297e3304d5d5a27be5d9c0a7d79e9b1f9c842ff90c0cdf97",
       "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
-      "release_status": "source and image checked; public-release approval pending",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Attribution, license link and change notice; local derivative remains under the same CC BY-SA license.",
       "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
       "reviewer": "Codex source and image check; not a human publication approval",
       "reviewed_at": "2026-09-07",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "07a77f5737a25fc2d8187731e756c00de6e374aea1dffa07c19e8b84db68ae69",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/album/REVIEW.json"
+        ],
+        "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "source record retained; complete publication review of license and actual use"
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     {
       "id": "album_leaf",
@@ -452,14 +656,26 @@
       "downloaded_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3a/Foglia_di_platanus_x_acerifolia.jpg/250px-Foglia_di_platanus_x_acerifolia.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
       "downloaded_sha256": "73e054cb0a420c0e7dd227283b16e0f66f0e9f2abaf63c4ef7bc1cc602998ace",
       "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
-      "release_status": "source and image checked; public-release approval pending",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Attribution, license link and change notice; local derivative remains under the same CC BY-SA license.",
       "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
       "reviewer": "Codex source and image check; not a human publication approval",
       "reviewed_at": "2026-09-07",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "8b9f1ed5d186ede78c1ae456ab34ea361a66c4751aba9c1ac74121b2807dd9bd",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/album/REVIEW.json"
+        ],
+        "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "source record retained; complete publication review of license and actual use"
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     {
       "id": "album_luhao",
@@ -476,14 +692,26 @@
       "downloaded_url": "https://upload.wikimedia.org/wikipedia/commons/9/93/Artemisia_selengensis_bundles.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
       "downloaded_sha256": "996130733a8668ae8fd891702f9c34b6fc8deefc5f6f1ba3ccfa1220b020413c",
       "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
-      "release_status": "source and image checked; public-release approval pending",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Follow the listed license; retain author, source and processing notice.",
       "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
       "reviewer": "Codex source and image check; not a human publication approval",
       "reviewed_at": "2026-09-07",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "d74d32dd6355dd68b067bd97ea0d9b487c83ada409aae6f4fcb40e4fa7a777b4",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/album/REVIEW.json"
+        ],
+        "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "source record retained; complete publication review of license and actual use"
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     {
       "id": "album_nanyanjing",
@@ -500,14 +728,26 @@
       "downloaded_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/26/Full_view_of_Nanjing_Eye_Pedestrian_Bridge.jpg/500px-Full_view_of_Nanjing_Eye_Pedestrian_Bridge.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
       "downloaded_sha256": "073c5e2db5a800db4883983661ccd441e49df534a8948025efd0a9f9e34dcc46",
       "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
-      "release_status": "source and image checked; public-release approval pending",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Attribution, license link and change notice; local derivative remains under the same CC BY-SA license.",
       "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
       "reviewer": "Codex source and image check; not a human publication approval",
       "reviewed_at": "2026-09-07",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "8148e3dfa63029bb0c17fbee1290e645d0a338219b76fcdc55453978528080f0",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/album/REVIEW.json"
+        ],
+        "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "source record retained; complete publication review of license and actual use"
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     {
       "id": "album_pibie",
@@ -524,14 +764,26 @@
       "downloaded_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fa/Tomb_of_Xiao_Jing_-_Bixie.JPG/960px-Tomb_of_Xiao_Jing_-_Bixie.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
       "downloaded_sha256": "6914fcd4a81f442ce5028652d788f0c807beca68206635af455b205d3ceb8d12",
       "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
-      "release_status": "source and image checked; public-release approval pending",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Attribution, license link and change notice; local derivative remains under the same CC BY-SA license.",
       "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
       "reviewer": "Codex source and image check; not a human publication approval",
       "reviewed_at": "2026-09-07",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "89d1e24d669a0c88d016631ea517f690495da05dbdf7b420104a0acc3b454a00",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/album/REVIEW.json"
+        ],
+        "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "source record retained; complete publication review of license and actual use"
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     {
       "id": "album_plum",
@@ -548,14 +800,26 @@
       "downloaded_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/13/2019%E5%8D%97%E4%BA%AC%E6%A2%85%E8%8A%B1%E5%B1%B1%E6%A2%85%E8%8A%B102.jpg/960px-2019%E5%8D%97%E4%BA%AC%E6%A2%85%E8%8A%B1%E5%B1%B1%E6%A2%85%E8%8A%B102.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
       "downloaded_sha256": "c47cd5423ae0c21c2b71502df1335d93a3272e9827a124aed8e9d59e7e55e49b",
       "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
-      "release_status": "source and image checked; public-release approval pending",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Attribution, license link and change notice; local derivative remains under the same CC BY-SA license.",
       "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
       "reviewer": "Codex source and image check; not a human publication approval",
       "reviewed_at": "2026-09-07",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "097491fe2701637b0437fd94d01d73d9dd3c58c2395f3294611929faa228fc34",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/album/REVIEW.json"
+        ],
+        "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "source record retained; complete publication review of license and actual use"
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     {
       "id": "album_pot",
@@ -572,14 +836,26 @@
       "downloaded_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/46/Beef_potstickers.jpg/960px-Beef_potstickers.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
       "downloaded_sha256": "24c5aebac27cfe2656734b6484135a49a7b1237bfe2b813de6b879bccd882e21",
       "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
-      "release_status": "source and image checked; public-release approval pending",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Follow the listed license; retain author, source and processing notice.",
       "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
       "reviewer": "Codex source and image check; not a human publication approval",
       "reviewed_at": "2026-09-07",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "af9b3ba0710b94ca2d38c18393de7f8216bc6262fba5b8f342222c57d85d541b",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/album/REVIEW.json"
+        ],
+        "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "source record retained; complete publication review of license and actual use"
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     {
       "id": "album_root",
@@ -596,14 +872,26 @@
       "downloaded_url": "https://upload.wikimedia.org/wikipedia/commons/2/2c/%E7%B3%96%E8%97%95.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
       "downloaded_sha256": "8234818edd6d25b7b44e9b9081464d63d534fa41496b3bd1468fcb7292ad2c7d",
       "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
-      "release_status": "source and image checked; public-release approval pending",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Attribution, license link and change notice; local derivative remains under the same CC BY-SA license.",
       "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
       "reviewer": "Codex source and image check; not a human publication approval",
       "reviewed_at": "2026-09-07",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "bb0a14b01c0baed42bb6938390584998ad248c54e2faf81a8b05c5fb61fec123",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/album/REVIEW.json"
+        ],
+        "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "source record retained; complete publication review of license and actual use"
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     {
       "id": "album_sakura",
@@ -620,14 +908,26 @@
       "downloaded_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4e/%E5%8D%97%E4%BA%AC%E7%8E%84%E6%AD%A6%E5%8C%BA%E9%B8%A1%E9%B8%A3%E5%AF%BA%E8%B7%AF%E6%A8%B1%E8%8A%B1_-_panoramio.jpg/960px-%E5%8D%97%E4%BA%AC%E7%8E%84%E6%AD%A6%E5%8C%BA%E9%B8%A1%E9%B8%A3%E5%AF%BA%E8%B7%AF%E6%A8%B1%E8%8A%B1_-_panoramio.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
       "downloaded_sha256": "bd95be443b7443e285aa76619149cbbd80d153d09c392ad6ef4a20e0f0371c6c",
       "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
-      "release_status": "source and image checked; public-release approval pending",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Follow the listed license; retain author, source and processing notice.",
       "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
       "reviewer": "Codex source and image check; not a human publication approval",
       "reviewed_at": "2026-09-07",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "e86545759f45d3c097ae56d5b01d864f8455f197ec2a0269165c3bd8813cf34e",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/album/REVIEW.json"
+        ],
+        "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "source record retained; complete publication review of license and actual use"
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     {
       "id": "album_stone",
@@ -644,14 +944,26 @@
       "downloaded_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d7/%E5%8D%97%E4%BA%AC%E9%9B%A8%E8%8A%B1%E5%8F%B0%E9%9B%A8%E8%8A%B1%E7%9F%B3.jpg/960px-%E5%8D%97%E4%BA%AC%E9%9B%A8%E8%8A%B1%E5%8F%B0%E9%9B%A8%E8%8A%B1%E7%9F%B3.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
       "downloaded_sha256": "1c29f8ccac642e9debbb403d34916c1e505c25730611bc4a47a83c45f2b76e1a",
       "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
-      "release_status": "source and image checked; public-release approval pending",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Attribution, license link and change notice; local derivative remains under the same CC BY-SA license.",
       "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
       "reviewer": "Codex source and image check; not a human publication approval",
       "reviewed_at": "2026-09-07",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "6c5184ee4814a9147e06e66428047c8c693fd925bd35f3206c5bb7b5bd47d52b",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/album/REVIEW.json"
+        ],
+        "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "source record retained; complete publication review of license and actual use"
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     {
       "id": "album_taro",
@@ -668,14 +980,26 @@
       "downloaded_url": "https://upload.wikimedia.org/wikipedia/commons/c/cd/Tangyumiao.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
       "downloaded_sha256": "a470ae59561bd6ec411d8721ee9285f4df0c401cfc381edc1885c4b12c7359be",
       "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
-      "release_status": "source and image checked; public-release approval pending",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Attribution, license link and change notice; local derivative remains under the same CC BY-SA license.",
       "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
       "reviewer": "Codex source and image check; not a human publication approval",
       "reviewed_at": "2026-09-07",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "352686b677e22b06ef968ed426bb0b0440efbc73a3f3f12721d462c370ac261d",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/album/REVIEW.json"
+        ],
+        "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "source record retained; complete publication review of license and actual use"
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     {
       "id": "album_wufan",
@@ -692,14 +1016,26 @@
       "downloaded_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/be/%E4%B9%8C%E7%B1%B3%E9%A5%AD_20240505.jpg/1280px-%E4%B9%8C%E7%B1%B3%E9%A5%AD_20240505.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
       "downloaded_sha256": "c2a023e00bae352f9d735ad9f84fa3d737af98aa21675e247c538c301068ab21",
       "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
-      "release_status": "source and image checked; public-release approval pending",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Attribution, license link and change notice; local derivative remains under the same CC BY-SA license.",
       "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
       "reviewer": "Codex source and image check; not a human publication approval",
       "reviewed_at": "2026-09-07",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "89663d5db060795213b7e4df5ae716e2b1997dae59b23b52a53f331b9a9868bc",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/album/REVIEW.json"
+        ],
+        "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "source record retained; complete publication review of license and actual use"
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     {
       "id": "album_yinghuo",
@@ -716,14 +1052,26 @@
       "downloaded_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d5/%EB%B0%98%EB%94%A7%EB%B6%88%EC%9D%B4.jpg/250px-%EB%B0%98%EB%94%A7%EB%B6%88%EC%9D%B4.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
       "downloaded_sha256": "3546ca2b7386f86c036742ed7e63f180cd7e4cd897c9d9619ee3c51f5f57ddd6",
       "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
-      "release_status": "source and image checked; public-release approval pending",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Attribution, license link and change notice; local derivative remains under the same CC BY-SA license.",
       "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
       "reviewer": "Codex source and image check; not a human publication approval",
       "reviewed_at": "2026-09-07",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "e53d61a0c33aafc5274f4d22a6b55ea673f36503c8c70deae44fec8253007682",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/album/REVIEW.json"
+        ],
+        "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "source record retained; complete publication review of license and actual use"
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     {
       "id": "album_zifeng",
@@ -740,14 +1088,26 @@
       "downloaded_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/88/Zifeng_Tower_in_2017.jpg/960px-Zifeng_Tower_in_2017.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
       "downloaded_sha256": "8bb09397ea1cf4007a26306f6da5d72f3d9a4210aa1d45f155821618138e23ac",
       "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
-      "release_status": "source and image checked; public-release approval pending",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Attribution, license link and change notice; local derivative remains under the same CC BY-SA license.",
       "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
       "reviewer": "Codex source and image check; not a human publication approval",
       "reviewed_at": "2026-09-07",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "1b3bd2e7fe0e62da1f9a552d46ebbabef41e99ce9ef16693401ac43a05865c91",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/album/REVIEW.json"
+        ],
+        "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "source record retained; complete publication review of license and actual use"
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     {
       "id": "jinling-brush",
@@ -759,7 +1119,7 @@
       "source_version": "official repository master snapshot downloaded 2026-09-02; exact commit was not recorded",
       "author": "The Ma Shan Zheng Project Authors",
       "license": "OFL-1.1",
-      "release_status": "registered — upstream family, copyright holder, SIL OFL 1.1 notice, SHA-256 and player-visible attribution are present",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Bundle the SIL OFL 1.1 copyright and license notice; do not sell font files by themselves.",
       "downloaded_at": "2026-09-02",
       "sha256": "829082b20613e56094f3d9fbb7d11ab36aeaace482f12b1bddf410cb960ce834",
@@ -767,9 +1127,21 @@
       "attribution_location": "menu:credits (src/legal.js); full notice: assets/fonts/OFL.txt",
       "reviewer": "Codex independent remediation",
       "reviewed_at": "2026-09-02",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "829082b20613e56094f3d9fbb7d11ab36aeaace482f12b1bddf410cb960ce834",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/fonts/OFL.txt"
+        ],
+        "decision": "Retain under bundled OFL; current subset fingerprint fixed; historical upstream revision gap remains disclosed.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "retain after fixed upstream and subset evidence review"
+      "decision": "Retain under bundled OFL; current subset fingerprint fixed; historical upstream revision gap remains disclosed."
     },
     {
       "id": "jinling-kai",
@@ -781,7 +1153,7 @@
       "source_version": "LXGW WenKai Medium v1.522 release",
       "author": "LXGW",
       "license": "OFL-1.1",
-      "release_status": "registered — upstream family, copyright holder, SIL OFL 1.1 notice, SHA-256 and player-visible attribution are present",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Bundle the SIL OFL 1.1 copyright and license notice; do not sell font files by themselves.",
       "downloaded_at": "2026-09-02",
       "sha256": "ea6298f05d75de7b9e767147b60ee8ac7ac65d6eabb9f8c0d265e801c3979764",
@@ -789,9 +1161,21 @@
       "attribution_location": "menu:credits (src/legal.js); full notice: assets/fonts/OFL.txt",
       "reviewer": "Codex independent remediation",
       "reviewed_at": "2026-09-02",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "ea6298f05d75de7b9e767147b60ee8ac7ac65d6eabb9f8c0d265e801c3979764",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/fonts/OFL.txt"
+        ],
+        "decision": "Retain under bundled OFL; current subset fingerprint fixed; historical upstream revision gap remains disclosed.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "retain after fixed upstream and subset evidence review"
+      "decision": "Retain under bundled OFL; current subset fingerprint fixed; historical upstream revision gap remains disclosed."
     },
     {
       "id": "bg_zhonghua",
@@ -803,7 +1187,7 @@
       "source_version": "not recorded in pre-stage-2 repository",
       "author": "Chainwit.",
       "license": "CC BY 4.0",
-      "release_status": "registered — source, author, license, SHA-256 and player-visible attribution are present",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Attribution, license link and change notice where applicable.",
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "9d3ca24f1f71ae963b3f24f1890328f5d6b77971b7dc1a103ece5b8d666bafda",
@@ -811,9 +1195,21 @@
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "9d3ca24f1f71ae963b3f24f1890328f5d6b77971b7dc1a103ece5b8d666bafda",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/img/CREDITS.md"
+        ],
+        "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "source record retained; complete publication review of license and actual use"
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     {
       "id": "assets/game/book-duck.webp",
@@ -824,12 +1220,24 @@
       "author": "AI-assisted project creation; human authorship scope to be reviewed",
       "license": "Platform terms apply; no guarantee of exclusive copyright",
       "modified": "2026-09-06 PNG encoded to WebP; no pixel retouch",
-      "release_status": "registered; NOT approved for public release",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Retain provenance and close rights review before publication",
       "attribution_location": "ASSETS.md; player credits; LICENSE.md",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "3510f55cdfa310e7d990ba740020d05465794786a4fd3b861c3cfe2858dce2ac",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "ASSETS.md"
+        ],
+        "decision": "Project-generated visual with documented provenance; AI assistance disclosed; no exclusive-copyright or official-endorsement claim.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "internal preview; review provenance and rights before public release"
+      "decision": "Project-generated visual with documented provenance; AI assistance disclosed; no exclusive-copyright or official-endorsement claim."
     },
     {
       "id": "assets/game/book-journey-1.webp",
@@ -840,12 +1248,24 @@
       "author": "AI-assisted project creation; human authorship scope to be reviewed",
       "license": "Platform terms apply; no guarantee of exclusive copyright",
       "modified": "2026-09-06 PNG encoded to WebP; no pixel retouch",
-      "release_status": "registered; NOT approved for public release",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Retain provenance and close rights review before publication",
       "attribution_location": "ASSETS.md; player credits; LICENSE.md",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "47563e411d66815b684b63f950ab5aef65bcb12e446cccb6db53036052c7809d",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "ASSETS.md"
+        ],
+        "decision": "Project-generated visual with documented provenance; AI assistance disclosed; no exclusive-copyright or official-endorsement claim.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "internal preview; review provenance and rights before public release"
+      "decision": "Project-generated visual with documented provenance; AI assistance disclosed; no exclusive-copyright or official-endorsement claim."
     },
     {
       "id": "assets/game/book-journey-2.webp",
@@ -856,12 +1276,24 @@
       "author": "AI-assisted project creation; human authorship scope to be reviewed",
       "license": "Platform terms apply; no guarantee of exclusive copyright",
       "modified": "2026-09-06 PNG encoded to WebP; no pixel retouch",
-      "release_status": "registered; NOT approved for public release",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Retain provenance and close rights review before publication",
       "attribution_location": "ASSETS.md; player credits; LICENSE.md",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "dcf5fb7f80a68bac00a67ddea4ca222601a743588c0eb77f0ce360874eda0465",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "ASSETS.md"
+        ],
+        "decision": "Project-generated visual with documented provenance; AI assistance disclosed; no exclusive-copyright or official-endorsement claim.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "internal preview; review provenance and rights before public release"
+      "decision": "Project-generated visual with documented provenance; AI assistance disclosed; no exclusive-copyright or official-endorsement claim."
     },
     {
       "id": "assets/game/book-journey-3.webp",
@@ -872,12 +1304,24 @@
       "author": "AI-assisted project creation; human authorship scope to be reviewed",
       "license": "Platform terms apply; no guarantee of exclusive copyright",
       "modified": "2026-09-06 PNG encoded to WebP; no pixel retouch",
-      "release_status": "registered; NOT approved for public release",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Retain provenance and close rights review before publication",
       "attribution_location": "ASSETS.md; player credits; LICENSE.md",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "8a6ff3e7f5757a6eddfe380845d123098066ddf57be0771bfbed1cd64a30713e",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "ASSETS.md"
+        ],
+        "decision": "Project-generated visual with documented provenance; AI assistance disclosed; no exclusive-copyright or official-endorsement claim.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "internal preview; review provenance and rights before public release"
+      "decision": "Project-generated visual with documented provenance; AI assistance disclosed; no exclusive-copyright or official-endorsement claim."
     },
     {
       "id": "assets/game/book-wall.webp",
@@ -888,28 +1332,54 @@
       "author": "AI-assisted project creation; human authorship scope to be reviewed",
       "license": "Platform terms apply; no guarantee of exclusive copyright",
       "modified": "2026-09-06 PNG encoded to WebP; no pixel retouch",
-      "release_status": "registered; NOT approved for public release",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Retain provenance and close rights review before publication",
       "attribution_location": "ASSETS.md; player credits; LICENSE.md",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "56cdca6ec57b5a17dd3a25c3e032ce127ce393440483b0846e124643ac93ee00",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "ASSETS.md"
+        ],
+        "decision": "Project-generated visual with documented provenance; AI assistance disclosed; no exclusive-copyright or official-endorsement claim.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "internal preview; review provenance and rights before public release"
+      "decision": "Project-generated visual with documented provenance; AI assistance disclosed; no exclusive-copyright or official-endorsement claim."
     },
     {
       "id": "assets/game/duck-atlas.webp",
       "local_path": "assets/game/duck-atlas.webp",
       "sha256": "612ce949a279eb7ae38d9d9467e715c760df6292d09e0d28544c84e142c9a0c2",
-      "category": "legacy_art",
-      "source_url": "legacy project asset; source evidence incomplete",
-      "author": "unverified legacy attribution",
-      "license": "unverified; internal preview only",
-      "modified": "historical transformations not reconstructed",
+      "category": "generated_game_sprite",
+      "source_url": "project generation with Grok; original inputs and generation records recovered",
+      "author": "AI-assisted project creation (Grok); icons derived by project script",
+      "license": "Grok output terms and attribution requirements; public distribution review pending",
+      "modified": "chroma-key removal, frame alignment, WebP encoding; icons resized and framed",
       "release_status": "registered; NOT approved for public release",
       "license_obligation": "Retain provenance and close rights review before publication",
       "attribution_location": "ASSETS.md; player credits; LICENSE.md",
+      "source_version": "c3a475d9e90ed185133cfd2b7cd56f6bf2b58f2b; atlas and obstacles reproduced byte-for-byte 2026-09-07",
+      "processing_record": "tools/assemble_vanguard_art.py; tools/make_icon.py; docs/release/asset-review-2026-09-07.md",
       "review_status": "pending",
+      "publication_review": {
+        "sha256": "612ce949a279eb7ae38d9d9467e715c760df6292d09e0d28544c84e142c9a0c2",
+        "status": "pending",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "ASSETS.md"
+        ],
+        "decision": "Source recovered and atlas bytes reproduced; applicable Grok output permission and attribution remain unresolved.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "replace or obtain original provenance before public release"
+      "decision": "Source recovered and atlas bytes reproduced; applicable Grok output permission and attribution remain unresolved."
     },
     {
       "id": "bg_menu",
@@ -921,7 +1391,7 @@
       "source_version": "not recorded in pre-stage-2 repository",
       "author": "Uyiliu2",
       "license": "CC BY-SA 4.0",
-      "release_status": "registered — source, author, license, SHA-256 and player-visible attribution are present",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Attribution, license link and change notice; the local derivative/copy remains available under the corresponding CC BY-SA license.",
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "1bb4be8123639d6268aa1d522f0fadf39aed8b1f10122ec96379a8f42a841450",
@@ -929,9 +1399,21 @@
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "1bb4be8123639d6268aa1d522f0fadf39aed8b1f10122ec96379a8f42a841450",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/img/CREDITS.md"
+        ],
+        "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "source record retained; complete publication review of license and actual use"
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     {
       "id": "nanjing-slice-target-v1",
@@ -943,7 +1425,7 @@
       "source_version": "prompt, visual reference and cultural-fact boundaries recorded in ASSETS.md and docs/research/nanjing-source-notes.md",
       "author": "Manus AI image generation for DuckDuckRun",
       "license": "project-generated asset; game code/art governed by LICENSE.md",
-      "release_status": "registered — project-generated source, processing path, SHA-256 and attribution location are present",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "No third-party visual source was used; retain project provenance and LICENSE.md notice.",
       "downloaded_at": "not applicable",
       "sha256": "60d47c6a9cb0ef6b2003e2e1c45b62fe324a8d062f940205b8a307eebf080d91",
@@ -951,9 +1433,21 @@
       "attribution_location": "ASSETS.md (stage 3 generated-asset record)",
       "reviewer": "Manus AI (stage 3 inventory)",
       "reviewed_at": "2026-09-01",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "60d47c6a9cb0ef6b2003e2e1c45b62fe324a8d062f940205b8a307eebf080d91",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "ASSETS.md"
+        ],
+        "decision": "Project-generated visual with documented provenance; AI assistance disclosed; no exclusive-copyright or official-endorsement claim.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "internal preview; review provenance and rights before public release"
+      "decision": "Project-generated visual with documented provenance; AI assistance disclosed; no exclusive-copyright or official-endorsement claim."
     },
     {
       "id": "nanjing-slice-lantern-marker-v1",
@@ -965,7 +1459,7 @@
       "source_version": "prompt, visual reference and cultural-fact boundaries recorded in ASSETS.md and docs/research/nanjing-source-notes.md",
       "author": "Manus AI image generation for DuckDuckRun",
       "license": "project-generated asset; game code/art governed by LICENSE.md",
-      "release_status": "registered — project-generated source, processing path, SHA-256 and attribution location are present",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "No third-party visual source was used; retain project provenance and LICENSE.md notice.",
       "downloaded_at": "not applicable",
       "sha256": "1bc708d76441d1790f498fd4357c712ccbd45d74d24faaf2d4f2fa636ed2f638",
@@ -973,9 +1467,21 @@
       "attribution_location": "ASSETS.md (stage 3 generated-asset record)",
       "reviewer": "Manus AI (stage 3 inventory)",
       "reviewed_at": "2026-09-01",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "1bc708d76441d1790f498fd4357c712ccbd45d74d24faaf2d4f2fa636ed2f638",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "ASSETS.md"
+        ],
+        "decision": "Project-generated visual with documented provenance; AI assistance disclosed; no exclusive-copyright or official-endorsement claim.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "internal preview; review provenance and rights before public release"
+      "decision": "Project-generated visual with documented provenance; AI assistance disclosed; no exclusive-copyright or official-endorsement claim."
     },
     {
       "id": "nanjing-slice-salted-duck-v1",
@@ -987,7 +1493,7 @@
       "source_version": "prompt, visual reference and cultural-fact boundaries recorded in ASSETS.md and docs/research/nanjing-source-notes.md",
       "author": "Manus AI image generation for DuckDuckRun",
       "license": "project-generated asset; game code/art governed by LICENSE.md",
-      "release_status": "registered — project-generated source, processing path, SHA-256 and attribution location are present",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "No third-party visual source was used; retain project provenance and LICENSE.md notice.",
       "downloaded_at": "not applicable",
       "sha256": "3abad99e4049d1d5d2361e19e8d01e17936fa6583718e0a14a454991d34b234c",
@@ -995,73 +1501,141 @@
       "attribution_location": "ASSETS.md (stage 3 generated-asset record)",
       "reviewer": "Manus AI (stage 3 inventory)",
       "reviewed_at": "2026-09-01",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "3abad99e4049d1d5d2361e19e8d01e17936fa6583718e0a14a454991d34b234c",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "ASSETS.md"
+        ],
+        "decision": "Project-generated visual with documented provenance; AI assistance disclosed; no exclusive-copyright or official-endorsement claim.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "internal preview; review provenance and rights before public release"
+      "decision": "Project-generated visual with documented provenance; AI assistance disclosed; no exclusive-copyright or official-endorsement claim."
     },
     {
       "id": "assets/game/obstacles-crenel.webp",
       "local_path": "assets/game/obstacles-crenel.webp",
       "sha256": "f88ace939543e0e97ca1b71bc7b38dde26ff68c5c37e6cea34fcac3d2ff3febf",
-      "category": "legacy_art",
-      "source_url": "legacy project asset; source evidence incomplete",
-      "author": "unverified legacy attribution",
-      "license": "unverified; internal preview only",
-      "modified": "historical transformations not reconstructed",
+      "category": "generated_game_sprite",
+      "source_url": "project generation with Grok; original inputs and generation records recovered",
+      "author": "AI-assisted project creation (Grok); icons derived by project script",
+      "license": "Grok output terms and attribution requirements; public distribution review pending",
+      "modified": "chroma-key removal, frame alignment, WebP encoding; icons resized and framed",
       "release_status": "registered; NOT approved for public release",
       "license_obligation": "Retain provenance and close rights review before publication",
       "attribution_location": "ASSETS.md; player credits; LICENSE.md",
+      "source_version": "c3a475d9e90ed185133cfd2b7cd56f6bf2b58f2b; atlas and obstacles reproduced byte-for-byte 2026-09-07",
+      "processing_record": "tools/assemble_vanguard_art.py; tools/make_icon.py; docs/release/asset-review-2026-09-07.md",
       "review_status": "pending",
+      "publication_review": {
+        "sha256": "f88ace939543e0e97ca1b71bc7b38dde26ff68c5c37e6cea34fcac3d2ff3febf",
+        "status": "pending",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "ASSETS.md"
+        ],
+        "decision": "Source recovered and atlas bytes reproduced; applicable Grok output permission and attribution remain unresolved.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "replace or obtain original provenance before public release"
+      "decision": "Source recovered and atlas bytes reproduced; applicable Grok output permission and attribution remain unresolved."
     },
     {
       "id": "assets/game/pickup-ring.webp",
       "local_path": "assets/game/pickup-ring.webp",
       "sha256": "7a67f5014543b402f8aedb7352ecf195d012b05bf7ef5577d860b325db9a3e23",
-      "category": "legacy_art",
-      "source_url": "legacy project asset; source evidence incomplete",
-      "author": "unverified legacy attribution",
-      "license": "unverified; internal preview only",
-      "modified": "historical transformations not reconstructed",
-      "release_status": "registered; NOT approved for public release",
+      "category": "generated_game_sprite",
+      "source_url": "OpenAI image generation using an existing project gameplay screenshot as context",
+      "author": "AI-assisted project creation (OpenAI)",
+      "license": "Platform output terms; no exclusive-copyright guarantee",
+      "modified": "chroma-key removal and WebP encoding",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Retain provenance and close rights review before publication",
       "attribution_location": "ASSETS.md; player credits; LICENSE.md",
-      "review_status": "pending",
+      "source_version": "retained original PNG; byte-identical reproduction verified 2026-09-07",
+      "processing_record": "tools/process_game_art.py --quality 90; reproduction evidence in docs/release/asset-review-2026-09-07.md",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "7a67f5014543b402f8aedb7352ecf195d012b05bf7ef5577d860b325db9a3e23",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "ASSETS.md"
+        ],
+        "decision": "Project-generated visual with documented provenance; AI assistance disclosed; no exclusive-copyright or official-endorsement claim.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "replace or obtain original provenance before public release"
+      "decision": "Project-generated visual with documented provenance; AI assistance disclosed; no exclusive-copyright or official-endorsement claim."
     },
     {
       "id": "assets/icons/duck-192.png",
       "local_path": "assets/icons/duck-192.png",
       "sha256": "c654d8051cc857c8e460bef48e8e80fba6e94e0ed22d8fb226622cc3597b70ee",
-      "category": "legacy_art",
-      "source_url": "legacy project asset; source evidence incomplete",
-      "author": "unverified legacy attribution",
-      "license": "unverified; internal preview only",
-      "modified": "historical transformations not reconstructed",
+      "category": "generated_game_sprite",
+      "source_url": "project generation with Grok; original inputs and generation records recovered",
+      "author": "AI-assisted project creation (Grok); icons derived by project script",
+      "license": "Grok output terms and attribution requirements; public distribution review pending",
+      "modified": "chroma-key removal, frame alignment, WebP encoding; icons resized and framed",
       "release_status": "registered; NOT approved for public release",
       "license_obligation": "Retain provenance and close rights review before publication",
       "attribution_location": "ASSETS.md; player credits; LICENSE.md",
+      "source_version": "c3a475d9e90ed185133cfd2b7cd56f6bf2b58f2b; atlas and obstacles reproduced byte-for-byte 2026-09-07",
+      "processing_record": "tools/assemble_vanguard_art.py; tools/make_icon.py; docs/release/asset-review-2026-09-07.md",
       "review_status": "pending",
+      "publication_review": {
+        "sha256": "c654d8051cc857c8e460bef48e8e80fba6e94e0ed22d8fb226622cc3597b70ee",
+        "status": "pending",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "ASSETS.md"
+        ],
+        "decision": "Source recovered and atlas bytes reproduced; applicable Grok output permission and attribution remain unresolved.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "replace or obtain original provenance before public release"
+      "decision": "Source recovered and atlas bytes reproduced; applicable Grok output permission and attribution remain unresolved."
     },
     {
       "id": "assets/icons/duck-512.png",
       "local_path": "assets/icons/duck-512.png",
       "sha256": "1ec0282e83ab26e896094d7b4b80074ff12b7b19c007f67ff96359419c63edb0",
-      "category": "legacy_art",
-      "source_url": "legacy project asset; source evidence incomplete",
-      "author": "unverified legacy attribution",
-      "license": "unverified; internal preview only",
-      "modified": "historical transformations not reconstructed",
+      "category": "generated_game_sprite",
+      "source_url": "project generation with Grok; original inputs and generation records recovered",
+      "author": "AI-assisted project creation (Grok); icons derived by project script",
+      "license": "Grok output terms and attribution requirements; public distribution review pending",
+      "modified": "chroma-key removal, frame alignment, WebP encoding; icons resized and framed",
       "release_status": "registered; NOT approved for public release",
       "license_obligation": "Retain provenance and close rights review before publication",
       "attribution_location": "ASSETS.md; player credits; LICENSE.md",
+      "source_version": "c3a475d9e90ed185133cfd2b7cd56f6bf2b58f2b; atlas and obstacles reproduced byte-for-byte 2026-09-07",
+      "processing_record": "tools/assemble_vanguard_art.py; tools/make_icon.py; docs/release/asset-review-2026-09-07.md",
       "review_status": "pending",
+      "publication_review": {
+        "sha256": "1ec0282e83ab26e896094d7b4b80074ff12b7b19c007f67ff96359419c63edb0",
+        "status": "pending",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "ASSETS.md"
+        ],
+        "decision": "Source recovered and atlas bytes reproduced; applicable Grok output permission and attribution remain unresolved.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "replace or obtain original provenance before public release"
+      "decision": "Source recovered and atlas bytes reproduced; applicable Grok output permission and attribution remain unresolved."
     },
     {
       "id": "bg_baoen",
@@ -1073,7 +1647,7 @@
       "source_version": "not recorded in pre-stage-2 repository",
       "author": "Chainwit.",
       "license": "CC BY 4.0",
-      "release_status": "registered — source, author, license, SHA-256 and player-visible attribution are present",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Attribution, license link and change notice where applicable.",
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "47d3256fdda0eeb82e165a22e80ccbfdd79261c0d66ab2c891b6da758f38b4c6",
@@ -1081,9 +1655,21 @@
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "47d3256fdda0eeb82e165a22e80ccbfdd79261c0d66ab2c891b6da758f38b4c6",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/img/CREDITS.md"
+        ],
+        "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "source record retained; complete publication review of license and actual use"
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     {
       "id": "bg_baoen",
@@ -1095,7 +1681,7 @@
       "source_version": "not recorded in pre-stage-2 repository",
       "author": "Chainwit.",
       "license": "CC BY 4.0",
-      "release_status": "registered — source, author, license, SHA-256 and player-visible attribution are present",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Attribution, license link and change notice where applicable.",
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "434d6dc75b0a7a513efce85c9240d3b1758b2d00ca6685057bfb703c62ce2e6d",
@@ -1103,9 +1689,21 @@
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "434d6dc75b0a7a513efce85c9240d3b1758b2d00ca6685057bfb703c62ce2e6d",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/img/CREDITS.md"
+        ],
+        "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "source record retained; complete publication review of license and actual use"
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     {
       "id": "bg_bridge",
@@ -1117,7 +1715,7 @@
       "source_version": "not recorded in pre-stage-2 repository",
       "author": "Jack No1",
       "license": "CC BY 3.0",
-      "release_status": "registered — source, author, license, SHA-256 and player-visible attribution are present",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Attribution, license link and change notice where applicable.",
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "9624b60da3c983db784c8660bccb24f62e61dd69803b36f62146849b0029e5f7",
@@ -1125,9 +1723,21 @@
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "9624b60da3c983db784c8660bccb24f62e61dd69803b36f62146849b0029e5f7",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/img/CREDITS.md"
+        ],
+        "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "source record retained; complete publication review of license and actual use"
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     {
       "id": "bg_bridge",
@@ -1139,7 +1749,7 @@
       "source_version": "not recorded in pre-stage-2 repository",
       "author": "Jack No1",
       "license": "CC BY 3.0",
-      "release_status": "registered — source, author, license, SHA-256 and player-visible attribution are present",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Attribution, license link and change notice where applicable.",
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "e69e9fc55a10a7d5a6a67d0a1780c598c025b85822cdc3df95d1af8cb74a4513",
@@ -1147,9 +1757,21 @@
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "e69e9fc55a10a7d5a6a67d0a1780c598c025b85822cdc3df95d1af8cb74a4513",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/img/CREDITS.md"
+        ],
+        "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "source record retained; complete publication review of license and actual use"
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     {
       "id": "bg_jiming",
@@ -1161,7 +1783,7 @@
       "source_version": "not recorded in pre-stage-2 repository",
       "author": "BlueSkySummer",
       "license": "CC BY-SA 4.0",
-      "release_status": "registered — source, author, license, SHA-256 and player-visible attribution are present",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Attribution, license link and change notice; the local derivative/copy remains available under the corresponding CC BY-SA license.",
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "b5122c37049db612573cbb252939b226dac20353adea3fcc3d5eaa743b750027",
@@ -1169,9 +1791,21 @@
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "b5122c37049db612573cbb252939b226dac20353adea3fcc3d5eaa743b750027",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/img/CREDITS.md"
+        ],
+        "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "source record retained; complete publication review of license and actual use"
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     {
       "id": "bg_jiming",
@@ -1183,7 +1817,7 @@
       "source_version": "not recorded in pre-stage-2 repository",
       "author": "BlueSkySummer",
       "license": "CC BY-SA 4.0",
-      "release_status": "registered — source, author, license, SHA-256 and player-visible attribution are present",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Attribution, license link and change notice; the local derivative/copy remains available under the corresponding CC BY-SA license.",
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "9984b4bd1429c8d9d18476bf11b027c4cb835baf70bcd112097a7a4453997783",
@@ -1191,9 +1825,21 @@
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "9984b4bd1429c8d9d18476bf11b027c4cb835baf70bcd112097a7a4453997783",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/img/CREDITS.md"
+        ],
+        "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "source record retained; complete publication review of license and actual use"
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     {
       "id": "bg_mendong",
@@ -1205,7 +1851,7 @@
       "source_version": "not recorded in pre-stage-2 repository",
       "author": "西安兵马俑",
       "license": "CC BY-SA 4.0",
-      "release_status": "registered — source, author, license, SHA-256 and player-visible attribution are present",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Attribution, license link and change notice; the local derivative/copy remains available under the corresponding CC BY-SA license.",
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "48976741a8fe356653a0a48a1969d1e389bf18b767a7c63c9c7d67d750c36aee",
@@ -1213,9 +1859,21 @@
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "48976741a8fe356653a0a48a1969d1e389bf18b767a7c63c9c7d67d750c36aee",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/img/CREDITS.md"
+        ],
+        "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "source record retained; complete publication review of license and actual use"
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     {
       "id": "bg_mendong",
@@ -1227,7 +1885,7 @@
       "source_version": "not recorded in pre-stage-2 repository",
       "author": "西安兵马俑",
       "license": "CC BY-SA 4.0",
-      "release_status": "registered — source, author, license, SHA-256 and player-visible attribution are present",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Attribution, license link and change notice; the local derivative/copy remains available under the corresponding CC BY-SA license.",
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "5654eab64009f4e096a4232184281eab239314382b5d8d93b7f539ecd0e4db02",
@@ -1235,9 +1893,21 @@
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "5654eab64009f4e096a4232184281eab239314382b5d8d93b7f539ecd0e4db02",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/img/CREDITS.md"
+        ],
+        "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "source record retained; complete publication review of license and actual use"
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     {
       "id": "bg_menu",
@@ -1249,7 +1919,7 @@
       "source_version": "not recorded in pre-stage-2 repository",
       "author": "Uyiliu2",
       "license": "CC BY-SA 4.0",
-      "release_status": "registered — source, author, license, SHA-256 and player-visible attribution are present",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Attribution, license link and change notice; the local derivative/copy remains available under the corresponding CC BY-SA license.",
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "d2b11b07335f4dfb4269379ddaf0e7b908e21067f9f45e33e603c6e6254e0b85",
@@ -1257,9 +1927,21 @@
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "d2b11b07335f4dfb4269379ddaf0e7b908e21067f9f45e33e603c6e6254e0b85",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/img/CREDITS.md"
+        ],
+        "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "source record retained; complete publication review of license and actual use"
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     {
       "id": "bg_menu",
@@ -1271,7 +1953,7 @@
       "source_version": "not recorded in pre-stage-2 repository",
       "author": "Uyiliu2",
       "license": "CC BY-SA 4.0",
-      "release_status": "registered — source, author, license, SHA-256 and player-visible attribution are present",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Attribution, license link and change notice; the local derivative/copy remains available under the corresponding CC BY-SA license.",
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "fe8bacfb6e90bd7a1ab885d614050dd224f49f297e2c7cd62be0a4ce6cf793eb",
@@ -1279,9 +1961,21 @@
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "fe8bacfb6e90bd7a1ab885d614050dd224f49f297e2c7cd62be0a4ce6cf793eb",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/img/CREDITS.md"
+        ],
+        "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "source record retained; complete publication review of license and actual use"
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     {
       "id": "bg_observatory",
@@ -1293,7 +1987,7 @@
       "source_version": "not recorded in pre-stage-2 repository",
       "author": "Gmbsfd",
       "license": "CC BY-SA 4.0",
-      "release_status": "registered — source, author, license, SHA-256 and player-visible attribution are present",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Attribution, license link and change notice; the local derivative/copy remains available under the corresponding CC BY-SA license.",
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "55e470d4b47685c75c0de54e6e5bb4a714a9edd06a91b2203c5a7d07a21e51f3",
@@ -1301,9 +1995,21 @@
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "55e470d4b47685c75c0de54e6e5bb4a714a9edd06a91b2203c5a7d07a21e51f3",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/img/CREDITS.md"
+        ],
+        "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "source record retained; complete publication review of license and actual use"
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     {
       "id": "bg_observatory",
@@ -1315,7 +2021,7 @@
       "source_version": "not recorded in pre-stage-2 repository",
       "author": "Gmbsfd",
       "license": "CC BY-SA 4.0",
-      "release_status": "registered — source, author, license, SHA-256 and player-visible attribution are present",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Attribution, license link and change notice; the local derivative/copy remains available under the corresponding CC BY-SA license.",
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "e5962fec704d2691e56785c94cc82ddc9f59fe5062de9a09ffab0ca85019d9ed",
@@ -1323,9 +2029,21 @@
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "e5962fec704d2691e56785c94cc82ddc9f59fe5062de9a09ffab0ca85019d9ed",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/img/CREDITS.md"
+        ],
+        "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "source record retained; complete publication review of license and actual use"
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     {
       "id": "bg_qixia",
@@ -1337,7 +2055,7 @@
       "source_version": "not recorded in pre-stage-2 repository",
       "author": "Haha169",
       "license": "CC BY-SA 4.0",
-      "release_status": "registered — source, author, license, SHA-256 and player-visible attribution are present",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Attribution, license link and change notice; the local derivative/copy remains available under the corresponding CC BY-SA license.",
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "738fbe0bfd06d78e92e5eaa037a69f259967bd5e50e5975d91499cbd8d41c2ed",
@@ -1345,9 +2063,21 @@
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "738fbe0bfd06d78e92e5eaa037a69f259967bd5e50e5975d91499cbd8d41c2ed",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/img/CREDITS.md"
+        ],
+        "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "source record retained; complete publication review of license and actual use"
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     {
       "id": "bg_qixia",
@@ -1359,7 +2089,7 @@
       "source_version": "not recorded in pre-stage-2 repository",
       "author": "Haha169",
       "license": "CC BY-SA 4.0",
-      "release_status": "registered — source, author, license, SHA-256 and player-visible attribution are present",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Attribution, license link and change notice; the local derivative/copy remains available under the corresponding CC BY-SA license.",
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "87253ea24c3dd7f76e112bd1ee5dbe7705f0ae30ded94d334103712026615995",
@@ -1367,9 +2097,21 @@
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "87253ea24c3dd7f76e112bd1ee5dbe7705f0ae30ded94d334103712026615995",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/img/CREDITS.md"
+        ],
+        "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "source record retained; complete publication review of license and actual use"
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     {
       "id": "bg_sunyard",
@@ -1381,7 +2123,7 @@
       "source_version": "not recorded in pre-stage-2 repository",
       "author": "Jiong Sheng from London, United Kingdom",
       "license": "CC BY-SA 2.0",
-      "release_status": "registered — source, author, license, SHA-256 and player-visible attribution are present",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Attribution, license link and change notice; the local derivative/copy remains available under the corresponding CC BY-SA license.",
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "326c5198e94f61c598780fceff6ada7df9573b6f79d266053c1c69fdfe39c0f2",
@@ -1389,9 +2131,21 @@
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "326c5198e94f61c598780fceff6ada7df9573b6f79d266053c1c69fdfe39c0f2",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/img/CREDITS.md"
+        ],
+        "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "source record retained; complete publication review of license and actual use"
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     {
       "id": "bg_sunyard",
@@ -1403,7 +2157,7 @@
       "source_version": "not recorded in pre-stage-2 repository",
       "author": "Jiong Sheng from London, United Kingdom",
       "license": "CC BY-SA 2.0",
-      "release_status": "registered — source, author, license, SHA-256 and player-visible attribution are present",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Attribution, license link and change notice; the local derivative/copy remains available under the corresponding CC BY-SA license.",
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "9d35bb96da6fa9f77d5e5d323b5199a79512a8184b5b8d1e22fd1dd8d0404d97",
@@ -1411,9 +2165,21 @@
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "9d35bb96da6fa9f77d5e5d323b5199a79512a8184b5b8d1e22fd1dd8d0404d97",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/img/CREDITS.md"
+        ],
+        "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "source record retained; complete publication review of license and actual use"
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     {
       "id": "bg_yihe",
@@ -1425,7 +2191,7 @@
       "source_version": "not recorded in pre-stage-2 repository",
       "author": "猫猫的日记本",
       "license": "CC BY-SA 3.0",
-      "release_status": "registered — source, author, license, SHA-256 and player-visible attribution are present",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Attribution, license link and change notice; the local derivative/copy remains available under the corresponding CC BY-SA license.",
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "8d526406c49c902ecb39fc39afe342435b332f57b61a2defdc9d843fc1dc9a14",
@@ -1433,9 +2199,21 @@
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "8d526406c49c902ecb39fc39afe342435b332f57b61a2defdc9d843fc1dc9a14",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/img/CREDITS.md"
+        ],
+        "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "source record retained; complete publication review of license and actual use"
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     {
       "id": "bg_yihe",
@@ -1447,7 +2225,7 @@
       "source_version": "not recorded in pre-stage-2 repository",
       "author": "猫猫的日记本",
       "license": "CC BY-SA 3.0",
-      "release_status": "registered — source, author, license, SHA-256 and player-visible attribution are present",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Attribution, license link and change notice; the local derivative/copy remains available under the corresponding CC BY-SA license.",
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "4258ca93d60a7c9e69ee35feb7174b06a9aad27eca447227b29d02c51f825948",
@@ -1455,9 +2233,21 @@
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "4258ca93d60a7c9e69ee35feb7174b06a9aad27eca447227b29d02c51f825948",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/img/CREDITS.md"
+        ],
+        "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "source record retained; complete publication review of license and actual use"
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     {
       "id": "bg_zhaobi",
@@ -1469,7 +2259,7 @@
       "source_version": "not recorded in pre-stage-2 repository",
       "author": "Dick Rochester",
       "license": "CC BY-SA 2.0",
-      "release_status": "registered — source, author, license, SHA-256 and player-visible attribution are present",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Attribution, license link and change notice; the local derivative/copy remains available under the corresponding CC BY-SA license.",
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "5788426bd94ae05d4175b86a907cb5b08651e47d574ebf059e6bef585195f175",
@@ -1477,9 +2267,21 @@
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "5788426bd94ae05d4175b86a907cb5b08651e47d574ebf059e6bef585195f175",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/img/CREDITS.md"
+        ],
+        "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "source record retained; complete publication review of license and actual use"
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     {
       "id": "bg_zhaobi",
@@ -1491,7 +2293,7 @@
       "source_version": "not recorded in pre-stage-2 repository",
       "author": "Dick Rochester",
       "license": "CC BY-SA 2.0",
-      "release_status": "registered — source, author, license, SHA-256 and player-visible attribution are present",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Attribution, license link and change notice; the local derivative/copy remains available under the corresponding CC BY-SA license.",
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "ca731746628ee2bf39e3257ac692983727be20ea6485beb69f7ad0e4f4c744ad",
@@ -1499,9 +2301,21 @@
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "ca731746628ee2bf39e3257ac692983727be20ea6485beb69f7ad0e4f4c744ad",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/img/CREDITS.md"
+        ],
+        "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "source record retained; complete publication review of license and actual use"
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     {
       "id": "bg_zhonghua",
@@ -1513,7 +2327,7 @@
       "source_version": "not recorded in pre-stage-2 repository",
       "author": "Chainwit.",
       "license": "CC BY 4.0",
-      "release_status": "registered — source, author, license, SHA-256 and player-visible attribution are present",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Attribution, license link and change notice where applicable.",
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "7047e55e7146b3bc4644f0dd10b7f9431984aab3c3f418c0ccaf7e680a84209e",
@@ -1521,9 +2335,21 @@
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "7047e55e7146b3bc4644f0dd10b7f9431984aab3c3f418c0ccaf7e680a84209e",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/img/CREDITS.md"
+        ],
+        "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "source record retained; complete publication review of license and actual use"
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     {
       "id": "bg_zhonghua",
@@ -1535,7 +2361,7 @@
       "source_version": "not recorded in pre-stage-2 repository",
       "author": "Chainwit.",
       "license": "CC BY 4.0",
-      "release_status": "registered — source, author, license, SHA-256 and player-visible attribution are present",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Attribution, license link and change notice where applicable.",
       "downloaded_at": "not recorded in pre-stage-2 repository",
       "sha256": "13b156f5d8f41c591809f6f0e14bd4f0a258183890db8d8a5e967f257dce5c0d",
@@ -1543,9 +2369,21 @@
       "attribution_location": "menu:credits (src/legal.js); full record: assets/img/CREDITS.md",
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "13b156f5d8f41c591809f6f0e14bd4f0a258183890db8d8a5e967f257dce5c0d",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "assets/img/CREDITS.md"
+        ],
+        "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "source record retained; complete publication review of license and actual use"
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     {
       "id": "it_bean",
@@ -1566,6 +2404,7 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
+      "publication_review": null,
       "release_included": false,
       "decision": "historical record; excluded from current release"
     },
@@ -1588,6 +2427,7 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
+      "publication_review": null,
       "release_included": false,
       "decision": "historical record; excluded from current release"
     },
@@ -1610,6 +2450,7 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
+      "publication_review": null,
       "release_included": false,
       "decision": "historical record; excluded from current release"
     },
@@ -1632,6 +2473,7 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
+      "publication_review": null,
       "release_included": false,
       "decision": "historical record; excluded from current release"
     },
@@ -1654,6 +2496,7 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
+      "publication_review": null,
       "release_included": false,
       "decision": "historical record; excluded from current release"
     },
@@ -1676,6 +2519,7 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
+      "publication_review": null,
       "release_included": false,
       "decision": "historical record; excluded from current release"
     },
@@ -1698,6 +2542,7 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
+      "publication_review": null,
       "release_included": false,
       "decision": "historical record; excluded from current release"
     },
@@ -1720,6 +2565,7 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
+      "publication_review": null,
       "release_included": false,
       "decision": "historical record; excluded from current release"
     },
@@ -1742,6 +2588,7 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
+      "publication_review": null,
       "release_included": false,
       "decision": "historical record; excluded from current release"
     },
@@ -1764,6 +2611,7 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
+      "publication_review": null,
       "release_included": false,
       "decision": "historical record; excluded from current release"
     },
@@ -1786,6 +2634,7 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
+      "publication_review": null,
       "release_included": false,
       "decision": "historical record; excluded from current release"
     },
@@ -1808,6 +2657,7 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
+      "publication_review": null,
       "release_included": false,
       "decision": "historical record; excluded from current release"
     },
@@ -1830,6 +2680,7 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
+      "publication_review": null,
       "release_included": false,
       "decision": "historical record; excluded from current release"
     },
@@ -1852,6 +2703,7 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
+      "publication_review": null,
       "release_included": false,
       "decision": "historical record; excluded from current release"
     },
@@ -1874,6 +2726,7 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
+      "publication_review": null,
       "release_included": false,
       "decision": "historical record; excluded from current release"
     },
@@ -1896,6 +2749,7 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
+      "publication_review": null,
       "release_included": false,
       "decision": "historical record; excluded from current release"
     },
@@ -1918,6 +2772,7 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
+      "publication_review": null,
       "release_included": false,
       "decision": "historical record; excluded from current release"
     },
@@ -1940,6 +2795,7 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
+      "publication_review": null,
       "release_included": false,
       "decision": "historical record; excluded from current release"
     },
@@ -1952,12 +2808,24 @@
       "author": "project contributors",
       "license": "LICENSE.md subject to contributor review",
       "modified": "2026-09-06 three buses, voice cooldown and four music phrases",
-      "release_status": "registered; NOT approved for public release",
+      "release_status": "engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance",
       "license_obligation": "Retain provenance and close rights review before publication",
       "attribution_location": "ASSETS.md; player credits; LICENSE.md",
-      "review_status": "pending",
+      "review_status": "approved",
+      "publication_review": {
+        "sha256": "517e4e917d17b1c9ba4d2c2710d35e603fe895a7f56ea902069446e449f6a4fd",
+        "status": "approved",
+        "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+        "reviewed_at": "2026-09-07",
+        "evidence": [
+          "docs/release/asset-review-2026-09-07.md",
+          "src/audio.js"
+        ],
+        "decision": "Project oscillator/envelope synthesis; no third-party audio samples.",
+        "current": true
+      },
       "release_included": true,
-      "decision": "internal preview; review provenance and rights before public release"
+      "decision": "Project oscillator/envelope synthesis; no third-party audio samples."
     }
   ]
 }

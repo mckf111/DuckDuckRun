@@ -2,6 +2,10 @@
 
 本手册对应 [`scripts/deploy_aliyun_oss.sh`](../../scripts/deploy_aliyun_oss.sh)，目标是将已验证的候选制品发布到**阿里云 OSS + 中国内地 CDN + HTTPS 自定义子域名**。发布保持纯静态：不部署服务器、容器、数据库、分析 SDK 或后台进程。默认路径是消费绑定批准 commit 的绿色 CI 制品；脚本先核对清单和 build ID，再上传不可变版本，最后为同一目标重新生成并切换两份根指针。任何凭证只存在于 GitHub Secrets、部署平台安全变量或本次命令进程环境中，不写配置文件，也不通过 `-i`/`-k` 出现在命令行。
 
+正式入口已确定为 `https://jinlingrun.caowenhu.com/`，源码仓库保持 Private。部署时只操作 `jinlingrun` 子域名。2026-09-07 现场核对：OSS 尚未开通，当前无游戏 Bucket 或对应 DNS 记录；不要把下文示例值当作现成资源。当前状态见 [`../release/publish-status.md`](../release/publish-status.md)。
+
+素材发布审核以 `assets/release-review.json` 为准，逐文件绑定 SHA-256、审阅者、日期、依据和结论。修改文件后批准自动失效；当前有 4 项 Grok 生成/衍生素材待确认分发条件，正式构建继续拒绝。
+
 > **发布控制。** 未经一次明确生产确认，不执行脚本、不上传 OSS、不刷新 CDN，亦不修改 DNS。第 6 节的真实微信 WebView 冒烟是部署链路的最低人工技术门槛；公开发布仍须同时满足 `docs/qa/release-candidate-report.md` 列出的 Android/iPhone 实机和三类玩家验证，不能把一次微信烟测写成全部产品验收。
 
 ## 1. 一次性平台准备
@@ -33,7 +37,7 @@ OSS 静态站点、CDN 缓存和中国内地 CDN 的 ICP 前提均有官方说�
 | `DEPLOY_ARTIFACT_DIR` | 正常发布推荐 | `/secure/artifacts/dist` | 从指定绿色 CI run 下载并解压后的 `dist/` 根目录；脚本不在此目录改写指针。 |
 | `DEPLOY_BUILD_ID` | 回滚时是 | `3e46040dc2db` | 要重新指向的已上传版本；脚本先核验远端版本清单，绝不复用当前 `dist` 根指针。 |
 | `DEPLOY_DRY_RUN` | 否 | `1` | 只验证本地制品/ID 并打印脱敏命令；不访问 OSS/CDN、不读取凭证。 |
-| `RUN_RELEASE_SOAK` | 否 | `1` | 设置为 `1` 时，将在本地/CI 发布前额外执行 20 分钟浸泡。 |
+| `PUBLIC_SITE_URL` | 正式构建必设 | `https://jinlingrun.caowenhu.com` | 构建期固定根网址；`PUBLIC_BASE_PATH` 留空。 |
 
 部署脚本会用 `DEPLOY_CDN_DOMAIN` 为根 `index.html` 生成稳定的 Open Graph URL/图片地址；版本目录内的运行时分享若未预注入 `PUBLIC_SITE_URL`，会自动从当前版本路径退回同域根入口，因此不会把二维码固定在 `/releases/<id>/`。
 
@@ -41,11 +45,11 @@ OSS 静态站点、CDN 缓存和中国内地 CDN 的 ICP 前提均有官方说�
 
 ## 3. 制品优先的一键部署
 
-在受保护的发布环境安装 Node 22、ossutil 1.6.16+ 和阿里云 CLI。先锁定批准 commit 及其绿色 CI run，下载该 run 的 `duckduckrun-<commit SHA>` 制品；不得拿另一分支、另一 SHA 或开发机残留的 `dist/` 顶替。以下以 GitHub CLI 为例，下载后的目录必须直接包含 `build-info.json` 和 `releases/`：
+在受保护的发布环境安装 Node 22、ossutil 1.6.16+ 和阿里云 CLI。对最终 `main` 提交手动运行 `quality-gate`，选择 `production=true`；它生成正式包并强制独立 20 分钟浸泡。必须等待 release 与 soak 两个作业都成功，下载该 run 的 `duckduckrun-<commit SHA>-production` 制品。普通 push/PR 产生的 `-preview` 包只供内部试玩，不得上传生产。以下以 GitHub CLI 为例，下载后的目录必须直接包含 `build-info.json` 和 `releases/`：
 
 ```bash
 gh run download <绿色 run ID> \
-  --name duckduckrun-<完整 commit SHA> \
+  --name duckduckrun-<完整 commit SHA>-production \
   --dir /secure/artifacts/duckduckrun-dist
 ```
 
@@ -64,7 +68,7 @@ DEPLOY_ARTIFACT_DIR=/secure/artifacts/duckduckrun-dist \
 ./scripts/deploy_aliyun_oss.sh
 ```
 
-如果无法取得已验证制品且明确选择从源码构建，可不设置 `DEPLOY_ARTIFACT_DIR`。此冷环境兜底会依次执行根目录 `npm ci`、`tools/e2e` 的锁定安装、Playwright Chromium 安装、`verify` 和完整 `test:release`；设置 `RUN_RELEASE_SOAK=1` 才会额外执行 20 分钟浸泡。不得把这条兜底写成“使用了 CI 制品”。
+如果无法取得已验证制品且明确选择从源码构建，可不设置 `DEPLOY_ARTIFACT_DIR`。此冷环境兜底会依次执行根目录 `npm ci`、`tools/e2e` 的锁定安装、Playwright Chromium/WebKit 安装、`verify`、`test:release:production` 和强制 20 分钟浸泡。不得把这条兜底写成“使用了 CI 制品”。
 
 脚本的发布顺序不可改变。正常发布先上传 `releases/<build-id>/`，再从 OSS 读回版本入口和版本清单确认 ID；随后依据该版本清单在临时目录重新生成根 `build-info.json` 和根 `index.html`，最后上传并再次从 OSS 读回两者，确认都指向同一 build ID。它不直接上传制品中可能陈旧的根文件。若设置 `DEPLOY_CDN_DOMAIN`，只刷新 `index.html` 与 `build-info.json` 两个 URL。
 

@@ -27,8 +27,12 @@ try{
   await page.goto(server.base);
   await page.locator('[data-action="start"]').waitFor();
   await page.evaluate(()=>document.fonts.ready);
+  await page.evaluate(async()=>{window.readmeCaptureState=await import('/src/game.js');});
   await page.locator('[data-action="start"]').click();
-  await page.waitForFunction(async()=> (await import('/src/game.js')).G.dist>=140,{},{timeout:20000});
+  await page.keyboard.press('ArrowLeft');
+  await page.waitForFunction(()=>window.readmeCaptureState.G.dist>=140,{},{timeout:30000});
+  const gameplay=await page.evaluate(()=>({distance:window.readmeCaptureState.G.dist,marks:window.readmeCaptureState.G.runMarks,cue:document.querySelector('#run-cue').textContent}));
+  assert.ok(gameplay.distance>=140,'实际截图必须已进入正式跑局');
   assert.equal(await page.evaluate(async()=> (await import('/src/game.js')).G.state),'play');
   await page.screenshot({path:join(output,'gameplay.png')});
   await page.locator('[data-action="pause"]').click();
@@ -43,6 +47,6 @@ try{
   await page.waitForTimeout(500);
   await page.screenshot({path:join(output,'album.png')});
   assert.deepEqual(errors,[]);
-  writeFileSync(join(evidence,'capture.json'),JSON.stringify({date:'2026-09-07',source:'current local application; isolated showcase save, not human completion evidence',ordinaryItems:28,hiddenItems:0,files:['hero.png','gameplay.png','stations.png','album.png'],errors},null,2));
+  writeFileSync(join(evidence,'capture.json'),JSON.stringify({date:'2026-09-07',source:'current local application; isolated showcase save, not human completion evidence',ordinaryItems:28,hiddenItems:0,gameplay,files:['hero.png','gameplay.png','stations.png','album.png'],errors},null,2));
   console.log('PASS | README 头图与三个当前游戏画面已输出');
 }finally{await browser.close();await server.stop();}

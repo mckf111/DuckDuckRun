@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright-core';
@@ -7,6 +7,7 @@ import { attachPageErrors, browserExecutable, ensureEvidenceDir, sampleJsHeap, s
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const dist = join(root, 'dist');
+const buildInfo=JSON.parse(readFileSync(join(dist,'build-info.json'),'utf8'));
 const out = join(ensureEvidenceDir(root), 'release-soak.json');
 const durationMs = Number(process.env.SOAK_DURATION_MS || 20 * 60 * 1000);
 assert.ok(Number.isFinite(durationMs) && durationMs >= 4000, 'SOAK_DURATION_MS 必须是至少 4000ms 的有限数字');
@@ -17,6 +18,8 @@ const heapGrowthRatio = Number(process.env.SOAK_MAX_HEAP_GROWTH_RATIO || 0.20);
 
 const result = {
   schema:'duckduckrun-release-soak/v2',
+  buildId:buildInfo.buildId,
+  distribution:buildInfo.distribution,
   startedAt:new Date().toISOString(),
   targetDurationMs:durationMs,
   environment:'Local headless Chromium touch simulation (844×390, DPR 2); actual runtime loop and GC-stabilized JavaScript heap, not physical-device/GPU memory.',

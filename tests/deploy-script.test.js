@@ -15,7 +15,7 @@ function makeArtifact(){
   const artifact = mkdtempSync(join(tmpdir(), 'duckduckrun-deploy-artifact-'));
   const release = join(artifact, 'releases', buildId);
   mkdirSync(release, { recursive:true });
-  const manifest = JSON.stringify({ schema:2, buildId, releasePath:`releases/${buildId}/`, files:['index.html'] }) + '\n';
+  const manifest = JSON.stringify({ schema:2, buildId, releasePath:`releases/${buildId}/`, distribution:'production',pendingAssetReviews:0,files:['index.html'] }) + '\n';
   writeFileSync(join(artifact, 'build-info.json'), manifest);
   writeFileSync(join(artifact, 'index.html'), `<script>location.replace('./releases/${buildId}/')</script>`);
   writeFileSync(join(release, 'build-info.json'), manifest);
@@ -36,6 +36,17 @@ function availableBash(){
 }
 
 const bash = availableBash();
+
+test('缺少正式发布模式的旧清单不能作为生产制品上传', {skip:!bash},()=>{
+  const artifact=makeArtifact();
+  try{
+    for(const path of [join(artifact,'build-info.json'),join(artifact,'releases',buildId,'build-info.json')]){
+      const manifest=JSON.parse(readFileSync(path,'utf8'));delete manifest.distribution;writeFileSync(path,JSON.stringify(manifest));
+    }
+    const result=spawnSync(bash,[scriptPath],{cwd:root,encoding:'utf8',env:{...process.env,DEPLOY_DRY_RUN:'1',DEPLOY_ARTIFACT_DIR:artifact,DEPLOY_OSS_ENDPOINT:'oss-cn-shanghai.aliyuncs.com',DEPLOY_OSS_BUCKET:'duckduckrun-test'}});
+    assert.notEqual(result.status,0);assert.match(result.stderr,/缺少正式审核信息/);assert.doesNotMatch(result.stdout,/ossutil cp/);
+  }finally{rmSync(artifact,{recursive:true,force:true});}
+});
 
 test('内部试玩包在构造上传命令前被拒绝', {skip:!bash},()=>{
   const artifact=makeArtifact();

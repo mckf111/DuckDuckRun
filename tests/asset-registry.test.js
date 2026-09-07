@@ -4,7 +4,8 @@ import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
-import { buildAssetSbom, parseCreditLine } from '../tools/generate_asset_sbom.mjs';
+import { applyReleaseReview, buildAssetSbom, parseCreditLine } from '../tools/generate_asset_sbom.mjs';
+import { includeReleaseAsset } from '../tools/release_assets.mjs';
 import { checkAssetRegistry, collectGovernedAssetPaths, registryCoverage } from '../tools/e2e/check_asset_registry.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
@@ -41,8 +42,22 @@ test('完整门禁从临时 SBOM 验证字段、哈希、声明合同和一一�
     const result = checkAssetRegistry(root, registryPath);
     assert.equal(result.registry.assets.length, result.governed.length);
     for(const path of ['assets/game/book-duck.webp','assets/game/book-wall.webp','assets/icons/duck-512.png','src/audio.js'])assert.ok(result.governed.includes(path),path);
-    assert.ok(result.registry.assets.every(asset=>asset.review_status==='pending'));
+    assert.ok(result.registry.assets.every(asset=>['pending','approved','rejected'].includes(asset.review_status)));
   }finally{
     rmSync(directory, {recursive:true, force:true});
   }
+});
+
+test('发布批准只对同一内容生效，缺记录或替换素材后必须重新审核',()=>{
+  const path='assets/game/book-wall.webp',sha='a'.repeat(64);
+  const records={[path]:{sha256:sha,status:'approved',reviewer:'review fixture',reviewed_at:'2026-09-07',decision:'fixture',evidence:['ASSETS.md']}};
+  assert.equal(applyReleaseReview({local_path:path,sha256:sha},records).review_status,'approved');
+  assert.equal(applyReleaseReview({local_path:path,sha256:'b'.repeat(64)},records).review_status,'pending');
+  assert.equal(applyReleaseReview({local_path:path,sha256:sha}).review_status,'pending');
+  assert.equal(applyReleaseReview({local_path:path,sha256:sha},{[path]:{...records[path],status:'rejected'}}).review_status,'rejected');
+});
+
+test('README 图片和内部发布审核不随游戏分发，运行素材仍保留',()=>{
+  for(const path of ['assets/readme','assets/readme/hero.png','assets/readme/source/hero-layout.svg','assets/release-review.json'])assert.equal(includeReleaseAsset(path),false,path);
+  for(const path of ['assets/game/book-wall.webp','assets/fonts/jinling-kai.woff2','assets/album/duck.jpg'])assert.equal(includeReleaseAsset(path),true,path);
 });

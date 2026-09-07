@@ -33,6 +33,9 @@ function treeDigest(directory){
 }
 
 let info = readInfo();
+assert.ok(['internal-preview','production'].includes(info.distribution), '未知制品发布模式');
+if(info.distribution==='production') assert.equal(info.pendingAssetReviews,0,'正式包仍有待审素材');
+assert.ok(!info.files.some(path=>path.startsWith('assets/readme/')||path==='assets/release-review.json'),'内部审核或 README 素材混入游戏包');
 assert.match(info.buildId, /^[a-f0-9]{12}$/);
 assert.equal(info.releasePath, `releases/${info.buildId}/`);
 assert.equal(info.schema, 2, '制品未使用第二版发布清单');
@@ -48,13 +51,15 @@ assert.deepEqual(info.notices, {
 let release = join(dist, info.releasePath);
 const firstBuildId = info.buildId;
 const firstDigest = treeDigest(release);
-const rebuild = spawnSync(process.execPath, [join(root, 'tools', 'build_static.mjs'), '--preview'], {
+const distribution = info.distribution;
+const rebuild = spawnSync(process.execPath, [join(root, 'tools', 'build_static.mjs'), ...(distribution==='internal-preview'?['--preview']:[])], {
   cwd:root,
-  env:process.env,
+  env:{...process.env,PUBLIC_SITE_URL:info.publicSiteUrl||'',PUBLIC_BASE_PATH:info.publicBasePath||''},
   encoding:'utf8',
 });
 assert.equal(rebuild.status, 0, `第二次确定性构建失败：${rebuild.stderr || rebuild.stdout}`);
 info = readInfo();
+assert.equal(info.distribution,distribution,'制品检查改变了发布模式');
 release = join(dist, info.releasePath);
 assert.equal(info.buildId, firstBuildId, '相同规范化输入第二次构建得到不同 build ID');
 assert.equal(treeDigest(release), firstDigest, '同一 build ID 的版本目录字节不稳定');

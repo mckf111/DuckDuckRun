@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PLAYER_VISIBLE_NOTICE_CONTRACT } from '../src/legal.js';
@@ -31,7 +31,33 @@ function sha256(root, relativePath){
   return createHash('sha256').update(readFileSync(join(root, relativePath))).digest('hex');
 }
 
+/* 发布批准绑定素材内容；重新编码、替换或改动后自动回到待审。 */
+export function applyReleaseReview(asset, records={}){
+  const record=records[asset.local_path];
+  if(!record)return {...asset,review_status:'pending',publication_review:null};
+  const current=record.sha256===asset.sha256;
+  return {...asset,review_status:current?record.status:'pending',publication_review:{...record,current}};
+}
+
+function releaseReviews(root){
+  const path=join(root,'assets/release-review.json');
+  if(!existsSync(path))return {};
+  const review=JSON.parse(readFileSync(path,'utf8'));
+  if(review.schema!=='duckduckrun-release-review/v1'||!review.assets||Array.isArray(review.assets))throw new Error('发布审核文件格式错误');
+  for(const [asset,record] of Object.entries(review.assets)){
+    if(!/^[a-f0-9]{64}$/.test(record.sha256)||!['pending','approved','rejected'].includes(record.status))throw new Error(`发布审核状态或指纹无效：${asset}`);
+    if(!record.reviewer||!/^\d{4}-\d{2}-\d{2}$/.test(record.reviewed_at)||!record.decision)throw new Error(`发布审核缺少审阅者、日期或结论：${asset}`);
+    if(!Array.isArray(record.evidence)||!record.evidence.length)throw new Error(`发布审核缺少依据：${asset}`);
+    for(const evidence of record.evidence){
+      const relative=typeof evidence==='string'?evidence.split('#')[0]:'';
+      if(!relative||relative.startsWith('/')||relative.includes('..')||relative.includes(':')||!existsSync(join(root,relative)))throw new Error(`发布审核依据文件不存在或越界：${asset}`);
+    }
+  }
+  return review.assets;
+}
+
 export function buildAssetSbom(root=defaultRoot){
+  const reviews=releaseReviews(root);
   const credits = readFileSync(join(root, 'assets/img/CREDITS.md'), 'utf8').split(/\r?\n/);
   const entries = [];
   for(const line of credits){
@@ -169,11 +195,32 @@ export function buildAssetSbom(root=defaultRoot){
       release_status:'registered; NOT approved for public release',license_obligation:'Retain provenance and close rights review before publication',
       attribution_location:'ASSETS.md; player credits; LICENSE.md'});
   }
+  for(const entry of entries){
+    if(entry.local_path==='assets/game/pickup-ring.webp')Object.assign(entry,{
+      category:'generated_game_sprite',source_url:'OpenAI image generation using an existing project gameplay screenshot as context',
+      source_version:'retained original PNG; byte-identical reproduction verified 2026-09-07',
+      author:'AI-assisted project creation (OpenAI)',license:'Platform output terms; no exclusive-copyright guarantee',
+      processing_record:'tools/process_game_art.py --quality 90; reproduction evidence in docs/release/asset-review-2026-09-07.md',
+      modified:'chroma-key removal and WebP encoding',
+    });
+    if(['assets/game/duck-atlas.webp','assets/game/obstacles-crenel.webp','assets/icons/duck-192.png','assets/icons/duck-512.png'].includes(entry.local_path))Object.assign(entry,{
+      category:'generated_game_sprite',source_url:'project generation with Grok; original inputs and generation records recovered',
+      source_version:'c3a475d9e90ed185133cfd2b7cd56f6bf2b58f2b; atlas and obstacles reproduced byte-for-byte 2026-09-07',
+      author:'AI-assisted project creation (Grok); icons derived by project script',
+      license:'Grok output terms and attribution requirements; public distribution review pending',
+      processing_record:'tools/assemble_vanguard_art.py; tools/make_icon.py; docs/release/asset-review-2026-09-07.md',
+      modified:'chroma-key removal, frame alignment, WebP encoding; icons resized and framed',
+    });
+  }
   for(const e of entries){
-    e.review_status='pending';
+    Object.assign(e,applyReleaseReview(e,reviews));
     e.release_included=includeReleaseAsset(e.local_path);
     e.decision=!e.release_included?'historical record; excluded from current release':e.category==='legacy_art'?'replace or obtain original provenance before public release':e.category==='font'?'retain after fixed upstream and subset evidence review':['item_photo','landmark_background'].includes(e.category)?'source record retained; complete publication review of license and actual use':'internal preview; review provenance and rights before public release';
+    if(e.publication_review?.current)e.decision=e.publication_review.decision;
+    if(e.review_status==='approved')e.release_status='engineering publication review approved for this SHA-256; not a legal opinion or physical-device acceptance';
   }
+  const knownPaths=new Set(entries.map(e=>e.local_path));
+  for(const path of Object.keys(reviews))if(!knownPaths.has(path))throw new Error(`发布审核引用未登记素材：${path}`);
   entries.sort((a,b)=>a.local_path.localeCompare(b.local_path));
   return {
     schema:'duckduckrun-asset-sbom/v1',
