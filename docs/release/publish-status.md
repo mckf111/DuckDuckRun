@@ -2,9 +2,22 @@
 
 日期：2026-09-07。固定入口：`https://jinlingrun.caowenhu.com/`。仓库保持 **Private**。
 
-**已上线。** 2026-09-07 14:31（UTC+8）完成固定域名的线上技术验收。真实 iPhone/Android 微信及公众号预览仍等待用户反馈，不把浏览器检查等同于实机验收。
+**本轮更新已上线。** 2026-09-07 18:28（UTC+8）正式域名已读回构建 `b599cfb77d82`，部署 ID `dp9a2abv7fw2`；下方保留首次上线记录。用户已对本轮本地手机试玩及修改作出确认并明确授权上线，线上技术检查不冒充所有实体设备或用户组验收。
 
-## 上线验收
+## 本轮发布（当前）
+
+- 源码已通过 [PR #2](https://github.com/mckf111/DuckDuckRun/pull/2) 合并至 `main`，来源提交 `59d42dbce5e75d23f1073de880dfb4e3012fe9e3`，源码树 `01b56a74381bbd4122bdadfdbd642169fa9df249`。包含关卡递进、难度与目标入口、教学失败边界、技巧判定、磁铁、撞击、图鉴往返及多模型创作署名。
+- 正式 CI [34108877618](https://github.com/mckf111/DuckDuckRun/actions/runs/34108877618) 的 release 与 soak 均成功。持续运行 1,200,354 ms、16 次重开、错误 0、堆增长 2.05%、最长长任务 62 ms；环境为 Chromium 触控模拟。
+- 下载同一 CI 的 production 制品，本地与 Linux CI 的 108 个文件逐字节一致；待审核素材 0 项。
+- 通过 `package_edgeone.py --retain-artifact` 保留上一构建 `18741739d7da` 的版本资源。ZIP 包 213 文件、24,162,742 字节，SHA-256 `bac6d34f954d6d0b6f6e3ed3f9160a4e386349eb7c0cd704f770a6a306e384f7`。没有在上传前重建或改写 CI 制品。
+- EdgeOne 项目 `makers-ph8ezjstboo1`（jinlingrun）生产环境部署成功，记录时间 2026-09-07 18:23:58，平台构建用时 19s；仅解压与发布静态文件，未运行项目源码构建。
+- 公网根清单与 CI 原件一致，根入口及清单为 `no-cache, no-store, must-revalidate`；HTTP 正常跳转 HTTPS。210 个新旧版本文件全部返回正确字节和不可变缓存，JS/CSS 类型正确，故意请求不存在脚本返回 404。
+- 已在 Chrome 实际打开正式根网址进入新版；首页难度与拿星目标、版权页四模型署名和资料入口在线可见。公网新手练习撞墙后明确暂停并出现重试/直接开跑出口，控制台错误 0。界面检查和控制台结果留在本轮工具记录；逐文件网络证据为 `docs/release/online-b599cfb77d82.json`。
+- 本轮未改 DNS、证书、套餐、源码仓库可见性或其他项目。上一版完整正式制品与发布记录保留，可按 EdgeOne 运行手册回滚。
+- Git 常规推送曾受网络影响，前三个提交通过 GitHub 官方 Git 对象 API 原样同步；blob、tree、commit SHA 均逐项一致，未强推或改写历史。网络恢复后常规 fetch/快进恢复。
+
+
+## 首次上线验收（历史）
 
 - CNAME：`jinlingrun` → `jinlingrun.caowenhu.com.pages.dnsoe4.com`，TTL 600；公共 DNS 与控制台读回一致。原有记录保留。
 - 免费 HTTPS 证书已部署，CN 为 `jinlingrun.caowenhu.com`，颁发者 TrustAsia DV TLS RSA CA 2025，有效至 2026-12-06 07:59:59（UTC+8）；平台配置到期前 15 天自动更新。正常 TLS 校验通过，没有忽略证书错误。
@@ -15,7 +28,7 @@
 
 ## 发布过程记录（按发生时状态保留）
 
-## 当前状态
+## 首次发布时状态（历史）
 
 - README、头图与当前游戏实截已完成；桌面 900px、手机 360px、深浅色和图片检查通过。
 - 公众号二维码为 `docs/launch/assets/jinlingrun-qr.png`，528×528，保留四模块留白；独立 ZXing-C++ 解码结果为固定根网址。二维码正确不等于网址已经上线。
