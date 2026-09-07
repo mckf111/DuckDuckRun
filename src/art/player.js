@@ -2,8 +2,8 @@ import { drawBookDuck } from './book.js';
 import { skinAtlas } from './skin.js';
 import { effectiveSkin } from '../rules.js';
 import { ctx, TAU, ZP, LANEGAP, proj, poly, disc, shadow, clamp } from '../core.js';
-import { save } from '../save.js';
-import { MOBILE } from '../config.js';
+import { save, prefersReducedMotion } from '../save.js';
+import { MOBILE, EXPERIENCE } from '../config.js';
 import { drawSpriteFrame, getSprite } from './sprites.js';
 
 /* ================= 剪纸绘制:玩家(逃跑的盐水鸭) ================= */
@@ -240,7 +240,19 @@ export function drawPlayer(pl, t, opts){
   shadow(gp.x, gp.y + 0.02*s, s*0.9*shK*shadowScale, 0.32*shK);
   if(opts.book){
     ctx.save();
-    if(opts.crashed){ctx.translate(p.x,p.y);ctx.rotate(-Math.min(1,opts.crashAge*3)*.8);ctx.translate(-p.x,-p.y);}
+    if(opts.crashed){
+      const age=opts.crashAge||0,reduced=prefersReducedMotion(),fall=clamp((age-EXPERIENCE.crash.freeze)/EXPERIENCE.crash.fall,0,1);
+      ctx.translate(p.x,p.y);ctx.rotate(reduced?-.3:-fall*.75+(age>.45?Math.sin(age*13)*.025:0));
+      if(age<EXPERIENCE.crash.freeze)ctx.scale(1.25,.65);
+      ctx.translate(-p.x,-p.y);
+      drawBookDuck(ctx,p.x,p.y,p.s*bookScale,{t:0,gold,panic:true});ctx.restore();
+      const size=p.s*bookScale,headX=p.x-size*.55*fall,headY=p.y-size*1.08;
+      for(let i=0;i<4;i++){
+        const phase=(reduced?0:age*7)+i*TAU/4;
+        spark(headX+Math.cos(phase)*size*.26,headY+Math.sin(phase)*size*.09,Math.max(5,size*.06));
+      }
+      return;
+    }
     drawBookDuck(ctx,p.x,p.y,p.s*bookScale,{t,air:pl.y>.05,slide:!!pl.sliding,gold,panic:opts.panic});ctx.restore();return;
   }
   if(drawSpritePlayer(pl, t, opts, p, gold)) return;

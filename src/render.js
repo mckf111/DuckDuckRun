@@ -248,14 +248,21 @@ export function render(){
   const cols = G.cols.slice().sort((a,b)=>(b.rz??b.z-G.dist+ZP)-(a.rz??a.z-G.dist+ZP));
   for(const c of cols){
     // 教学切到第 4 步的同一帧，新增印记尚未经过 update；先按世界坐标投影，避免 NaN 让主循环停摆。
-    const rz = c.rz ?? c.z-G.dist+ZP;
+    if(c.got)continue;
+    const rz = c.fly?.rz ?? c.rz ?? c.z-G.dist+ZP;
     if(rz < 2 || rz > DRAWD) continue;
-    const p = proj(c.x, c.y + Math.sin((prefersReducedMotion()?0:G.t*3)+c.z)*0.08, rz);
+    const p = c.fly?proj(c.fly.x,c.fly.y,rz):proj(c.x, c.y + Math.sin((prefersReducedMotion()?0:G.t*3)+c.z)*0.08, rz);
+    if(c.fly?.previous&&!prefersReducedMotion()){
+      const a=c.fly.previous,q=proj(a.x,a.y,a.rz);
+      ctx.save();ctx.strokeStyle='#f7df90';ctx.globalAlpha=.7;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(q.x,q.y);ctx.lineTo(p.x,p.y);ctx.stroke();ctx.restore();
+    }
     const gp = proj(c.x, 0, rz);
-    shadow(gp.x, gp.y, gp.s*0.28, 0.18);
+    if(!c.fly)shadow(gp.x, gp.y, gp.s*0.28, 0.18);
     const r = clamp(p.s*0.34, 4, 19);
     if(c.kind==='skillStep'){
-      ctx.save();ctx.translate(p.x,p.y);ctx.rotate(Math.PI/4);ctx.fillStyle='#d6a34f';ctx.strokeStyle='#fff1c6';ctx.lineWidth=2;ctx.fillRect(-r,-r,r*2,r*2);ctx.strokeRect(-r,-r,r*2,r*2);ctx.restore();
+      const markerR=rz<ZP+24?Math.max(r,11):r;
+      ctx.save();ctx.translate(p.x,p.y);ctx.rotate(Math.PI/4);ctx.fillStyle='#d6a34f';ctx.strokeStyle='#fff1c6';ctx.lineWidth=2;ctx.fillRect(-markerR,-markerR,markerR*2,markerR*2);ctx.strokeRect(-markerR,-markerR,markerR*2,markerR*2);ctx.restore();
+      if(rz<ZP+24){ctx.save();ctx.fillStyle='#344d49';ctx.font='bold '+Math.max(12,markerR*.85)+'px system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(String(c.step+1),p.x,p.y);ctx.restore();}
     }else if(c.kind==='sliceToken') drawSliceToken(p.x,p.y,r*1.45);
     else if(c.kind==='sliceLight') drawSliceMarker(p.x,p.y,r*1.15);
     else if(c.kind==='relic') drawRelic(c.id, p.x, p.y, r*1.15);

@@ -1,5 +1,5 @@
 import { clamp, lerp, rnd, irnd, visualRnd, visualIrnd, proj, LANEGAP, ZP, DRAWD, TAU, getRandomSeed, restartRandomSequence } from './core.js';
-import { LEVELS, NANJING_SLICE, ITEMS, LM_CYCLE, LM_NAME, MILESTONES, RUN_STAR_THRESHOLDS, MOBILE, QUACKS, CRASH_LINES, buildJourneyPlan, JOURNEY_COPY, JOURNEY_LEVELS } from './config.js';
+import { LEVELS, NANJING_SLICE, ITEMS, LM_CYCLE, LM_NAME, MILESTONES, RUN_STAR_THRESHOLDS, MOBILE, QUACKS, CRASH_LINES, buildJourneyPlan, JOURNEY_COPY, JOURNEY_LEVELS, EXPERIENCE, EXPERIENCE_COPY as EC, TUTORIAL_COPY as TC, journeyLaneAt } from './config.js';
 import { save, persist, queuePersist, prefersReducedMotion } from './save.js';
 import { canPassObstacle, calculateRunStars, calculateMedals, getBridgeUnlockStatus, getCollectionWeight, getObstacleInstruction, recordBestStars } from './rules.js';
 import { sfx, bgm, setBgmIntensity } from './audio.js';
@@ -15,7 +15,7 @@ export const G = {
   dist:0, speed:0, runMarks:0, runStars:0, newIds:[],
   obs:[], cols:[], parts:[], gates:[],
   nextSpawn:0, nextGate:0, shake:0,
-  buttons:[], albumFrom:'menu', wipe:0, pressed:null,
+  buttons:[], albumFrom:'menu', albumReturn:null, levelFocus:null, wipe:0, pressed:null,
   albumZoom:null,    // 图鉴放大查看的风物 id(纯 UI 状态)
   albumScroll:0,     // 图鉴页纵向滚动偏移(px)
   creditsScroll:0,   // 授权页纵向滚动偏移(px)
@@ -25,9 +25,10 @@ export const G = {
   combo:0, comboT:0,   // 连击与剩余窗口
   tut:null,            // 教学飘字 [{z,text}]
   tutStage:4,          // 兼容测试快照；0~3 对应四步教学，4=结束
+  tutorialSkipped:false, // 本次打开主动跳过练习；不伪造已完成记录
   tutorial:null,       // {step,targetZ,targetLane,actionDone,retries,tip}
   inputBuffer:{jump:0,slide:0},
-  crashT:0, crashLen:0.54, crashLine:'',
+  crashT:0, crashLen:EXPERIENCE.crash.duration, crashLine:'',
   rhythm:null, rhythmLog:[], featureMarks:[],
   secretQueue:[], runFoundNew:false, runFinalized:false,
   shopFeedback:null,
@@ -84,17 +85,17 @@ export function startRun(mode, lvIdx=0, forceTutorial=false, options={}){
     return false;
   }
   if(getRandomSeed() !== null) restartRandomSequence();
-  G.mode = mode; G.lvIdx = lvIdx;
+  G.mode = mode; G.lvIdx = lvIdx; G.albumReturn=null; G.albumZoom=null;
   G.benchmark=mode==='adv'&&lvIdx===0;
   G.scripted=mode==='adv';G.plan=G.scripted?buildJourneyPlan(lvIdx,lvIdx?irnd(0,1):0):null;G.gatesPassed=0;
   G.difficulty=mode==='adv'?(options.difficulty||save.difficulty):'standard';
   G.rescues=G.difficulty==='easy'?MOBILE.rescues:0;G.resumeIn=0;
-  G.skills=[];G.skillSteps={};G.skillFailed={};G.actionLog=[];
+  G.speedRamp=null;G.skills=[];G.skillSteps={};G.skillFailed={};G.actionLog=[];
   if(mode==='adv'){save.lastLevel=lvIdx;save.journeyStarted=true;queuePersist();}
   if(G.replay) G.replay = { ...G.replay, seed:getRandomSeed(), mode, lvIdx };
   G.dist = 0; G.runMarks = 0; G.runStars = 0; G.newIds = []; G.t = 0;
   G.obs = []; G.cols = []; G.parts = []; G.gates = [];
-  G.speed = mode==='adv' ? G.plan.speed*(G.difficulty==='easy'?MOBILE.easySpeed:1) : mode==='slice' ? sliceConfig.speed : 9.5;
+  G.speed = mode==='adv' ? G.plan.speed*(G.plan.beats[0].speedMul||1)*(G.difficulty==='easy'?MOBILE.easySpeed:1) : mode==='slice' ? sliceConfig.speed : 9.5;
   G.nextSpawn = 40; G.paused = false; G.shake = 0; G.egg = null;
   G.newBest = false; G.kbSel = 0; G.kbActive = false;
   G.combo = 0; G.comboT = 0; G.killedBy = null; G.newItem = null;
@@ -103,7 +104,7 @@ export function startRun(mode, lvIdx=0, forceTutorial=false, options={}){
   G.nextPower = 120;
   G.nextRelic = 70;
   G.msIdx = 0; G.lmCyc = -1; G.arcGot = {};
-  G.inputBuffer={jump:0,slide:0}; G.crashT=0; G.crashLen=0.54; G.crashLine='';
+  G.inputBuffer={jump:0,slide:0}; G.crashT=0; G.crashLen=EXPERIENCE.crash.duration; G.crashLine='';
   G.rhythm={pressureStreak:0,lastAction:null,actionStreak:0,reliefNext:false};G.rhythmLog=[];
   G.featureMarks=mode==='adv'?[LEVELS[lvIdx].len*0.28,LEVELS[lvIdx].len*0.62]:[];
   G.secretQueue=[];G.runFoundNew=false;G.runFinalized=false;G.shopFeedback=null;
@@ -113,7 +114,7 @@ export function startRun(mode, lvIdx=0, forceTutorial=false, options={}){
     tokenCount:0, autoStep:0, beatLog:[], activeBeat:null,
   } : null;
   G.speech=null; G.talkCd=0; G.idleTalk=visualRnd(7,11); G.lastPanic=false;
-  const teach=mode==='adv' && lvIdx===0 && (forceTutorial || !save.tutorialCompleted);
+  const teach=mode==='adv' && lvIdx===0 && (forceTutorial || (!save.tutorialCompleted&&!G.tutorialSkipped));
   G.tut=null; G.tutorial=null; G.tutStage=teach?0:4;
   if(teach) G.nextSpawn=Infinity;
   G.nextGate = mode==='adv' ? 130 : mode==='slice' ? Infinity : 200;
@@ -177,7 +178,8 @@ export function onSlide(){
 export function onPauseKey(){
   if(G.state==='play'){ G.paused?resumeRun():pauseRun();sfx.click(); }
   else if(G.state==='album'){
-    if(G.albumZoom) G.albumZoom = null;        // 放大查看时 Esc 先关放大层
+    if(G.albumReturn){G.state=G.albumReturn.state;G.albumZoom=null;}
+    else if(G.albumZoom) G.albumZoom = null;
     else G.state = G.albumFrom;
     sfx.click();
   }
@@ -199,7 +201,7 @@ function beginTutorialStep(step,retry=false){
   const type=TUTORIAL_TYPES[step];
   const tip=step===3 ? (touch?'起跳后再上滑一次，翅膀张开就成功':'起跳后再按一次 ↑，翅膀张开就成功')
     : getObstacleInstruction(type,touch);
-  G.tutorial={step,targetZ:z,targetLane:lane,actionDone:false,retries:retry?(previous?.retries||0)+1:0,tip};
+  G.tutorial={step,startDist:G.dist,retryPending:false,targetZ:z,targetLane:lane,actionDone:false,retries:retry?(previous?.retries||0)+1:0,tip};
   G.tut=[{z:z-12,text:'第 '+(step+1)+'/'+(G.benchmark?3:4)+' 步 · '+tip}];
   if(step<3){
     G.obs.push({lane,x:lane*LANEGAP,z,type,tutorialStep:step});
@@ -211,15 +213,25 @@ function beginTutorialStep(step,retry=false){
   }
 }
 function retryTutorial(){
-  if(!G.tutorial) return;
-  const step=G.tutorial.step;
-  G.egg={text:'临时护盾接住了，再试一次',ttl:2,dur:2};
-  sfx.shieldBreak();
-  beginTutorialStep(step,true);
+  if(!G.tutorial)return;
+  G.tutorial.retryPending=true;G.tutorial.retries++;
+  G.egg=null;sfx.shieldBreak();pauseRun();
 }
-export function retryCurrentTutorial(){if(G.tutorial)beginTutorialStep(G.tutorial.step,true);}
+export function retryCurrentTutorial(){
+ if(!G.tutorial)return;
+ const previous=G.tutorial;G.dist=previous.startDist;
+ pl.lane=previous.targetLane;pl.x=pl.lane*LANEGAP;pl.y=0;pl.vy=0;pl.sliding=0;pl.jumps=0;
+ G.inputBuffer={jump:0,slide:0};G.egg=null;G.parts=[];
+ beginTutorialStep(previous.step,false);G.tutorial.retries=previous.retries;
+}
+export function skipTutorial(){
+ if(!G.tutorial)return false;
+ G.tutorialSkipped=true;startRun('adv',0,false,{difficulty:G.difficulty});
+ G.dist=MOBILE.benchmark.tutorialEnd;
+ return true;
+}
 export function pauseRun(){if(G.state==='play'){G.paused=true;G.resumeIn=0;G.inputBuffer={jump:0,slide:0};}}
-export function resumeRun(skip=false){if(G.state==='play'){G.paused=false;G.resumeIn=skip?0:2;}}
+export function resumeRun(skip=false){if(G.state==='play'&&!G.tutorial?.retryPending){G.paused=false;G.resumeIn=skip?0:2;}}
 
 function completeTutorialStep(step){
   if(!G.tutorial || G.tutorial.step!==step) return;
@@ -231,7 +243,7 @@ function completeTutorialStep(step){
   save.tutorialCompleted=true; save.tut=true; persist();
   track('tutorial_complete', { retries:G.tutorial.retries });
   // 标杆教学属于前 100 米安全段；旧版四步练习保留独立起跑。
-  if(G.benchmark){G.dist=MOBILE.benchmark.tutorialEnd;G.tutorial=null;G.tut=null;G.tutStage=4;startBenchmark();G.egg={text:'会跑了！带上鸭蛋，一起出城',ttl:2.4,dur:2.4};}
+  if(G.benchmark){G.dist=MOBILE.benchmark.tutorialEnd;G.tutorial=null;G.tut=null;G.tutStage=4;startBenchmark();G.egg={text:TC.ready,ttl:2.4,dur:2.4};}
   else {startRun('adv',0,false);G.egg={text:'四步全会了，正式开跑！',ttl:2.4,dur:2.4};}
 }
 function consumeInputBuffer(dt){
@@ -436,8 +448,9 @@ export function update(dt){
   if(G.shopFeedback){G.shopFeedback.ttl-=dt;if(G.shopFeedback.ttl<=0)G.shopFeedback=null;}
   G.shake = Math.max(0, G.shake - dt*3);                        // 震屏衰减(撞车后也能平息)
   if(G.state==='crashing'){
+    if(G.paused)return;
     G.crashT-=dt;
-    const freeze = G.crashT > G.crashLen - 0.09;
+    const freeze = G.crashT > G.crashLen - EXPERIENCE.crash.freeze;
     if(!freeze){
       G.t += dt * 0.42;
       for(const p of G.parts){
@@ -471,6 +484,12 @@ export function update(dt){
       G.slice.activeBeat=beat.id;G.slice.beatLog.push({id:beat.id,at:Math.floor(G.dist)});
     }
   }
+  if(G.scripted&&!G.benchmark){
+    const beat=benchmarkBeat(),base=G.plan.speed*(G.difficulty==='easy'?MOBILE.easySpeed:1);
+    const target=base*(beat.speedMul||1);
+    if(!G.speedRamp||G.speedRamp.to!==target)G.speedRamp={from:G.speed,to:target,age:0};
+    G.speedRamp.age+=dt;G.speed=lerp(G.speedRamp.from,target,clamp(G.speedRamp.age/EXPERIENCE.speedTransition,0,1));
+  }
   if(G.mode==='endless') G.speed = Math.min(20, 9.5 + G.dist/280);
   setBgmIntensity(G.tutorial?0.18:clamp(0.28+(G.speed-9.5) / 18+Math.min(G.combo,15)/30,0.24,0.9));
   const nearLesson=G.tutorial && !G.tutorial.actionDone && G.tutorial.targetZ-G.dist<12;
@@ -490,13 +509,7 @@ export function update(dt){
   // 道具计时(磁铁/金桂)
   if(G.powerT.magnet > 0) G.powerT.magnet -= dt;
   if(G.powerT.gui > 0) G.powerT.gui -= dt;
-  // 磁铁生效:邻道收集品横向吸向玩家道
-  if(G.powerT.magnet > 0){
-    for(const c of G.cols){
-      if(c.kind!=='egg' || c.got || Math.abs(c.x - pl.x) <= 0.1) continue;
-      c.x += (pl.x - c.x) * Math.min(1, dt*4);
-    }
-  }
+  updateAttraction(dt);
   if(G.newItem){ G.newItem.ttl -= dt; if(G.newItem.ttl <= 0) G.newItem = null; }
   if(G.speech){ G.speech.ttl -= dt; if(G.speech.ttl<=0) G.speech=null; }
   G.talkCd = Math.max(0, G.talkCd-dt);
@@ -606,8 +619,9 @@ export function update(dt){
   for(const c of G.cols){
     const prevRz = c.rz===undefined ? Infinity : c.rz;
     c.rz = c.z - G.dist + ZP;
+    if(c.kind==='skillStep'){recordSkillStep(c,prevRz);continue;}
     const inWin = (c.rz > ZP-0.5 && c.rz < ZP+0.5) || (prevRz > ZP && c.rz <= ZP);
-    if(!c.got && inWin && Math.abs(c.x-pl.x)<0.6 && Math.abs(c.y-(pl.y+0.8))<0.95){
+    if(!c.got && !c.fly && inWin && Math.abs(c.x-pl.x)<0.6 && Math.abs(c.y-(pl.y+0.8))<0.95){
       c.got = true;
       const p = proj(c.x, c.y, ZP);
       if(c.kind==='sliceToken' || c.kind==='sliceLight'){
@@ -625,16 +639,6 @@ export function update(dt){
         G.arcGot[c.arc]=arcCount;
         continue;
       }
-      if(c.kind==='skillStep'){
-        const index=G.skillSteps[c.skillId]||0;
-        const actual=c.action==='double'?pl.jumps>=2&&pl.y>1.35:c.action==='jump'?pl.y>0.72:c.action==='slide'?pl.sliding>0&&pl.y<0.3:G.actionLog.some(a=>a.kind==='lane'&&a.lane===c.lane&&a.dist>c.z-22);
-        if(!G.skillFailed[c.skillId]&&index===c.step&&actual){
-          G.skillSteps[c.skillId]=index+1;
-          if(index+1===c.steps){G.skills.push(c.skillId);G.egg={text:G.plan.skills.find(s=>s.id===c.skillId).name+JOURNEY_COPY.seal,ttl:2.2,dur:2.2};sfx.newItem();}
-          else sfx.gate();
-        } else G.skillFailed[c.skillId]=true;
-        continue;
-      }
       if(c.kind==='relic'){
         burst(p.x, p.y, '#d89a3a');
         if(!save.album[c.id]) grantAlbumItem(c.id);
@@ -644,27 +648,10 @@ export function update(dt){
         }
         continue;
       }
-      const coinMul = G.powerT.gui > 0 ? 2 : 1;            // 金桂只翻倍鸭蛋
-      G.runMarks += 1;
-      G.runStars = G.scripted?calculateMedals(G.runMarks,G.plan.collectTarget,G.skills).stars:calculateRunStars(G.runMarks, RUN_STAR_THRESHOLDS);
-      save.coins += coinMul;
-      queuePersist();
-      G.arcGot[c.arc] = (G.arcGot[c.arc]||0) + 1;
-      G.combo++; G.comboT = 3; sfx.collect(G.combo);
-      duckSay(G.combo>=5?'combo':'egg', true, 1);
-      burst(p.x, p.y, '#f4e2b0');
-      if(G.combo >= 2 && G.arcGot[c.arc] === c.arcN){
-        G.egg = G.egg && G.egg.ttl > 1.5 ? G.egg : { text:'一串全收!', ttl:2, dur:2 };
-        const q = proj(c.x, c.y+0.6, ZP); burst(q.x, q.y, '#f4e2b0');
-      }
-      if(G.mode==='adv'&&!G.scripted){
-        for(let i=0;i<3;i++) if(G.runMarks === RUN_STAR_THRESHOLDS[i]){
-          G.egg = { text:'★'.repeat(i+1)+' 达成!', ttl:2.2, dur:2.2 }; sfx.gate();
-        }
-      }
+      collectEgg(c);
     }
   }
-  G.cols = G.cols.filter(c=>!c.got && c.rz > 1.2);
+  G.cols = G.cols.filter(c=>!c.got && (c.fly || c.rz > 1.2));
   // 道具扫掠(同收集品判定窗;磁铁/护盾/金桂)
   for(const p of G.powers){
     const prevRz = p.rz===undefined ? Infinity : p.rz;
@@ -690,6 +677,68 @@ export function update(dt){
   G.parts = G.parts.filter(p=>p.life>0);
 }
 
+// 菱形是动作检查点，不套用鸭蛋的高度拾取框。
+// 在通过检查线时验证动作，待障碍碰撞窗口结束后才提示下一步。
+function recordSkillStep(c,previous){
+ if(c.got)return;
+ if(G.skills.includes(c.skillId)){c.got=true;return;}
+ const crossed=previous>ZP&&c.rz<=ZP;
+ if(crossed){
+  const lane=pl.lane===c.lane&&Math.abs(pl.x-c.x)<EXPERIENCE.skill.laneTolerance;
+  const action=c.action==='jump'?canPassObstacle(pl,'low'):c.action==='slide'?canPassObstacle(pl,'high'):
+    c.action==='double'?pl.jumps>=2&&pl.y>EXPERIENCE.skill.doubleHeight:c.action==='lane';
+  c.actionPassed=lane&&action;
+ }
+ if(c.rz>=ZP-EXPERIENCE.skill.finishMargin)return;
+ c.got=true;
+ const done=G.skillSteps[c.skillId]||0;
+ if(G.skillFailed[c.skillId]||done!==c.step||!c.actionPassed){G.skillFailed[c.skillId]=true;return;}
+ G.skillSteps[c.skillId]=done+1;
+ if(done+1===c.steps){
+  G.skills.push(c.skillId);G.egg={text:G.plan.skills.find(s=>s.id===c.skillId).name+JOURNEY_COPY.seal,ttl:2.2,dur:2.2};sfx.newItem();
+ }else sfx.gate();
+}
+
+// 吸附只改变绘制位置；原始路线位置保持不变。
+export function updateAttraction(dt){
+ for(const c of G.cols){
+  if(c.got||c.kind!=='egg'||c.tutorialStep!==undefined||c.tutorialGoal)continue;
+  const distance=c.z-G.dist;
+  if(!c.fly&&G.powerT.magnet>0&&distance>=0&&distance<=EXPERIENCE.magnet.range){
+   c.fly={age:0,duration:EXPERIENCE.magnet.minTime+(EXPERIENCE.magnet.maxTime-EXPERIENCE.magnet.minTime)*distance/EXPERIENCE.magnet.range,x:c.x,y:c.y,rz:distance+ZP};
+  }
+  if(!c.fly)continue;
+  const f=c.fly;f.age+=dt;const t=clamp(f.age/f.duration,0,1),ease=t*t*(3-2*t);
+  f.previous={x:f.x,y:f.y,rz:f.rz};
+  f.x=lerp(c.x,pl.x,ease);f.y=lerp(c.y,pl.y+.8,ease)+Math.sin(t*Math.PI)*.45;
+  f.rz=lerp(Math.max(ZP,c.z-G.dist+ZP),ZP,ease);
+  if(t>=1)collectEgg(c);
+ }
+}
+function settleAttraction(){for(const c of G.cols)if(c.fly&&!c.got)collectEgg(c);}
+function collectEgg(c){
+ if(c.credited)return;c.credited=true;c.got=true;
+ const p=proj(pl.x,pl.y+.8,ZP);
+  const coinMul = G.powerT.gui > 0 ? 2 : 1;            // 金桂只翻倍鸭蛋
+  G.runMarks += 1;
+  G.runStars = G.scripted?calculateMedals(G.runMarks,G.plan.collectTarget,G.skills).stars:calculateRunStars(G.runMarks, RUN_STAR_THRESHOLDS);
+  save.coins += coinMul;
+  queuePersist();
+  G.arcGot[c.arc] = (G.arcGot[c.arc]||0) + 1;
+  G.combo++; G.comboT = 3; sfx.collect(G.combo);
+  duckSay(G.combo>=5?'combo':'egg', true, 1);
+  burst(p.x, p.y, '#f4e2b0');
+  if(G.combo >= 2 && G.arcGot[c.arc] === c.arcN){
+    G.egg = G.egg && G.egg.ttl > 1.5 ? G.egg : { text:'一串全收!', ttl:2, dur:2 };
+    const q = proj(c.x, c.y+0.6, ZP); burst(q.x, q.y, '#f4e2b0');
+  }
+  if(G.mode==='adv'&&!G.scripted){
+    for(let i=0;i<3;i++) if(G.runMarks === RUN_STAR_THRESHOLDS[i]){
+      G.egg = { text:'★'.repeat(i+1)+' 达成!', ttl:2.2, dur:2.2 }; sfx.gate();
+    }
+  }
+}
+
 function scatterCrashBits(){
   const n = Math.min(8, 2 + G.runMarks);
   for(let i=0;i<n;i++){
@@ -706,12 +755,14 @@ function scatterCrashBits(){
 }
 
 export function gameOver(type){
+  if(G.state!=='play')return;
+  settleAttraction();
   G.killedBy = type || 'full';
   const lines = CRASH_LINES[G.killedBy] || CRASH_LINES.full;
   G.crashLine = lines[visualIrnd(0, lines.length-1)];
   sfx.bonk(); duckSay('crash', true, 0.78);
   scatterCrashBits();
-  G.shake = prefersReducedMotion() ? 0 : 1.35; G.crashT = G.crashLen;   // 90ms 定格 + 450ms 出洋相
+  G.shake = prefersReducedMotion() ? 0 : 1.35; G.crashT = G.crashLen;   // 定格、翻倒、晕眩分别留出表演时间
   G.newBest = false;
   if(G.mode==='endless'){
     const m = Math.floor(G.dist);
@@ -723,6 +774,8 @@ export function gameOver(type){
   track('over', { mode:G.mode, dist:Math.floor(G.dist) });
 }
 export function levelClear(){
+  if(G.state!=='play')return;
+  settleAttraction();
   sfx.clear();
   if(G.mode==='slice'){
     G.runStars=0;G.state='clear';track('slice_clear',{dist:Math.floor(G.dist),tokens:G.slice?.tokenCount||0,easy:!!G.slice?.easy});return;
@@ -812,13 +865,21 @@ function protectGuaranteedSecrets(){
 }
 
 
-/* 标杆固定片段；真实玩家验收后才将新编排推广到其余九关。 */
+/* 主线节奏提示与路线实例化；第一关保留教学标杆。 */
 export function benchmarkBeat(){
   const level=G.plan||MOBILE.benchmark,beat=level.beats.find(b=>G.dist>=b.from&&G.dist<b.to)||level.beats.at(-1);
-  if(!beat.skill)return beat;
+  if(!beat.skill){
+    const step=level.basicSteps?.find(s=>s.z>G.dist&&s.z-G.dist<level.speed*3.5);
+    return step?{...beat,cue:EC.lanes[step.lane+1]+'道 · '+EC.actions[step.action]+'；'+beat.cue}:beat;
+  }
   const skill=level.skills.find(s=>s.id===beat.skill),words=level.cueWords;
-  const route=skill.steps.map(s=>words.lanes[s.lane+1]+(words.actions[s.action]||'')).join('—');
-  return {...beat,cue:route+words.reward+skill.name+words.seal+'；'+words.lanes[level.safeLane+1]+words.safe};
+  const format=(copy,values)=>copy.replace(/\{(\w+)\}/g,(_,key)=>String(values[key]??''));
+  if(G.skills.includes(skill.id))return {...beat,cue:format(EC.skillEarned,{name:skill.name})};
+  if(G.skillFailed[skill.id])return {...beat,cue:format(EC.skillMissed,{name:skill.name})};
+  const done=G.skillSteps[skill.id]||0,next=skill.steps[done];
+  const progress=format(EC.skillProgress,{name:skill.name,done,total:skill.steps.length});
+  const action=next?format(EC.skillNext,{lane:words.lanes[next.lane+1],action:next.action==='lane'?EC.skillHold:EC.actions[next.action]}):'';
+  return {...beat,cue:progress+'；'+action};
 }
 function startBenchmark(){
   const level=G.plan||MOBILE.benchmark;
@@ -826,8 +887,8 @@ function startBenchmark(){
   G.nextSpawn=Infinity;G.nextGate=Infinity;G.nextPower=Infinity;G.nextRelic=Infinity;
   G.obs=level.obstacles.map(o=>({...o,x:o.lane*LANEGAP}));
   G.cols=[];
-  // 左侧舒缓线的收益可达标；印章需要主动走技巧线。
-  for(let z=rewards.from;z<rewards.to;z+=rewards.every)for(let i=0;i<rewards.count;i++)G.cols.push({x:safeX,z:z+i*rewards.gap,y:rewards.height,id:'egg',kind:'egg',arc:z,arcN:rewards.count,got:false});
+  // 收益沿当前引导路线分布；技巧标记仍要求玩家主动完成动作。
+  for(let z=rewards.from;z<rewards.to;z+=rewards.every)for(let i=0;i<rewards.count;i++)G.cols.push({x:journeyLaneAt(level,z+i*rewards.gap)*LANEGAP,z:z+i*rewards.gap,y:rewards.height,id:'egg',kind:'egg',arc:z,arcN:rewards.count,got:false});
   for(const skill of level.skills)skill.steps.forEach((s,i)=>{
     G.cols.push({...s,x:s.lane*LANEGAP,y:s.action==='double'?2.6:s.action==='jump'?bonus.jumpHeight:bonus.groundHeight,id:'gold',kind:'skillStep',skillId:skill.id,step:i,steps:skill.steps.length,got:false});
     for(let k=1;k<=bonus.count;k++)G.cols.push({x:s.lane*LANEGAP,z:s.z+k*bonus.gap,y:bonus.height,id:'egg',kind:'egg',arc:s.z,arcN:bonus.count,got:false});
@@ -837,13 +898,13 @@ function startBenchmark(){
   const reserved=new Set(),pool=ITEMS.filter(i=>!i.secret&&(i.home??0)===G.lvIdx);
   for(const z of level.relicSpots||[level.relic.z]){
     const relic=tracked&&!tracked.secret&&(tracked.home??0)===G.lvIdx&&!reserved.has(tracked.id)?tracked.id:pool.find(i=>!save.album[i.id]&&!reserved.has(i.id))?.id||pool.find(i=>!reserved.has(i.id))?.id||pool[0]?.id||level.relic.defaultId;
-    reserved.add(relic);G.cols.push({x:safeX,z,y:level.relic.height,id:relic,kind:'relic',got:false});
+    reserved.add(relic);G.cols.push({x:journeyLaneAt(level,z)*LANEGAP,z,y:level.relic.height,id:relic,kind:'relic',got:false});
   }
   G.gates=level.gates.map(z=>({z,passed:false,rz:z-G.dist+ZP}));
   G.powers=[{lane:level.safeLane,x:safeX,z:level.power.z,kind:level.power.kind}];
   if(!G.benchmark){
     G.powers=[];const interval=220*([1,.85,.7,.55][save.ups.spawn]||1),kinds=['magnet','shield','gui'];
-    for(let z=150,k=0;z<level.len-40;z+=interval,k++)G.powers.push({lane:level.safeLane,x:safeX,z,kind:kinds[k%kinds.length]});
+    for(let z=150,k=0;z<level.len-40;z+=interval,k++)G.powers.push({lane:journeyLaneAt(level,z),x:journeyLaneAt(level,z)*LANEGAP,z,kind:kinds[k%kinds.length]});
   }
   if(level.arcRewards){
     for(const skill of level.skills)for(let i=1;i<skill.steps.length;i++){
