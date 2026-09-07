@@ -1,10 +1,10 @@
 {
   "schema": "duckduckrun-asset-sbom/v1",
-  "generated_at": "2026-09-06",
+  "generated_at": "2026-09-07",
   "scope": "All runtime images, icons, fonts and synthesized audio source. Inventory is distinct from approval for publication.",
   "release_review": {
     "status": "registered",
-    "asset_file_count": 58,
+    "asset_file_count": 88,
     "completeness_rule": "Each governed source/release asset must be discovered from disk and matched to exactly one registry entry; every entry includes SHA-256, source/provenance, author/rightsholder, license, attribution location and release obligation.",
     "player_visible_notice_contract": {
       "ui_route": "menu:credits",
@@ -15,7 +15,7 @@
           "publicPath": "legal/LICENSE.md"
         },
         "photoCredits": {
-          "source": "assets/img/CREDITS.md",
+          "source": "assets/album/CREDITS.md",
           "publicPath": "legal/PHOTO-CREDITS.md"
         },
         "fontLicense": {
@@ -29,6 +29,726 @@
     "legal_note": "Registry review documents attribution and license handling; it is not a formal legal opinion."
   },
   "assets": [
+    {
+      "id": "album_baige",
+      "local_path": "assets/album/baige.jpg",
+      "category": "item_photo",
+      "purpose": "album documentary",
+      "sha256": "ea7a05acb79f33bf45d132335d9b36a556cbffb51233211535fd452363c4f8ab",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Music_Stage_of_Sun_Yat-sen_Mauloleum.jpg",
+      "source_version": "2009-05-31T05:31:33Z; SHA-1 5e552bd78874e6d4242a3cddb20f3fb952f584ed",
+      "author": "Jay Hsu",
+      "license": "CC BY-SA 2.0",
+      "modified": "采用 Commons 提供的缩略图；按 EXIF 方向旋转，等比缩至最长边不超过 1200px，JPEG 85 重编码并移除嵌入元数据；未裁剪、未改色。",
+      "downloaded_at": "2026-09-07T02:32:48Z",
+      "downloaded_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/dc/Music_Stage_of_Sun_Yat-sen_Mauloleum.jpg/960px-Music_Stage_of_Sun_Yat-sen_Mauloleum.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "downloaded_sha256": "6fb56a4aec2fb88a564695a7841cfada6d402508d33c0f66a3d2f8ef345f1263",
+      "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
+      "release_status": "source and image checked; public-release approval pending",
+      "license_obligation": "Attribution, license link and change notice; local derivative remains under the same CC BY-SA license.",
+      "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
+      "reviewer": "Codex source and image check; not a human publication approval",
+      "reviewed_at": "2026-09-07",
+      "review_status": "pending",
+      "release_included": true,
+      "decision": "source record retained; complete publication review of license and actual use"
+    },
+    {
+      "id": "album_bao",
+      "local_path": "assets/album/bao.jpg",
+      "category": "item_photo",
+      "purpose": "album actual",
+      "sha256": "d51dd1746dfd7e384956daa1cae0c0117b927d9392dc50e6b82b64b7163416fb",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Xiaolongbaozi_(Nanjing).jpg",
+      "source_version": "2018-03-14T14:59:01Z; SHA-1 43af60cf3a92ebfc1ef24fb81915c4683ee939f5",
+      "author": "Leiem",
+      "license": "CC BY-SA 4.0",
+      "modified": "按 EXIF 方向旋转，等比缩至最长边 1200px，JPEG 85 重编码并移除嵌入元数据；未裁剪、未改色。",
+      "downloaded_at": "2026-09-07T02:19:29Z",
+      "downloaded_url": "https://upload.wikimedia.org/wikipedia/commons/1/12/Xiaolongbaozi_%28Nanjing%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "downloaded_sha256": "38a076e56132c2dcdd6596f26f6d3be97bfd68a87715a1f7f1e7b10dcef3bc3f",
+      "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
+      "release_status": "source and image checked; public-release approval pending",
+      "license_obligation": "Attribution, license link and change notice; local derivative remains under the same CC BY-SA license.",
+      "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
+      "reviewer": "Codex source and image check; not a human publication approval",
+      "reviewed_at": "2026-09-07",
+      "review_status": "pending",
+      "release_included": true,
+      "decision": "source record retained; complete publication review of license and actual use"
+    },
+    {
+      "id": "album_baochuan",
+      "local_path": "assets/album/baochuan.jpg",
+      "category": "item_photo",
+      "purpose": "album reconstruction",
+      "sha256": "59f428a8850b2594e3e3067ef212f3722970a484bfba40d83c175a812749f459",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Nanjing_Treasure_Boat_-_P1070978.JPG",
+      "source_version": "2011-02-15T02:58:06Z; SHA-1 4a50d6df780880950b4da65c5f7c1fcd4a776ceb",
+      "author": "User:Vmenkov",
+      "license": "CC BY-SA 3.0",
+      "modified": "采用 Commons 提供的缩略图；按 EXIF 方向旋转，等比缩至最长边不超过 1200px，JPEG 85 重编码并移除嵌入元数据；未裁剪、未改色。",
+      "downloaded_at": "2026-09-07T02:31:54Z",
+      "downloaded_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/79/Nanjing_Treasure_Boat_-_P1070978.JPG/960px-Nanjing_Treasure_Boat_-_P1070978.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "downloaded_sha256": "4d5bf6f36a272163176d88b0ace65d69537a42754fe15acb9b00c918d76fc5a4",
+      "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
+      "release_status": "source and image checked; public-release approval pending",
+      "license_obligation": "Attribution, license link and change notice; local derivative remains under the same CC BY-SA license.",
+      "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
+      "reviewer": "Codex source and image check; not a human publication approval",
+      "reviewed_at": "2026-09-07",
+      "review_status": "pending",
+      "release_included": true,
+      "decision": "source record retained; complete publication review of license and actual use"
+    },
+    {
+      "id": "album_baoenta",
+      "local_path": "assets/album/baoenta.jpg",
+      "category": "item_photo",
+      "purpose": "album actual",
+      "sha256": "6aef1b79b5a8612c69c9b25c3fe950d1ec4483c90faf391599f3812231febf78",
+      "source_url": "https://commons.wikimedia.org/wiki/File:2024Apr_-_Glass_Pagoda_of_Nanjing_-_img_01.jpg",
+      "source_version": "2024-05-21T17:36:02Z; SHA-1 e4e8ca2005d25f1a723ee97473cb0280fb3283a0",
+      "author": "Chainwit.",
+      "license": "CC BY 4.0",
+      "modified": "采用 Commons 提供的缩略图；按 EXIF 方向旋转，等比缩至最长边不超过 1200px，JPEG 85 重编码并移除嵌入元数据；未裁剪、未改色。",
+      "downloaded_at": "2026-09-07T02:31:22Z",
+      "downloaded_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/48/2024Apr_-_Glass_Pagoda_of_Nanjing_-_img_01.jpg/960px-2024Apr_-_Glass_Pagoda_of_Nanjing_-_img_01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "downloaded_sha256": "f17df674433eaf1672559382210d2275e40569912f9084c838411ba524c8fe1a",
+      "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
+      "release_status": "source and image checked; public-release approval pending",
+      "license_obligation": "Follow the listed license; retain author, source and processing notice.",
+      "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
+      "reviewer": "Codex source and image check; not a human publication approval",
+      "reviewed_at": "2026-09-07",
+      "review_status": "pending",
+      "release_included": true,
+      "decision": "source record retained; complete publication review of license and actual use"
+    },
+    {
+      "id": "album_bean",
+      "local_path": "assets/album/bean.jpg",
+      "category": "item_photo",
+      "purpose": "album actual",
+      "sha256": "ac7c276857b15f6d62f90a84d8e5f67cfcde3149e4d3382287756a8e64e5e02b",
+      "source_url": "https://commons.wikimedia.org/wiki/File:%E8%B5%A4%E8%B1%86%E9%85%92%E9%85%BF%E5%85%83%E5%AE%B5.jpg",
+      "source_version": "2017-01-10T13:17:39Z; SHA-1 b1ea909ba55e5e1ef0325494739f863a32bfefb5",
+      "author": "三猎",
+      "license": "CC BY-SA 4.0",
+      "modified": "按 EXIF 方向旋转，等比缩至最长边 1200px，JPEG 85 重编码并移除嵌入元数据；未裁剪、未改色。",
+      "downloaded_at": "2026-09-07T02:18:36Z",
+      "downloaded_url": "https://upload.wikimedia.org/wikipedia/commons/2/27/%E8%B5%A4%E8%B1%86%E9%85%92%E9%85%BF%E5%85%83%E5%AE%B5.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "downloaded_sha256": "8b182e1bdcde91538f65a1c72925f28366ffe400eeafdaa941068b43c2846270",
+      "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
+      "release_status": "source and image checked; public-release approval pending",
+      "license_obligation": "Attribution, license link and change notice; local derivative remains under the same CC BY-SA license.",
+      "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
+      "reviewer": "Codex source and image check; not a human publication approval",
+      "reviewed_at": "2026-09-07",
+      "review_status": "pending",
+      "release_included": true,
+      "decision": "source record retained; complete publication review of license and actual use"
+    },
+    {
+      "id": "album_book",
+      "local_path": "assets/album/book.jpg",
+      "category": "item_photo",
+      "purpose": "album actual",
+      "sha256": "c31a2a0fe628bac05782f58e0661b3995b043712262ce9cec33c8429d5868849",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Facade_of_Libraire_Avant-Garde(Wutai_Mountain_branch).jpg",
+      "source_version": "2017-01-25T10:25:12Z; SHA-1 c53307e38e6d750b8a5a41d0bc64c8a9b1641971",
+      "author": "JosephLai",
+      "license": "CC BY-SA 4.0",
+      "modified": "采用 Commons 提供的缩略图；按 EXIF 方向旋转，等比缩至最长边不超过 1200px，JPEG 85 重编码并移除嵌入元数据；未裁剪、未改色。",
+      "downloaded_at": "2026-09-07T02:23:56Z",
+      "downloaded_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c3/Facade_of_Libraire_Avant-Garde%28Wutai_Mountain_branch%29.jpg/1280px-Facade_of_Libraire_Avant-Garde%28Wutai_Mountain_branch%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "downloaded_sha256": "65bc1da99ba92a6e7cdc37919a62b6c143df1b60a0a629c0f1e7cea62287765e",
+      "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
+      "release_status": "source and image checked; public-release approval pending",
+      "license_obligation": "Attribution, license link and change notice; local derivative remains under the same CC BY-SA license.",
+      "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
+      "reviewer": "Codex source and image check; not a human publication approval",
+      "reviewed_at": "2026-09-07",
+      "review_status": "pending",
+      "release_included": true,
+      "decision": "source record retained; complete publication review of license and actual use"
+    },
+    {
+      "id": "album_chengzhuan",
+      "local_path": "assets/album/chengzhuan.jpg",
+      "category": "item_photo",
+      "purpose": "album actual",
+      "sha256": "dfa75fc7b97e1ee673d18085b8df6575be311f8db3edef6660845ebaeb802dd9",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Nanjing_City_Wall_Brick_with_Maker%27s_Mark_(10150966183).jpg",
+      "source_version": "2020-07-04T15:30:34Z; SHA-1 ef843a26d723de3bc14331f41ad6b8fb258bf3f4",
+      "author": "Gary Todd from Xinzheng, China",
+      "license": "CC0",
+      "modified": "采用 Commons 提供的缩略图；按 EXIF 方向旋转，等比缩至最长边不超过 1200px，JPEG 85 重编码并移除嵌入元数据；未裁剪、未改色。",
+      "downloaded_at": "2026-09-07T02:26:30Z",
+      "downloaded_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/55/Nanjing_City_Wall_Brick_with_Maker%27s_Mark_%2810150966183%29.jpg/960px-Nanjing_City_Wall_Brick_with_Maker%27s_Mark_%2810150966183%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "downloaded_sha256": "fd8e45b9b2ad60bf5e8e006e67c1eea8227ccf51a8697700f6a370206abff935",
+      "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
+      "release_status": "source and image checked; public-release approval pending",
+      "license_obligation": "Follow the listed license; retain author, source and processing notice.",
+      "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
+      "reviewer": "Codex source and image check; not a human publication approval",
+      "reviewed_at": "2026-09-07",
+      "review_status": "pending",
+      "release_included": true,
+      "decision": "source record retained; complete publication review of license and actual use"
+    },
+    {
+      "id": "album_cloud",
+      "local_path": "assets/album/cloud.jpg",
+      "category": "item_photo",
+      "purpose": "album actual",
+      "sha256": "3745b82d2e80af7147c25a2955a6012685379a7b1ddd69329bcd9f1ebea2f3fb",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Drachenrobe-Qianlong.JPG",
+      "source_version": "2006-08-16T16:34:42Z; SHA-1 32462d313c26eb31048b6372ad7a6a872a365f88",
+      "author": "Dr. Meierhofer",
+      "license": "CC BY-SA 3.0",
+      "modified": "采用 Commons 提供的缩略图；按 EXIF 方向旋转，等比缩至最长边不超过 1200px，JPEG 85 重编码并移除嵌入元数据；未裁剪、未改色。",
+      "downloaded_at": "2026-09-07T02:23:22Z",
+      "downloaded_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/52/Drachenrobe-Qianlong.JPG/960px-Drachenrobe-Qianlong.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "downloaded_sha256": "7cc3f47815684e4599da2de4deae8c003b68aff120e0f35a55e2c7fdc56e44f3",
+      "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
+      "release_status": "source and image checked; public-release approval pending",
+      "license_obligation": "Attribution, license link and change notice; local derivative remains under the same CC BY-SA license.",
+      "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
+      "reviewer": "Codex source and image check; not a human publication approval",
+      "reviewed_at": "2026-09-07",
+      "review_status": "pending",
+      "release_included": true,
+      "decision": "source record retained; complete publication review of license and actual use"
+    },
+    {
+      "id": "album_duck",
+      "local_path": "assets/album/duck.jpg",
+      "category": "item_photo",
+      "purpose": "album actual",
+      "sha256": "5e8e55cabe728f4171ee5153c69bf685c83b8d6d6e7a0972550beba8d3a46c6e",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Nanjing_Salted_Duck.jpg",
+      "source_version": "2013-07-16T12:38:15Z; SHA-1 6a707f8435002b83a33ee56a62b00321e0f7f742",
+      "author": "AddisWang",
+      "license": "CC BY-SA 3.0",
+      "modified": "按 EXIF 方向旋转，等比缩至最长边 1200px，JPEG 85 重编码并移除嵌入元数据；未裁剪、未改色。",
+      "downloaded_at": "2026-09-07T02:16:53Z",
+      "downloaded_url": "https://upload.wikimedia.org/wikipedia/commons/0/0d/Nanjing_Salted_Duck.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "downloaded_sha256": "ce2ed41e261bb34285418849464b5e671e8a9977e8e8beb2db891ab4eb3e76c3",
+      "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
+      "release_status": "source and image checked; public-release approval pending",
+      "license_obligation": "Attribution, license link and change notice; local derivative remains under the same CC BY-SA license.",
+      "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
+      "reviewer": "Codex source and image check; not a human publication approval",
+      "reviewed_at": "2026-09-07",
+      "review_status": "pending",
+      "release_included": true,
+      "decision": "source record retained; complete publication review of license and actual use"
+    },
+    {
+      "id": "album_egg",
+      "local_path": "assets/album/egg.jpg",
+      "category": "item_photo",
+      "purpose": "album documentary",
+      "sha256": "6a9dc863613630bbaea097d6d96b1e2c7d7bb91832d6b83211b935b37ff8ed00",
+      "source_url": "https://commons.wikimedia.org/wiki/File:W%C3%A0ng_j%C4%ABd%C3%A0n.jpg",
+      "source_version": "2010-01-18T16:42:52Z; SHA-1 abd85e6ec4717ab5fe7830dea3c3357fd05a03c7",
+      "author": "Berthe",
+      "license": "CC BY-SA 3.0",
+      "modified": "按 EXIF 方向旋转，等比缩至最长边 1200px，JPEG 85 重编码并移除嵌入元数据；未裁剪、未改色。",
+      "downloaded_at": "2026-09-07T02:19:15Z",
+      "downloaded_url": "https://upload.wikimedia.org/wikipedia/commons/a/a7/W%C3%A0ng_j%C4%ABd%C3%A0n.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "downloaded_sha256": "976f8a46ec93f98c629a34a7d14ab01e72fee84ec6a6a7604fe9fdd0db8c813e",
+      "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
+      "release_status": "source and image checked; public-release approval pending",
+      "license_obligation": "Attribution, license link and change notice; local derivative remains under the same CC BY-SA license.",
+      "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
+      "reviewer": "Codex source and image check; not a human publication approval",
+      "reviewed_at": "2026-09-07",
+      "review_status": "pending",
+      "release_included": true,
+      "decision": "source record retained; complete publication review of license and actual use"
+    },
+    {
+      "id": "album_elephant",
+      "local_path": "assets/album/elephant.jpg",
+      "category": "item_photo",
+      "purpose": "album actual",
+      "sha256": "325454a64bfefb4c335228d096769d882c2eb43fc13cc1c3c22bab041a06392e",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Stone_Elephant_Road_(Ming_Xiaoling)_1.jpg",
+      "source_version": "2021-12-18T13:40:15Z; SHA-1 7f6f064821800c73eaff844cc3dae2ffc4452ed3",
+      "author": "钉钉",
+      "license": "CC BY-SA 4.0",
+      "modified": "采用 Commons 提供的缩略图；按 EXIF 方向旋转，等比缩至最长边不超过 1200px，JPEG 85 重编码并移除嵌入元数据；未裁剪、未改色。",
+      "downloaded_at": "2026-09-07T02:26:03Z",
+      "downloaded_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b4/Stone_Elephant_Road_%28Ming_Xiaoling%29_1.jpg/960px-Stone_Elephant_Road_%28Ming_Xiaoling%29_1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "downloaded_sha256": "c42cefd87cf5c0fca57f841407cdc86039cd901478f6a2d27dae7f4700b272e9",
+      "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
+      "release_status": "source and image checked; public-release approval pending",
+      "license_obligation": "Attribution, license link and change notice; local derivative remains under the same CC BY-SA license.",
+      "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
+      "reviewer": "Codex source and image check; not a human publication approval",
+      "reviewed_at": "2026-09-07",
+      "review_status": "pending",
+      "release_included": true,
+      "decision": "source record retained; complete publication review of license and actual use"
+    },
+    {
+      "id": "album_fans",
+      "local_path": "assets/album/fans.jpg",
+      "category": "item_photo",
+      "purpose": "album actual",
+      "sha256": "6d654714296d2f94a134f11671256dfda221cd18d25b1551d79ad72a5f8b7f0a",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Duck_blood_and_vermicelli_soup_(20150819124849).JPG",
+      "source_version": "2015-08-22T14:44:58Z; SHA-1 0d6560c5b188592cd3b36f89bf7f0e240d778e38",
+      "author": "N509FZ",
+      "license": "CC BY-SA 4.0",
+      "modified": "按 EXIF 方向旋转，等比缩至最长边 1200px，JPEG 85 重编码并移除嵌入元数据；未裁剪、未改色。",
+      "downloaded_at": "2026-09-07T02:16:57Z",
+      "downloaded_url": "https://upload.wikimedia.org/wikipedia/commons/d/d3/Duck_blood_and_vermicelli_soup_%2820150819124849%29.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "downloaded_sha256": "3d81962d46122bef9b41393b79a73ec7f2e0befafa500bc2bea0715c7de95153",
+      "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
+      "release_status": "source and image checked; public-release approval pending",
+      "license_obligation": "Attribution, license link and change notice; local derivative remains under the same CC BY-SA license.",
+      "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
+      "reviewer": "Codex source and image check; not a human publication approval",
+      "reviewed_at": "2026-09-07",
+      "review_status": "pending",
+      "release_included": true,
+      "decision": "source record retained; complete publication review of license and actual use"
+    },
+    {
+      "id": "album_guihua",
+      "local_path": "assets/album/guihua.jpg",
+      "category": "item_photo",
+      "purpose": "album actual",
+      "sha256": "2af8c98cc26b74d065361cfd1d6705da01c9fe8cb41f768ed3dbf061a1cc69bd",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Osmanthus_fragrans_flowers.jpg",
+      "source_version": "2010-10-03T16:47:22Z; SHA-1 f3f2cfd0eb5ba107b8cc87ae13eee6e54a2375c7",
+      "author": "Achillu",
+      "license": "CC BY-SA 3.0",
+      "modified": "采用 Commons 提供的缩略图；按 EXIF 方向旋转，等比缩至最长边不超过 1200px，JPEG 85 重编码并移除嵌入元数据；未裁剪、未改色。",
+      "downloaded_at": "2026-09-07T02:32:34Z",
+      "downloaded_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0b/Osmanthus_fragrans_flowers.jpg/960px-Osmanthus_fragrans_flowers.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "downloaded_sha256": "1ae3553db966328c7391f91aefc3d573c1b1171b482ecee46d58dfce097bc5eb",
+      "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
+      "release_status": "source and image checked; public-release approval pending",
+      "license_obligation": "Attribution, license link and change notice; local derivative remains under the same CC BY-SA license.",
+      "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
+      "reviewer": "Codex source and image check; not a human publication approval",
+      "reviewed_at": "2026-09-07",
+      "review_status": "pending",
+      "release_included": true,
+      "decision": "source record retained; complete publication review of license and actual use"
+    },
+    {
+      "id": "album_hufengdie",
+      "local_path": "assets/album/hufengdie.jpg",
+      "category": "item_photo",
+      "purpose": "album actual",
+      "sha256": "748377c88f2f1dbc4ba5cbe9330d6725d3bb2558603e19dfde861aed56165c23",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Leuhd204.jpg",
+      "source_version": "2018-08-23T23:33:28Z; SHA-1 c23bcf2e124e6cf3cc7eeddc6852baebf6cfd8a0",
+      "author": "Notafly",
+      "license": "CC BY 3.0",
+      "modified": "采用 Commons 提供的缩略图；按 EXIF 方向旋转，等比缩至最长边不超过 1200px，JPEG 85 重编码并移除嵌入元数据；未裁剪、未改色。",
+      "downloaded_at": "2026-09-07T02:33:14Z",
+      "downloaded_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/80/Leuhd204.jpg/960px-Leuhd204.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "downloaded_sha256": "489b386e47e8b2cd60e4ef87b00c31871716226b60b7c5bd998caca3deee7a66",
+      "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
+      "release_status": "source and image checked; public-release approval pending",
+      "license_obligation": "Follow the listed license; retain author, source and processing notice.",
+      "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
+      "reviewer": "Codex source and image check; not a human publication approval",
+      "reviewed_at": "2026-09-07",
+      "review_status": "pending",
+      "release_included": true,
+      "decision": "source record retained; complete publication review of license and actual use"
+    },
+    {
+      "id": "album_jiangtun",
+      "local_path": "assets/album/jiangtun.jpg",
+      "category": "item_photo",
+      "purpose": "album actual",
+      "sha256": "bb46c332103e03a8cf6204a04d9efcf29b0d235610eb6b404c8df9c9e9302bb7",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Yangtze_finless_porpoise,_12_February_2008a.jpg",
+      "source_version": "2020-02-23T03:07:54Z; SHA-1 30f1d94234111894a4633f876e3ce8d18463ec3e",
+      "author": "Huangdan2060",
+      "license": "CC BY 3.0",
+      "modified": "采用 Commons 提供的缩略图；按 EXIF 方向旋转，等比缩至最长边不超过 1200px，JPEG 85 重编码并移除嵌入元数据；未裁剪、未改色。",
+      "downloaded_at": "2026-09-07T02:33:28Z",
+      "downloaded_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5f/Yangtze_finless_porpoise%2C_12_February_2008a.jpg/960px-Yangtze_finless_porpoise%2C_12_February_2008a.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "downloaded_sha256": "fe6d96ca9997d19c35ca5f733362053b2404f584d6d47b405bbde91821cdb550",
+      "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
+      "release_status": "source and image checked; public-release approval pending",
+      "license_obligation": "Follow the listed license; retain author, source and processing notice.",
+      "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
+      "reviewer": "Codex source and image check; not a human publication approval",
+      "reviewed_at": "2026-09-07",
+      "review_status": "pending",
+      "release_included": true,
+      "decision": "source record retained; complete publication review of license and actual use"
+    },
+    {
+      "id": "album_kejing",
+      "local_path": "assets/album/kejing.jpg",
+      "category": "item_photo",
+      "purpose": "album related",
+      "sha256": "2174e995aace6c9aee5b36335f99d37dba94de16240fa599af907e6e93ac828d",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Kejingchu_in_Nanjing_2012-02.JPG",
+      "source_version": "2012-11-07T05:03:45Z; SHA-1 3f02b9b72da35f20abd9b576b95ef31a23fd3f17",
+      "author": "猫猫的日记本",
+      "license": "CC BY-SA 3.0",
+      "modified": "采用 Commons 提供的缩略图；按 EXIF 方向旋转，等比缩至最长边不超过 1200px，JPEG 85 重编码并移除嵌入元数据；未裁剪、未改色。",
+      "downloaded_at": "2026-09-07T02:25:50Z",
+      "downloaded_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/88/Kejingchu_in_Nanjing_2012-02.JPG/960px-Kejingchu_in_Nanjing_2012-02.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "downloaded_sha256": "cc8c3fe912edc3391b80ba82c2019aa957accc8a60a5f0992c2da8e8d45d899b",
+      "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
+      "release_status": "source and image checked; public-release approval pending",
+      "license_obligation": "Attribution, license link and change notice; local derivative remains under the same CC BY-SA license.",
+      "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
+      "reviewer": "Codex source and image check; not a human publication approval",
+      "reviewed_at": "2026-09-07",
+      "review_status": "pending",
+      "release_included": true,
+      "decision": "source record retained; complete publication review of license and actual use"
+    },
+    {
+      "id": "album_lamp",
+      "local_path": "assets/album/lamp.jpg",
+      "category": "item_photo",
+      "purpose": "album actual",
+      "sha256": "07a77f5737a25fc2d8187731e756c00de6e374aea1dffa07c19e8b84db68ae69",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Night_of_Qinhuai_lantern_fair_2019_-_decorations.jpg",
+      "source_version": "2019-02-25T05:33:27Z; SHA-1 9e980d0395743f9b1ba7d7d1dbade91056dc87cf",
+      "author": "Leiem",
+      "license": "CC BY-SA 4.0",
+      "modified": "采用 Commons 提供的缩略图；按 EXIF 方向旋转，等比缩至最长边不超过 1200px，JPEG 85 重编码并移除嵌入元数据；未裁剪、未改色。",
+      "downloaded_at": "2026-09-07T02:23:36Z",
+      "downloaded_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b8/Night_of_Qinhuai_lantern_fair_2019_-_decorations.jpg/960px-Night_of_Qinhuai_lantern_fair_2019_-_decorations.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "downloaded_sha256": "81e01e074bfbdf49297e3304d5d5a27be5d9c0a7d79e9b1f9c842ff90c0cdf97",
+      "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
+      "release_status": "source and image checked; public-release approval pending",
+      "license_obligation": "Attribution, license link and change notice; local derivative remains under the same CC BY-SA license.",
+      "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
+      "reviewer": "Codex source and image check; not a human publication approval",
+      "reviewed_at": "2026-09-07",
+      "review_status": "pending",
+      "release_included": true,
+      "decision": "source record retained; complete publication review of license and actual use"
+    },
+    {
+      "id": "album_leaf",
+      "local_path": "assets/album/leaf.jpg",
+      "category": "item_photo",
+      "purpose": "album actual",
+      "sha256": "8b9f1ed5d186ede78c1ae456ab34ea361a66c4751aba9c1ac74121b2807dd9bd",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Foglia_di_platanus_x_acerifolia.jpg",
+      "source_version": "2018-06-27T10:26:51Z; SHA-1 88b865afb3a7dd03f2984c189a185104e50d46c7",
+      "author": "Arlas!",
+      "license": "CC BY-SA 4.0",
+      "modified": "采用 Commons 提供的缩略图；按 EXIF 方向旋转，等比缩至最长边不超过 1200px，JPEG 85 重编码并移除嵌入元数据；未裁剪、未改色。",
+      "downloaded_at": "2026-09-07T02:34:46Z",
+      "downloaded_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3a/Foglia_di_platanus_x_acerifolia.jpg/250px-Foglia_di_platanus_x_acerifolia.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "downloaded_sha256": "73e054cb0a420c0e7dd227283b16e0f66f0e9f2abaf63c4ef7bc1cc602998ace",
+      "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
+      "release_status": "source and image checked; public-release approval pending",
+      "license_obligation": "Attribution, license link and change notice; local derivative remains under the same CC BY-SA license.",
+      "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
+      "reviewer": "Codex source and image check; not a human publication approval",
+      "reviewed_at": "2026-09-07",
+      "review_status": "pending",
+      "release_included": true,
+      "decision": "source record retained; complete publication review of license and actual use"
+    },
+    {
+      "id": "album_luhao",
+      "local_path": "assets/album/luhao.jpg",
+      "category": "item_photo",
+      "purpose": "album actual",
+      "sha256": "d74d32dd6355dd68b067bd97ea0d9b487c83ada409aae6f4fcb40e4fa7a777b4",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Artemisia_selengensis_bundles.jpg",
+      "source_version": "2024-11-08T04:27:11Z; SHA-1 ef590c64e14449249e4cc5ac3071074aa9d82b2e",
+      "author": "Fumikas Sagisavas",
+      "license": "CC0",
+      "modified": "按 EXIF 方向旋转，等比缩至最长边 1200px，JPEG 85 重编码并移除嵌入元数据；未裁剪、未改色。",
+      "downloaded_at": "2026-09-07T02:19:42Z",
+      "downloaded_url": "https://upload.wikimedia.org/wikipedia/commons/9/93/Artemisia_selengensis_bundles.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "downloaded_sha256": "996130733a8668ae8fd891702f9c34b6fc8deefc5f6f1ba3ccfa1220b020413c",
+      "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
+      "release_status": "source and image checked; public-release approval pending",
+      "license_obligation": "Follow the listed license; retain author, source and processing notice.",
+      "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
+      "reviewer": "Codex source and image check; not a human publication approval",
+      "reviewed_at": "2026-09-07",
+      "review_status": "pending",
+      "release_included": true,
+      "decision": "source record retained; complete publication review of license and actual use"
+    },
+    {
+      "id": "album_nanyanjing",
+      "local_path": "assets/album/nanyanjing.jpg",
+      "category": "item_photo",
+      "purpose": "album actual",
+      "sha256": "8148e3dfa63029bb0c17fbee1290e645d0a338219b76fcdc55453978528080f0",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Full_view_of_Nanjing_Eye_Pedestrian_Bridge.jpg",
+      "source_version": "2024-10-20T12:45:17Z; SHA-1 bdfe2768efe6c48f3442f265cc79c14fe17f0ead",
+      "author": "Uyiliu2",
+      "license": "CC BY-SA 4.0",
+      "modified": "采用 Commons 提供的缩略图；按 EXIF 方向旋转，等比缩至最长边不超过 1200px，JPEG 85 重编码并移除嵌入元数据；未裁剪、未改色。",
+      "downloaded_at": "2026-09-07T02:34:13Z",
+      "downloaded_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/26/Full_view_of_Nanjing_Eye_Pedestrian_Bridge.jpg/500px-Full_view_of_Nanjing_Eye_Pedestrian_Bridge.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "downloaded_sha256": "073c5e2db5a800db4883983661ccd441e49df534a8948025efd0a9f9e34dcc46",
+      "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
+      "release_status": "source and image checked; public-release approval pending",
+      "license_obligation": "Attribution, license link and change notice; local derivative remains under the same CC BY-SA license.",
+      "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
+      "reviewer": "Codex source and image check; not a human publication approval",
+      "reviewed_at": "2026-09-07",
+      "review_status": "pending",
+      "release_included": true,
+      "decision": "source record retained; complete publication review of license and actual use"
+    },
+    {
+      "id": "album_pibie",
+      "local_path": "assets/album/pibie.jpg",
+      "category": "item_photo",
+      "purpose": "album actual",
+      "sha256": "89d1e24d669a0c88d016631ea517f690495da05dbdf7b420104a0acc3b454a00",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Tomb_of_Xiao_Jing_-_Bixie.JPG",
+      "source_version": "2011-03-26T09:03:28Z; SHA-1 51a82854be93f6318afa040b29a58fc9f86320af",
+      "author": "Shallowell",
+      "license": "CC BY-SA 3.0",
+      "modified": "采用 Commons 提供的缩略图；按 EXIF 方向旋转，等比缩至最长边不超过 1200px，JPEG 85 重编码并移除嵌入元数据；未裁剪、未改色。",
+      "downloaded_at": "2026-09-07T02:26:17Z",
+      "downloaded_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fa/Tomb_of_Xiao_Jing_-_Bixie.JPG/960px-Tomb_of_Xiao_Jing_-_Bixie.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "downloaded_sha256": "6914fcd4a81f442ce5028652d788f0c807beca68206635af455b205d3ceb8d12",
+      "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
+      "release_status": "source and image checked; public-release approval pending",
+      "license_obligation": "Attribution, license link and change notice; local derivative remains under the same CC BY-SA license.",
+      "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
+      "reviewer": "Codex source and image check; not a human publication approval",
+      "reviewed_at": "2026-09-07",
+      "review_status": "pending",
+      "release_included": true,
+      "decision": "source record retained; complete publication review of license and actual use"
+    },
+    {
+      "id": "album_plum",
+      "local_path": "assets/album/plum.jpg",
+      "category": "item_photo",
+      "purpose": "album actual",
+      "sha256": "097491fe2701637b0437fd94d01d73d9dd3c58c2395f3294611929faa228fc34",
+      "source_url": "https://commons.wikimedia.org/wiki/File:2019%E5%8D%97%E4%BA%AC%E6%A2%85%E8%8A%B1%E5%B1%B1%E6%A2%85%E8%8A%B102.jpg",
+      "source_version": "2019-03-16T16:12:24Z; SHA-1 adbf08361713a85ef7b9206b681f796225817b3b",
+      "author": "西安兵马俑",
+      "license": "CC BY-SA 4.0",
+      "modified": "采用 Commons 提供的缩略图；按 EXIF 方向旋转，等比缩至最长边不超过 1200px，JPEG 85 重编码并移除嵌入元数据；未裁剪、未改色。",
+      "downloaded_at": "2026-09-07T02:24:10Z",
+      "downloaded_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/13/2019%E5%8D%97%E4%BA%AC%E6%A2%85%E8%8A%B1%E5%B1%B1%E6%A2%85%E8%8A%B102.jpg/960px-2019%E5%8D%97%E4%BA%AC%E6%A2%85%E8%8A%B1%E5%B1%B1%E6%A2%85%E8%8A%B102.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "downloaded_sha256": "c47cd5423ae0c21c2b71502df1335d93a3272e9827a124aed8e9d59e7e55e49b",
+      "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
+      "release_status": "source and image checked; public-release approval pending",
+      "license_obligation": "Attribution, license link and change notice; local derivative remains under the same CC BY-SA license.",
+      "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
+      "reviewer": "Codex source and image check; not a human publication approval",
+      "reviewed_at": "2026-09-07",
+      "review_status": "pending",
+      "release_included": true,
+      "decision": "source record retained; complete publication review of license and actual use"
+    },
+    {
+      "id": "album_pot",
+      "local_path": "assets/album/pot.jpg",
+      "category": "item_photo",
+      "purpose": "album actual",
+      "sha256": "af9b3ba0710b94ca2d38c18393de7f8216bc6262fba5b8f342222c57d85d541b",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Beef_potstickers.jpg",
+      "source_version": "2024-11-05T22:55:45Z; SHA-1 9e4e258832743574f06ea3688c9f85c81de101d3",
+      "author": "Fumikas Sagisavas",
+      "license": "CC0",
+      "modified": "采用 Commons 提供的缩略图；按 EXIF 方向旋转，等比缩至最长边不超过 1200px，JPEG 85 重编码并移除嵌入元数据；未裁剪、未改色。",
+      "downloaded_at": "2026-09-07T02:30:50Z",
+      "downloaded_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/46/Beef_potstickers.jpg/960px-Beef_potstickers.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "downloaded_sha256": "24c5aebac27cfe2656734b6484135a49a7b1237bfe2b813de6b879bccd882e21",
+      "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
+      "release_status": "source and image checked; public-release approval pending",
+      "license_obligation": "Follow the listed license; retain author, source and processing notice.",
+      "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
+      "reviewer": "Codex source and image check; not a human publication approval",
+      "reviewed_at": "2026-09-07",
+      "review_status": "pending",
+      "release_included": true,
+      "decision": "source record retained; complete publication review of license and actual use"
+    },
+    {
+      "id": "album_root",
+      "local_path": "assets/album/root.jpg",
+      "category": "item_photo",
+      "purpose": "album related",
+      "sha256": "bb0a14b01c0baed42bb6938390584998ad248c54e2faf81a8b05c5fb61fec123",
+      "source_url": "https://commons.wikimedia.org/wiki/File:%E7%B3%96%E8%97%95.jpg",
+      "source_version": "2020-08-06T02:41:08Z; SHA-1 54fbdee04af44819458f7b523d07052285708864",
+      "author": "三猎",
+      "license": "CC BY-SA 4.0",
+      "modified": "按 EXIF 方向旋转，等比缩至最长边 1200px，JPEG 85 重编码并移除嵌入元数据；未裁剪、未改色。",
+      "downloaded_at": "2026-09-07T02:19:03Z",
+      "downloaded_url": "https://upload.wikimedia.org/wikipedia/commons/2/2c/%E7%B3%96%E8%97%95.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "downloaded_sha256": "8234818edd6d25b7b44e9b9081464d63d534fa41496b3bd1468fcb7292ad2c7d",
+      "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
+      "release_status": "source and image checked; public-release approval pending",
+      "license_obligation": "Attribution, license link and change notice; local derivative remains under the same CC BY-SA license.",
+      "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
+      "reviewer": "Codex source and image check; not a human publication approval",
+      "reviewed_at": "2026-09-07",
+      "review_status": "pending",
+      "release_included": true,
+      "decision": "source record retained; complete publication review of license and actual use"
+    },
+    {
+      "id": "album_sakura",
+      "local_path": "assets/album/sakura.jpg",
+      "category": "item_photo",
+      "purpose": "album actual",
+      "sha256": "e86545759f45d3c097ae56d5b01d864f8455f197ec2a0269165c3bd8813cf34e",
+      "source_url": "https://commons.wikimedia.org/wiki/File:%E5%8D%97%E4%BA%AC%E7%8E%84%E6%AD%A6%E5%8C%BA%E9%B8%A1%E9%B8%A3%E5%AF%BA%E8%B7%AF%E6%A8%B1%E8%8A%B1_-_panoramio.jpg",
+      "source_version": "2017-03-28T02:22:33Z; SHA-1 e69dc21d095a9bf029c740a0bc6ef42d66d3c309",
+      "author": "helkonig",
+      "license": "CC BY 3.0",
+      "modified": "采用 Commons 提供的缩略图；按 EXIF 方向旋转，等比缩至最长边不超过 1200px，JPEG 85 重编码并移除嵌入元数据；未裁剪、未改色。",
+      "downloaded_at": "2026-09-07T02:24:26Z",
+      "downloaded_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4e/%E5%8D%97%E4%BA%AC%E7%8E%84%E6%AD%A6%E5%8C%BA%E9%B8%A1%E9%B8%A3%E5%AF%BA%E8%B7%AF%E6%A8%B1%E8%8A%B1_-_panoramio.jpg/960px-%E5%8D%97%E4%BA%AC%E7%8E%84%E6%AD%A6%E5%8C%BA%E9%B8%A1%E9%B8%A3%E5%AF%BA%E8%B7%AF%E6%A8%B1%E8%8A%B1_-_panoramio.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "downloaded_sha256": "bd95be443b7443e285aa76619149cbbd80d153d09c392ad6ef4a20e0f0371c6c",
+      "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
+      "release_status": "source and image checked; public-release approval pending",
+      "license_obligation": "Follow the listed license; retain author, source and processing notice.",
+      "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
+      "reviewer": "Codex source and image check; not a human publication approval",
+      "reviewed_at": "2026-09-07",
+      "review_status": "pending",
+      "release_included": true,
+      "decision": "source record retained; complete publication review of license and actual use"
+    },
+    {
+      "id": "album_stone",
+      "local_path": "assets/album/stone.jpg",
+      "category": "item_photo",
+      "purpose": "album documentary",
+      "sha256": "6c5184ee4814a9147e06e66428047c8c693fd925bd35f3206c5bb7b5bd47d52b",
+      "source_url": "https://commons.wikimedia.org/wiki/File:%E5%8D%97%E4%BA%AC%E9%9B%A8%E8%8A%B1%E5%8F%B0%E9%9B%A8%E8%8A%B1%E7%9F%B3.jpg",
+      "source_version": "2020-01-08T01:39:31Z; SHA-1 9092fcb7d7349e0f6b4bc9b5cafeb154b5ee8dd0",
+      "author": "董辰兴",
+      "license": "CC BY-SA 4.0",
+      "modified": "采用 Commons 提供的缩略图；按 EXIF 方向旋转，等比缩至最长边不超过 1200px，JPEG 85 重编码并移除嵌入元数据；未裁剪、未改色。",
+      "downloaded_at": "2026-09-07T02:35:00Z",
+      "downloaded_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d7/%E5%8D%97%E4%BA%AC%E9%9B%A8%E8%8A%B1%E5%8F%B0%E9%9B%A8%E8%8A%B1%E7%9F%B3.jpg/960px-%E5%8D%97%E4%BA%AC%E9%9B%A8%E8%8A%B1%E5%8F%B0%E9%9B%A8%E8%8A%B1%E7%9F%B3.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "downloaded_sha256": "1c29f8ccac642e9debbb403d34916c1e505c25730611bc4a47a83c45f2b76e1a",
+      "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
+      "release_status": "source and image checked; public-release approval pending",
+      "license_obligation": "Attribution, license link and change notice; local derivative remains under the same CC BY-SA license.",
+      "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
+      "reviewer": "Codex source and image check; not a human publication approval",
+      "reviewed_at": "2026-09-07",
+      "review_status": "pending",
+      "release_included": true,
+      "decision": "source record retained; complete publication review of license and actual use"
+    },
+    {
+      "id": "album_taro",
+      "local_path": "assets/album/taro.jpg",
+      "category": "item_photo",
+      "purpose": "album actual",
+      "sha256": "352686b677e22b06ef968ed426bb0b0440efbc73a3f3f12721d462c370ac261d",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Tangyumiao.JPG",
+      "source_version": "2012-02-14T16:33:24Z; SHA-1 4ec9831d077fc18a7e7498b71ff93edeb10e6be6",
+      "author": "AddisWang",
+      "license": "CC BY-SA 3.0",
+      "modified": "按 EXIF 方向旋转，等比缩至最长边 1200px，JPEG 85 重编码并移除嵌入元数据；未裁剪、未改色。",
+      "downloaded_at": "2026-09-07T02:18:08Z",
+      "downloaded_url": "https://upload.wikimedia.org/wikipedia/commons/c/cd/Tangyumiao.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "downloaded_sha256": "a470ae59561bd6ec411d8721ee9285f4df0c401cfc381edc1885c4b12c7359be",
+      "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
+      "release_status": "source and image checked; public-release approval pending",
+      "license_obligation": "Attribution, license link and change notice; local derivative remains under the same CC BY-SA license.",
+      "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
+      "reviewer": "Codex source and image check; not a human publication approval",
+      "reviewed_at": "2026-09-07",
+      "review_status": "pending",
+      "release_included": true,
+      "decision": "source record retained; complete publication review of license and actual use"
+    },
+    {
+      "id": "album_wufan",
+      "local_path": "assets/album/wufan.jpg",
+      "category": "item_photo",
+      "purpose": "album actual",
+      "sha256": "89663d5db060795213b7e4df5ae716e2b1997dae59b23b52a53f331b9a9868bc",
+      "source_url": "https://commons.wikimedia.org/wiki/File:%E4%B9%8C%E7%B1%B3%E9%A5%AD_20240505.jpg",
+      "source_version": "2024-05-05T09:33:19Z; SHA-1 697dbeb0b4b81b259c5b80b716b5f69c2ad6ca96",
+      "author": "Uuongkinghe",
+      "license": "CC BY-SA 4.0",
+      "modified": "采用 Commons 提供的缩略图；按 EXIF 方向旋转，等比缩至最长边不超过 1200px，JPEG 85 重编码并移除嵌入元数据；未裁剪、未改色。",
+      "downloaded_at": "2026-09-07T02:23:09Z",
+      "downloaded_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/be/%E4%B9%8C%E7%B1%B3%E9%A5%AD_20240505.jpg/1280px-%E4%B9%8C%E7%B1%B3%E9%A5%AD_20240505.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "downloaded_sha256": "c2a023e00bae352f9d735ad9f84fa3d737af98aa21675e247c538c301068ab21",
+      "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
+      "release_status": "source and image checked; public-release approval pending",
+      "license_obligation": "Attribution, license link and change notice; local derivative remains under the same CC BY-SA license.",
+      "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
+      "reviewer": "Codex source and image check; not a human publication approval",
+      "reviewed_at": "2026-09-07",
+      "review_status": "pending",
+      "release_included": true,
+      "decision": "source record retained; complete publication review of license and actual use"
+    },
+    {
+      "id": "album_yinghuo",
+      "local_path": "assets/album/yinghuo.jpg",
+      "category": "item_photo",
+      "purpose": "album related",
+      "sha256": "e53d61a0c33aafc5274f4d22a6b55ea673f36503c8c70deae44fec8253007682",
+      "source_url": "https://commons.wikimedia.org/wiki/File:%EB%B0%98%EB%94%A7%EB%B6%88%EC%9D%B4.jpg",
+      "source_version": "2016-10-09T02:43:11Z; SHA-1 9710617d234236441ea1e89dcf861c6657f3dca8",
+      "author": "메이",
+      "license": "CC BY-SA 1.0",
+      "modified": "采用 Commons 提供的缩略图；按 EXIF 方向旋转，等比缩至最长边不超过 1200px，JPEG 85 重编码并移除嵌入元数据；未裁剪、未改色。",
+      "downloaded_at": "2026-09-07T02:38:09Z",
+      "downloaded_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d5/%EB%B0%98%EB%94%A7%EB%B6%88%EC%9D%B4.jpg/250px-%EB%B0%98%EB%94%A7%EB%B6%88%EC%9D%B4.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "downloaded_sha256": "3546ca2b7386f86c036742ed7e63f180cd7e4cd897c9d9619ee3c51f5f57ddd6",
+      "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
+      "release_status": "source and image checked; public-release approval pending",
+      "license_obligation": "Attribution, license link and change notice; local derivative remains under the same CC BY-SA license.",
+      "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
+      "reviewer": "Codex source and image check; not a human publication approval",
+      "reviewed_at": "2026-09-07",
+      "review_status": "pending",
+      "release_included": true,
+      "decision": "source record retained; complete publication review of license and actual use"
+    },
+    {
+      "id": "album_zifeng",
+      "local_path": "assets/album/zifeng.jpg",
+      "category": "item_photo",
+      "purpose": "album actual",
+      "sha256": "1b3bd2e7fe0e62da1f9a552d46ebbabef41e99ce9ef16693401ac43a05865c91",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Zifeng_Tower_in_2017.jpg",
+      "source_version": "2022-08-15T04:06:28Z; SHA-1 8872958cd1f0c388e6b34a6530ea67ed5bbdb29b",
+      "author": "Haha169",
+      "license": "CC BY-SA 4.0",
+      "modified": "采用 Commons 提供的缩略图；按 EXIF 方向旋转，等比缩至最长边不超过 1200px，JPEG 85 重编码并移除嵌入元数据；未裁剪、未改色。",
+      "downloaded_at": "2026-09-07T02:34:27Z",
+      "downloaded_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/88/Zifeng_Tower_in_2017.jpg/960px-Zifeng_Tower_in_2017.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "downloaded_sha256": "8bb09397ea1cf4007a26306f6da5d72f3d9a4210aa1d45f155821618138e23ac",
+      "processing_record": "assets/album/REVIEW.json; tools/prepare_album_photos.py",
+      "release_status": "source and image checked; public-release approval pending",
+      "license_obligation": "Attribution, license link and change notice; local derivative remains under the same CC BY-SA license.",
+      "attribution_location": "album detail; menu:credits; legal/PHOTO-CREDITS.md",
+      "reviewer": "Codex source and image check; not a human publication approval",
+      "reviewed_at": "2026-09-07",
+      "review_status": "pending",
+      "release_included": true,
+      "decision": "source record retained; complete publication review of license and actual use"
+    },
     {
       "id": "jinling-brush",
       "local_path": "assets/fonts/jinling-brush.woff2",
@@ -48,6 +768,7 @@
       "reviewer": "Codex independent remediation",
       "reviewed_at": "2026-09-02",
       "review_status": "pending",
+      "release_included": true,
       "decision": "retain after fixed upstream and subset evidence review"
     },
     {
@@ -69,6 +790,7 @@
       "reviewer": "Codex independent remediation",
       "reviewed_at": "2026-09-02",
       "review_status": "pending",
+      "release_included": true,
       "decision": "retain after fixed upstream and subset evidence review"
     },
     {
@@ -90,7 +812,8 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
-      "decision": "internal preview; review provenance and rights before public release"
+      "release_included": true,
+      "decision": "source record retained; complete publication review of license and actual use"
     },
     {
       "id": "assets/game/book-duck.webp",
@@ -105,6 +828,7 @@
       "license_obligation": "Retain provenance and close rights review before publication",
       "attribution_location": "ASSETS.md; player credits; LICENSE.md",
       "review_status": "pending",
+      "release_included": true,
       "decision": "internal preview; review provenance and rights before public release"
     },
     {
@@ -120,6 +844,7 @@
       "license_obligation": "Retain provenance and close rights review before publication",
       "attribution_location": "ASSETS.md; player credits; LICENSE.md",
       "review_status": "pending",
+      "release_included": true,
       "decision": "internal preview; review provenance and rights before public release"
     },
     {
@@ -135,6 +860,7 @@
       "license_obligation": "Retain provenance and close rights review before publication",
       "attribution_location": "ASSETS.md; player credits; LICENSE.md",
       "review_status": "pending",
+      "release_included": true,
       "decision": "internal preview; review provenance and rights before public release"
     },
     {
@@ -150,6 +876,7 @@
       "license_obligation": "Retain provenance and close rights review before publication",
       "attribution_location": "ASSETS.md; player credits; LICENSE.md",
       "review_status": "pending",
+      "release_included": true,
       "decision": "internal preview; review provenance and rights before public release"
     },
     {
@@ -165,6 +892,7 @@
       "license_obligation": "Retain provenance and close rights review before publication",
       "attribution_location": "ASSETS.md; player credits; LICENSE.md",
       "review_status": "pending",
+      "release_included": true,
       "decision": "internal preview; review provenance and rights before public release"
     },
     {
@@ -180,6 +908,7 @@
       "license_obligation": "Retain provenance and close rights review before publication",
       "attribution_location": "ASSETS.md; player credits; LICENSE.md",
       "review_status": "pending",
+      "release_included": true,
       "decision": "replace or obtain original provenance before public release"
     },
     {
@@ -201,7 +930,8 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
-      "decision": "internal preview; review provenance and rights before public release"
+      "release_included": true,
+      "decision": "source record retained; complete publication review of license and actual use"
     },
     {
       "id": "nanjing-slice-target-v1",
@@ -222,6 +952,7 @@
       "reviewer": "Manus AI (stage 3 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
+      "release_included": true,
       "decision": "internal preview; review provenance and rights before public release"
     },
     {
@@ -243,6 +974,7 @@
       "reviewer": "Manus AI (stage 3 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
+      "release_included": true,
       "decision": "internal preview; review provenance and rights before public release"
     },
     {
@@ -264,6 +996,7 @@
       "reviewer": "Manus AI (stage 3 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
+      "release_included": true,
       "decision": "internal preview; review provenance and rights before public release"
     },
     {
@@ -279,6 +1012,7 @@
       "license_obligation": "Retain provenance and close rights review before publication",
       "attribution_location": "ASSETS.md; player credits; LICENSE.md",
       "review_status": "pending",
+      "release_included": true,
       "decision": "replace or obtain original provenance before public release"
     },
     {
@@ -294,6 +1028,7 @@
       "license_obligation": "Retain provenance and close rights review before publication",
       "attribution_location": "ASSETS.md; player credits; LICENSE.md",
       "review_status": "pending",
+      "release_included": true,
       "decision": "replace or obtain original provenance before public release"
     },
     {
@@ -309,6 +1044,7 @@
       "license_obligation": "Retain provenance and close rights review before publication",
       "attribution_location": "ASSETS.md; player credits; LICENSE.md",
       "review_status": "pending",
+      "release_included": true,
       "decision": "replace or obtain original provenance before public release"
     },
     {
@@ -324,6 +1060,7 @@
       "license_obligation": "Retain provenance and close rights review before publication",
       "attribution_location": "ASSETS.md; player credits; LICENSE.md",
       "review_status": "pending",
+      "release_included": true,
       "decision": "replace or obtain original provenance before public release"
     },
     {
@@ -345,7 +1082,8 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
-      "decision": "internal preview; review provenance and rights before public release"
+      "release_included": true,
+      "decision": "source record retained; complete publication review of license and actual use"
     },
     {
       "id": "bg_baoen",
@@ -366,7 +1104,8 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
-      "decision": "internal preview; review provenance and rights before public release"
+      "release_included": true,
+      "decision": "source record retained; complete publication review of license and actual use"
     },
     {
       "id": "bg_bridge",
@@ -387,7 +1126,8 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
-      "decision": "internal preview; review provenance and rights before public release"
+      "release_included": true,
+      "decision": "source record retained; complete publication review of license and actual use"
     },
     {
       "id": "bg_bridge",
@@ -408,7 +1148,8 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
-      "decision": "internal preview; review provenance and rights before public release"
+      "release_included": true,
+      "decision": "source record retained; complete publication review of license and actual use"
     },
     {
       "id": "bg_jiming",
@@ -429,7 +1170,8 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
-      "decision": "internal preview; review provenance and rights before public release"
+      "release_included": true,
+      "decision": "source record retained; complete publication review of license and actual use"
     },
     {
       "id": "bg_jiming",
@@ -450,7 +1192,8 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
-      "decision": "internal preview; review provenance and rights before public release"
+      "release_included": true,
+      "decision": "source record retained; complete publication review of license and actual use"
     },
     {
       "id": "bg_mendong",
@@ -471,7 +1214,8 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
-      "decision": "internal preview; review provenance and rights before public release"
+      "release_included": true,
+      "decision": "source record retained; complete publication review of license and actual use"
     },
     {
       "id": "bg_mendong",
@@ -492,7 +1236,8 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
-      "decision": "internal preview; review provenance and rights before public release"
+      "release_included": true,
+      "decision": "source record retained; complete publication review of license and actual use"
     },
     {
       "id": "bg_menu",
@@ -513,7 +1258,8 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
-      "decision": "internal preview; review provenance and rights before public release"
+      "release_included": true,
+      "decision": "source record retained; complete publication review of license and actual use"
     },
     {
       "id": "bg_menu",
@@ -534,7 +1280,8 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
-      "decision": "internal preview; review provenance and rights before public release"
+      "release_included": true,
+      "decision": "source record retained; complete publication review of license and actual use"
     },
     {
       "id": "bg_observatory",
@@ -555,7 +1302,8 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
-      "decision": "internal preview; review provenance and rights before public release"
+      "release_included": true,
+      "decision": "source record retained; complete publication review of license and actual use"
     },
     {
       "id": "bg_observatory",
@@ -576,7 +1324,8 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
-      "decision": "internal preview; review provenance and rights before public release"
+      "release_included": true,
+      "decision": "source record retained; complete publication review of license and actual use"
     },
     {
       "id": "bg_qixia",
@@ -597,7 +1346,8 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
-      "decision": "internal preview; review provenance and rights before public release"
+      "release_included": true,
+      "decision": "source record retained; complete publication review of license and actual use"
     },
     {
       "id": "bg_qixia",
@@ -618,7 +1368,8 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
-      "decision": "internal preview; review provenance and rights before public release"
+      "release_included": true,
+      "decision": "source record retained; complete publication review of license and actual use"
     },
     {
       "id": "bg_sunyard",
@@ -639,7 +1390,8 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
-      "decision": "internal preview; review provenance and rights before public release"
+      "release_included": true,
+      "decision": "source record retained; complete publication review of license and actual use"
     },
     {
       "id": "bg_sunyard",
@@ -660,7 +1412,8 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
-      "decision": "internal preview; review provenance and rights before public release"
+      "release_included": true,
+      "decision": "source record retained; complete publication review of license and actual use"
     },
     {
       "id": "bg_yihe",
@@ -681,7 +1434,8 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
-      "decision": "internal preview; review provenance and rights before public release"
+      "release_included": true,
+      "decision": "source record retained; complete publication review of license and actual use"
     },
     {
       "id": "bg_yihe",
@@ -702,7 +1456,8 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
-      "decision": "internal preview; review provenance and rights before public release"
+      "release_included": true,
+      "decision": "source record retained; complete publication review of license and actual use"
     },
     {
       "id": "bg_zhaobi",
@@ -723,7 +1478,8 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
-      "decision": "internal preview; review provenance and rights before public release"
+      "release_included": true,
+      "decision": "source record retained; complete publication review of license and actual use"
     },
     {
       "id": "bg_zhaobi",
@@ -744,7 +1500,8 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
-      "decision": "internal preview; review provenance and rights before public release"
+      "release_included": true,
+      "decision": "source record retained; complete publication review of license and actual use"
     },
     {
       "id": "bg_zhonghua",
@@ -765,7 +1522,8 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
-      "decision": "internal preview; review provenance and rights before public release"
+      "release_included": true,
+      "decision": "source record retained; complete publication review of license and actual use"
     },
     {
       "id": "bg_zhonghua",
@@ -786,7 +1544,8 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
-      "decision": "internal preview; review provenance and rights before public release"
+      "release_included": true,
+      "decision": "source record retained; complete publication review of license and actual use"
     },
     {
       "id": "it_bean",
@@ -807,7 +1566,8 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
-      "decision": "internal preview; review provenance and rights before public release"
+      "release_included": false,
+      "decision": "historical record; excluded from current release"
     },
     {
       "id": "it_book",
@@ -828,7 +1588,8 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
-      "decision": "internal preview; review provenance and rights before public release"
+      "release_included": false,
+      "decision": "historical record; excluded from current release"
     },
     {
       "id": "it_cake",
@@ -849,7 +1610,8 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
-      "decision": "internal preview; review provenance and rights before public release"
+      "release_included": false,
+      "decision": "historical record; excluded from current release"
     },
     {
       "id": "it_cloud",
@@ -870,7 +1632,8 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
-      "decision": "internal preview; review provenance and rights before public release"
+      "release_included": false,
+      "decision": "historical record; excluded from current release"
     },
     {
       "id": "it_duck",
@@ -891,7 +1654,8 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
-      "decision": "internal preview; review provenance and rights before public release"
+      "release_included": false,
+      "decision": "historical record; excluded from current release"
     },
     {
       "id": "it_egg",
@@ -912,7 +1676,8 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
-      "decision": "internal preview; review provenance and rights before public release"
+      "release_included": false,
+      "decision": "historical record; excluded from current release"
     },
     {
       "id": "it_elephant",
@@ -933,7 +1698,8 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
-      "decision": "internal preview; review provenance and rights before public release"
+      "release_included": false,
+      "decision": "historical record; excluded from current release"
     },
     {
       "id": "it_fans",
@@ -954,7 +1720,8 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
-      "decision": "internal preview; review provenance and rights before public release"
+      "release_included": false,
+      "decision": "historical record; excluded from current release"
     },
     {
       "id": "it_gold",
@@ -975,7 +1742,8 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
-      "decision": "internal preview; review provenance and rights before public release"
+      "release_included": false,
+      "decision": "historical record; excluded from current release"
     },
     {
       "id": "it_lamp",
@@ -996,7 +1764,8 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
-      "decision": "internal preview; review provenance and rights before public release"
+      "release_included": false,
+      "decision": "historical record; excluded from current release"
     },
     {
       "id": "it_leaf",
@@ -1017,7 +1786,8 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
-      "decision": "internal preview; review provenance and rights before public release"
+      "release_included": false,
+      "decision": "historical record; excluded from current release"
     },
     {
       "id": "it_plum",
@@ -1038,7 +1808,8 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
-      "decision": "internal preview; review provenance and rights before public release"
+      "release_included": false,
+      "decision": "historical record; excluded from current release"
     },
     {
       "id": "it_pot",
@@ -1059,7 +1830,8 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
-      "decision": "internal preview; review provenance and rights before public release"
+      "release_included": false,
+      "decision": "historical record; excluded from current release"
     },
     {
       "id": "it_root",
@@ -1080,7 +1852,8 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
-      "decision": "internal preview; review provenance and rights before public release"
+      "release_included": false,
+      "decision": "historical record; excluded from current release"
     },
     {
       "id": "it_sakura",
@@ -1101,7 +1874,8 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
-      "decision": "internal preview; review provenance and rights before public release"
+      "release_included": false,
+      "decision": "historical record; excluded from current release"
     },
     {
       "id": "it_stone",
@@ -1122,7 +1896,8 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
-      "decision": "internal preview; review provenance and rights before public release"
+      "release_included": false,
+      "decision": "historical record; excluded from current release"
     },
     {
       "id": "it_taro",
@@ -1143,7 +1918,8 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
-      "decision": "internal preview; review provenance and rights before public release"
+      "release_included": false,
+      "decision": "historical record; excluded from current release"
     },
     {
       "id": "it_tea",
@@ -1164,7 +1940,8 @@
       "reviewer": "Manus AI (stage 2 inventory)",
       "reviewed_at": "2026-09-01",
       "review_status": "pending",
-      "decision": "internal preview; review provenance and rights before public release"
+      "release_included": false,
+      "decision": "historical record; excluded from current release"
     },
     {
       "id": "src/audio.js",
@@ -1179,6 +1956,7 @@
       "license_obligation": "Retain provenance and close rights review before publication",
       "attribution_location": "ASSETS.md; player credits; LICENSE.md",
       "review_status": "pending",
+      "release_included": true,
       "decision": "internal preview; review provenance and rights before public release"
     }
   ]

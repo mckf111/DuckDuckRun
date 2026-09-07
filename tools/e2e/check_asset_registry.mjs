@@ -24,6 +24,7 @@ function filesUnder(root, relativeDirectory, accept){
 export function collectGovernedAssetPaths(root=defaultRoot){
   const paths = [
     ...filesUnder(root, 'assets/img', name => imagePattern.test(name)),
+    ...filesUnder(root, 'assets/album', name => imagePattern.test(name)),
     ...filesUnder(root, 'assets/fonts', name => /\.woff2$/i.test(name)),
     ...filesUnder(root, 'assets/game', name => imagePattern.test(name)),
     ...filesUnder(root, 'assets/icons', name => /\.(png|svg|ico|webp)$/i.test(name)),

@@ -1,5 +1,7 @@
 # 手机体验升级 · 当前执行状态
 
+2026-09-07 增补：换鸭与星级说明已修复；图鉴采用 30 张经来源及画面核验的照片，全部 40 件逐项记录，10 件暂缺。当前交付及本轮验证见 [EXPERIENCE-UPDATE.md](EXPERIENCE-UPDATE.md)、[ALBUM-REVIEW.md](ALBUM-REVIEW.md)。下方 2026-09-06 的版本、体积和素材数量属于上一轮证据；不能替代本轮证据。用户本轮 iPhone 换鸭复核已回复「切换正常」。
+
 ## 用户确认与边界
 
 - 2026-09-06：用户已用 iPhone 多次试玩，反馈「效果很不错」。没有提供机型、系统、浏览器或性能数值，不倒填。
@@ -39,13 +41,13 @@
 - 独立整段旅程回归通过：重复路线可取得足够普通风物、开启并通过大桥；追踪风物到手即清除追踪。
 - 四种视口原生界面回归；十关逐关竖/横共 20 张画面检查。修正横屏背景拼接边、降低新场景装饰干扰。
 - 最后视觉/无尽同步后补跑共享规则、分享、浏览器全流程、无尽 200 种子生还路径；制品检查、实际请求预算和 release 自动化通过。微信为 UA 模拟，不记作物理微信证据。
-- 当前版本 `2b2d5ed65200`：本地无压缩实际请求首屏 826 KiB，首关累计 1244 KiB，完整运行制品 7.47 MiB。首屏/首关/完整预算分别为 1.5/3/20 MiB。这不是国内网络速度结论。
+- 上一轮版本 `2b2d5ed65200`：本地无压缩实际请求首屏 826 KiB，首关累计 1244 KiB，完整运行制品 7.47 MiB。首屏/首关/完整预算分别为 1.5/3/20 MiB。这不是国内网络速度结论。
 - 二十次重开 JS 堆端点变化约 +10.63%，无运行时/网络错误；不以此宣称物理手机 20 分钟性能指标达成。
 - 本地证据：`docs/mobile-upgrade/journey-verify.log`、`journey-release.log`、`journey-final-regression.log`、`journey-simulation.json`、`network-budget.json`；画面在 `tools/e2e/shots/journey/`。
 
 ## 素材与发布
 
-- 58 项图片、字体、图标及合成音频源均登记、逐文件哈希反查。三张新图集提供九站场景，进入对应关卡时加载；首页不预载九站。
+- 上一轮 58 项图片、字体、图标及合成音频源均登记、逐文件哈希反查。三张新图集提供九站场景，进入对应关卡时加载；首页不预载九站。
 - 图集参考本项目已生成的城墙画风，不使用外部摄影或商标参考；原稿、提示词和字体源留在 `docs/mobile-upgrade/private-evidence/`，不进网页。没有排他版权保证或伪造人工批准。
 - 所有素材仍待正式审查。`npm run build` 仅出 internal-preview；正式构建和阿里云脚本拒绝待审/内部制品。
 - ICP/CDN 与游戏公开出版/运营适用要求分别核验：阿里云 https://help.aliyun.com/zh/icp-filing/basic-icp-service/product-overview/use-alibaba-cloud-cdn ；国家新闻出版署 https://www.nppa.gov.cn/bsfw/xksx/cbfxl/wlcbfwspsx/202210/t20221013_600725.html 。
@@ -55,5 +57,5 @@
 - 当前入口：http://127.0.0.1:8010/ ；同一 Wi-Fi 手机：http://192.168.0.102:8010/ 。换版本请从根入口重新打开。服务停止时运行 `python -m http.server 8010 --bind 0.0.0.0 --directory dist`。
 - 旧标杆备份：`docs/mobile-upgrade/jinling-mobile-6607ab5d525e.zip`；桌面比例修正提交 `77a2c1a`。首次实现 `a79b75f` 与交付门槛 `51cd12a` 保留。
 - 已用同源新→旧标杆→新版本核验存档往返，星级、技巧记录、鸭蛋、难度和皮肤保持一致；证据 `docs/mobile-upgrade/version-switch.json`。本地预览保留旧标杆版本目录供回看。
-- 当前打包、源码提交和哈希见 `docs/mobile-upgrade/handoff.json`。存档仍用 jinling_run_v1/schema 5；跨域必须玩家主动导出导入。
+- 上一轮打包、源码提交和哈希见 `docs/mobile-upgrade/handoff.json`。当前制品以 `dist/build-info.json` 及本轮交付说明为准。存档仍用 jinling_run_v1/schema 5；跨域必须玩家主动导出导入。
 - 本轮没有推送、公开发布、修改 DNS 或防火墙。后续工作是发布材料与候选制品核验，不再组织额外玩家试玩。

@@ -25,7 +25,7 @@ try{
    await p.evaluate(()=>{rules.recordBestStars(store.save,4,3);ui.renderDomUI();});
    assert.equal(await p.locator('[data-action="skin:gold"]').isEnabled(),true);
    await p.locator('[data-action="skin:gold"]').scrollIntoViewIfNeeded();
-   await p.evaluate(()=>{window.originalCard=document.querySelector('[data-action="skin:gold"]');window.oldScroll=document.querySelector('#app-ui').scrollTop;});
+   await p.evaluate(()=>{window.originalCard=document.querySelector('[data-action="skin:gold"]');window.oldScroll=document.querySelector('#app-ui').scrollTop;window.oldTop=originalCard.getBoundingClientRect().top;window.oldFonts=document.fonts.status;});
    for(const skin of ['gold','white','gold']){
     await act('skin:'+skin);
     assert.equal(await p.evaluate(()=>store.save.selectedSkin),skin);
@@ -33,10 +33,13 @@ try{
     assert.match(await p.locator(`[data-action="skin:${skin}"]`).textContent(),/使用中/);
    }
    assert.equal(await p.evaluate(()=>window.originalCard===document.querySelector('[data-action="skin:gold"]')),true,'切换保留按钮节点');
-   assert.ok(await p.evaluate(()=>Math.abs(oldScroll-document.querySelector('#app-ui').scrollTop)<2),'切换保留滚动位置');
+   const scroll=await p.evaluate(()=>({before:oldScroll,after:document.querySelector('#app-ui').scrollTop,topBefore:oldTop,topAfter:originalCard.getBoundingClientRect().top,fontsBefore:oldFonts,fontsAfter:document.fonts.status}));
+   if(Math.abs(scroll.before-scroll.after)>=2)await p.screenshot({path:join(shots,name+'-scroll-failure.png')});
+   assert.ok(Math.abs(scroll.before-scroll.after)<2,'切换保留滚动位置 '+name+' '+JSON.stringify(scroll));
    assert.notEqual(await p.evaluate(()=>document.activeElement.tagName),'H1','不得把焦点抢到标题');
    await p.screenshot({path:join(shots,name+'-shop.png')});
    await p.reload();await act('shop');assert.equal(await p.locator('[data-action="skin:gold"]').getAttribute('aria-pressed'),'true');
+   await p.evaluate(async()=>{window.store=await import('/src/save.js');window.game=await import('/src/game.js');window.ui=await import('/src/dom-ui.js');});
    await act('back');await p.waitForFunction(()=>document.querySelector('[data-duck]')?.dataset.paint==='gold:true');
    const goldHome=await p.locator('[data-duck]').evaluate(c=>c.toDataURL());
    await act('shop');await act('skin:white');await act('back');
@@ -51,11 +54,29 @@ try{
     let different=0,alphaSame=true;for(let i=0;i<a.length;i+=4){if(a[i]!==b[i]||a[i+1]!==b[i+1]||a[i+2]!==b[i+2])different++;if(a[i+3]!==b[i+3])alphaSame=false;}
     return {different,alphaSame,cached:gold===again};
    });assert.ok(pixels.different>1000);assert.ok(pixels.alphaSame);assert.ok(pixels.cached);
+   const surfaces=await p.evaluate(async()=>{
+    const core=await import('/src/core.js'),player=await import('/src/art/player.js'),sharing=await import('/src/share.js');
+    const sample=document.createElement('canvas');sample.width=core.W;sample.height=core.H;const c=sample.getContext('2d');
+    const before=store.save.selectedSkin,players=[],cards=[],toBlob=HTMLCanvasElement.prototype.toBlob;
+    try{
+      // 截取真实分享绘制完成的像素，不触发系统分享或下载。
+      HTMLCanvasElement.prototype.toBlob=function(){cards.push(this.toDataURL());};
+      for(const skin of ['white','gold']){
+        store.save.selectedSkin=skin;c.clearRect(0,0,sample.width,sample.height);
+        core.withDrawingContext(c,()=>player.drawPlayer(game.pl,1,{book:true}));players.push(sample.toDataURL());sharing.shareScore();
+      }
+    }finally{store.save.selectedSkin=before;HTMLCanvasElement.prototype.toBlob=toBlob;}
+    return {playerChanges:players[0]!==players[1],shareChanges:cards[0]!==cards[1]};
+   });assert.ok(surfaces.playerChanges);assert.ok(surfaces.shareChanges);
+   await p.evaluate(()=>{Object.assign(game.G,{state:'clear',mode:'adv',lvIdx:0,runStars:2});ui.renderDomUI();});
+   assert.match(await p.locator('.result-summary').textContent(),/本次评价.*★★☆.*本关最佳 ★★★.*通关总星数 15\/30/);
+   await p.evaluate(()=>{game.G.state='over';ui.renderDomUI();});assert.match(await p.locator('.result-summary').textContent(),/未通关，不增加通关星数/);
+   await p.evaluate(()=>{game.G.state='menu';ui.renderDomUI();});
    await act('levels');assert.match(await p.locator('#app-ui').textContent(),/通关总星数 15\/30/);assert.match(await p.locator('.level-card').first().textContent(),/历史最佳 ★★★/);
    await act('back');await act('shop');
    await p.evaluate(()=>{Storage.prototype.setItem=()=>{throw new DOMException('blocked','QuotaExceededError');};});
    await act('skin:gold');assert.match(await p.locator('#skin-feedback').textContent(),/保存失败/);assert.equal(await p.locator('[data-action="skin:gold"]').getAttribute('aria-pressed'),'true');
-   assert.deepEqual(errors,[]);reports.push({name,pixels,passed:true});await context.close();
+   assert.deepEqual(errors,[]);reports.push({name,pixels,surfaces,passed:true});await context.close();
   }finally{await browser.close();}
  }
  writeFileSync(join(shots,'report.json'),JSON.stringify({scope:'local Chromium and WebKit; physical iPhone check pending',reports},null,2));

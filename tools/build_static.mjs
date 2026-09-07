@@ -3,12 +3,13 @@ import { mkdirSync, readFileSync, readdirSync, renameSync, rmSync, statSync, wri
 import { dirname, extname, join, parse, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildAssetSbom } from './generate_asset_sbom.mjs';
+import { includeReleaseAsset } from './release_assets.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const dist = join(root, 'dist');
 const preview=process.argv.includes('--preview');
 const assetReview=buildAssetSbom(root);
-const pendingAssets=assetReview.assets.filter(a=>a.review_status!=='approved');
+const pendingAssets=assetReview.assets.filter(a=>a.release_included&&a.review_status!=='approved');
 if(!preview&&pendingAssets.length)throw new Error(`正式构建已阻止：${pendingAssets.length} 项素材尚未审核通过。内部试玩请用 npm run build（--preview）。`);
 const textExtensions = new Set(['.css', '.html', '.js', '.json', '.md', '.mjs', '.py', '.sh', '.txt', '.yaml', '.yml']);
 
@@ -22,7 +23,7 @@ function listSourceInputs(directory, prefix=''){
   return readdirSync(directory, {withFileTypes:true}).flatMap(entry => {
     const absolute = join(directory, entry.name);
     const relativePath = prefix ? `${prefix}/${entry.name}` : entry.name;
-    if(relativePath==='assets/img/src')return [];
+    if(!includeReleaseAsset(relativePath))return [];
     return entry.isDirectory() ? listSourceInputs(absolute, relativePath) : [relativePath];
   }).sort();
 }
@@ -49,6 +50,8 @@ function runtimeInputBuildId(){
     'index.html',
     'LICENSE.md',
     'tools/build_static.mjs',
+    'tools/release_assets.mjs',
+    'assets/album/CREDITS.md',
     ...listSourceInputs(join(root, 'src'), 'src'),
     ...listSourceInputs(join(root, 'assets'), 'assets'),
   ].sort();
@@ -72,7 +75,7 @@ function copyCanonicalDirectory(source, destination){
   mkdirSync(destination, {recursive:true});
   for(const entry of readdirSync(source, {withFileTypes:true})){
     const sourcePath = join(source, entry.name);
-    if(relative(root,sourcePath).replaceAll('\\','/')==='assets/img/src')continue;
+    if(!includeReleaseAsset(relative(root,sourcePath).replaceAll('\\','/')))continue;
     const destinationPath = join(destination, entry.name);
     if(entry.isDirectory()) copyCanonicalDirectory(sourcePath, destinationPath);
     else if(entry.isFile()) writeFileSync(destinationPath, canonicalBytes(sourcePath));
@@ -93,7 +96,7 @@ const notices = {
 };
 mkdirSync(join(release, 'legal'), {recursive:true});
 writeFileSync(join(release, notices.gameLicense), canonicalBytes(join(root, 'LICENSE.md')));
-writeFileSync(join(release, notices.photoCredits), canonicalBytes(join(root, 'assets', 'img', 'CREDITS.md')));
+writeFileSync(join(release, notices.photoCredits), canonicalBytes(join(root, 'assets', 'album', 'CREDITS.md')));
 writeFileSync(join(release, notices.fontLicense), canonicalBytes(join(root, 'assets', 'fonts', 'OFL.txt')));
 
 function listFiles(directory){

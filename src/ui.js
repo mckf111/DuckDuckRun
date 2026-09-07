@@ -595,10 +595,9 @@ export function handleButton(id, data){
   }
   else if(id==='credits'){ G.creditsScroll=0; G.state='credits'; }
   else if(id==='album'){ G.albumFrom='menu'; G.albumZoom=null; G.state='album';
-    loadItemPhotos(ITEMS.filter(i=>i.photo).map(i=>i.id));   // 只请求 config 标记的 18 张实景照片
     if(save.albumNew){ save.albumNew=false; persist(); }   // 隐藏件红点看完即清
   }
-  else if(id==='item') G.albumZoom = data;
+  else if(id==='item') { G.albumZoom = data; if(save.album[data])loadItemPhotos([data]); }
   else if(id==='zoomclose') G.albumZoom = null;
   else if(id==='lv') startRun('adv', data);
   else if(id==='back'){ G.albumZoom=null; G.state = G.state==='album' ? G.albumFrom : 'menu'; }

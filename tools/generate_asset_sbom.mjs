@@ -3,6 +3,7 @@ import { mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PLAYER_VISIBLE_NOTICE_CONTRACT } from '../src/legal.js';
+import { includeReleaseAsset } from './release_assets.mjs';
 
 const defaultRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -140,6 +141,21 @@ export function buildAssetSbom(root=defaultRoot){
     });
   }
 
+  const album=JSON.parse(readFileSync(join(root,'assets/album/REVIEW.json'),'utf8'));
+  for(const [id,photo] of Object.entries(album)){
+    if(!photo.file)continue;
+    const actual=sha256(root,photo.file);
+    if(actual!==photo.sha256)throw new Error(`图鉴照片已变化，需要重新核验：${id}`);
+    entries.push({id:'album_'+id,local_path:photo.file,category:'item_photo',purpose:'album '+photo.kind,
+      sha256:actual,source_url:photo.sourceUrl,source_version:photo.sourceTimestamp+'; SHA-1 '+photo.sourceSha1,
+      author:photo.author,license:photo.license,modified:photo.changes,downloaded_at:photo.retrievedAt,
+      downloaded_url:photo.downloadedUrl,downloaded_sha256:photo.downloadedSha256,
+      processing_record:'assets/album/REVIEW.json; tools/prepare_album_photos.py',
+      release_status:'source and image checked; public-release approval pending',
+      license_obligation:photo.license.includes('BY-SA')?'Attribution, license link and change notice; local derivative remains under the same CC BY-SA license.':'Follow the listed license; retain author, source and processing notice.',
+      attribution_location:'album detail; menu:credits; legal/PHOTO-CREDITS.md',
+      reviewer:'Codex source and image check; not a human publication approval',reviewed_at:'2026-09-07'});
+  }
   entries.sort((a,b) => a.local_path.localeCompare(b.local_path));
   const walk=(dir)=>readdirSync(join(root,dir),{withFileTypes:true}).flatMap(e=>e.isDirectory()?walk(`${dir}/${e.name}`):/\.(png|webp|jpg|jpeg|svg|ico|mp3|wav|ogg)$/i.test(e.name)?[`${dir}/${e.name}`]:[]);
   for(const path of [...walk('assets/game'),...walk('assets/icons'),'src/audio.js']){
@@ -155,12 +171,13 @@ export function buildAssetSbom(root=defaultRoot){
   }
   for(const e of entries){
     e.review_status='pending';
-    e.decision=e.category==='legacy_art'?'replace or obtain original provenance before public release':e.category==='font'?'retain after fixed upstream and subset evidence review':e.category==='photo'?'review original license and modifications; replace unresolved material':'internal preview; review provenance and rights before public release';
+    e.release_included=includeReleaseAsset(e.local_path);
+    e.decision=!e.release_included?'historical record; excluded from current release':e.category==='legacy_art'?'replace or obtain original provenance before public release':e.category==='font'?'retain after fixed upstream and subset evidence review':['item_photo','landmark_background'].includes(e.category)?'source record retained; complete publication review of license and actual use':'internal preview; review provenance and rights before public release';
   }
   entries.sort((a,b)=>a.local_path.localeCompare(b.local_path));
   return {
     schema:'duckduckrun-asset-sbom/v1',
-    generated_at:'2026-09-06',
+    generated_at:'2026-09-07',
     scope:'All runtime images, icons, fonts and synthesized audio source. Inventory is distinct from approval for publication.',
     release_review:{
       status:'registered',

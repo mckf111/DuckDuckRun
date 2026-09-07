@@ -1,6 +1,6 @@
 import { G, startRun, curLv, nextAfterClear, pauseRun, resumeRun, retryCurrentTutorial, benchmarkBeat } from './game.js';
 import { save, persist, flushSave, replaceSave, saveError } from './save.js';
-import { LEVELS, ITEMS, SHOPS, MOBILE, MOBILE_UI, JOURNEY_COPY, SKINS, PROGRESS_COPY as PC } from './config.js';
+import { LEVELS, ITEMS, SHOPS, MOBILE, MOBILE_UI, JOURNEY_COPY, SKINS, PROGRESS_COPY as PC, PHOTO_COPY as PH } from './config.js';
 import { getBridgeUnlockStatus, getObstacleInstruction, parseSaveImport, totalStars, skinUnlocked, effectiveSkin } from './rules.js';
 import { unlockAudio, syncVolumes, sfx, suspendAudio } from './audio.js';
 import { shareScore } from './share.js';
@@ -8,7 +8,9 @@ import { withDrawingContext } from './core.js';
 import { drawItemIcon } from './art/items.js';
 import { drawBookDuck } from './art/book.js';
 import { getSprite } from './art/sprites.js';
-import { COPYRIGHT_LINE, CREDIT_SECTIONS, PHOTO_CREDITS } from './legal.js';
+import { COPYRIGHT_LINE, CREDIT_SECTIONS } from './legal.js';
+import { ALBUM_PHOTOS } from './album-photos.js';
+import { assetUrl } from './asset-url.js';
 
 const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const btn=(action,label,kind='',extra='')=>`<button type="button" data-action="${esc(action)}" class="${kind}" ${extra}>${esc(label)}</button>`;
@@ -18,6 +20,26 @@ const count=()=>Object.keys(save.album).length;
 let root=null,lastKey='',lastPage='',category='food',feedback='',skinFeedback='',pendingImport=null,lastSkinKey='';
 const format=(copy,values)=>copy.replace(/\{(\w+)\}/g,(_,key)=>String(values[key]??''));
 const starsSummary=()=>`${PC.total} ${totalStars(save)}/${LEVELS.length*3}`;
+const external=(url,label)=>`<a href="${esc(url)}" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer">${esc(label)}</a>`;
+const photoCredit=photo=>`<p class="photo-credit">${esc(photo.author)} · ${external(photo.sourceUrl,PH.source)} · ${external(photo.licenseUrl,photo.license)}</p>`;
+function itemPhoto(item){
+  const photo=ALBUM_PHOTOS[item.id];
+  if(!photo?.file)return `<section class="photo-missing"><p>${PH.missing}</p></section>`;
+  return `<figure class="item-photo" data-photo="${item.id}"><button type="button" class="photo-open" data-action="photo:${item.id}" aria-label="${esc(item.name)} · ${PH.enlarge}" disabled><img src="${esc(assetUrl(photo.file))}" alt="${esc(photo.caption)}" width="${photo.width}" height="${photo.height}" decoding="async" referrerpolicy="no-referrer"></button><p data-photo-status role="status">${PH.loading}</p><button type="button" data-action="retryPhoto:${item.id}" class="secondary" hidden>${PH.retry}</button><figcaption><strong>${PH[photo.kind]}</strong><p>${esc(photo.caption)}</p>${photoCredit(photo)}</figcaption></figure>`;
+}
+function closePhoto(){
+  const dialog=root?.querySelector('.photo-dialog');
+  if(dialog){dialog.close();dialog.remove();}
+}
+function openPhoto(id){
+  const photo=ALBUM_PHOTOS[id],item=ITEMS.find(it=>it.id===id);
+  if(!item||!photo?.file||!save.album[id]||G.albumZoom!==id)return;
+  const loaded=root.querySelector('.item-photo img');if(!loaded?.complete||!loaded.naturalWidth)return;
+  closePhoto();const dialog=document.createElement('dialog');dialog.className='photo-dialog';
+  dialog.setAttribute('aria-label',item.name+' · '+PH.enlarge);
+  dialog.innerHTML=`<div class="photo-dialog-head"><strong>${esc(item.name)} · ${PH[photo.kind]}</strong>${btn('closePhoto',PH.close,'quiet')}</div><img src="${esc(loaded.currentSrc||loaded.src)}" alt="${esc(photo.caption)}" width="${photo.width}" height="${photo.height}" referrerpolicy="no-referrer"><p>${esc(photo.caption)}</p>${photoCredit(photo)}`;
+  dialog.addEventListener('close',()=>dialog.remove(),{once:true});root.append(dialog);dialog.showModal();
+}
 function continueIndex(){let i=save.lastLevel;if(i===9&&!getBridgeUnlockStatus(save).unlocked)i=8;while(i>0&&!save.cleared[i-1])i--;return i;}
 const cats=[['food',MOBILE_UI.text001,MOBILE_UI.text002],['craft',MOBILE_UI.text003,MOBILE_UI.text004],['ruin',MOBILE_UI.text005,MOBILE_UI.text006],['creature',MOBILE_UI.text007,MOBILE_UI.text008]];
 const page=(title,content,kicker=MOBILE_UI.text009)=>`<section class="page"><header class="page-head"><div><p class="eyebrow">${esc(kicker)}</p><h1 tabindex="-1">${esc(title)}</h1></div>${btn('back',MOBILE_UI.text010,'quiet')}</header>${content}</section>`;
@@ -39,7 +61,7 @@ function albumPage(){
   if(G.albumZoom){
     const item=ITEMS.find(x=>x.id===G.albumZoom);if(!item){G.albumZoom=null;return albumPage();}
     const owned=!!save.album[item.id];
-    return page(owned||!item.secret?item.name:MOBILE_UI.text041,`<article class="item-detail">${picture(item.id,132)}<p class="item-note">${esc(owned?item.note:item.secret?item.riddle:MOBILE_UI.text042)}</p>${owned?`<blockquote>${esc(item.quip)}</blockquote><p>${esc(item.where)}</p>`:!item.secret?`<p>${MOBILE_UI.text043}${esc(LEVELS[item.home??0].name)}</p>`:''}<div class="stack">${!owned&&!item.secret?btn('track:'+item.id,save.trackedItem===item.id?MOBILE_UI.text044:MOBILE_UI.text045,'primary'):''}${!item.secret?btn('find:'+item.id,MOBILE_UI.text046,'secondary'):''}</div><p class="muted">${MOBILE_UI.text047}</p></article>`,MOBILE_UI.text048);
+    return page(owned||!item.secret?item.name:MOBILE_UI.text041,`<article class="item-detail"><div class="item-visuals"><div>${picture(item.id,132)}</div>${owned?itemPhoto(item):''}</div><p class="item-note">${esc(owned?item.note:item.secret?item.riddle:MOBILE_UI.text042)}</p>${owned?`<blockquote>${esc(item.quip)}</blockquote><p>${esc(item.where)}</p>`:!item.secret?`<p>${MOBILE_UI.text043}${esc(LEVELS[item.home??0].name)}</p>`:''}<div class="stack">${!owned&&!item.secret?btn('track:'+item.id,save.trackedItem===item.id?MOBILE_UI.text044:MOBILE_UI.text045,'primary'):''}${!item.secret?btn('find:'+item.id,MOBILE_UI.text046,'secondary'):''}</div><p class="muted">${MOBILE_UI.text047}</p></article>`,MOBILE_UI.text048);
   }
   const list=ITEMS.filter(x=>x.cat===category);
   return page(MOBILE_UI.text048,`<p class="lead">${count()} / 40 ${MOBILE_UI.text049}</p><nav class="category-tabs" aria-label="${MOBILE_UI.text050}">${cats.map(([id,label,name])=>btn('category:'+id,label+(category===id?' · '+name:''),category===id?'selected':'',`aria-pressed="${category===id}"`)).join('')}</nav><div class="album-grid">${list.map(it=>`<button class="item-tile ${save.album[it.id]?'owned':''}" data-action="item:${it.id}">${picture(it.id)}<strong>${esc(it.secret&&!save.album[it.id]?MOBILE_UI.text051:it.name)}</strong><small>${save.album[it.id]?MOBILE_UI.text052:save.trackedItem===it.id?MOBILE_UI.text044:it.secret?MOBILE_UI.text053:esc(LEVELS[it.home??0].name)}</small></button>`).join('')}</div>`);
@@ -68,7 +90,7 @@ function settingsPage(){
   return page(MOBILE_UI.text064,`${difficulty()}<section class="settings-block"><h2>${MOBILE_UI.text065}</h2>${[['music',MOBILE_UI.text066],['effects',MOBILE_UI.text067],['voice',MOBILE_UI.text068]].map(([key,label])=>`<label class="volume">${label}<input aria-label="${label}${MOBILE_UI.text069}" type="range" min="0" max="100" value="${Math.round(save.volumes[key]*100)}" data-volume="${key}"><output>${Math.round(save.volumes[key]*100)}%</output></label>`).join('')}${btn('mute',save.muted?MOBILE_UI.text070:MOBILE_UI.text071,'secondary')}</section><section class="settings-block"><h2>${MOBILE_UI.text072}</h2><label>${MOBILE_UI.text073}<select name="motion" aria-label="${MOBILE_UI.text073}">${[['system',MOBILE_UI.text074],['reduced',MOBILE_UI.text075],['full',MOBILE_UI.text076]].map(([v,label])=>`<option value="${v}" ${save.motion===v?'selected':''}>${label}</option>`).join('')}</select></label></section><section class="settings-block"><h2>${MOBILE_UI.text077}</h2><p>${MOBILE_UI.text078}</p><div class="two-actions">${btn('export',MOBILE_UI.text079,'secondary')}${btn('import',MOBILE_UI.text080,'secondary')}</div><input id="save-file" type="file" accept="application/json,.json" hidden>${pendingImport?`<div class="import-preview"><p>${MOBILE_UI.text081}${Object.keys(pendingImport.album).length} ${MOBILE_UI.text082}${pendingImport.coins} ${MOBILE_UI.text083}</p>${btn('confirmImport',MOBILE_UI.text084,'primary')}${btn('cancelImport',MOBILE_UI.text085,'secondary')}</div>`:''}<p role="status" class="status">${esc(feedback||saveError)}</p></section>${btn('tutorial',MOBILE_UI.text086,'secondary')}`);
 }
 function creditsPage(){
-  return page(MOBILE_UI.text028,`<p class="lead">${esc(COPYRIGHT_LINE)}</p>${CREDIT_SECTIONS.map(s=>`<section class="settings-block"><h2>${esc(s.title)}</h2>${s.lines.map(l=>`<p>${esc(l)}</p>`).join('')}</section>`).join('')}<details><summary>${MOBILE_UI.text087}</summary><p>${MOBILE_UI.text088}</p>${PHOTO_CREDITS.map(([id,name,author,license])=>`<p>${esc(name)} · ${esc(author)} · ${esc(license)}</p>`).join('')}</details><p>${MOBILE_UI.text089}<a href="${document.querySelector('meta[name=duckduckrun-build]')?.content!=='__BUILD_ID__'?new URL('../legal/LICENSE.md',import.meta.url).href:new URL('../LICENSE.md',import.meta.url).href}">${MOBILE_UI.text090}</a> · <a href="https://github.com/mckf111" target="_blank" rel="noopener noreferrer">${MOBILE_UI.text091}</a></p>`);
+  return page(MOBILE_UI.text028,`<p class="lead">${esc(COPYRIGHT_LINE)}</p>${CREDIT_SECTIONS.map(s=>`<section class="settings-block"><h2>${esc(s.title)}</h2>${s.lines.map(l=>`<p>${esc(l)}</p>`).join('')}</section>`).join('')}<details><summary>${MOBILE_UI.text087}</summary><p>${MOBILE_UI.text088}</p>${Object.entries(ALBUM_PHOTOS).filter(([,photo])=>photo.file).map(([id,photo])=>`<section class="photo-license"><h3>${esc(ITEMS.find(it=>it.id===id).name)} · ${PH[photo.kind]}</h3><p>${esc(photo.caption)}</p>${photoCredit(photo)}<p>${PH.changes}：${esc(photo.changes)}</p></section>`).join('')}</details><p>${MOBILE_UI.text089}<a href="${document.querySelector('meta[name=duckduckrun-build]')?.content!=='__BUILD_ID__'?new URL('../legal/LICENSE.md',import.meta.url).href:new URL('../LICENSE.md',import.meta.url).href}">${MOBILE_UI.text090}</a> · <a href="${document.querySelector('meta[name=duckduckrun-build]')?.content!=='__BUILD_ID__'?new URL('../legal/PHOTO-CREDITS.md',import.meta.url).href:new URL('../assets/album/CREDITS.md',import.meta.url).href}">${PH.record}</a> · <a href="https://github.com/mckf111" target="_blank" rel="noopener noreferrer">${MOBILE_UI.text091}</a></p>`);
 }
 function outcome(){
   const clear=G.state==='clear',lv=curLv(),bridge=getBridgeUnlockStatus(save);
@@ -107,6 +129,7 @@ export function renderDomUI(){
     root.className=playing?'in-game':'in-page';
     root.innerHTML=playing?playUI():G.state==='menu'?home():G.state==='levels'?levelPage():G.state==='album'?albumPage():G.state==='shop'?shopPage():G.state==='settings'?settingsPage():G.state==='credits'?creditsPage():outcome();
     paintIllustrations();
+    for(const img of root.querySelectorAll('.item-photo img'))if(img.complete)updatePhotoState(img);
     if(G.paused)root.querySelector('[data-action="resume"]')?.focus({preventScroll:true});
     else if(!playing&&changedPage)root.querySelector('h1')?.focus({preventScroll:true});
     else if(focusAction){[...root.querySelectorAll('[data-action]')].find(el=>el.dataset.action===focusAction)?.focus({preventScroll:true});}
@@ -148,6 +171,17 @@ function handle(action){
   else if(id==='next')nextAfterClear();
   else if(id==='tutorial')start(0,true);
   else if(id==='item')G.albumZoom=value;
+  else if(id==='photo')openPhoto(value);
+  else if(id==='closePhoto')closePhoto();
+  else if(id==='retryPhoto'){
+    const figure=root.querySelector('.item-photo'),photo=ALBUM_PHOTOS[value];
+    if(figure?.dataset.photo===value&&photo?.file&&save.album[value]){
+      const img=figure.querySelector('img');img.hidden=false;figure.querySelector('[data-photo-status]').textContent=PH.loading;
+      figure.querySelector('[data-action^="retryPhoto:"]').hidden=true;
+      img.dataset.attempt=String(Number(img.dataset.attempt||0)+1);
+      const url=new URL(assetUrl(photo.file));url.searchParams.set('retry',img.dataset.attempt);img.src=url.href;
+    }
+  }
   else if(id==='category'){category=value;G.albumZoom=null;}
   else if(id==='track'){save.trackedItem=value;persist();}
   else if(id==='find'){
@@ -172,6 +206,14 @@ function handle(action){
   renderDomUI();
 }
 const onClick=e=>{const button=e.target.closest('[data-action]');if(button&&!button.disabled)handle(button.dataset.action);};
+function updatePhotoState(img){
+  const figure=img.closest('.item-photo');if(!figure||!root.contains(figure))return;
+  const ready=img.complete&&img.naturalWidth>0;img.hidden=!ready;
+  figure.querySelector('.photo-open').disabled=!ready;
+  figure.querySelector('[data-photo-status]').textContent=ready?PH.enlarge:PH.failed;
+  figure.querySelector('[data-action^="retryPhoto:"]').hidden=ready;
+}
+const onPhotoState=e=>{if(e.target instanceof HTMLImageElement)updatePhotoState(e.target);};
 const onInput=e=>{
   const key=e.target.dataset.volume;if(!key)return;
   save.volumes[key]=Number(e.target.value)/100;save.muted=false;persist();syncVolumes();e.target.nextElementSibling.textContent=e.target.value+'%';
@@ -194,7 +236,8 @@ const onKey=e=>{
 export function mountDomUI(){
   root=document.getElementById('app-ui');lastKey='';lastPage='';lastSkinKey='';
   root.addEventListener('click',onClick);root.addEventListener('input',onInput);root.addEventListener('change',onChange);root.addEventListener('keydown',onKey);renderDomUI();
+  root.addEventListener('load',onPhotoState,true);root.addEventListener('error',onPhotoState,true);
 }
 export function disposeDomUI(){
-  if(!root)return;root.removeEventListener('click',onClick);root.removeEventListener('input',onInput);root.removeEventListener('change',onChange);root.removeEventListener('keydown',onKey);root.replaceChildren();root=null;lastKey='';
+  if(!root)return;closePhoto();root.removeEventListener('click',onClick);root.removeEventListener('input',onInput);root.removeEventListener('change',onChange);root.removeEventListener('keydown',onKey);root.removeEventListener('load',onPhotoState,true);root.removeEventListener('error',onPhotoState,true);root.replaceChildren();root=null;lastKey='';
 }
