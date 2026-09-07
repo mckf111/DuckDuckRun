@@ -49,6 +49,7 @@ function runtimeInputBuildId(){
   const inputs = [
     'index.html',
     'LICENSE.md',
+    'edgeone.json',
     'tools/build_static.mjs',
     'tools/release_assets.mjs',
     'assets/album/CREDITS.md',
@@ -175,6 +176,7 @@ const manifest = {
 const manifestJson = JSON.stringify(manifest, null, 2) + '\n';
 writeFileSync(join(release, 'build-info.json'), manifestJson);
 writeFileSync(join(dist, 'build-info.json'), manifestJson);
+writeFileSync(join(dist, 'edgeone.json'), canonicalBytes(join(root,'edgeone.json')));
 writeFileSync(join(dist, 'index.html'), [
   '<!doctype html>',
   '<html lang="zh-CN"><head>',

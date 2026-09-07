@@ -17,7 +17,7 @@ const heapFloorBytes = Number(process.env.SOAK_MAX_HEAP_GROWTH_BYTES || 1024 * 1
 const heapGrowthRatio = Number(process.env.SOAK_MAX_HEAP_GROWTH_RATIO || 0.20);
 
 const result = {
-  schema:'duckduckrun-release-soak/v2',
+  schema:'duckduckrun-release-soak/v3',
   buildId:buildInfo.buildId,
   distribution:buildInfo.distribution,
   startedAt:new Date().toISOString(),
@@ -114,10 +114,24 @@ try{
     }else if(checkpoint.name === 'orientation'){
       await page.setViewportSize({width:390,height:844});
       await sleep(300);
-      result.lifecycle.portraitBlocked = await page.locator('#rotate').evaluate(el => getComputedStyle(el).display === 'flex');
+      result.lifecycle.portraitPaused = await page.evaluate(async () => (await import('./src/game.js')).G.paused === true);
+      result.lifecycle.portraitFits = await page.locator('#cv').evaluate(canvas=>{
+        const rect=canvas.getBoundingClientRect();
+        return rect.width>0&&rect.height>0&&rect.left>=-.5&&rect.right<=innerWidth+.5&&rect.bottom<=innerHeight+.5;
+      });
+      await page.locator('[data-action="resume"]').click();
+      if(await page.locator('[data-action="skipResume"]').isVisible())await page.locator('[data-action="skipResume"]').click();
+      const beforePortrait=await page.evaluate(async () => (await import('./src/game.js')).G.dist);
+      await sleep(350);
+      result.lifecycle.portraitPlayable=await page.evaluate(async before=>{
+        const {G}=await import('./src/game.js');return !G.paused&&G.dist>before;
+      },beforePortrait);
       await page.setViewportSize({width:844,height:390});
       await sleep(300);
-      result.lifecycle.landscapeRestored = await page.locator('#rotate').evaluate(el => getComputedStyle(el).display === 'none');
+      result.lifecycle.landscapePaused=await page.evaluate(async () => (await import('./src/game.js')).G.paused === true);
+      await page.locator('[data-action="resume"]').click();
+      if(await page.locator('[data-action="skipResume"]').isVisible())await page.locator('[data-action="skipResume"]').click();
+      result.lifecycle.landscapeRestored=await page.evaluate(async () => !(await import('./src/game.js')).G.paused&&innerWidth>innerHeight);
     }else if(checkpoint.name === 'deepLinkReload'){
       await collectSegment();
       await page.reload({waitUntil:'domcontentloaded'});
@@ -159,7 +173,7 @@ try{
 
   const lifecyclePassed = [
     'audioInitiallyUnlocked', 'backgroundPaused', 'backgroundResumed', 'audioAfterResume',
-    'portraitBlocked', 'landscapeRestored', 'deepLinkReloaded', 'audioAfterReloadUnlocked',
+    'portraitPaused', 'portraitFits', 'portraitPlayable', 'landscapePaused', 'landscapeRestored', 'deepLinkReloaded', 'audioAfterReloadUnlocked',
   ].every(key => result.lifecycle[key] === true);
   result.passed = result.elapsedMs >= durationMs - 1000
     && result.errors.length === 0

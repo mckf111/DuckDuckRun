@@ -207,7 +207,7 @@ export function buildAssetSbom(root=defaultRoot){
       category:'generated_game_sprite',source_url:'project generation with Grok; original inputs and generation records recovered',
       source_version:'c3a475d9e90ed185133cfd2b7cd56f6bf2b58f2b; atlas and obstacles reproduced byte-for-byte 2026-09-07',
       author:'AI-assisted project creation (Grok); icons derived by project script',
-      license:'Grok output terms and attribution requirements; public distribution review pending',
+      license:'Grok Consumer FAQ permits commercial output use; Created with Grok attribution retained; no exclusive-copyright guarantee',
       processing_record:'tools/assemble_vanguard_art.py; tools/make_icon.py; docs/release/asset-review-2026-09-07.md',
       modified:'chroma-key removal, frame alignment, WebP encoding; icons resized and framed',
     });

@@ -26,7 +26,7 @@ python -m http.server 8000   # 然后浏览器打开 http://localhost:8000
 
 ## 部署(传播层)
 
-本地源码可通过 HTTP 直接运行；正式发布必须冷安装并通过 `npm run verify`、`npm run test:release` 与独立 20 分钟 soak，只上传该次生成并验证过的完整 `dist/`，不得在云端重新构建或只上传源码目录。目标为阿里云大陆 OSS/CDN；ICP备案、游戏公开出版/运营适用手续与素材批准分别核验，当前门槛未关闭。
+本地源码可通过 HTTP 直接运行；正式发布必须冷安装并通过 `npm run verify`、`npm run test:release:production` 与独立 20 分钟 soak，只上传该次生成并验证过的完整 `dist/`，不得在云端重新构建或只上传源码目录。当前目标为 EdgeOne Pages 免费静态托管，详见 [发布与回滚](deployment/edgeone.md)。ICP备案、游戏公开发布适用手续与素材批准分别核验。
 
 当前 <https://mckf111.github.io/DuckDuckRun/> 由 `main` 的旧版本提供，只是历史预览，不能作为最新试玩、二维码或公众号入口。现有 GitHub Actions 只生成并保留候选制品与证据，不执行生产部署。
 

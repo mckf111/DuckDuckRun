@@ -422,14 +422,16 @@
     },
     "assets/game/duck-atlas.webp": {
       "sha256": "612ce949a279eb7ae38d9d9467e715c760df6292d09e0d28544c84e142c9a0c2",
-      "status": "pending",
+      "status": "approved",
       "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
       "reviewed_at": "2026-09-07",
       "evidence": [
         "docs/release/asset-review-2026-09-07.md",
-        "ASSETS.md"
+        "ASSETS.md",
+        "LICENSE.md",
+        "src/legal.js"
       ],
-      "decision": "Source recovered and atlas bytes reproduced; applicable Grok output permission and attribution remain unresolved."
+      "decision": "User confirmed personal Grok subscription; official Consumer FAQ explicitly permits commercial output use; Created with Grok attribution retained in LICENSE, player credits and README. Source and derivative chain verified; no exclusive-copyright guarantee."
     },
     "assets/game/menu-background.webp": {
       "sha256": "1bb4be8123639d6268aa1d522f0fadf39aed8b1f10122ec96379a8f42a841450",
@@ -477,14 +479,16 @@
     },
     "assets/game/obstacles-crenel.webp": {
       "sha256": "f88ace939543e0e97ca1b71bc7b38dde26ff68c5c37e6cea34fcac3d2ff3febf",
-      "status": "pending",
+      "status": "approved",
       "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
       "reviewed_at": "2026-09-07",
       "evidence": [
         "docs/release/asset-review-2026-09-07.md",
-        "ASSETS.md"
+        "ASSETS.md",
+        "LICENSE.md",
+        "src/legal.js"
       ],
-      "decision": "Source recovered and atlas bytes reproduced; applicable Grok output permission and attribution remain unresolved."
+      "decision": "User confirmed personal Grok subscription; official Consumer FAQ explicitly permits commercial output use; Created with Grok attribution retained in LICENSE, player credits and README. Source and derivative chain verified; no exclusive-copyright guarantee."
     },
     "assets/game/pickup-ring.webp": {
       "sha256": "7a67f5014543b402f8aedb7352ecf195d012b05bf7ef5577d860b325db9a3e23",
@@ -499,25 +503,29 @@
     },
     "assets/icons/duck-192.png": {
       "sha256": "c654d8051cc857c8e460bef48e8e80fba6e94e0ed22d8fb226622cc3597b70ee",
-      "status": "pending",
+      "status": "approved",
       "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
       "reviewed_at": "2026-09-07",
       "evidence": [
         "docs/release/asset-review-2026-09-07.md",
-        "ASSETS.md"
+        "ASSETS.md",
+        "LICENSE.md",
+        "src/legal.js"
       ],
-      "decision": "Source recovered and atlas bytes reproduced; applicable Grok output permission and attribution remain unresolved."
+      "decision": "User confirmed personal Grok subscription; official Consumer FAQ explicitly permits commercial output use; Created with Grok attribution retained in LICENSE, player credits and README. Source and derivative chain verified; no exclusive-copyright guarantee."
     },
     "assets/icons/duck-512.png": {
       "sha256": "1ec0282e83ab26e896094d7b4b80074ff12b7b19c007f67ff96359419c63edb0",
-      "status": "pending",
+      "status": "approved",
       "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
       "reviewed_at": "2026-09-07",
       "evidence": [
         "docs/release/asset-review-2026-09-07.md",
-        "ASSETS.md"
+        "ASSETS.md",
+        "LICENSE.md",
+        "src/legal.js"
       ],
-      "decision": "Source recovered and atlas bytes reproduced; applicable Grok output permission and attribution remain unresolved."
+      "decision": "User confirmed personal Grok subscription; official Consumer FAQ explicitly permits commercial output use; Created with Grok attribution retained in LICENSE, player credits and README. Source and derivative chain verified; no exclusive-copyright guarantee."
     },
     "assets/img/bg_baoen.jpg": {
       "sha256": "47d3256fdda0eeb82e165a22e80ccbfdd79261c0d66ab2c891b6da758f38b4c6",

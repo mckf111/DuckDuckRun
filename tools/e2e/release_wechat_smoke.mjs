@@ -91,10 +91,11 @@ try{
     loadedVersionedPath:location.pathname.includes(`/releases/${document.querySelector('meta[name="duckduckrun-build"]').content}/`),
   }));
   result.audioUnlocked = audioUnlocked;
-  const stableRoot = base + '/';
+  const stableRoot = (info.publicSiteUrl||base).replace(/\/+$/,'')+(info.publicBasePath||'')+'/';
+  result.expectedShareRoot=stableRoot;
   result.passed = result.errors.length === 0 && result.audioUnlocked && result.share.layerVisible
     && result.share.copyToast.includes('复制') && result.share.loadedVersionedPath
-    && result.share.copiedText.includes(stableRoot) && !result.share.copiedText.includes('/releases/');
+    && result.share.copiedText.endsWith(stableRoot) && !result.share.copiedText.includes('/releases/');
   assert.equal(result.passed, true, `微信UA分享冒烟不通过：${JSON.stringify(result)}`);
   await context.close();
 } catch(error){

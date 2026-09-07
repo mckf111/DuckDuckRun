@@ -66,6 +66,10 @@ assert.equal(treeDigest(release), firstDigest, '同一 build ID 的版本目录�
 
 const index = readFileSync(join(release, 'index.html'), 'utf8');
 const rootIndex = readFileSync(join(dist, 'index.html'), 'utf8');
+const edgeConfig=JSON.parse(readFileSync(join(dist,'edgeone.json'),'utf8'));
+assert.deepEqual(edgeConfig,JSON.parse(readFileSync(join(root,'edgeone.json'),'utf8')),'EdgeOne 配置未随制品同步');
+for(const path of ['/','/index.html','/build-info.json'])assert.ok(edgeConfig.headers.some(rule=>rule.source===path&&rule.headers.some(h=>h.key==='Cache-Control'&&h.value.includes('no-store'))),'根入口必须可回滚：'+path);
+assert.ok(edgeConfig.headers.some(rule=>rule.source==='/releases/*'&&rule.headers.some(h=>h.key==='Cache-Control'&&h.value.includes('immutable'))),'版本资源缺少不可变缓存配置');
 const assetManifest = readFileSync(join(release, 'asset-manifest.js'), 'utf8');
 assert.ok(index.includes(`name="duckduckrun-build" content="${info.buildId}"`), '版本标识未注入制品 HTML');
 assert.ok(!index.includes('__BUILD_ID__') && !index.includes('__SOCIAL_META__'), '制品仍含未替换的构建占位符');

@@ -1,10 +1,12 @@
 # DuckDuckRun 生产发布运行手册
 
+> **备选方案归档。** 2026-09-07 已改为复用现有 EdgeOne Pages 免费托管，现役手册为 [edgeone.md](edgeone.md)。本页与 OSS 脚本保留备用，不代表需要开通或购买阿里云 OSS。
+
 本手册对应 [`scripts/deploy_aliyun_oss.sh`](../../scripts/deploy_aliyun_oss.sh)，目标是将已验证的候选制品发布到**阿里云 OSS + 中国内地 CDN + HTTPS 自定义子域名**。发布保持纯静态：不部署服务器、容器、数据库、分析 SDK 或后台进程。默认路径是消费绑定批准 commit 的绿色 CI 制品；脚本先核对清单和 build ID，再上传不可变版本，最后为同一目标重新生成并切换两份根指针。任何凭证只存在于 GitHub Secrets、部署平台安全变量或本次命令进程环境中，不写配置文件，也不通过 `-i`/`-k` 出现在命令行。
 
 正式入口已确定为 `https://jinlingrun.caowenhu.com/`，源码仓库保持 Private。部署时只操作 `jinlingrun` 子域名。2026-09-07 现场核对：OSS 尚未开通，当前无游戏 Bucket 或对应 DNS 记录；不要把下文示例值当作现成资源。当前状态见 [`../release/publish-status.md`](../release/publish-status.md)。
 
-素材发布审核以 `assets/release-review.json` 为准，逐文件绑定 SHA-256、审阅者、日期、依据和结论。修改文件后批准自动失效；当前有 4 项 Grok 生成/衍生素材待确认分发条件，正式构建继续拒绝。
+素材发布审核以 `assets/release-review.json` 为准，逐文件绑定 SHA-256、审阅者、日期、依据和结论。修改文件后批准自动失效；70 项当前随包素材已复核，具体依据见发布记录。
 
 > **发布控制。** 未经一次明确生产确认，不执行脚本、不上传 OSS、不刷新 CDN，亦不修改 DNS。第 6 节的真实微信 WebView 冒烟是部署链路的最低人工技术门槛；公开发布仍须同时满足 `docs/qa/release-candidate-report.md` 列出的 Android/iPhone 实机和三类玩家验证，不能把一次微信烟测写成全部产品验收。
 
