@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
-import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PLAYER_VISIBLE_NOTICE_CONTRACT } from '../../src/legal.js';
+import { assetSha256 } from '../generate_asset_sbom.mjs';
 
 const defaultRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const imagePattern = /\.(?:jpe?g|png|webp)$/i;
@@ -63,7 +63,7 @@ export function checkAssetRegistry(root=defaultRoot, registryPath=join(root, 'do
     }
     const absolute = join(root, asset.local_path);
     assert.equal(existsSync(absolute), true, `登记文件不存在：${asset.local_path}`);
-    const actualHash = createHash('sha256').update(readFileSync(absolute)).digest('hex');
+    const actualHash = assetSha256(root,asset.local_path);
     assert.equal(asset.sha256, actualHash, `登记哈希与当前文件不一致：${asset.local_path}`);
   }
 

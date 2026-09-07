@@ -27,9 +27,13 @@ export function parseCreditLine(line){
   return { id:idMatch[1], sourceUrl, author, license };
 }
 
-function sha256(root, relativePath){
-  return createHash('sha256').update(readFileSync(join(root, relativePath))).digest('hex');
+export function assetSha256(root, relativePath){
+  const bytes=readFileSync(join(root,relativePath));
+  // 音频源码与构建器一样规范化换行；图片、字体仍逐字节绑定。
+  const content=/\.js$/i.test(relativePath)?Buffer.from(bytes.toString('utf8').replace(/\r\n?/g,'\n')):bytes;
+  return createHash('sha256').update(content).digest('hex');
 }
+const sha256=assetSha256;
 
 /* 发布批准绑定素材内容；重新编码、替换或改动后自动回到待审。 */
 export function applyReleaseReview(asset, records={}){

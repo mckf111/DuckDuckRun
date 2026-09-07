@@ -4,7 +4,7 @@ import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
-import { applyReleaseReview, buildAssetSbom, parseCreditLine } from '../tools/generate_asset_sbom.mjs';
+import { applyReleaseReview, assetSha256, buildAssetSbom, parseCreditLine } from '../tools/generate_asset_sbom.mjs';
 import { includeReleaseAsset } from '../tools/release_assets.mjs';
 import { checkAssetRegistry, collectGovernedAssetPaths, registryCoverage } from '../tools/e2e/check_asset_registry.mjs';
 
@@ -60,4 +60,15 @@ test('发布批准只对同一内容生效，缺记录或替换素材后必须�
 test('README 图片和内部发布审核不随游戏分发，运行素材仍保留',()=>{
   for(const path of ['assets/readme','assets/readme/hero.png','assets/readme/source/hero-layout.svg','assets/release-review.json'])assert.equal(includeReleaseAsset(path),false,path);
   for(const path of ['assets/game/book-wall.webp','assets/fonts/jinling-kai.woff2','assets/album/duck.jpg'])assert.equal(includeReleaseAsset(path),true,path);
+});
+
+test('源码审核与发布统一 LF，实质代码变化与二进制字节变化仍使指纹改变',()=>{
+  const directory=mkdtempSync(join(tmpdir(),'duckduckrun-fingerprint-'));
+  try{
+    writeFileSync(join(directory,'sound.js'),'one();\ntwo();\n');const lf=assetSha256(directory,'sound.js');
+    writeFileSync(join(directory,'sound.js'),'one();\r\ntwo();\r\n');assert.equal(assetSha256(directory,'sound.js'),lf);
+    writeFileSync(join(directory,'sound.js'),'one();\r\nthree();\r\n');assert.notEqual(assetSha256(directory,'sound.js'),lf);
+    writeFileSync(join(directory,'image.png'),Buffer.from([1,13,10,2]));const binary=assetSha256(directory,'image.png');
+    writeFileSync(join(directory,'image.png'),Buffer.from([1,10,2]));assert.notEqual(assetSha256(directory,'image.png'),binary);
+  }finally{rmSync(directory,{recursive:true,force:true});}
 });

@@ -10,7 +10,7 @@ const dist = join(root, 'dist');
 const preview=process.argv.includes('--preview');
 const assetReview=buildAssetSbom(root);
 const pendingAssets=assetReview.assets.filter(a=>a.release_included&&a.review_status!=='approved');
-if(!preview&&pendingAssets.length)throw new Error(`正式构建已阻止：${pendingAssets.length} 项素材尚未审核通过。内部试玩请用 npm run build（--preview）。`);
+if(!preview&&pendingAssets.length)throw new Error(`正式构建已阻止：${pendingAssets.length} 项素材尚未审核通过：${pendingAssets.map(a=>a.local_path+(a.publication_review?.current===false?'（指纹已变化）':'')).join('、')}。内部试玩请用 npm run build（--preview）。`);
 const textExtensions = new Set(['.css', '.html', '.js', '.json', '.md', '.mjs', '.py', '.sh', '.txt', '.yaml', '.yml']);
 
 function canonicalBytes(path){

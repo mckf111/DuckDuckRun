@@ -4,6 +4,8 @@
 
 最终逐文件状态在 `assets/release-review.json`，绑定当前 SHA-256。任何素材变化使批准失效。`assets/album/REVIEW.json` 保留此前来源核验记录，不用它的历史 `publicationReview` 字段代替本轮发布决定。
 
+指纹规则与实际发布字节一致：图片/字体按原始二进制，JavaScript 音频源按构建器相同的 LF 换行规范化后计算。首次正式 CI 曾因 Windows CRLF 与 Linux LF 的音频源哈希不同而拒绝 1 项，现已修复并覆盖回归测试；实质代码和二进制变化仍会使审核失效。
+
 ## 复核结果
 
 当前随包素材 70 项均完成工程复核。最初 4 项 Grok 输出分发条件待核，随后用户确认个人订阅，官方 Consumer FAQ 明确允许包含图片在内的输出用于商业目的；已在游戏版权页、LICENSE 与 README 补充 Created with Grok 署名。文件变更后仍须重新审核，不得通过改用试玩包上传绕过。

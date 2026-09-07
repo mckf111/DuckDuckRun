@@ -770,7 +770,7 @@
       "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
     },
     "src/audio.js": {
-      "sha256": "517e4e917d17b1c9ba4d2c2710d35e603fe895a7f56ea902069446e449f6a4fd",
+      "sha256": "23e427a4689d5943da6ed4de7cb513eda93b2a8a89e15671179c08169ccfd62d",
       "status": "approved",
       "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
       "reviewed_at": "2026-09-07",
@@ -778,7 +778,7 @@
         "docs/release/asset-review-2026-09-07.md",
         "src/audio.js"
       ],
-      "decision": "Project oscillator/envelope synthesis; no third-party audio samples."
+      "decision": "Project oscillator/envelope synthesis; no third-party audio samples. Fingerprint uses the same LF-normalized source bytes as the published build; only line-ending differences are normalized."
     }
   }
 }
