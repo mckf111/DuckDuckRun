@@ -15,7 +15,10 @@
 - 托管改为已有 EdgeOne Pages 免费站点的独立 `jinlingrun` 项目，全球可用区（含中国大陆）。账号已登录；现有 `if-history` 项目、免费额度和区域已核对。
 - OSS 未购买、未开通；阿里云只负责 DNS。
 - 阿里云 DNS 已核对 `caowenhu.com`，当前没有 `jinlingrun` 记录。已有 9 条解析保持原状。
-- 新 EdgeOne 项目尚未上传；首次上传被自动审批拦截，要求用户明确授权向新增 EdgeOne 目的地发送正式网页包。当前等待该确认；自定义域名、证书与公网验收待执行。
+- 用户已明确授权向 EdgeOne 上传正式网页包并公开访问，首次自动审批拦截已解除。正式包已上传成功：项目 `makers-ph8ezjstboo1`（jinlingrun），部署 `dp2edl0rn7rm`，平台显示成功，时间 2026-09-07 13:32:13（UTC+8）。平台只解压与复制静态文件，没有重跑本仓库源码构建。
+- 临时项目域名 `jinlingrun-l2jzjarz.edgeone.cool` 的匿名 HTTPS 构建清单返回 200，版本为 `18741739d7da`、production、待审 0；清单与下载的 CI 文件逐字节一致，根清单响应带 `no-cache, no-store, must-revalidate`。临时域名不作为公众号入口。
+- 已添加自定义域名 `jinlingrun.caowenhu.com` 并验证归属权；新增 TXT 主机 `edgeonereclaim.jinlingrun`，TTL 600，公共 DNS 已核对生效。此时原有解析均保留。
+- 13:42 刷新前最后可读状态：固定域名在 EdgeOne 显示“部署中”，CNAME 尚未返回、HTTPS 尚未配置。随后腾讯云控制台在两个浏览器中持续只显示页头；已尝试刷新、服务总览入口和另一已登录浏览器，仍无法读取配置。浏览器标签列表通信正常，无 JavaScript 对话框阻塞。当前需恢复控制台访问以继续 CNAME 与证书配置；不能据此宣称固定域名已上线。
 - 真实 iPhone/Android 微信与公众号预览验收尚未执行。已有自动化和历史实机反馈不替代这次正式网址验收。
 
 ## 已选配置与前提
