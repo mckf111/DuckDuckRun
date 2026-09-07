@@ -3,6 +3,7 @@ import { getSprite } from './art/sprites.js';
 import { G, bookScene } from './game.js';
 import { LEVELS, ITEMS, MILESTONES, NANJING_SLICE } from './config.js';
 import { save } from './save.js';
+import { effectiveSkin } from './rules.js';
 import { track } from './track.js';
 import { makeQR } from './qr.js';
 
@@ -159,7 +160,7 @@ export function shareScore(){
   const totalStars = save.stars.reduce((a,b)=>a+b,0);
   const copy = buildShareCopy(snapshot, {best:save.best,totalStars}, link);
   const text = copy.text;
-  const gold = save.selectedSkin==='gold'&&save.stars.reduce((a,b)=>a+b,0) >= 15;
+  const gold = effectiveSkin(save)==='gold';
 
   const c = document.createElement('canvas');
   c.width = 600; c.height = 760;

@@ -37,14 +37,15 @@ export function preloadGameSprites(){
 }
 
 export function drawSpriteFrame(context, image, cols, rows, frame, dx, dy, dw, dh){
-  if(!image || !image.naturalWidth || !image.naturalHeight) return false;
+  const width=image?.naturalWidth||image?.width,height=image?.naturalHeight||image?.height;
+  if(!width || !height) return false;
   const count = cols * rows;
   const index = ((frame % count) + count) % count;
   const col = index % cols, row = Math.floor(index / cols);
-  const sx0 = Math.round(col * image.naturalWidth / cols);
-  const sx1 = Math.round((col + 1) * image.naturalWidth / cols);
-  const sy0 = Math.round(row * image.naturalHeight / rows);
-  const sy1 = Math.round((row + 1) * image.naturalHeight / rows);
+  const sx0 = Math.round(col * width / cols);
+  const sx1 = Math.round((col + 1) * width / cols);
+  const sy0 = Math.round(row * height / rows);
+  const sy1 = Math.round((row + 1) * height / rows);
   context.drawImage(image, sx0, sy0, sx1-sx0, sy1-sy0, dx, dy, dw, dh);
   return true;
 }

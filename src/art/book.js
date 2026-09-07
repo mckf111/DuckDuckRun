@@ -1,5 +1,6 @@
 import { ctx, W, H, HOR, CX, TAU, viewport } from '../core.js';
 import { getSprite } from './sprites.js';
+import { skinAtlas } from './skin.js';
 
 /* 绘本图集与程序化加载后备：统一后视和脚底锚点，分享与主页复用。 */
 export function drawBookDuck(c,x,y,size,{t=0,air=false,slide=false,gold=false,panic=false}={}){
@@ -7,8 +8,8 @@ export function drawBookDuck(c,x,y,size,{t=0,air=false,slide=false,gold=false,pa
   if(atlas){
     const frame=slide?3:air?2:Math.floor(t*8)%2,sw=atlas.naturalWidth/2,sh=atlas.naturalHeight/2;
     const width=size*2.25*(slide?1.12:1),height=size*1.5*(slide?.62:1);
-    c.save();if(gold)c.filter='sepia(.55) saturate(1.15)';
-    c.drawImage(atlas,(frame%2)*sw,Math.floor(frame/2)*sh,sw,sh,x-width/2,y-height*.93,width,height);c.restore();return;
+    c.save();
+    c.drawImage(skinAtlas(atlas,gold),(frame%2)*sw,Math.floor(frame/2)*sh,sw,sh,x-width/2,y-height*.93,width,height);c.restore();return;
   }
   c.save();c.translate(x,y);c.scale(size/100,size/100);
   c.lineJoin='round';c.lineCap='round';c.lineWidth=2.6;

@@ -1,4 +1,6 @@
 import { drawBookDuck } from './book.js';
+import { skinAtlas } from './skin.js';
+import { effectiveSkin } from '../rules.js';
 import { ctx, TAU, ZP, LANEGAP, proj, poly, disc, shadow, clamp } from '../core.js';
 import { save } from '../save.js';
 import { MOBILE } from '../config.js';
@@ -213,9 +215,8 @@ function drawSpritePlayer(pl, t, opts, p, gold){
   } else {
     ctx.rotate(clamp((pl.lane*LANEGAP-pl.x)*0.18, -0.2, 0.2));
   }
-  if(gold && 'filter' in ctx) ctx.filter = 'sepia(.55) saturate(1.35) hue-rotate(350deg)';
   ctx.imageSmoothingEnabled = true;
-  drawSpriteFrame(ctx, image, 4, 3, frame, -dw/2, -dh*0.88, dw, dh);
+  drawSpriteFrame(ctx, skinAtlas(image,gold), 4, 3, frame, -dw/2, -dh*0.88, dw, dh);
   ctx.restore();
   return true;
 }
@@ -223,7 +224,7 @@ function drawSpritePlayer(pl, t, opts, p, gold){
 // opts: { panic: 障碍逼近, crashed: 撞车定格 }
 export function drawPlayer(pl, t, opts){
   opts = opts || {};
-  const gold = save.selectedSkin==='gold' && save.stars.reduce((a,b)=>a+b,0) >= 15;   // 15 星:金鸭皮肤
+  const gold = effectiveSkin(save)==='gold';
   BODY = gold ? '#f5d76e' : '#f5f0e6';
   BELLY = gold ? '#d8a83a' : '#e3d9c8';
   const p = proj(pl.x, pl.y, ZP);

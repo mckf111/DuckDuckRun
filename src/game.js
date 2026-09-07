@@ -1,7 +1,7 @@
 import { clamp, lerp, rnd, irnd, visualRnd, visualIrnd, proj, LANEGAP, ZP, DRAWD, TAU, getRandomSeed, restartRandomSequence } from './core.js';
 import { LEVELS, NANJING_SLICE, ITEMS, LM_CYCLE, LM_NAME, MILESTONES, RUN_STAR_THRESHOLDS, MOBILE, QUACKS, CRASH_LINES, buildJourneyPlan, JOURNEY_COPY, JOURNEY_LEVELS } from './config.js';
 import { save, persist, queuePersist, prefersReducedMotion } from './save.js';
-import { canPassObstacle, calculateRunStars, calculateMedals, getBridgeUnlockStatus, getCollectionWeight, getObstacleInstruction } from './rules.js';
+import { canPassObstacle, calculateRunStars, calculateMedals, getBridgeUnlockStatus, getCollectionWeight, getObstacleInstruction, recordBestStars } from './rules.js';
 import { sfx, bgm, setBgmIntensity } from './audio.js';
 import { track } from './track.js';
 
@@ -732,7 +732,7 @@ export function levelClear(){
     const result=calculateMedals(G.runMarks,G.plan.collectTarget,G.skills);G.runStars=result.stars;
     const best=save.medals[G.difficulty][G.lvIdx];for(const key of Object.keys(best))best[key]=best[key]||result.medals[key];
   }
-  if(G.runStars > save.stars[G.lvIdx]) save.stars[G.lvIdx]=G.runStars;
+  recordBestStars(save,G.lvIdx,G.runStars);
   save.lastLevel=Math.min(9,G.lvIdx+1);
   save.cleared[G.lvIdx] = true;   // 通关即解锁下一关,与星级脱钩
   if(G.lvIdx === LEVELS.length-1) grantAlbumItem('jiangtun');

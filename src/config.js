@@ -1,4 +1,19 @@
 /* ================= 关卡主题(国风剪纸配色) ================= */
+export const SKINS = { goldStars:15 };
+export const PROGRESS_COPY = {
+  total:'通关总星数', best:'历史最佳', current:'本次评价', levelBest:'本关最佳',
+  rule:'每关最多 3 星，只计各关最好成绩。解锁不消耗星星。',
+  earn:'通关得 1 星；当局鸭蛋达标再得 1 星；当局取得两枚技巧印章再得 1 星。',
+  medals:'本难度累计印章', clear:'通关', collect:'鸭蛋达标', skill:'技巧达标',
+  failed:'本次未通关，不增加通关星数。',
+  skinTitle:'今天穿哪身？', skinNote:'白鸭与金鸭只改变外观。',
+  goldUnlock:'金羽鸭 · 通关总星数达到 {stars} 星后解锁',
+  skinNames:{white:'桂花白鸭',gold:'金羽鸭'}, using:'✓ 使用中', use:'使用这只',
+  locked:'尚未解锁', unlocked:'已解锁', progress:'当前 {total}/{stars} 星',
+  goLevels:'去选关拿星', local:'进度保存在当前浏览器，手机和电脑不会自动同步。',
+  saved:'已换上{skin}。', saveFailed:'本次已切换，但保存失败，重新打开可能恢复原选择。',
+};
+
 export const MOBILE = {
   bookPlayerScale:{touch:1.4,desktop:1.05},
   swipeThreshold:18, inputBuffer:{standard:0.12,easy:0.18}, easySpeed:0.9, rescues:2,

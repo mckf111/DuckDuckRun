@@ -1,4 +1,4 @@
-import { ITEMS, LEVELS } from './config.js';
+import { ITEMS, LEVELS, SKINS } from './config.js';
 
 export const SAVE_SCHEMA = 5;
 export const BRIDGE_INDEX = LEVELS.length - 1;
@@ -51,6 +51,21 @@ export function calculateRunStars(markCount, thresholds){
   return stars;
 }
 
+// 总星数只相加每关最好成绩；难度与累计技巧印章不重复入账。
+export function totalStars(candidate){
+  return LEVELS.reduce((sum,_,i)=>sum+clampInt(candidate?.stars?.[i],0,3),0);
+}
+export function skinUnlocked(candidate,skin){
+  return skin==='white'||skin==='gold'&&totalStars(candidate)>=SKINS.goldStars;
+}
+export function effectiveSkin(candidate){
+  return candidate?.selectedSkin==='gold'&&skinUnlocked(candidate,'gold')?'gold':'white';
+}
+export function recordBestStars(candidate,level,stars){
+  if(!Number.isInteger(level)||level<0||level>=LEVELS.length)return;
+  candidate.stars[level]=Math.max(clampInt(candidate.stars[level],0,3),clampInt(stars,0,3));
+}
+
 export function sanitizeAlbum(raw){
   const album = {};
   if(!raw || typeof raw !== 'object' || Array.isArray(raw)) return album;
@@ -86,7 +101,7 @@ export function normalizeSave(raw){
     tut: tutorialCompleted,
     muted: !!source.muted,
     difficulty: source.difficulty==='easy'?'easy':'standard',
-    selectedSkin: source.selectedSkin==='gold'?'gold':'white',
+    selectedSkin: effectiveSkin({stars,selectedSkin:source.selectedSkin}),
     trackedItem: NORMAL_ITEM_IDS.includes(source.trackedItem)?source.trackedItem:null,
     journeyStarted: !!source.journeyStarted || cleared.some(Boolean),
     lastLevel: clampInt(source.lastLevel,0,LEVELS.length-1),
