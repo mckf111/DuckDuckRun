@@ -1,8 +1,17 @@
+import { assetUrl } from '../asset-url.js';
+
 /* 预渲染游戏素材：异步加载失败时，各绘制模块继续走原 Canvas 兜底。 */
 const SOURCES = {
-  duck: new URL('../../assets/game/duck-atlas.webp?v=derp1', import.meta.url).href,
-  pickup: new URL('../../assets/game/pickup-ring.webp', import.meta.url).href,
-  crenelObstacles: new URL('../../assets/game/obstacles-crenel.webp?v=wall1', import.meta.url).href,
+  bookBackdrop: 'assets/game/book-wall.webp',
+  bookDuck: 'assets/game/book-duck.webp',
+  bookJourney1:'assets/game/book-journey-1.webp',
+  bookJourney2:'assets/game/book-journey-2.webp',
+  bookJourney3:'assets/game/book-journey-3.webp',
+  duck: 'assets/game/duck-atlas.webp',
+  pickup: 'assets/game/pickup-ring.webp',
+  crenelObstacles: 'assets/game/obstacles-crenel.webp',
+  sliceToken: 'assets/game/nanjing-slice/salted-duck-token.webp',
+  sliceMarker: 'assets/game/nanjing-slice/qinhuai-lantern-marker.webp',
 };
 
 const CACHE = new Map();
@@ -18,23 +27,25 @@ export function getSprite(name){
   image.decoding = 'async';
   image.onload = () => { entry.ready = image.naturalWidth > 0; };
   image.onerror = () => { entry.failed = true; };
-  image.src = SOURCES[name];
+  image.src = assetUrl(SOURCES[name]);
   return null;
 }
 
 export function preloadGameSprites(){
-  Object.keys(SOURCES).forEach(getSprite);
+  getSprite('bookBackdrop');
+  getSprite('bookDuck');
 }
 
 export function drawSpriteFrame(context, image, cols, rows, frame, dx, dy, dw, dh){
-  if(!image || !image.naturalWidth || !image.naturalHeight) return false;
+  const width=image?.naturalWidth||image?.width,height=image?.naturalHeight||image?.height;
+  if(!width || !height) return false;
   const count = cols * rows;
   const index = ((frame % count) + count) % count;
   const col = index % cols, row = Math.floor(index / cols);
-  const sx0 = Math.round(col * image.naturalWidth / cols);
-  const sx1 = Math.round((col + 1) * image.naturalWidth / cols);
-  const sy0 = Math.round(row * image.naturalHeight / rows);
-  const sy1 = Math.round((row + 1) * image.naturalHeight / rows);
+  const sx0 = Math.round(col * width / cols);
+  const sx1 = Math.round((col + 1) * width / cols);
+  const sy0 = Math.round(row * height / rows);
+  const sy1 = Math.round((row + 1) * height / rows);
   context.drawImage(image, sx0, sy0, sx1-sx0, sy1-sy0, dx, dy, dw, dh);
   return true;
 }

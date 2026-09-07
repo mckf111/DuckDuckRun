@@ -1,0 +1,78 @@
+{
+  "schema": "duckduckrun-release-restart-memory/v1",
+  "capturedAt": "2026-09-02T05:00:03.268Z",
+  "environment": "Local headless Chromium touch simulation (844×390, DPR 2); CDP JavaScript heap only, not device or GPU memory.",
+  "cycles": 10,
+  "errors": [],
+  "audioUnlocked": true,
+  "heapBefore": {
+    "samples": [
+      3662972,
+      3474060,
+      3295908
+    ],
+    "median": 3474060
+  },
+  "restart1": {
+    "state": "play",
+    "mode": "slice",
+    "paused": false
+  },
+  "restart2": {
+    "state": "play",
+    "mode": "slice",
+    "paused": false
+  },
+  "restart3": {
+    "state": "play",
+    "mode": "slice",
+    "paused": false
+  },
+  "restart4": {
+    "state": "play",
+    "mode": "slice",
+    "paused": false
+  },
+  "restart5": {
+    "state": "play",
+    "mode": "slice",
+    "paused": false
+  },
+  "restart6": {
+    "state": "play",
+    "mode": "slice",
+    "paused": false
+  },
+  "restart7": {
+    "state": "play",
+    "mode": "slice",
+    "paused": false
+  },
+  "restart8": {
+    "state": "play",
+    "mode": "slice",
+    "paused": false
+  },
+  "restart9": {
+    "state": "play",
+    "mode": "slice",
+    "paused": false
+  },
+  "restart10": {
+    "state": "play",
+    "mode": "slice",
+    "paused": false
+  },
+  "heapAfter": {
+    "samples": [
+      3396884,
+      3468864,
+      3404280
+    ],
+    "median": 3404280
+  },
+  "heapDeltaBytes": -69780,
+  "heapDeltaPct": -2.01,
+  "heapGrowthLimitBytes": 1572864,
+  "passed": true
+}

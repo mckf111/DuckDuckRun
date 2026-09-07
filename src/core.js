@@ -1,8 +1,25 @@
 /* ================= 基础 ================= */
 export const cv = document.getElementById('cv');
-export const ctx = cv.getContext('2d');
-export const W = 960, H = 540, CX = W / 2, HOR = H * 0.40;   // 逻辑分辨率与地平线
-export const CAMF = 300, CAMH = 2.3, ZP = 3, DRAWD = 72;      // 透视参数:焦距/相机高/玩家z/绘制距离
+export let ctx = cv.getContext('2d');
+export function withDrawingContext(context,draw){
+  const previous=ctx;ctx=context;try{return draw();}finally{ctx=previous;}
+}
+export let W = 960, H = 540, CX = W / 2, HOR = H * 0.40;
+export const viewport = { width:960, height:540, portrait:false, scale:1, camera:300, playerY:446 };
+export function setViewportSize(width, height){
+  const portrait = height > width;
+  const scale = Math.min(width, height) / 540;
+  W = width / scale; H = height / scale; CX = W / 2;
+  HOR = H * (portrait ? 0.29 : 0.34);
+  // 横竖屏只改变镜头：玩家世界高度、车道和碰撞规则保持不变。
+  const playerY = H * (portrait ? 0.77 : 0.80);
+  Object.assign(viewport,{width,height,portrait,scale,playerY,camera:Math.min(300,W*0.43),vertical:(playerY-HOR)*3/2.3});
+}
+export function screenToWorld(clientX,clientY){
+  const r=cv.getBoundingClientRect();
+  return {x:(clientX-r.left)*W/r.width,y:(clientY-r.top)*H/r.height};
+}
+export const CAMF = 300, CAMH = 2.3, ZP = 3, DRAWD = 72;      // 透视参数:焦距/相机高/绘制距离
 export const LANEGAP = 1.25, ROAD_HALF = 2.0;
 
 const QUALITY_LEVELS = [
@@ -10,7 +27,9 @@ const QUALITY_LEVELS = [
   { name:'medium', dpr:1.5 },
   { name:'low', dpr:1 },
 ];
-let qualityIndex = 0;
+// 触控设备默认从 1.5 DPR 起步：优先保证中端移动端的帧时间，再在桌面保留 2 DPR 上限。
+const defaultQualityIndex = typeof matchMedia === 'function' && matchMedia('(pointer:coarse)').matches ? 1 : 0;
+let qualityIndex = defaultQualityIndex;
 
 export function getQuality(){ return QUALITY_LEVELS[qualityIndex]; }
 export function downgradeQuality(){
@@ -19,12 +38,17 @@ export function downgradeQuality(){
   fit();
   return true;
 }
+export function resetQuality(){ qualityIndex = defaultQualityIndex; fit(); }
 
 export function fit(){
   const cap = getQuality().dpr;
   const dpr = Math.min(cap, Math.max(1, window.devicePixelRatio || 1));
-  const s = Math.min(innerWidth / W, innerHeight / H);
-  const cssW = W * s, cssH = H * s;
+  const wrap = document.getElementById('wrap');
+  const style = wrap ? getComputedStyle(wrap) : null;
+  const safeWidth = Math.max(1, innerWidth - (parseFloat(style?.paddingLeft)||0) - (parseFloat(style?.paddingRight)||0));
+  const safeHeight = Math.max(1, innerHeight - (parseFloat(style?.paddingTop)||0) - (parseFloat(style?.paddingBottom)||0));
+  setViewportSize(safeWidth,safeHeight);
+  const cssW = safeWidth, cssH = safeHeight;
   cv.style.width = cssW + 'px'; cv.style.height = cssH + 'px';
   // 背板 = CSS 显示尺寸 × cappedDPR，逻辑坐标仍为 960×540。
   cv.width = Math.max(1, Math.round(cssW * dpr));
@@ -33,21 +57,57 @@ export function fit(){
   if(cv.dataset) cv.dataset.quality = getQuality().name;
 }
 
+// 可回放随机流：只服务玩法状态。视觉抖动和音频噪声使用独立原生随机数，不让帧率或音频解锁改变关卡序列。
+let replaySeed = null;
+let randomSource = Math.random;
+function normalizeSeed(value){
+  const numeric = Number(value);
+  return Number.isSafeInteger(numeric) ? numeric >>> 0 : null;
+}
+function mulberry32(seed){
+  let state = seed >>> 0;
+  return () => {
+    state = state + 0x6D2B79F5 | 0;
+    let t = Math.imul(state ^ state >>> 15, 1 | state);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+export function setRandomSeed(seed){
+  const normalized = normalizeSeed(seed);
+  if(normalized === null) return null;
+  replaySeed = normalized;
+  randomSource = mulberry32(normalized);
+  return replaySeed;
+}
+export function getRandomSeed(){ return replaySeed; }
+export function restartRandomSequence(){
+  if(replaySeed === null) return false;
+  randomSource = mulberry32(replaySeed);
+  return true;
+}
+export function clearRandomSeed(){
+  replaySeed = null;
+  randomSource = Math.random;
+}
+
 // 透视投影:世界(车道x, 高度y, 相对深度z) -> 屏幕
 export function proj(x, y, z){
-  const s = CAMF / z;
-  return { x: CX + x * s, y: HOR + (CAMH - y) * s, s };
+  const s = viewport.camera / z;
+  return { x: CX + x * s, y: HOR + (CAMH - y) * (viewport.vertical || CAMF) / z, s };
 }
 export const clamp = (v,a,b)=>v<a?a:v>b?b:v;
 export const lerp = (a,b,t)=>a+(b-a)*t;
-export const rnd = (a,b)=>a+Math.random()*(b-a);
+export const rnd = (a,b)=>a+randomSource()*(b-a);
 export const irnd = (a,b)=>Math.floor(rnd(a,b+1));
+export const visualRnd = (a,b)=>a+Math.random()*(b-a);
+export const visualIrnd = (a,b)=>Math.floor(visualRnd(a,b+1));
 export const TAU = Math.PI*2;
 
 /* ================= 剪纸绘制:小件 ================= */
 export function poly(pts, fill, stroke, lw){
   ctx.beginPath(); ctx.moveTo(pts[0][0], pts[0][1]);
-  for(let i=1;i<pts.length;i++) ctx.lineTo(pts[i][0], pts[i][1]);
+  for(let i=0;i<pts.length;i++) ctx.lineTo(pts[i][0], pts[i][1]);
   ctx.closePath();
   if(fill){ ctx.fillStyle=fill; ctx.fill(); }
   if(stroke){ ctx.strokeStyle=stroke; ctx.lineWidth=lw||1.5; ctx.stroke(); }

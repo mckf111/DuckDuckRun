@@ -1,0 +1,40 @@
+{
+  "schema": "duckduckrun-release-wechat-ua-smoke/v2",
+  "capturedAt": "2026-09-02T04:59:57.041Z",
+  "environment": "Chromium with iPhone/MicroMessenger user-agent and touch viewport. This is a container-style simulation, not a real WeChat WebView or physical-phone result.",
+  "buildId": "f36b36debf1a",
+  "errors": [],
+  "touchProbe": {
+    "state": "over",
+    "wipe": 0,
+    "pressed": null,
+    "layerDisplay": "flex",
+    "imageComplete": true,
+    "imageNaturalWidth": 600,
+    "toBlobCalls": 1,
+    "pointerEvents": [
+      {
+        "type": "pointerdown",
+        "isPrimary": true,
+        "pointerType": "touch",
+        "wipe": 0,
+        "pressed": null
+      },
+      {
+        "type": "pointerup",
+        "isPrimary": true,
+        "pointerType": "touch",
+        "wipe": 0,
+        "pressed": null
+      }
+    ]
+  },
+  "share": {
+    "layerVisible": true,
+    "copyToast": "链接已复制,发给朋友直接玩",
+    "copiedText": "我在《冲鸭！金陵！》的“中华门·秦淮夜渡”跑了 2 m，收下 0 枚灯牌。来跑一趟南京夜色：http://127.0.0.1:8134/",
+    "loadedVersionedPath": true
+  },
+  "audioUnlocked": true,
+  "passed": true
+}

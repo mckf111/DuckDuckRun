@@ -1,0 +1,776 @@
+{
+  "schema": "duckduckrun-release-review/v1",
+  "scope": "Current private-repository game website release; file-bound engineering review",
+  "assets": {
+    "assets/album/baige.jpg": {
+      "sha256": "ea7a05acb79f33bf45d132335d9b36a556cbffb51233211535fd452363c4f8ab",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/album/REVIEW.json"
+      ],
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
+    },
+    "assets/album/bao.jpg": {
+      "sha256": "d51dd1746dfd7e384956daa1cae0c0117b927d9392dc50e6b82b64b7163416fb",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/album/REVIEW.json"
+      ],
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
+    },
+    "assets/album/baochuan.jpg": {
+      "sha256": "59f428a8850b2594e3e3067ef212f3722970a484bfba40d83c175a812749f459",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/album/REVIEW.json"
+      ],
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
+    },
+    "assets/album/baoenta.jpg": {
+      "sha256": "6aef1b79b5a8612c69c9b25c3fe950d1ec4483c90faf391599f3812231febf78",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/album/REVIEW.json"
+      ],
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
+    },
+    "assets/album/bean.jpg": {
+      "sha256": "ac7c276857b15f6d62f90a84d8e5f67cfcde3149e4d3382287756a8e64e5e02b",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/album/REVIEW.json"
+      ],
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
+    },
+    "assets/album/book.jpg": {
+      "sha256": "c31a2a0fe628bac05782f58e0661b3995b043712262ce9cec33c8429d5868849",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/album/REVIEW.json"
+      ],
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
+    },
+    "assets/album/chengzhuan.jpg": {
+      "sha256": "dfa75fc7b97e1ee673d18085b8df6575be311f8db3edef6660845ebaeb802dd9",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/album/REVIEW.json"
+      ],
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
+    },
+    "assets/album/cloud.jpg": {
+      "sha256": "3745b82d2e80af7147c25a2955a6012685379a7b1ddd69329bcd9f1ebea2f3fb",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/album/REVIEW.json"
+      ],
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
+    },
+    "assets/album/duck.jpg": {
+      "sha256": "5e8e55cabe728f4171ee5153c69bf685c83b8d6d6e7a0972550beba8d3a46c6e",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/album/REVIEW.json"
+      ],
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
+    },
+    "assets/album/egg.jpg": {
+      "sha256": "6a9dc863613630bbaea097d6d96b1e2c7d7bb91832d6b83211b935b37ff8ed00",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/album/REVIEW.json"
+      ],
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
+    },
+    "assets/album/elephant.jpg": {
+      "sha256": "325454a64bfefb4c335228d096769d882c2eb43fc13cc1c3c22bab041a06392e",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/album/REVIEW.json"
+      ],
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
+    },
+    "assets/album/fans.jpg": {
+      "sha256": "6d654714296d2f94a134f11671256dfda221cd18d25b1551d79ad72a5f8b7f0a",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/album/REVIEW.json"
+      ],
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
+    },
+    "assets/album/guihua.jpg": {
+      "sha256": "2af8c98cc26b74d065361cfd1d6705da01c9fe8cb41f768ed3dbf061a1cc69bd",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/album/REVIEW.json"
+      ],
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
+    },
+    "assets/album/hufengdie.jpg": {
+      "sha256": "748377c88f2f1dbc4ba5cbe9330d6725d3bb2558603e19dfde861aed56165c23",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/album/REVIEW.json"
+      ],
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
+    },
+    "assets/album/jiangtun.jpg": {
+      "sha256": "bb46c332103e03a8cf6204a04d9efcf29b0d235610eb6b404c8df9c9e9302bb7",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/album/REVIEW.json"
+      ],
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
+    },
+    "assets/album/kejing.jpg": {
+      "sha256": "2174e995aace6c9aee5b36335f99d37dba94de16240fa599af907e6e93ac828d",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/album/REVIEW.json"
+      ],
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
+    },
+    "assets/album/lamp.jpg": {
+      "sha256": "07a77f5737a25fc2d8187731e756c00de6e374aea1dffa07c19e8b84db68ae69",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/album/REVIEW.json"
+      ],
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
+    },
+    "assets/album/leaf.jpg": {
+      "sha256": "8b9f1ed5d186ede78c1ae456ab34ea361a66c4751aba9c1ac74121b2807dd9bd",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/album/REVIEW.json"
+      ],
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
+    },
+    "assets/album/luhao.jpg": {
+      "sha256": "d74d32dd6355dd68b067bd97ea0d9b487c83ada409aae6f4fcb40e4fa7a777b4",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/album/REVIEW.json"
+      ],
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
+    },
+    "assets/album/nanyanjing.jpg": {
+      "sha256": "8148e3dfa63029bb0c17fbee1290e645d0a338219b76fcdc55453978528080f0",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/album/REVIEW.json"
+      ],
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
+    },
+    "assets/album/pibie.jpg": {
+      "sha256": "89d1e24d669a0c88d016631ea517f690495da05dbdf7b420104a0acc3b454a00",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/album/REVIEW.json"
+      ],
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
+    },
+    "assets/album/plum.jpg": {
+      "sha256": "097491fe2701637b0437fd94d01d73d9dd3c58c2395f3294611929faa228fc34",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/album/REVIEW.json"
+      ],
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
+    },
+    "assets/album/pot.jpg": {
+      "sha256": "af9b3ba0710b94ca2d38c18393de7f8216bc6262fba5b8f342222c57d85d541b",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/album/REVIEW.json"
+      ],
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
+    },
+    "assets/album/root.jpg": {
+      "sha256": "bb0a14b01c0baed42bb6938390584998ad248c54e2faf81a8b05c5fb61fec123",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/album/REVIEW.json"
+      ],
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
+    },
+    "assets/album/sakura.jpg": {
+      "sha256": "e86545759f45d3c097ae56d5b01d864f8455f197ec2a0269165c3bd8813cf34e",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/album/REVIEW.json"
+      ],
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
+    },
+    "assets/album/stone.jpg": {
+      "sha256": "6c5184ee4814a9147e06e66428047c8c693fd925bd35f3206c5bb7b5bd47d52b",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/album/REVIEW.json"
+      ],
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
+    },
+    "assets/album/taro.jpg": {
+      "sha256": "352686b677e22b06ef968ed426bb0b0440efbc73a3f3f12721d462c370ac261d",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/album/REVIEW.json"
+      ],
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
+    },
+    "assets/album/wufan.jpg": {
+      "sha256": "89663d5db060795213b7e4df5ae716e2b1997dae59b23b52a53f331b9a9868bc",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/album/REVIEW.json"
+      ],
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
+    },
+    "assets/album/yinghuo.jpg": {
+      "sha256": "e53d61a0c33aafc5274f4d22a6b55ea673f36503c8c70deae44fec8253007682",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/album/REVIEW.json"
+      ],
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
+    },
+    "assets/album/zifeng.jpg": {
+      "sha256": "1b3bd2e7fe0e62da1f9a552d46ebbabef41e99ce9ef16693401ac43a05865c91",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/album/REVIEW.json"
+      ],
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
+    },
+    "assets/fonts/jinling-brush.woff2": {
+      "sha256": "829082b20613e56094f3d9fbb7d11ab36aeaace482f12b1bddf410cb960ce834",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/fonts/OFL.txt"
+      ],
+      "decision": "Retain under bundled OFL; current subset fingerprint fixed; historical upstream revision gap remains disclosed."
+    },
+    "assets/fonts/jinling-kai.woff2": {
+      "sha256": "ea6298f05d75de7b9e767147b60ee8ac7ac65d6eabb9f8c0d265e801c3979764",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/fonts/OFL.txt"
+      ],
+      "decision": "Retain under bundled OFL; current subset fingerprint fixed; historical upstream revision gap remains disclosed."
+    },
+    "assets/game/bg-zhonghua.webp": {
+      "sha256": "9d3ca24f1f71ae963b3f24f1890328f5d6b77971b7dc1a103ece5b8d666bafda",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/img/CREDITS.md"
+      ],
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
+    },
+    "assets/game/book-duck.webp": {
+      "sha256": "3510f55cdfa310e7d990ba740020d05465794786a4fd3b861c3cfe2858dce2ac",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "ASSETS.md"
+      ],
+      "decision": "Project-generated visual with documented provenance; AI assistance disclosed; no exclusive-copyright or official-endorsement claim."
+    },
+    "assets/game/book-journey-1.webp": {
+      "sha256": "47563e411d66815b684b63f950ab5aef65bcb12e446cccb6db53036052c7809d",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "ASSETS.md"
+      ],
+      "decision": "Project-generated visual with documented provenance; AI assistance disclosed; no exclusive-copyright or official-endorsement claim."
+    },
+    "assets/game/book-journey-2.webp": {
+      "sha256": "dcf5fb7f80a68bac00a67ddea4ca222601a743588c0eb77f0ce360874eda0465",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "ASSETS.md"
+      ],
+      "decision": "Project-generated visual with documented provenance; AI assistance disclosed; no exclusive-copyright or official-endorsement claim."
+    },
+    "assets/game/book-journey-3.webp": {
+      "sha256": "8a6ff3e7f5757a6eddfe380845d123098066ddf57be0771bfbed1cd64a30713e",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "ASSETS.md"
+      ],
+      "decision": "Project-generated visual with documented provenance; AI assistance disclosed; no exclusive-copyright or official-endorsement claim."
+    },
+    "assets/game/book-wall.webp": {
+      "sha256": "56cdca6ec57b5a17dd3a25c3e032ce127ce393440483b0846e124643ac93ee00",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "ASSETS.md"
+      ],
+      "decision": "Project-generated visual with documented provenance; AI assistance disclosed; no exclusive-copyright or official-endorsement claim."
+    },
+    "assets/game/duck-atlas.webp": {
+      "sha256": "612ce949a279eb7ae38d9d9467e715c760df6292d09e0d28544c84e142c9a0c2",
+      "status": "pending",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "ASSETS.md"
+      ],
+      "decision": "Source recovered and atlas bytes reproduced; applicable Grok output permission and attribution remain unresolved."
+    },
+    "assets/game/menu-background.webp": {
+      "sha256": "1bb4be8123639d6268aa1d522f0fadf39aed8b1f10122ec96379a8f42a841450",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/img/CREDITS.md"
+      ],
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
+    },
+    "assets/game/nanjing-slice/nanjing-vertical-slice-target.webp": {
+      "sha256": "60d47c6a9cb0ef6b2003e2e1c45b62fe324a8d062f940205b8a307eebf080d91",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "ASSETS.md"
+      ],
+      "decision": "Project-generated visual with documented provenance; AI assistance disclosed; no exclusive-copyright or official-endorsement claim."
+    },
+    "assets/game/nanjing-slice/qinhuai-lantern-marker.webp": {
+      "sha256": "1bc708d76441d1790f498fd4357c712ccbd45d74d24faaf2d4f2fa636ed2f638",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "ASSETS.md"
+      ],
+      "decision": "Project-generated visual with documented provenance; AI assistance disclosed; no exclusive-copyright or official-endorsement claim."
+    },
+    "assets/game/nanjing-slice/salted-duck-token.webp": {
+      "sha256": "3abad99e4049d1d5d2361e19e8d01e17936fa6583718e0a14a454991d34b234c",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "ASSETS.md"
+      ],
+      "decision": "Project-generated visual with documented provenance; AI assistance disclosed; no exclusive-copyright or official-endorsement claim."
+    },
+    "assets/game/obstacles-crenel.webp": {
+      "sha256": "f88ace939543e0e97ca1b71bc7b38dde26ff68c5c37e6cea34fcac3d2ff3febf",
+      "status": "pending",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "ASSETS.md"
+      ],
+      "decision": "Source recovered and atlas bytes reproduced; applicable Grok output permission and attribution remain unresolved."
+    },
+    "assets/game/pickup-ring.webp": {
+      "sha256": "7a67f5014543b402f8aedb7352ecf195d012b05bf7ef5577d860b325db9a3e23",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "ASSETS.md"
+      ],
+      "decision": "Project-generated visual with documented provenance; AI assistance disclosed; no exclusive-copyright or official-endorsement claim."
+    },
+    "assets/icons/duck-192.png": {
+      "sha256": "c654d8051cc857c8e460bef48e8e80fba6e94e0ed22d8fb226622cc3597b70ee",
+      "status": "pending",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "ASSETS.md"
+      ],
+      "decision": "Source recovered and atlas bytes reproduced; applicable Grok output permission and attribution remain unresolved."
+    },
+    "assets/icons/duck-512.png": {
+      "sha256": "1ec0282e83ab26e896094d7b4b80074ff12b7b19c007f67ff96359419c63edb0",
+      "status": "pending",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "ASSETS.md"
+      ],
+      "decision": "Source recovered and atlas bytes reproduced; applicable Grok output permission and attribution remain unresolved."
+    },
+    "assets/img/bg_baoen.jpg": {
+      "sha256": "47d3256fdda0eeb82e165a22e80ccbfdd79261c0d66ab2c891b6da758f38b4c6",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/img/CREDITS.md"
+      ],
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
+    },
+    "assets/img/bg_baoen.webp": {
+      "sha256": "434d6dc75b0a7a513efce85c9240d3b1758b2d00ca6685057bfb703c62ce2e6d",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/img/CREDITS.md"
+      ],
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
+    },
+    "assets/img/bg_bridge.jpg": {
+      "sha256": "9624b60da3c983db784c8660bccb24f62e61dd69803b36f62146849b0029e5f7",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/img/CREDITS.md"
+      ],
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
+    },
+    "assets/img/bg_bridge.webp": {
+      "sha256": "e69e9fc55a10a7d5a6a67d0a1780c598c025b85822cdc3df95d1af8cb74a4513",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/img/CREDITS.md"
+      ],
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
+    },
+    "assets/img/bg_jiming.jpg": {
+      "sha256": "b5122c37049db612573cbb252939b226dac20353adea3fcc3d5eaa743b750027",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/img/CREDITS.md"
+      ],
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
+    },
+    "assets/img/bg_jiming.webp": {
+      "sha256": "9984b4bd1429c8d9d18476bf11b027c4cb835baf70bcd112097a7a4453997783",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/img/CREDITS.md"
+      ],
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
+    },
+    "assets/img/bg_mendong.jpg": {
+      "sha256": "48976741a8fe356653a0a48a1969d1e389bf18b767a7c63c9c7d67d750c36aee",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/img/CREDITS.md"
+      ],
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
+    },
+    "assets/img/bg_mendong.webp": {
+      "sha256": "5654eab64009f4e096a4232184281eab239314382b5d8d93b7f539ecd0e4db02",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/img/CREDITS.md"
+      ],
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
+    },
+    "assets/img/bg_menu.jpg": {
+      "sha256": "d2b11b07335f4dfb4269379ddaf0e7b908e21067f9f45e33e603c6e6254e0b85",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/img/CREDITS.md"
+      ],
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
+    },
+    "assets/img/bg_menu.webp": {
+      "sha256": "fe8bacfb6e90bd7a1ab885d614050dd224f49f297e2c7cd62be0a4ce6cf793eb",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/img/CREDITS.md"
+      ],
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
+    },
+    "assets/img/bg_observatory.jpg": {
+      "sha256": "55e470d4b47685c75c0de54e6e5bb4a714a9edd06a91b2203c5a7d07a21e51f3",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/img/CREDITS.md"
+      ],
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
+    },
+    "assets/img/bg_observatory.webp": {
+      "sha256": "e5962fec704d2691e56785c94cc82ddc9f59fe5062de9a09ffab0ca85019d9ed",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/img/CREDITS.md"
+      ],
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
+    },
+    "assets/img/bg_qixia.jpg": {
+      "sha256": "738fbe0bfd06d78e92e5eaa037a69f259967bd5e50e5975d91499cbd8d41c2ed",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/img/CREDITS.md"
+      ],
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
+    },
+    "assets/img/bg_qixia.webp": {
+      "sha256": "87253ea24c3dd7f76e112bd1ee5dbe7705f0ae30ded94d334103712026615995",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/img/CREDITS.md"
+      ],
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
+    },
+    "assets/img/bg_sunyard.jpg": {
+      "sha256": "326c5198e94f61c598780fceff6ada7df9573b6f79d266053c1c69fdfe39c0f2",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/img/CREDITS.md"
+      ],
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
+    },
+    "assets/img/bg_sunyard.webp": {
+      "sha256": "9d35bb96da6fa9f77d5e5d323b5199a79512a8184b5b8d1e22fd1dd8d0404d97",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/img/CREDITS.md"
+      ],
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
+    },
+    "assets/img/bg_yihe.jpg": {
+      "sha256": "8d526406c49c902ecb39fc39afe342435b332f57b61a2defdc9d843fc1dc9a14",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/img/CREDITS.md"
+      ],
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
+    },
+    "assets/img/bg_yihe.webp": {
+      "sha256": "4258ca93d60a7c9e69ee35feb7174b06a9aad27eca447227b29d02c51f825948",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/img/CREDITS.md"
+      ],
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
+    },
+    "assets/img/bg_zhaobi.jpg": {
+      "sha256": "5788426bd94ae05d4175b86a907cb5b08651e47d574ebf059e6bef585195f175",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/img/CREDITS.md"
+      ],
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
+    },
+    "assets/img/bg_zhaobi.webp": {
+      "sha256": "ca731746628ee2bf39e3257ac692983727be20ea6485beb69f7ad0e4f4c744ad",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/img/CREDITS.md"
+      ],
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
+    },
+    "assets/img/bg_zhonghua.jpg": {
+      "sha256": "7047e55e7146b3bc4644f0dd10b7f9431984aab3c3f418c0ccaf7e680a84209e",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/img/CREDITS.md"
+      ],
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
+    },
+    "assets/img/bg_zhonghua.webp": {
+      "sha256": "13b156f5d8f41c591809f6f0e14bd4f0a258183890db8d8a5e967f257dce5c0d",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "assets/img/CREDITS.md"
+      ],
+      "decision": "Retain for game cultural illustration under the recorded license; preserve author, source, modifications and applicable share-alike obligations."
+    },
+    "src/audio.js": {
+      "sha256": "517e4e917d17b1c9ba4d2c2710d35e603fe895a7f56ea902069446e449f6a4fd",
+      "status": "approved",
+      "reviewer": "Codex engineering source-and-license review; not a human legal opinion",
+      "reviewed_at": "2026-09-07",
+      "evidence": [
+        "docs/release/asset-review-2026-09-07.md",
+        "src/audio.js"
+      ],
+      "decision": "Project oscillator/envelope synthesis; no third-party audio samples."
+    }
+  }
+}

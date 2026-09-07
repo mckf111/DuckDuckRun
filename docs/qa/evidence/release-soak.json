@@ -1,0 +1,79 @@
+{
+  "schema": "duckduckrun-release-soak/v2",
+  "startedAt": "2026-09-02T04:20:24.893Z",
+  "targetDurationMs": 1200000,
+  "environment": "Local headless Chromium touch simulation (844×390, DPR 2); actual runtime loop and GC-stabilized JavaScript heap, not physical-device/GPU memory.",
+  "thresholds": {
+    "maxLongTaskMs": 250,
+    "maxLongTaskRatio": 0.02,
+    "heapFloorBytes": 1048576,
+    "heapGrowthRatio": 0.2
+  },
+  "lifecycle": {
+    "audioInitiallyUnlocked": true,
+    "backgroundPaused": true,
+    "backgroundResumed": true,
+    "audioAfterResume": true,
+    "portraitBlocked": true,
+    "landscapeRestored": true,
+    "deepLinkReloaded": true,
+    "audioAfterReloadUnlocked": true
+  },
+  "errors": [],
+  "heapBefore": {
+    "samples": [
+      3460736,
+      3313144,
+      3397984
+    ],
+    "median": 3397984
+  },
+  "heapAfter": {
+    "samples": [
+      3590008,
+      3589364,
+      3568868
+    ],
+    "median": 3589364
+  },
+  "runtime": {
+    "state": "play",
+    "mode": "slice",
+    "paused": false,
+    "audioState": "running",
+    "cycles": 16
+  },
+  "performance": {
+    "supported": true,
+    "segments": [
+      {
+        "supported": true,
+        "count": 0,
+        "totalMs": 0,
+        "maxMs": 0,
+        "cycles": 12
+      },
+      {
+        "supported": true,
+        "count": 1,
+        "totalMs": 111,
+        "maxMs": 111,
+        "cycles": 4
+      }
+    ],
+    "count": 1,
+    "totalMs": 111,
+    "maxMs": 111,
+    "blockingRatio": 0.00009
+  },
+  "elapsedMs": 1200378,
+  "heap": {
+    "before": 3397984,
+    "after": 3589364,
+    "delta": 191380,
+    "deltaPct": 5.63,
+    "growthLimitBytes": 1048576
+  },
+  "passed": true,
+  "finishedAt": "2026-09-02T04:40:25.984Z"
+}

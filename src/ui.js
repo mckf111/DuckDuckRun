@@ -1,9 +1,9 @@
 import { ctx, W, H, CX, poly, disc, rrect, petalFlower, clamp } from './core.js';
-import { LEVELS, ITEMS, MILESTONES, SHOPS, RUN_STAR_THRESHOLDS } from './config.js';
-import { save, persist } from './save.js';
+import { LEVELS, NANJING_SLICE, ITEMS, MILESTONES, SHOPS, RUN_STAR_THRESHOLDS } from './config.js';
+import { save, persist, cycleMotionPreference } from './save.js';
 import { getBridgeUnlockStatus, getObstacleInstruction } from './rules.js';
 import { sfx } from './audio.js';
-import { G, curLv, startRun, nextAfterClear } from './game.js';
+import { G, curLv, startRun, nextAfterClear, currentSliceCue } from './game.js';
 import { drawItemPhoto, hasPhoto, loadItemPhotos } from './art/photo.js';
 import { drawItemIcon } from './art/items.js';
 import { drawSide } from './art/scenery.js';
@@ -16,8 +16,7 @@ export function text(str, x, y, size, color, align, weight, soft){
   // 三档字体:soft=书法体大标题(铭心毛笔);≥14px=文楷;<14px 与数字提示=黑体
   const clean = soft==='clean';
   const family = soft===true ? '"JinlingBrush","KaiTi","Microsoft YaHei",serif'
-    : size >= 14 ? '"JinlingKai","KaiTi","Microsoft YaHei",serif'
-    : '"Microsoft YaHei","PingFang SC",sans-serif';
+    : '"JinlingKai","Microsoft YaHei","PingFang SC","Noto Sans CJK SC",sans-serif';
   ctx.font = (weight && soft!==true ? weight + ' ' : '') + size + 'px ' + family;
   ctx.textAlign = align||'center'; ctx.textBaseline = 'middle';
   // 统一深色描边:任何实景照片背景上都可读;soft=大标题用细淡描边(现代感)
@@ -88,6 +87,8 @@ export function stars(n, x, y, r){
 }
 export function dim(alpha){ ctx.fillStyle=`rgba(8,6,14,${alpha})`; ctx.fillRect(0,0,W,H); }
 
+function motionLabel(){ return save.motion==='reduced' ? '动效 · 减弱' : save.motion==='full' ? '动效 · 完整' : '动效 · 跟随系统'; }
+
 function glassPanel(x,y,w,h,r=14){
   ctx.save();
   ctx.shadowColor='rgba(70,40,16,0.28)';ctx.shadowBlur=14;ctx.shadowOffsetY=5;
@@ -101,11 +102,17 @@ function glassPanel(x,y,w,h,r=14){
 export function drawHUD(){
   const lv = curLv();
   glassPanel(16,14,154,102);
+  const sliceMode=G.mode==='slice';
   text(Math.floor(G.dist)+' m', 30, 38, 24, '#3a2614', 'left', 'bold', 'clean');
-  text('本局鸭蛋', 30, 68, 12, 'rgba(90,54,24,0.62)', 'left', null, 'clean');
-  text(String(G.runMarks), 140, 68, 17, '#b86a20', 'right', 'bold', 'clean');
-  drawPickupMedallion('gold',31,94,7,0);
-  text('鸭蛋 '+save.coins, 47, 94, 13, '#b86a20', 'left', 'bold', 'clean');
+  text(sliceMode?NANJING_SLICE.ui.ledgerLabel:'本局鸭蛋', 30, 68, 14, 'rgba(90,54,24,0.62)', 'left', null, 'clean');
+  text(String(sliceMode?(G.slice?.tokenCount||0):G.runMarks), 140, 68, 17, '#b86a20', 'right', 'bold', 'clean');
+  if(sliceMode){
+    disc(31,94,7,'#F4BE57','#3A2614',1);
+    text(NANJING_SLICE.ui.nonMainline,47,94,14,'#b86a20','left','bold','clean');
+  } else {
+    drawPickupMedallion('gold',31,94,7,0);
+    text('鸭蛋 '+save.coins, 47, 94, 13, '#b86a20', 'left', 'bold', 'clean');
+  }
   if(G.combo >= 2){
     glassPanel(18,124,112,32,10);
     text(G.combo+' 连击', 74, 140, 14, '#b86a20', 'center', 'bold', 'clean');
@@ -119,10 +126,12 @@ export function drawHUD(){
     ctx.fillStyle = '#5aa85a'; ctx.beginPath(); ctx.ellipse(stX+8, stY-1, 7, 3, 0, Math.PI, 0); ctx.fill();
     text('护盾', stX+22, stY, 14, '#a8d5a2', 'left', 'bold');
   }
-  if(G.mode==='adv'){
-    glassPanel(CX-154,14,308,54);
-    text(lv.name, CX, 32, 18, '#3a2614', 'center', 'bold', 'clean');
-    const pw = 266, px = CX-pw/2, py = 53;
+  if(G.mode==='adv' || G.mode==='slice'){
+    glassPanel(CX-154,14,308,64);
+    const slice = G.mode==='slice';
+    text(slice ? (G.slice?.quiet?'◉  ◉  ◉':NANJING_SLICE.ui.displayName) : lv.name, CX, 30, 18, '#3a2614', 'center', 'bold', 'clean');
+    if(slice && !G.slice?.quiet) text((G.slice?.config?.label||NANJING_SLICE.modes.standard.label)+' · 灯牌 '+(G.slice?.tokenCount||0), CX, 49, 14, 'rgba(90,54,24,0.70)', 'center', null, 'clean');
+    const pw = 266, px = CX-pw/2, py = 61;
     rrect(px,py,pw,6,3,'rgba(255,255,255,0.12)');
     rrect(px,py,pw*clamp(G.dist/lv.len,0,1),6,3,lv.accent);
   } else {
@@ -157,7 +166,12 @@ export function drawHUD(){
     for(let i=0;i<4;i++) disc(tx+tw-86+i*18,ty+22,4,i<=G.tutorial.step?'#d89a3a':'rgba(90,54,24,0.18)');
     text(G.tutorial.tip, CX, ty+50, 17, '#3a2614', 'center', 'bold', 'clean');
   }
-  if(!G.tutorial && (G.paused || G.t < 5)){
+  if(G.mode==='slice' && !G.paused && G.t<62 && !G.egg){
+    const beat=currentSliceCue();
+    const sliceTip=beat?.cue || '中道夜渡 · 收束在前';
+    glassPanel(CX-180,H-42,360,34,12);
+    text(sliceTip, CX, H-25, 14, '#3A2614', 'center', 'bold', 'clean');
+  } else if(!G.tutorial && (G.paused || G.t < 5)){
     ctx.globalAlpha = G.paused ? 1 : clamp(5-G.t, 0, 1);
     text(hint, CX, H-16, 13, lv.hud, 'center');
     ctx.globalAlpha = 1;
@@ -180,26 +194,50 @@ export function drawHUD(){
 /* ---- 界面 ---- */
 export function drawMenu(){
   dim(0.22);
-  const ty = H*0.24;
-  text('奔跑展开的金陵长卷', CX, H*0.09, 12, 'rgba(174,220,239,0.78)', 'center', 'bold', 'clean');
+  const compactTouch = 'ontouchstart' in window && innerHeight <= 480;
+  const weixin = /MicroMessenger/i.test(navigator.userAgent);
+  const ty = compactTouch ? 102 : H*0.20;
+  text('奔跑展开的金陵长卷', CX, compactTouch?38:H*0.07, compactTouch?14:12, 'rgba(174,220,239,0.78)', 'center', 'bold', 'clean');
   ctx.save();
   if('letterSpacing' in ctx) ctx.letterSpacing = '4px';
-  text('冲鸭！金陵！', CX, ty, 72, '#f7f5ee', 'center', 'bold', 'clean');
+  text('冲鸭！金陵！', CX, ty, compactTouch?56:68, '#f7f5ee', 'center', 'bold', 'clean');
   ctx.restore();
   ctx.strokeStyle = '#f1c86b'; ctx.lineWidth = 2;
-  ctx.beginPath(); ctx.moveTo(CX-58, ty+54); ctx.lineTo(CX+58, ty+54); ctx.stroke();
-  disc(CX, ty+54, 3, '#f1c86b');
-  text('一只认真逃跑的白鸭 · 十站金陵 · 四十件风物', CX, H*0.43, 15, 'rgba(228,239,245,0.82)', 'center', null, 'clean');
-  button('adv','开始冒险', CX, H*0.58, 224, 48);
-  button('endless','无尽奔跑', CX, H*0.68, 224, 46, {ghost:true});
-  button('album','风物图鉴 '+Object.keys(save.album).length+'/'+ITEMS.length+(save.albumNew?'  ●':''), CX, H*0.78, 224, 46, {ghost:true});
-  button('shop','鸭铺升级 · '+save.coins+' 蛋', CX, H*0.88, 224, 46, {ghost:true});
-  button('tutorial','重玩教学', 90, H-28, 140, 36, {ghost:true,size:14});
-  button('credits','素材与授权', W-90, H-28, 150, 36, {ghost:true,size:14});
-  text(COPYRIGHT_LINE, CX, H-18, 11, 'rgba(211,230,240,0.48)', 'center', null, 'clean');
+  const ruleY=ty+(compactTouch?42:50);
+  ctx.beginPath(); ctx.moveTo(CX-58, ruleY); ctx.lineTo(CX+58, ruleY); ctx.stroke();
+  disc(CX, ruleY, 3, '#f1c86b');
+  text('一只认真逃跑的白鸭 · 十站金陵 · 四十件风物', CX, compactTouch?188:H*0.36, compactTouch?16:15, 'rgba(228,239,245,0.82)', 'center', null, 'clean');
+  if(compactTouch){
+    const left=CX-190,right=CX+190,h=62,w=340;
+    button('slice',NANJING_SLICE.ui.menuStandard,left,245,w,h,{bg:'#d88a3f',size:17});
+    button('sliceEasy',NANJING_SLICE.ui.menuEasy,right,245,w,h,{ghost:true,size:17});
+    button('adv','开始冒险',left,318,w,h);
+    button('endless','无尽奔跑',right,318,w,h,{ghost:true});
+    button('album','风物图鉴 '+Object.keys(save.album).length+'/'+ITEMS.length+(save.albumNew?'  ●':''),left,391,w,h,{ghost:true,size:18});
+    button('shop','鸭铺升级 · '+save.coins+' 蛋',right,391,w,h,{ghost:true,size:18});
+    text(COPYRIGHT_LINE,CX,weixin?430:444,12,'rgba(211,230,240,0.56)','center',null,'clean');
+    button('tutorial','重玩教学',160,500,260,h,{ghost:true,size:17});
+    button('motion',motionLabel(),CX,500,260,h,{ghost:true,size:16});
+    button('credits','素材与授权',W-160,500,260,h,{ghost:true,size:17});
+  }else{
+    button('slice',NANJING_SLICE.ui.menuStandard,CX-92,H*0.45,270,44,{bg:'#d88a3f'});
+    button('sliceEasy',NANJING_SLICE.ui.menuEasy,CX+220,H*0.45,170,44,{ghost:true,size:14});
+    button('adv','开始冒险',CX,H*0.54,224,46);
+    button('endless','无尽奔跑',CX,H*0.63,224,44,{ghost:true});
+    button('album','风物图鉴 '+Object.keys(save.album).length+'/'+ITEMS.length+(save.albumNew?'  ●':''),CX,H*0.72,224,44,{ghost:true});
+    button('shop','鸭铺升级 · '+save.coins+' 蛋',CX,H*0.81,224,44,{ghost:true});
+    text(COPYRIGHT_LINE,CX,H-50,11,'rgba(211,230,240,0.48)','center',null,'clean');
+    button('tutorial','重玩教学',90,H-18,140,32,{ghost:true,size:14});
+    button('motion',motionLabel(),CX,H-18,164,32,{ghost:true,size:13});
+    button('credits','素材与授权',W-90,H-18,150,32,{ghost:true,size:14});
+  }
+  if(!G.kbActive){
+    const primary=G.buttons.findIndex(entry=>entry.id==='adv');
+    if(primary>=0) G.kbSel=primary;
+  }
   // F6:微信内提示绕开内置浏览器限制(下载/分享被吞)
-  if(/MicroMessenger/i.test(navigator.userAgent))
-    text('微信内体验有限:点右上角 ··· → 在浏览器打开', CX, H-44, 12, 'rgba(246,241,231,0.42)');
+  if(weixin)
+    text('微信内体验有限:点右上角 ··· → 在浏览器打开', CX, compactTouch?450:H-70, 12, 'rgba(246,241,231,0.42)');
 }
 /* 长文案自动缩字号,保证不溢出容器 */
 function fitSize(str, maxW, base){
@@ -332,11 +370,13 @@ export function drawOver(){
   if(deathTip) text(deathTip, CX, H*0.33, 13, 'rgba(246,237,212,0.55)');
   const line = G.mode==='endless'
     ? '跑了 '+Math.floor(G.dist)+' m · 鸭蛋 '+G.runMarks+(G.newBest?' · 新纪录!':'')
-    : LEVELS[G.lvIdx].name+' · 跑了 '+Math.floor(G.dist)+' m · 鸭蛋 '+G.runMarks+' · 距终点还差 '+Math.max(0,Math.ceil(LEVELS[G.lvIdx].len-G.dist))+' m';
+    : G.mode==='slice'
+      ? NANJING_SLICE.ui.displayName+' · 跑了 '+Math.floor(G.dist)+' m · 灯牌 '+(G.slice?.tokenCount||0)+' · 距收束 '+Math.max(0,Math.ceil(curLv().len-G.dist))+' m'
+      : LEVELS[G.lvIdx].name+' · 跑了 '+Math.floor(G.dist)+' m · 鸭蛋 '+G.runMarks+' · 距终点还差 '+Math.max(0,Math.ceil(LEVELS[G.lvIdx].len-G.dist))+' m';
   text(line, CX, H*0.40, 18, '#e8c170');
   if(got) text('新图鉴:'+G.newIds.map(id=>(ITEMS.find(i=>i.id===id)||{}).name||'').join('、'), CX, H*0.46, 16, '#a8d5a2');
   if(G.newIds.some(id=>ITEMS.find(i=>i.id===id)?.secret)) text('隐藏风物现身!', CX, H*0.51, 15, '#f0b64c', 'center', 'bold');
-  button('retry','起来再跑 (Enter)', CX, H*0.50, 240, 50);
+  button('retry',G.mode==='slice'?'再跑一趟 (Enter)':'起来再跑 (Enter)', CX, H*0.50, 240, 50);
   button('share','分享成绩', CX-115, H*0.61, 210, 46, {ghost:true});
   button('copy','复制链接', CX+115, H*0.61, 210, 46, {ghost:true});
   button('quit','回主菜单', CX, H*0.72, 240, 46, {ghost:true});
@@ -354,10 +394,11 @@ function star(x, y, r, on, k){
 }
 export function drawClear(){
   dim(0.5);
-  const lv = LEVELS[G.lvIdx];
-  text('过关!', CX, H*0.2, 58, '#f4f1e8', 'center', null, true);
-  text(lv.sub, CX, H*0.29, 15, '#d8c9a8');
-  text(lv.name+' · 本局拾取 '+G.runMarks+' 枚鸭蛋', CX, H*0.36, 20, '#f0b64c');
+  const lv = curLv();
+  const slice = G.mode==='slice';
+  text(slice?NANJING_SLICE.ui.finishTitle:'过关!', CX, H*0.2, 58, '#f4f1e8', 'center', null, true);
+  text(slice?NANJING_SLICE.ui.finishSub:lv.sub, CX, H*0.29, 15, '#d8c9a8');
+  text(slice?NANJING_SLICE.ui.displayName+' · 灯牌 '+(G.slice?.tokenCount||0):lv.name+' · 本局拾取 '+G.runMarks+' 枚鸭蛋', CX, H*0.36, 20, '#f0b64c');
   // 星星逐颗弹入
   const n = G.runStars;
   for(let i=0;i<3;i++){
@@ -365,12 +406,19 @@ export function drawClear(){
     if(k>0) star(CX+(i-1)*52, H*0.45, 20, i<n, 1.6-0.6*k);
   }
   if(G.stateT > 1.2){
-    text('本局 '+G.runStars+' 星 · 历史最佳 '+save.stars[G.lvIdx]+' 星', CX, H*0.515, 15, '#f7ead0', 'center', 'bold');
-    text('鸭蛋 '+RUN_STAR_THRESHOLDS.join(' / ')+' = 1 / 2 / 3 星', CX, H*0.555, 13, '#d8c9a8');
+    if(slice){
+      text((G.slice?.easy?NANJING_SLICE.modes.easy.label+'模式 · 灯影护航':NANJING_SLICE.modes.standard.label+'模式 · 路线取舍完成')+' · 不写入主线进度', CX, H*0.53, 15, '#f7ead0', 'center', 'bold');
+      text('行旅小笺 · '+(G.slice?.routeName||'月影左线')+'：三道瓮城的门序，跑成今晚的一小段夜渡。', CX, H*0.575, 13, '#d8c9a8');
+    }
+    else {
+      text('本局 '+G.runStars+' 星 · 历史最佳 '+save.stars[G.lvIdx]+' 星', CX, H*0.515, 15, '#f7ead0', 'center', 'bold');
+      text('鸭蛋 '+RUN_STAR_THRESHOLDS.join(' / ')+' = 1 / 2 / 3 星', CX, H*0.555, 13, '#d8c9a8');
+    }
   }
   if(G.newIds.length) text('新图鉴:'+G.newIds.map(id=>(ITEMS.find(i=>i.id===id)||{}).name||'').join('、'), CX, H*0.58, 16, '#a8d5a2');
   if(G.newIds.some(id=>ITEMS.find(i=>i.id===id)?.secret)) text('隐藏风物现身!', CX, H*0.63, 15, '#f0b64c', 'center', 'bold');
-  if(G.lvIdx < LEVELS.length-1){
+  if(slice) button('next','再跑一趟 (Enter)', CX, H*0.68, 300, 52);
+  else if(G.lvIdx < LEVELS.length-1){
     const next = LEVELS[G.lvIdx+1];
     const bridgeStatus = getBridgeUnlockStatus(save);
     if(!next.hidden || bridgeStatus.unlocked) button('next','下一关:'+next.name+' (Enter)', CX, H*0.66, 300, 52);
@@ -528,6 +576,8 @@ export function clickAt(px, py){
 }
 export function handleButton(id, data){
   if(id==='adv') G.state='levels';
+  else if(id==='slice') startRun('slice',0,false,{easy:false});
+  else if(id==='sliceEasy') startRun('slice',0,false,{easy:true});
   else if(id==='tutorial') startRun('adv',0,true);
   else if(id==='endless') startRun('endless', 0);
   else if(id==='shop'){ G.shopFeedback=null; G.state='shop'; }
@@ -545,10 +595,9 @@ export function handleButton(id, data){
   }
   else if(id==='credits'){ G.creditsScroll=0; G.state='credits'; }
   else if(id==='album'){ G.albumFrom='menu'; G.albumZoom=null; G.state='album';
-    loadItemPhotos(ITEMS.filter(i=>i.photo).map(i=>i.id));   // 只请求 config 标记的 18 张实景照片
     if(save.albumNew){ save.albumNew=false; persist(); }   // 隐藏件红点看完即清
   }
-  else if(id==='item') G.albumZoom = data;
+  else if(id==='item') { G.albumZoom = data; if(save.album[data])loadItemPhotos([data]); }
   else if(id==='zoomclose') G.albumZoom = null;
   else if(id==='lv') startRun('adv', data);
   else if(id==='back'){ G.albumZoom=null; G.state = G.state==='album' ? G.albumFrom : 'menu'; }
@@ -557,6 +606,7 @@ export function handleButton(id, data){
   else if(id==='resume') G.paused=false;
   else if(id==='pause') G.paused=true;
   else if(id==='mute'){ save.muted=!save.muted; persist(); }
+  else if(id==='motion') cycleMotionPreference();
   else if(id==='next') nextAfterClear();
   else if(id==='share') shareScore();
   else if(id==='copy'){

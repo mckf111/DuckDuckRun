@@ -10,7 +10,7 @@ test('存档迁移覆盖标量、非法值、旧教学字段和超范围升级',
   const dirty = normalizeSave({
     best:Infinity, stars:'bad', cleared:3, album:{ fake:true, [ITEMS[0].id]:true },
     tutorialDone:1, coins:-9, distTotal:Infinity, ups:{ magnet:99, gui:-5, spawn:'bad' },
-    albumDryRuns:Infinity, secretPending:['baiju','fake','baiju'],
+    albumDryRuns:Infinity, secretPending:['baiju','fake','baiju'], motion:'unexpected',
   });
   assert.equal(dirty.best, 0);
   assert.deepEqual(dirty.album, { [ITEMS[0].id]:true });
@@ -19,6 +19,9 @@ test('存档迁移覆盖标量、非法值、旧教学字段和超范围升级',
   assert.equal(dirty.albumDryRuns, 0);
   assert.deepEqual(dirty.secretPending,['baiju']);
   assert.deepEqual(dirty.ups, { magnet:3, gui:0, spawn:0 });
+  assert.equal(dirty.motion,'system');
+  assert.equal(normalizeSave({motion:'reduced'}).motion,'reduced');
+  assert.equal(normalizeSave({motion:'full'}).motion,'full');
 });
 
 test('6 关旧档迁桥到第 10 站，重复迁移不再挪动', () => {

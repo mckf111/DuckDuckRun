@@ -1,6 +1,8 @@
 import { ctx, W, H, HOR, clamp } from '../core.js';
 import { ITEMS } from '../config.js';
 import { drawItemIcon } from './items.js';
+import { assetUrl } from '../asset-url.js';
+import { ALBUM_PHOTOS } from '../album-photos.js';
 
 /* ================= 实景照片:加载 / 远景 / 拍立得风物卡 ================= */
 // 命名约定:背景 assets/img/bg_<landmarkId>.jpg;风物 assets/img/it_<itemId>.jpg
@@ -55,13 +57,28 @@ export function loadBackground(id){
     ...(featured ? [featured] : []),
     'assets/img/bg_' + id + '.webp',
     'assets/img/bg_' + id + '.jpg',
-  ]);
+  ].map(assetUrl));
 }
 export function loadMenuBackground(){ return loadBackground('menu'); }
-export function prefetchBackground(id){
-  const run = () => loadBackground(id);
-  if(typeof requestIdleCallback === 'function') requestIdleCallback(run, { timeout:1800 });
-  else setTimeout(run, 120);
+export function prefetchBackground(id, delayMs=120){
+  let cancelled = false;
+  let idleHandle = null;
+  let timerHandle = null;
+  const run = () => {
+    if(cancelled) return;
+    cancelled = true;
+    if(timerHandle) clearTimeout(timerHandle);
+    if(idleHandle!==null && typeof cancelIdleCallback === 'function') cancelIdleCallback(idleHandle);
+    loadBackground(id);
+  };
+  // 有空闲回调时尽早执行；无头/节流环境若迟迟不给 idle，定时兜底仍履行预取契约。
+  if(typeof requestIdleCallback === 'function') idleHandle = requestIdleCallback(run, { timeout:delayMs });
+  timerHandle = setTimeout(run, delayMs);
+  return () => {
+    cancelled = true;
+    if(timerHandle) clearTimeout(timerHandle);
+    if(idleHandle!==null && typeof cancelIdleCallback === 'function') cancelIdleCallback(idleHandle);
+  };
 }
 
 /* 图鉴风物照片懒加载:首次进图鉴页时调用,逐张异步;已加载/加载中不重复。
@@ -69,7 +86,7 @@ export function prefetchBackground(id){
 export function loadItemPhoto(id){
   const key = 'it_' + id;
   if(!PHOTO_ITEMS.has(id)) return Promise.resolve(null);
-  return loadWithFallback(key, ['assets/img/it_' + id + '.jpg']);
+  return loadWithFallback(key, [assetUrl(ALBUM_PHOTOS[id].file)]);
 }
 export function loadItemPhotos(ids){
   return Promise.all(ids.map(loadItemPhoto));

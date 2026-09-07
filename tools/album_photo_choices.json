@@ -1,0 +1,276 @@
+{
+  "duck": {
+    "title": "File:Nanjing Salted Duck.jpg",
+    "kind": "actual",
+    "caption": "南京盐水鸭实拍",
+    "visualReview": "原始文件标注南京盐水鸭；画面为切块鸭肉，无人物及品牌主体。"
+  },
+  "fans": {
+    "title": "File:Duck blood and vermicelli soup (20150819124849).JPG",
+    "kind": "actual",
+    "caption": "南京鸭血粉丝汤实拍",
+    "visualReview": "原始说明明确为南京经典鸭血粉丝汤；画面为成品汤碗。"
+  },
+  "tea": {
+    "title": null,
+    "reason": "本轮未找到准确标注雨花茶且使用条件清楚的茶叶实拍；旧茶园照片不作雨花茶本体。",
+    "additionalSources": [
+      "https://std.samr.gov.cn/gb/search/gbDetailed?id=71F772D77F29D3A7E05397BE0A0AB82A",
+      "https://www.zgbk.com/ecph/words?ID=193969&Preview=false&SiteID=1&Type=bkzyb"
+    ]
+  },
+  "taro": {
+    "title": "File:Tangyumiao.JPG",
+    "kind": "actual",
+    "caption": "南京糖芋苗实拍",
+    "visualReview": "原作者标注南京糖芋苗；画面为碗装芋苗甜汤，不采用芋田照片。"
+  },
+  "pot": {
+    "title": "File:Beef potstickers.jpg",
+    "kind": "actual",
+    "caption": "牛肉锅贴实拍；原图拍摄于常州，不代表南京或图鉴所列店铺",
+    "visualReview": "原作者自有照片、CC0，明确牛肉锅贴；采用食物近景，明确常州拍摄，不冒充南京店铺。"
+  },
+  "bean": {
+    "title": "File:赤豆酒酿元宵.jpg",
+    "kind": "actual",
+    "caption": "南京赤豆酒酿元宵实拍",
+    "visualReview": "原作者明确标注南京赤豆酒酿元宵；画面为小元宵与红豆甜汤，背景仅局部模糊肢体，不展示可识别人物肖像。"
+  },
+  "cake": {
+    "title": null,
+    "reason": "旧图虽名为 Red Bean Plum Blossom Cake，目视为花形压模糕点，不能认定为南京现烤梅花糕。继续检索的准确实拍多为商业图库或作者游记，未获得适用于本游戏的授权。",
+    "rejected": [
+      "File:Red Bean Plum Blossom Cake (1).jpg：题名相近但对象不符。"
+    ],
+    "additionalSources": [
+      "https://www.huitu.com/newmedia/detail/20240520/154734042900.html",
+      "https://chuka.tokyo/meihuagao"
+    ]
+  },
+  "root": {
+    "title": "File:糖藕.jpg",
+    "kind": "related",
+    "caption": "糯米糖藕实拍，用于认识藕中灌米的做法；不是完整的南京糖粥藕",
+    "visualReview": "画面为糯米糖藕摆盘，没有糖粥；仅作为相关示意，不计完整南京糖粥藕实拍。"
+  },
+  "egg": {
+    "title": "File:Wàng jīdàn.jpg",
+    "kind": "documentary",
+    "caption": "南京旺鸡蛋摊位纪实（2010）；照片不能确认胚龄，不作十二日活珠子实物认定",
+    "visualReview": "原作者记录南京旺鸡蛋摊位；照片不能判定胚龄，按摊位纪实展示而非十二日活珠子实物。"
+  },
+  "bao": {
+    "title": "File:Xiaolongbaozi (Nanjing).jpg",
+    "kind": "actual",
+    "caption": "南京小笼包实拍；不代表图鉴所列店铺",
+    "visualReview": "文件明确南京小笼包；画面为盒装小笼包，无店铺名称，不代表文案中的商家。"
+  },
+  "xiangdu": {
+    "title": null,
+    "reason": "检索到南京香肚介绍与商品图，暂未核实可用于本游戏的照片许可。",
+    "additionalSources": [
+      "https://dag.nanjing.gov.cn/dawh/dags/202301/t20230130_3813917.html"
+    ]
+  },
+  "luhao": {
+    "title": "File:Artemisia selengensis bundles.jpg",
+    "kind": "actual",
+    "caption": "芦蒿菜蔬实拍（Artemisia selengensis）；不作南京拍摄地点认定",
+    "visualReview": "原作者标注 Artemisia selengensis bundles；画面为成捆菜蔬茎，不用同属其他蒿类冒充。"
+  },
+  "wufan": {
+    "title": "File:乌米饭 20240505.jpg",
+    "kind": "actual",
+    "caption": "乌米饭实拍；不作南京拍摄地点认定",
+    "visualReview": "原作者说明为立夏节派发乌米饭；画面为黑色糯米饭，照片地点不冒充南京。"
+  },
+  "zhuangyuan": {
+    "title": null,
+    "reason": "尚未找到对象确为南京状元豆且许可清楚的照片；糕点与普通煮黄豆不冒充。",
+    "additionalSources": []
+  },
+  "cloud": {
+    "title": "File:Drachenrobe-Qianlong.JPG",
+    "kind": "actual",
+    "caption": "云锦实物：德国莱比锡格拉西博物馆藏乾隆时期龙袍；不是南京现场摄影",
+    "additionalSources": [
+      "https://commons.wikimedia.org/wiki/File:Drachenrobe-Qianlong.JPG",
+      "https://commons.wikimedia.org/wiki/Category:Nanjing_brocade"
+    ],
+    "visualReview": "原文件分类与结构化 depicts 均指向 Yunjin brocade；画面为历史龙袍实物，明确格拉西博物馆藏而非南京现场。"
+  },
+  "gold": {
+    "title": null,
+    "reason": "暂未找到可核实南京金箔身份与使用许可的实物照片；不沿用日本金泽工厂示意。",
+    "additionalSources": [
+      "https://commons.wikimedia.org/wiki/Category:Gold_leaf",
+      "https://min.news/en/culture/f86d3ba416a23611e6f4221369319845.html"
+    ]
+  },
+  "lamp": {
+    "title": "File:Night of Qinhuai lantern fair 2019 - decorations.jpg",
+    "kind": "actual",
+    "caption": "2019 年秦淮灯会花灯实景",
+    "visualReview": "文件为 2019 秦淮灯会；画面为花灯及场地，游客为背景，未作人物特写；不代表灯会或景区授权。"
+  },
+  "ronghua": {
+    "title": null,
+    "reason": "已找到传承人及机构作品照片，但未找到明确覆盖本游戏使用的开放许可。",
+    "additionalSources": [
+      "https://www.rmzxw.com.cn/c/2020-06-04/2588384.shtml",
+      "https://jiaju.njfu.edu.cn/xsgz/yjsgzdt/20260413/i356097.html"
+    ]
+  },
+  "zheshan": {
+    "title": null,
+    "reason": "不能把一般书画折扇认定为金陵折扇；准确对象的报道图片尚无可核实的复用许可。",
+    "additionalSources": [
+      "https://www.xinhuanet.com/talking/sjwd2/b06.htm",
+      "https://jssdfz.jiangsu.gov.cn/n96/20230920/i28100.html"
+    ]
+  },
+  "jianzhi": {
+    "title": null,
+    "reason": "南京剪纸作品还需核实作品与摄影的使用条件；不以一般剪纸替代。",
+    "additionalSources": [
+      "https://www.ihchina.cn/tuji_details/20286.html",
+      "https://www.chinamuseum.org.cn/detail.html?contentId=586&id=14"
+    ]
+  },
+  "kejing": {
+    "title": "File:Kejingchu in Nanjing 2012-02.JPG",
+    "kind": "related",
+    "caption": "金陵刻经处大门实景；用于认识传承地点，不是雕版实物",
+    "visualReview": "原作者标注金陵刻经处大门；画面为建筑入口，按相关地点示意，不冒充雕版实物。"
+  },
+  "baiju": {
+    "title": null,
+    "reason": "找到南京白局演出照片及 CC 许可，但存在二次转载来源或以可识别演员为主体，未核实相应摄影来源及肖像使用条件；暂不将这些图片用于游戏。",
+    "additionalSources": [
+      "https://commons.wikimedia.org/wiki/Category:Nanjing_Baiju",
+      "https://commons.wikimedia.org/wiki/File:%E5%8D%97%E4%BA%AC%E7%99%BD%E5%B1%80.jpg"
+    ]
+  },
+  "elephant": {
+    "title": "File:Stone Elephant Road (Ming Xiaoling) 1.jpg",
+    "kind": "actual",
+    "caption": "南京明孝陵石象路实景",
+    "visualReview": "文件为明孝陵石象路；画面有成对石象及道路，地点与条目一致。"
+  },
+  "book": {
+    "title": "File:Facade of Libraire Avant-Garde(Wutai Mountain branch).jpg",
+    "kind": "actual",
+    "caption": "先锋书店五台山店外观；仅作地点介绍，不代表合作或推荐",
+    "visualReview": "文件为先锋书店五台山店外观；画面为入口建筑，商标仅为地点辨识，不暗示合作。"
+  },
+  "pibie": {
+    "title": "File:Tomb of Xiao Jing - Bixie.JPG",
+    "kind": "actual",
+    "caption": "南京萧景墓前南朝石辟邪实拍",
+    "visualReview": "原作者标注南京萧景墓前辟邪；画面为墓前石兽，不采用玉器、陶俑或外地石兽替代。"
+  },
+  "wadang": {
+    "title": null,
+    "reason": "检索到辽宁、宁波和鄂州的人面纹瓦当照片，尚未找到与南京条目对应且许可清楚的实物照片；不将异地出土文物冒充南京出土。",
+    "additionalSources": [
+      "https://commons.wikimedia.org/wiki/File:%E5%AE%81%E6%B3%A2%E5%8D%9A%E7%89%A9%E9%A6%86%E8%97%8F%E5%85%AD%E6%9C%9D%E4%BA%BA%E9%9D%A2%E7%BA%B9%E7%93%A6%E5%BD%93.jpg"
+    ]
+  },
+  "chengzhuan": {
+    "title": "File:Nanjing City Wall Brick with Maker's Mark (10150966183).jpg",
+    "kind": "actual",
+    "caption": "南京明城墙带制作者铭文的城砖实拍",
+    "visualReview": "原作者明确南京明城墙带制作者印记城砖；画面可见砖面铭文，CC0 来源及 Flickr 许可复核记录可追溯。"
+  },
+  "nanyanjing": {
+    "title": "File:Full view of Nanjing Eye Pedestrian Bridge.jpg",
+    "kind": "actual",
+    "caption": "南京眼步行桥实景",
+    "minWidth": 500,
+    "visualReview": "原始文件明确南京眼步行桥；画面为双环斜拉结构与步道，非长江大桥。"
+  },
+  "baoenta": {
+    "title": "File:2024Apr - Glass Pagoda of Nanjing - img 01.jpg",
+    "kind": "actual",
+    "caption": "大报恩寺遗址公园现建塔实景（2024）；不是明代原塔",
+    "visualReview": "原始文件明确南京现建玻璃塔；画面为大报恩寺遗址公园塔景，标明现建塔而非明代原塔。"
+  },
+  "zifeng": {
+    "title": "File:Zifeng Tower in 2017.jpg",
+    "kind": "actual",
+    "caption": "南京紫峰大厦实景",
+    "visualReview": "原始文件明确 2017 年紫峰大厦；画面为完整塔身，不采用施工中旧楼或其他城市摩天楼。"
+  },
+  "baochuan": {
+    "title": "File:Nanjing Treasure Boat - P1070978.JPG",
+    "kind": "reconstruction",
+    "caption": "南京宝船厂遗址的宝船复原展示；不是明代原船",
+    "visualReview": "原始说明明确南京宝船厂遗址的现代全尺寸模型；按复原展示，不算明代原船实物。"
+  },
+  "plum": {
+    "title": "File:2019南京梅花山梅花02.jpg",
+    "kind": "actual",
+    "caption": "南京梅花山梅花实拍（2019）",
+    "visualReview": "原始文件明确 2019 南京梅花山；画面为梅花枝与花朵，不混用樱花。"
+  },
+  "sakura": {
+    "title": "File:南京玄武区鸡鸣寺路樱花 - panoramio.jpg",
+    "kind": "actual",
+    "caption": "南京鸡鸣寺路樱花实景",
+    "visualReview": "原始文件明确南京鸡鸣寺路；画面为樱花街景，行人不作人物主体。"
+  },
+  "leaf": {
+    "title": "File:Foglia di platanus x acerifolia.jpg",
+    "kind": "actual",
+    "caption": "二球悬铃木叶片实拍，俗称法国梧桐；不是南京现场摄影",
+    "visualReview": "原始文件标注 Platanus x acerifolia；画面为单片叶，解释南京俗称法国梧桐，非梧桐属梧桐，不冒充南京现场。"
+  },
+  "stone": {
+    "title": "File:南京雨花台雨花石.jpg",
+    "kind": "documentary",
+    "caption": "南京雨花台雨花石陈列实景（打磨后的观赏石）",
+    "rejected": [
+      "旧图以雨花石串珠为主，不作原石典型展示。"
+    ],
+    "visualReview": "原始文件标注南京雨花台雨花石；画面为打磨观赏石陈列，按现场陈列纪实，不作原石或品质鉴定。"
+  },
+  "guihua": {
+    "title": "File:Osmanthus fragrans flowers.jpg",
+    "kind": "actual",
+    "caption": "桂花（Osmanthus fragrans）花朵实拍；不作南京拍摄地点认定",
+    "visualReview": "原作者标注 Osmanthus fragrans；画面为桂花枝与花簇，不冒充灵谷寺桂王或南京现场。"
+  },
+  "baige": {
+    "title": "File:Music Stage of Sun Yat-sen Mauloleum.jpg",
+    "kind": "documentary",
+    "caption": "南京中山陵音乐台白鸽与场地实景",
+    "visualReview": "文件明确中山陵音乐台；画面可见白鸽群和音乐台，按场地纪实而非单只白鸽特写。"
+  },
+  "yinghuo": {
+    "title": "File:반딧불이.jpg",
+    "kind": "related",
+    "caption": "萤科昆虫（Pyrocoelia rufa）实拍，仅作形态对照；不是南京灵谷寺现场或当地物种认定",
+    "rejected": [
+      "灵谷寺夜景为二次转载，原作者页面无法访问，本轮未补齐原始授权链。"
+    ],
+    "additionalSources": [
+      "https://commons.wikimedia.org/wiki/File:Fireflies_at_Linggu_Temple,_20160627.jpg",
+      "https://suyipin.lofter.com/post/1247e8_b79c8ec",
+      "https://commons.wikimedia.org/wiki/File:%EB%B0%98%EB%94%A7%EB%B6%88%EC%9D%B4.jpg"
+    ],
+    "visualReview": "原作者自有作品，文件分类指向 Pyrocoelia rufa；画面为萤科昆虫形态，仅作相关示意，不冒充灵谷寺现场或当地物种。"
+  },
+  "hufengdie": {
+    "title": "File:Leuhd204.jpg",
+    "kind": "actual",
+    "caption": "中华虎凤蝶（Luehdorfia chinensis）标本实拍；不是南京野外摄影",
+    "visualReview": "原始说明 L.chinensis；画面为展开翅膀的实体标本，明确标本实拍，不声称南京野外摄影。"
+  },
+  "jiangtun": {
+    "title": "File:Yangtze finless porpoise, 12 February 2008a.jpg",
+    "kind": "actual",
+    "caption": "长江江豚实拍，摄于中国科学院水生生物研究所（2008）；不是南京江段野外摄影",
+    "visualReview": "原始说明明确长江江豚、中国科学院水生生物研究所；画面为水中江豚，标注研究所及年份，不冒充南京野外现场。"
+  }
+}

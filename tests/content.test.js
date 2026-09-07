@@ -4,6 +4,7 @@ import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { ITEMS, LEVELS } from '../src/config.js';
+import { ALBUM_PHOTOS } from '../src/album-photos.js';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const read = file => readFileSync(join(root, file), 'utf8');
@@ -31,10 +32,12 @@ test('版本口径统一为十关、四十风物和动态总星', () => {
   assert.match(read('src/share.js'), /LEVELS\.length\s*\*\s*3/);
 });
 
-test('照片清单只标记实际存在的 18 件风物', () => {
-  const photos = ITEMS.filter(item => item.photo);
-  assert.equal(photos.length, 18);
-  for(const item of photos) assert.equal(existsSync(join(root, 'assets', 'img', `it_${item.id}.jpg`)), true, item.id);
+test('40 件照片结果与配置一致，采用照片全部存在', () => {
+  assert.deepEqual(Object.keys(ALBUM_PHOTOS).sort(),ITEMS.map(item=>item.id).sort());
+  for(const item of ITEMS){
+    assert.equal(item.photo,!!ALBUM_PHOTOS[item.id].file,item.id);
+    if(item.photo)assert.equal(existsSync(join(root,ALBUM_PHOTOS[item.id].file)),true,item.id);
+  }
 });
 
 test('全部关卡背景同时具有 WebP 和 JPEG 回退', () => {

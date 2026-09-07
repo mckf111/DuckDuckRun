@@ -1,0 +1,152 @@
+{
+  "schema": 1,
+  "generatedAt": "2026-09-02T05:08:02.850Z",
+  "source": "deterministic simulation; no human participant or physical-device claim",
+  "commit": "768d7070876c3d313c8e1c933fb32e575425c3cc",
+  "referenceSeed": 20260903,
+  "checks": {
+    "threeNewcomerPaths": true,
+    "allModeRoutesComplete": true,
+    "durationDistribution": true,
+    "easyHasGraceNotAutoplay": true,
+    "tenMinuteContinuous": true,
+    "twentyMinuteSoak": true
+  },
+  "passed": true,
+  "routeAudit": {
+    "runs": [
+      {
+        "mode": "standard",
+        "seed": 20260903,
+        "route": "moon-left",
+        "state": "clear",
+        "durationSec": 72.02,
+        "dist": 720,
+        "tokens": 4,
+        "beats": [
+          "onboard",
+          "confidence",
+          "choice",
+          "pressure",
+          "relief",
+          "climax"
+        ]
+      },
+      {
+        "mode": "standard",
+        "seed": 1,
+        "route": "boat-right",
+        "state": "clear",
+        "durationSec": 72.02,
+        "dist": 720,
+        "tokens": 4,
+        "beats": [
+          "onboard",
+          "confidence",
+          "choice",
+          "pressure",
+          "relief",
+          "climax"
+        ]
+      },
+      {
+        "mode": "standard",
+        "seed": 2,
+        "route": "arch-weave",
+        "state": "clear",
+        "durationSec": 72.02,
+        "dist": 720,
+        "tokens": 4,
+        "beats": [
+          "onboard",
+          "confidence",
+          "choice",
+          "pressure",
+          "relief",
+          "climax"
+        ]
+      },
+      {
+        "mode": "easy",
+        "seed": 20260903,
+        "route": "moon-left",
+        "state": "clear",
+        "durationSec": 80.02,
+        "dist": 720,
+        "tokens": 4,
+        "beats": [
+          "onboard",
+          "confidence",
+          "choice",
+          "pressure",
+          "relief",
+          "climax"
+        ]
+      },
+      {
+        "mode": "easy",
+        "seed": 1,
+        "route": "boat-right",
+        "state": "clear",
+        "durationSec": 80.02,
+        "dist": 720,
+        "tokens": 4,
+        "beats": [
+          "onboard",
+          "confidence",
+          "choice",
+          "pressure",
+          "relief",
+          "climax"
+        ]
+      },
+      {
+        "mode": "easy",
+        "seed": 2,
+        "route": "arch-weave",
+        "state": "clear",
+        "durationSec": 80.02,
+        "dist": 720,
+        "tokens": 4,
+        "beats": [
+          "onboard",
+          "confidence",
+          "choice",
+          "pressure",
+          "relief",
+          "climax"
+        ]
+      }
+    ],
+    "easyMiss": {
+      "state": "play",
+      "rescues": 1,
+      "inputBuffer": 0.18,
+      "collisionWidth": 0.46
+    },
+    "standardMiss": {
+      "state": "crashing",
+      "inputBuffer": 0.1,
+      "collisionWidth": 0.55
+    },
+    "bufferedInput": 0.18
+  },
+  "tenMinutes": {
+    "targetSeconds": 600,
+    "simulatedSeconds": 600,
+    "completedRuns": 7,
+    "finalState": "play",
+    "maxObjects": 16,
+    "maxParticles": 56,
+    "updateFrames": 18000
+  },
+  "twentyMinutes": {
+    "targetSeconds": 1200,
+    "simulatedSeconds": 1200.03,
+    "completedRuns": 15,
+    "finalState": "play",
+    "maxObjects": 16,
+    "maxParticles": 61,
+    "updateFrames": 36001
+  }
+}

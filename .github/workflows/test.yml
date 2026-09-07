@@ -1,56 +1,109 @@
-name: trusted-experience
+name: quality-gate
 
 on:
   push:
-    branches: [codex/trusted-experience]
+    branches: [main, codex/trusted-experience, manus/duckduckrun-hardening, codex/manus-rc-remediation]
+    tags: ['v*']
   pull_request:
+  workflow_dispatch:
+    inputs:
+      production:
+        description: Build an approved production artifact for jinlingrun.caowenhu.com
+        required: true
+        type: boolean
+        default: false
+      run_soak:
+        description: Run the independent 20-minute soak gate
+        required: true
+        type: boolean
+        default: true
+      soak_duration_ms:
+        description: Soak duration in milliseconds (minimum 4000)
+        required: true
+        type: string
+        default: '1200000'
+  schedule:
+    - cron: '17 18 * * 0'
 
 permissions:
   contents: read
+
+env:
+  PUBLIC_SITE_URL: ${{ inputs.production && 'https://jinlingrun.caowenhu.com' || '' }}
+  PUBLIC_BASE_PATH: ''
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  test:
+  release:
+    if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
           node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            tools/e2e/package-lock.json
+      - run: npm ci
       - run: npm ci --prefix tools/e2e
-      - run: node tools/e2e/node_modules/playwright-core/cli.js install --with-deps chromium
-      - run: npm run test:syntax
-      - run: npm run test:logic
-      - run: npm run test:save
-      - run: npm run test:resources
-      - run: npm run test:browser
+      - run: node tools/e2e/node_modules/playwright-core/cli.js install --with-deps chromium webkit
+      - name: Core verification
+        run: npm run verify
+      - name: Asset and notice verification
+        run: npm run test:assets
+      - name: Release candidate verification
+        env:
+          RELEASE_EVIDENCE_DIR: ${{ runner.temp }}/duckduckrun-evidence
+        run: npm run ${{ inputs.production && 'test:release:production' || 'test:release' }}
+      - name: Upload immutable static artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: duckduckrun-${{ github.sha }}-${{ inputs.production && 'production' || 'preview' }}
+          path: dist/
+          if-no-files-found: error
+          retention-days: 90
+      - name: Upload release evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: duckduckrun-release-evidence-${{ github.sha }}
+          path: ${{ runner.temp }}/duckduckrun-evidence/
+          if-no-files-found: warn
+          retention-days: 90
 
-  preview:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/codex/trusted-experience'
-    needs: test
+  soak:
+    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && (inputs.run_soak || inputs.production))
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/configure-pages@v5
-      - name: Prepare static preview
-        run: |
-          mkdir _site
-          cp index.html _site/
-          cp -r src assets _site/
-          touch _site/.nojekyll
-      - uses: actions/upload-pages-artifact@v4
+      - uses: actions/setup-node@v6
         with:
-          path: _site
-      - name: Deploy implementation preview
-        id: deployment
-        uses: actions/deploy-pages@v4
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            tools/e2e/package-lock.json
+      - run: npm ci
+      - run: npm ci --prefix tools/e2e
+      - run: node tools/e2e/node_modules/playwright-core/cli.js install --with-deps chromium webkit
+      - run: npm run ${{ inputs.production && 'build:production' || 'build' }}
+      - name: Runtime soak gate
+        env:
+          RELEASE_EVIDENCE_DIR: ${{ runner.temp }}/duckduckrun-evidence
+          SOAK_DURATION_MS: ${{ inputs.production && '1200000' || (github.event_name == 'workflow_dispatch' && inputs.soak_duration_ms || '1200000') }}
+        run: npm run test:release:soak
+      - name: Upload soak evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: duckduckrun-soak-evidence-${{ github.run_id }}
+          path: ${{ runner.temp }}/duckduckrun-evidence/
+          if-no-files-found: error
+          retention-days: 90
